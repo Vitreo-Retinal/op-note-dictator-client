@@ -179,6 +179,7 @@ ABBREVIATION DICTIONARY:
 - PXF = pseudo-exfoliation, lens calcs = lens calculations
 - BEM = bull's eye maculopathy, FAF = fundus autofluorescence, IS/OS = inner segment/outer segment junction, OCT-A = OCT angiography
 - FAZ = foveal avascular zone, MAs = microaneurysms, CNVM = choroidal neovascular membrane
+- SRHRM = subretinal hyperreflective material (usually blood on OCT)
 - RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
 - Plaquenil = hydroxychloroquine
 
