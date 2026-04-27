@@ -181,6 +181,11 @@ ABBREVIATION DICTIONARY:
 - RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
 - Plaquenil = hydroxychloroquine
 
+PHYSICIAN ABBREVIATIONS:
+- Dr. Z = Dr. Zacharia, Dr. K = Dr. Kleinberg, Dr. G = Dr. Gallo
+- Dr. M = Dr. Meltzer, Dr. BJ = Dr. Ling, Dr. L = Dr. Luna
+- Always expand these to the full name in the generated note.
+
 PLAQUENIL LIFETIME DOSE CALCULATION:
 - When the physician provides dose and duration, CALCULATE and include the cumulative lifetime dose
 - Formula: daily dose (mg) × 365 × years
