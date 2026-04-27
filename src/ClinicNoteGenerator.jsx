@@ -99,6 +99,12 @@ POST-OP FOLLOW-UP DEFAULTS (use unless physician specifies otherwise):
 - POM12+ → yearly
 - If PVR or high risk noted → use shorter follow-up
 
+TIME-BASED CODING (only when time is provided):
+- If the physician provides time spent with patient, compare it to time thresholds: 99213=20min, 99214=30min, 99215=40min.
+- Use whichever method (MDM or time) supports the HIGHER E/M level.
+- If time-based coding is used, add at the end of the note: "[+] Total time spent on date of encounter: [X] minutes, including [brief description of what time was spent on — e.g., counseling regarding treatment options, reviewing extensive imaging, coordinating care]."
+- If MDM alone supports the same or higher level, do NOT add the time sentence — just use MDM.
+
 COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - AMD → Healthy diet, non-smoking, Amsler grid, AREDS2, UV protection
 - RVO (BRVO/CRVO) → Healthy lifestyle, healthy diet, low salt, BP control
@@ -234,6 +240,7 @@ const isEyeCode = (code) => code === "92014" || code === "92004";
 export default function ClinicNoteGenerator({ onBack }) {
   const [mode, setMode] = useState("generate"); // generate | optimize
   const [note, setNote] = useState("");
+  const [timeSpent, setTimeSpent] = useState(""); // optional — minutes spent with patient
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -361,9 +368,10 @@ export default function ClinicNoteGenerator({ onBack }) {
     setLoading(true); setError(""); setResult(null);
     try {
       const systemPrompt = buildSystemPrompt(mode, examples);
+      const timeNote = timeSpent.trim() ? `\n\nTIME SPENT WITH PATIENT: ${timeSpent.trim()} minutes (use for time-based coding if it supports a higher E/M level than MDM alone)` : "";
       const userMessage = mode === "generate"
-        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}`
-        : `Optimize this existing A/P note with minimum billing language:\n\n${note}`;
+        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}`
+        : `Optimize this existing A/P note with minimum billing language:\n\n${note}${timeNote}`;
 
       const res = await fetch(`${API_BASE}/api/generate-note`, {
         method: "POST",
@@ -489,6 +497,19 @@ export default function ClinicNoteGenerator({ onBack }) {
               rows={14}
               style={{ display: "block", width: "100%", background: S.card, border: `1px solid #475569`, borderRadius: 10, padding: 14, color: S.bright, fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.8, resize: "vertical", boxSizing: "border-box" }}
             />
+
+            {/* Optional time field */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+              <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Time with patient (optional):</label>
+              <input
+                type="number"
+                value={timeSpent}
+                onChange={e => setTimeSpent(e.target.value)}
+                placeholder="min"
+                style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.82rem", width: 70, boxSizing: "border-box" }}
+              />
+              <span style={{ fontSize: "0.66rem", color: "#475569" }}>99213=20 min · 99214=30 min · 99215=40 min</span>
+            </div>
 
             {error && (
               <div style={{ color: "#f87171", fontSize: "0.72rem", background: "#1a0808", padding: "8px 12px", borderRadius: 6, border: "1px solid #7f1d1d", marginTop: 10, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
