@@ -71,6 +71,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_rd_ppv",
+    label: "RD — multiple breaks, PPV planned",
+    shorthand: `67 yo lady here for f/u\n\n1. RD OS w multiple breaks\nVA 20/200\nSRF involves the fovea\nHSTs at 1, 5 and 10\nFP today captures\nPhakic\n+ PVD\n\nPlan\nPPV/EL/FAX/gas OS\nRBA discussed including endophthalmitis/hemorrhage/failure and need for additional surgery/glaucoma/vision loss/gas precautions\nF/u post-op`,
+    builtin: true,
+  },
+  {
     id: "ex_plaquenil",
     label: "Plaquenil toxicity screening",
     shorthand: `67 yo lady here for f/u\n\n1. Long-term use of Plaquenil\nTakes for RA\nOn 200mg BID x 10 years\nIS/OS intact on OCT\nExam and FAF without BEM\n\nPlan\nObservation\nF/u in 1 year`,
