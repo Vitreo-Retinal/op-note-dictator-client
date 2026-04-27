@@ -47,6 +47,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_ftmh",
+    label: "FTMH — surgery planned",
+    shorthand: `67 yo lady here for f/u\n\n1. FTMH OS\nVA 20/100\nPt complains of metamorphopsia and loss of vision\nAcute symptoms 3 weeks ago\nInterferes w ADLs\n\n1. Cataract OS\nMild, not VS\n\nPlan\nDiscussed PPV/MP vs observation and patient would like to proceed with surgery\nRBA discussed in detail including endophthalmitis/vision loss/bleeding and glaucoma\nWill plan for next available OR time slot\nDiscussed cataract progression after vitrectomy`,
+    builtin: true,
+  },
+  {
     id: "ex_poag",
     label: "POAG — co-managed, stable",
     shorthand: `67 yo lady here for f/u\n\n1. POAG OU\nIOP stable, followed by Dr. Zacharia\n\nPlan\nCtn Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU\nStressed importance of compliance with gtt`,
@@ -103,8 +109,9 @@ ABBREVIATION DICTIONARY:
 - cat = cataracts, AT QID = artificial tears four times daily
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
-- ERM = epiretinal membrane, VS = visually significant, MP = membrane peel, MS = membrane stripping
-- ADLs = activities of daily living, metamorphopsia = distorted vision
+- ERM = epiretinal membrane, FTMH = full-thickness macular hole, VS = visually significant
+- MP = membrane peel, MS = membrane stripping, ADLs = activities of daily living
+- metamorphopsia = distorted vision
 
 ERM DECISION LOGIC:
 - If ERM is VS (interferes with ADLs, significant symptoms) → plan includes PPV/MP, RBA discussed, schedule surgery
