@@ -65,6 +65,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_plaquenil",
+    label: "Plaquenil toxicity screening",
+    shorthand: `67 yo lady here for f/u\n\n1. Long-term use of Plaquenil\nTakes for RA\nOn 200mg BID x 10 years\nIS/OS intact on OCT\nExam and FAF without BEM\n\nPlan\nObservation\nF/u in 1 year`,
+    builtin: true,
+  },
+  {
     id: "ex_poag",
     label: "POAG — co-managed, stable",
     shorthand: `67 yo lady here for f/u\n\n1. POAG OU\nIOP stable, followed by Dr. Zacharia\n\nPlan\nCtn Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU\nStressed importance of compliance with gtt`,
@@ -126,6 +132,16 @@ ABBREVIATION DICTIONARY:
 - ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
 - PI = peripheral iridectomy, AC-IOL = anterior chamber intraocular lens, CF = counting fingers
 - PXF = pseudo-exfoliation, lens calcs = lens calculations
+- BEM = bull's eye maculopathy, FAF = fundus autofluorescence, IS/OS = inner segment/outer segment junction
+- RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
+- Plaquenil = hydroxychloroquine
+
+PLAQUENIL LIFETIME DOSE CALCULATION:
+- When the physician provides dose and duration, CALCULATE and include the cumulative lifetime dose
+- Formula: daily dose (mg) × 365 × years
+- Example: 200mg BID (=400mg/day) × 10 years = 400 × 365 × 10 = 1,460,000 mg = 1,460 g cumulative dose
+- Include in the note: "Cumulative lifetime dose: approximately [X] g"
+- Risk increases significantly after cumulative dose >1,000 g or >5 years of use
 - MP = membrane peel, MS = membrane stripping, ADLs = activities of daily living
 - metamorphopsia = distorted vision
 
