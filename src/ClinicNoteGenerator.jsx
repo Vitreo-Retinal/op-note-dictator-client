@@ -192,6 +192,7 @@ ABBREVIATION DICTIONARY:
 - CFT = central foveal thickness (in microns). When provided, include in the OCT review statement (e.g., "OCT reviewed, CFT 285 microns")
 - dd = disc diameters (unit of lesion size), FP = fundus photo/photography
 - orange pigment = lipofuscin (a risk factor for melanoma conversion in choroidal lesions)
+- CHRPE = congenital hypertrophy of the retinal pigment epithelium
 - RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
 - Plaquenil = hydroxychloroquine
 
@@ -229,6 +230,11 @@ CHOROIDAL NEVUS LOGIC:
 - Use the TFSOM-DIM mnemonic for melanoma risk factors: Thickness >2mm, Fluid (SRF), Symptoms, Orange pigment, Margin touching disc, Diameter >5mm, Intrinsic melanocytic markers, Male
 - When discussing melanoma conversion risk, include data: small choroidal nevi (<5mm, flat, no risk factors) have approximately 1 in 8,845 annual risk of conversion. Risk increases with each TFSOM-DIM factor present. At 5 years, conversion rate is ~2% for lesions with 1 risk factor, ~14% with 2, ~36% with 3 or more.
 - B-scan = B-scan ultrasonography
+
+CHRPE LOGIC:
+- CHRPE is a benign, congenital lesion — always document this in the assessment
+- FP for documentation
+- No treatment needed, reassurance to patient
 
 ERM DECISION LOGIC:
 - If ERM is VS (interferes with ADLs, significant symptoms) → plan includes PPV/MP, RBA discussed, schedule surgery
