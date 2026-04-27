@@ -323,6 +323,31 @@ export default function ClinicNoteGenerator({ onBack }) {
   const [copied, setCopied] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
+  // Injection calculator
+  const [lastInjDate, setLastInjDate] = useState("");
+  const [fuWeeks, setFuWeeks] = useState("");
+
+  const injCalc = (() => {
+    if (!lastInjDate) return null;
+    const last = new Date(lastInjDate + "T12:00:00");
+    if (isNaN(last)) return null;
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    const diffMs = today - last;
+    const weeksSince = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+    const daysSince = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    let nextDate = null;
+    if (fuWeeks && parseInt(fuWeeks) > 0) {
+      nextDate = new Date(today.getTime() + parseInt(fuWeeks) * 7 * 24 * 60 * 60 * 1000);
+    }
+    return { weeksSince, daysSince, nextDate };
+  })();
+
+  const formatDate = (d) => {
+    if (!d) return "";
+    return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  };
+
   // Examples state
   const [examples, setExamples] = useState(DEFAULT_EXAMPLES);
   const [editingExample, setEditingExample] = useState(null);
@@ -584,6 +609,45 @@ export default function ClinicNoteGenerator({ onBack }) {
                 style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.82rem", width: 70, boxSizing: "border-box" }}
               />
               <span style={{ fontSize: "0.66rem", color: "#475569" }}>99213=20 min · 99214=30 min · 99215=40 min</span>
+            </div>
+
+            {/* Injection calculator */}
+            <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", marginTop: 10 }}>
+              <div style={{ fontSize: "0.72rem", color: S.muted, fontWeight: 700, marginBottom: 8 }}>Injection Calculator (optional)</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Last inj:</label>
+                  <input
+                    type="date"
+                    value={lastInjDate}
+                    onChange={e => setLastInjDate(e.target.value)}
+                    style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", boxSizing: "border-box" }}
+                  />
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>F/u in:</label>
+                  <input
+                    type="number"
+                    value={fuWeeks}
+                    onChange={e => setFuWeeks(e.target.value)}
+                    placeholder="wks"
+                    style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", width: 60, boxSizing: "border-box" }}
+                  />
+                  <span style={{ fontSize: "0.72rem", color: S.muted }}>weeks</span>
+                </div>
+              </div>
+              {injCalc && (
+                <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: "0.78rem", color: S.accentLight, fontFamily: S.mono }}>
+                    {injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""} since last inj
+                  </span>
+                  {injCalc.nextDate && (
+                    <span style={{ fontSize: "0.78rem", color: S.green, fontFamily: S.mono }}>
+                      Next appt: {formatDate(injCalc.nextDate)}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {error && (
