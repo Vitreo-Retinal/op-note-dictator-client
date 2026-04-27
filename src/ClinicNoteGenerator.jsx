@@ -177,7 +177,8 @@ ABBREVIATION DICTIONARY:
 - ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
 - PI = peripheral iridectomy, AC-IOL = anterior chamber intraocular lens, CF = counting fingers
 - PXF = pseudo-exfoliation, lens calcs = lens calculations
-- BEM = bull's eye maculopathy, FAF = fundus autofluorescence, IS/OS = inner segment/outer segment junction
+- BEM = bull's eye maculopathy, FAF = fundus autofluorescence, IS/OS = inner segment/outer segment junction, OCT-A = OCT angiography
+- FAZ = foveal avascular zone, MAs = microaneurysms, CNVM = choroidal neovascular membrane
 - RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
 - Plaquenil = hydroxychloroquine
 
@@ -237,6 +238,7 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 
 BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marked with [+]):
 1. IMAGING REVIEW: Always include [+] "OCT reviewed" or [+] "OCT and imaging reviewed" when any imaging is mentioned or implied. For complex cases: [+] "Data reviewed including OCT/imaging and prior surgical records."
+   - OCT-A is routinely reviewed. For DIABETIC patients: mention FAZ enlargement and/or MAs on OCT-A when relevant. For AMD or myopic CNVM: mention CNVM on OCT-A when relevant. Include [+] "OCT-A reviewed" alongside OCT review for these conditions.
 2. MANAGEMENT DECISION: Always document what was decided and why. Examples:
    - [+] "Decision was made to continue present management with Vabysmo q8 weeks given stable response."
    - [+] "Decision was made to switch from Eylea to Vabysmo given sub-optimal response."
@@ -291,6 +293,7 @@ TASK: The physician will give you an already-structured A/P note. Your job is to
 
 BILLING ADDITIONS — ensure these components are present in every note (add with [+] only if missing):
 1. IMAGING REVIEW: [+] "OCT reviewed" or [+] "OCT and imaging reviewed" — if imaging mentioned but "reviewed" not stated. For complex cases: [+] "Data reviewed including OCT/imaging and prior surgical records."
+   - OCT-A is routinely reviewed. For DIABETIC patients: add FAZ enlargement and/or MAs on OCT-A if not already stated. For AMD or myopic CNVM: add CNVM on OCT-A if not already stated. Include [+] "OCT-A reviewed" for these conditions.
 2. MANAGEMENT DECISION: If not already stated, add what was decided: [+] "Decision was made to continue present management..." or [+] "Decision was made to switch agents..." or [+] "Decision was made to proceed with surgical intervention..." or [+] "Decision was made to observe..."
 3. RBA: [+] "Risks, benefits, and alternatives discussed" — for injection/treatment visits if not already present.
 4. COMPLEXITY: For 99214/99215 visits, ensure the note documents what makes the visit complex (agent switching, progression, multiple conditions, surgical planning, treatment failure).
