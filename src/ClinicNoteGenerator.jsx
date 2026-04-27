@@ -230,10 +230,15 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
   if (mode === "generate") {
     return `${baseRules}
 
-BILLING-COMPLIANT LANGUAGE — insert these where appropriate and mark with [+]:
-- After mentioning OCT/imaging findings: [+] "OCT reviewed"
-- For injection visits: [+] "Risks, benefits, and alternatives discussed" (if not already present as RBA)
-- For complex visits (agent switching, progression, new findings): [+] "Data reviewed including OCT/imaging" and [+] "Treatment options discussed"
+BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marked with [+]):
+1. IMAGING REVIEW: Always include [+] "OCT reviewed" or [+] "OCT and imaging reviewed" when any imaging is mentioned or implied. For complex cases: [+] "Data reviewed including OCT/imaging and prior surgical records."
+2. MANAGEMENT DECISION: Always document what was decided and why. Examples:
+   - [+] "Decision was made to continue present management with Vabysmo q8 weeks given stable response."
+   - [+] "Decision was made to switch from Eylea to Vabysmo given sub-optimal response."
+   - [+] "Decision was made to proceed with surgical intervention given worsening TRD."
+   - [+] "Decision was made to observe given stable exam and asymptomatic status."
+3. RBA: For injection visits: [+] "Risks, benefits, and alternatives discussed" (if not already present as RBA). For surgical visits, RBA should already be in the dictation.
+4. COMPLEXITY: For 99214/99215, the MDM justification sentence (see below) captures this. But within the note body, document what makes this visit complex — e.g., agent switching, progression, multiple conditions, surgical planning, treatment failure.
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
 
@@ -279,10 +284,11 @@ TASK: The physician will give you an already-structured A/P note. Your job is to
 2. Insert MINIMUM billing-compliant language to support that code, marked with [+]
 3. Do NOT rewrite or restructure the note — only add what's needed
 
-BILLING ADDITIONS to insert where needed (mark with [+]):
-- [+] "OCT reviewed" — if imaging mentioned but "reviewed" not stated
-- [+] "Data reviewed including OCT/imaging" — for 99214/99215 support
-- [+] "Treatment options discussed" — for agent switching or progression visits
+BILLING ADDITIONS — ensure these components are present in every note (add with [+] only if missing):
+1. IMAGING REVIEW: [+] "OCT reviewed" or [+] "OCT and imaging reviewed" — if imaging mentioned but "reviewed" not stated. For complex cases: [+] "Data reviewed including OCT/imaging and prior surgical records."
+2. MANAGEMENT DECISION: If not already stated, add what was decided: [+] "Decision was made to continue present management..." or [+] "Decision was made to switch agents..." or [+] "Decision was made to proceed with surgical intervention..." or [+] "Decision was made to observe..."
+3. RBA: [+] "Risks, benefits, and alternatives discussed" — for injection/treatment visits if not already present.
+4. COMPLEXITY: For 99214/99215 visits, ensure the note documents what makes the visit complex (agent switching, progression, multiple conditions, surgical planning, treatment failure).
 - Do NOT add what's already there
 
 DECISION RULES:
