@@ -59,6 +59,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_disl_iol",
+    label: "Dislocated IOL — surgery planned",
+    shorthand: `67 yo lady here for f/u\n\n1. Dislocated IOL OS\nPt noted acute loss of vision OS 1 week ago\nVA CF\nThree-piece IOL in the vitreous\nPt has a history of pseudo-exfoliation\n\nPlan\nDiscussed IOL exchange vs. contact lens vs. aphakic lenses and pt would like to proceed with surgical intervention\nPPV/IOL exchange/PI/AC-IOL\nNeeds lens calcs\nRBA discussed in detail including risks of endophthalmitis/RD/VH/glaucoma/corneal edema and vision loss\nF/u post-op`,
+    builtin: true,
+  },
+  {
     id: "ex_poag",
     label: "POAG — co-managed, stable",
     shorthand: `67 yo lady here for f/u\n\n1. POAG OU\nIOP stable, followed by Dr. Zacharia\n\nPlan\nCtn Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU\nStressed importance of compliance with gtt`,
@@ -117,7 +123,9 @@ ABBREVIATION DICTIONARY:
 - cat = cataracts, AT QID = artificial tears four times daily
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
-- ERM = epiretinal membrane, FTMH = full-thickness macular hole, VS = visually significant
+- ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
+- PI = peripheral iridectomy, AC-IOL = anterior chamber intraocular lens, CF = counting fingers
+- PXF = pseudo-exfoliation, lens calcs = lens calculations
 - MP = membrane peel, MS = membrane stripping, ADLs = activities of daily living
 - metamorphopsia = distorted vision
 
