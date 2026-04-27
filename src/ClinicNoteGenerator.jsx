@@ -183,7 +183,7 @@ VMT DECISION LOGIC:
 FLOATER VITRECTOMY RULES:
 - PPV for symptomatic floaters is ONLY offered to pseudophakic patients with a documented PVD
 - If the patient is phakic, do NOT recommend PPV for floaters — observe instead
-- Must document: pseudophakic status, PVD confirmed, no breaks on SDE, no history or family history of RD, interference with ADLs
+- Must document: pseudophakic status, PVD confirmed (include "OCT was reviewed and the posterior hyaloid was lifted"), no breaks on SDE, no history or family history of RD, interference with ADLs
 - POD1 = post-op day 1, POW1 = post-op week 1, POM1/3/6 = post-op month 1/3/6
 
 POST-OP FOLLOW-UP DEFAULTS (use unless physician specifies otherwise):
