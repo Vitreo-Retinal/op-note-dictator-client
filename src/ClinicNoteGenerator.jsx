@@ -109,6 +109,8 @@ ABBREVIATION DICTIONARY:
 - "on V q8" = on Vabysmo, requires q8 weeks
 - NPDR = non-proliferative diabetic retinopathy, PDR = proliferative diabetic retinopathy
 - DME = diabetic macular edema, SRF = subretinal fluid, IRF = intraretinal fluid
+- T1DM = type 1 diabetes mellitus, T2DM = type 2 diabetes mellitus
+- IDDM = insulin-dependent diabetes mellitus, NIDDM = non-insulin-dependent diabetes mellitus
 - FP = fundus photos, SDE = scleral depressed exam, LRP = laser retinopexy
 - PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange
 - HST = horseshoe tear, PVD = posterior vitreous detachment
