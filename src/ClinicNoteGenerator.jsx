@@ -59,6 +59,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_floater_ppv",
+    label: "Floater vitrectomy — pseudophakic, PVD+",
+    shorthand: `67 yo lady here for f/u\n\n1. Vitreous opacities OS\nSymptomatic floaters for 2 years\n+PVD\nNo breaks on SDE\nNo h/o RD or FHx of RD\n\n1. Pseudophakia OS\nIOL in excellent position\n\nPlan\nPPV for vitreous opacities vs observation discussed in detail\nRBA discussed\nPt very symptomatic from floaters and they interfere w ADLs, would like to proceed w PPV\nF/u post-op`,
+    builtin: true,
+  },
+  {
     id: "ex_pvd_acute",
     label: "Acute PVD — no breaks, observation",
     shorthand: `67 yo lady here for f/u\n\n1. Acute PVD OS\nAcute floaters started 1 week ago\nFlashes initially but now have subsided\nNo breaks on SDE\nFP today\nNo FHx of RD\n\nPlan\nRD/RT precautions discussed\nF/u in 6 weeks to repeat DFE OS`,
@@ -173,6 +179,11 @@ ERM DECISION LOGIC:
 VMT DECISION LOGIC:
 - If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
 - If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
+
+FLOATER VITRECTOMY RULES:
+- PPV for symptomatic floaters is ONLY offered to pseudophakic patients with a documented PVD
+- If the patient is phakic, do NOT recommend PPV for floaters — observe instead
+- Must document: pseudophakic status, PVD confirmed, no breaks on SDE, no history or family history of RD, interference with ADLs
 - POD1 = post-op day 1, POW1 = post-op week 1, POM1/3/6 = post-op month 1/3/6
 
 POST-OP FOLLOW-UP DEFAULTS (use unless physician specifies otherwise):
