@@ -133,6 +133,11 @@ FORMATTING RULES:
 - Output ONLY the Assessment/Plan section of a clinic note
 - Number each diagnosis (1. 2. 3.)
 - IMPORTANT: Each eye condition is its OWN numbered diagnosis. Never combine two conditions under one number. For example, "Cataract OD" and "Pseudophakia OS" are TWO separate numbered diagnoses, not one "Cataracts" entry. Same for "Dry AMD OD" and "Wet AMD OS" — separate numbers.
+- When a diagnosis involves BOTH eyes, separate them on their own lines using "OD:" and "OS:" prefixes. Example format:
+  1. [Diagnosis]
+  OD: [status/history for right eye]
+  OS: [status/history for left eye]
+  For example: "OD: s/p PPV/EL/FAX/gas in 2022" on one line, "OS: h/o HST s/p LRP (MR, 3/11/2023)" on the next.
 - List treatment history chronologically with dates when provided
 - Place the Plan section at the bottom
 - Preserve the physician's exact abbreviations and shorthand (wet AMD, SRF, IRF, nAMD, s/p, f/u, q8, NPDR, etc.)
