@@ -72,6 +72,7 @@ ${examplesBlock}
 FORMATTING RULES:
 - Output ONLY the Assessment/Plan section of a clinic note
 - Number each diagnosis (1. 2. 3.)
+- IMPORTANT: Each eye condition is its OWN numbered diagnosis. Never combine two conditions under one number. For example, "Cataract OD" and "Pseudophakia OS" are TWO separate numbered diagnoses, not one "Cataracts" entry. Same for "Dry AMD OD" and "Wet AMD OS" — separate numbers.
 - List treatment history chronologically with dates when provided
 - Place the Plan section at the bottom
 - Preserve the physician's exact abbreviations and shorthand (wet AMD, SRF, IRF, nAMD, s/p, f/u, q8, NPDR, etc.)
@@ -118,10 +119,10 @@ BILLING-COMPLIANT LANGUAGE — insert these where appropriate and mark with [+]:
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
 
-G2211 LANGUAGE PLACEMENT:
-- If G2211 qualifies, add the G2211 justification sentence BELOW the A/P note as a separate section labeled "G2211 Justification:"
-- Example: "G2211 Justification: Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
-- Do NOT embed it inside the A/P section — it goes after the note ends.
+G2211 LANGUAGE:
+- If G2211 qualifies, add a sentence at the very end of the Plan section (no special header or label).
+- Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
+- Just a plain sentence at the bottom of the plan, not a separate labeled section.
 
 OUTPUT FORMAT — use ONLY these exact delimiters:
 
@@ -132,11 +133,7 @@ YES or NO
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
-the full formatted A/P note with [+] before each inserted billing phrase
-
-If G2211 = YES, add at the very end of the note:
-
-G2211 Justification: [+] Longitudinal managing physician for this patient's [condition]; ongoing complexity given [brief reason].
+the full formatted A/P note with [+] before each inserted billing phrase. If G2211 = YES, the last sentence of the plan should be the G2211 supporting language (no header).
 ---END---`;
   }
 
@@ -161,10 +158,10 @@ DECISION RULES:
 - 99215: multiple chronic conditions OR progression requiring complex MDM (agent switch, new treatment)
 - G2211: only with 99215 + established patient + serious chronic condition
 
-G2211 LANGUAGE PLACEMENT:
-- If G2211 qualifies, add the G2211 justification sentence BELOW the A/P note as a separate section
-- Example: "G2211 Justification: Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
-- Do NOT embed it inside the A/P section — it goes after the note ends.
+G2211 LANGUAGE:
+- If G2211 qualifies, add a sentence at the very end of the Plan section (no special header or label).
+- Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
+- Just a plain sentence at the bottom of the plan, not a separate labeled section.
 
 OUTPUT FORMAT — use ONLY these exact delimiters:
 
@@ -175,11 +172,7 @@ YES or NO
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
-the full note with [+] before each inserted billing phrase
-
-If G2211 = YES, add at the very end of the note:
-
-G2211 Justification: [+] Longitudinal managing physician for this patient's [condition]; ongoing complexity given [brief reason].
+the full note with [+] before each inserted billing phrase. If G2211 = YES, the last sentence of the plan should be the G2211 supporting language (no header).
 ---END---`;
 }
 
