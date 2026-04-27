@@ -17,6 +17,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_pdr_complex",
+    label: "PDR/TRD — complex diabetic, s/p PRP & PPV",
+    shorthand: `67 yo lady here for f/u\n\n1. T2DM, IDDM\nA1C 11 (uncontrolled)\nOD: Active PDR w DME\ns/p PPV/MS/FAX/SO (MR, 10/10/2025)\ns/p multiple Avastin, latest one in Sept 2025\ns/p PRP in 2022\nDeveloped TRD\nLooks good, retina attached\nOS: Active PDR w DME\ns/p Vabysmo, requires q8 weeks now which is stable\ns/p Eylea w sub-optimal response\ns/p multiple Avastin\ns/p PRP in 2022\n\nPlan\nVabysmo OS\nRBA discussed\nBS control\nF/u in 8 weeks`,
+    builtin: true,
+  },
+  {
     id: "ex_rvo",
     label: "BRVO — injection visit",
     shorthand: `67 yo lady here for f/u\n\n1. BRVO OD\nPt has h/o HTN, now controlled on medication\ns/p Avastin 3/2024- sub-optimal response\ns/p Eylea 4/2025- unable to extend\ns/p Vabysmo 3/10/2026, requires q8weeks. Now w new IRF\n\n1. Cataracts\nMild, observe\n\n3. Dry Eye\nAT QID\n\nPlan\nVabysmo OD\nRBA discussed including endophthalmitis/RD/VH\nF/u in 7 weeks given worsening edema (unable to extend beyond 8)\nBS/BP control emphasized`,
