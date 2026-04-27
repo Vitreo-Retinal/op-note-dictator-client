@@ -191,6 +191,10 @@ ABBREVIATION DICTIONARY:
 - RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
 - Plaquenil = hydroxychloroquine
 
+PATIENT SHORTHAND:
+- "M" after age = gentleman (e.g., "77 yo M" → "77-year-old gentleman")
+- "W" after age = lady (e.g., "77 yo W" → "77-year-old lady")
+
 PHYSICIAN ABBREVIATIONS:
 - Dr. Z = Dr. Zacharia, Dr. K = Dr. Kleinberg, Dr. G = Dr. Gallo
 - Dr. M = Dr. Meltzer, Dr. BJ = Dr. Ling, Dr. L = Dr. Luna
