@@ -114,15 +114,24 @@ BILLING-COMPLIANT LANGUAGE — insert these where appropriate and mark with [+]:
 - After mentioning OCT/imaging findings: [+] "OCT reviewed"
 - For injection visits: [+] "Risks, benefits, and alternatives discussed" (if not already present as RBA)
 - For complex visits (agent switching, progression, new findings): [+] "Data reviewed including OCT/imaging" and [+] "Treatment options discussed"
-- For established patients with chronic conditions on 99215: [+] "Longitudinal managing physician for this patient's [condition]; ongoing complexity given [brief reason]"
-- For 99214: note chronic condition with management decision and data reviewed
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
 
+MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and 99215):
+- For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
+- For 99215: add a sentence summarizing high MDM — reference multiple chronic conditions or progression requiring complex decisions. Example: "[+] High complexity medical decision-making: progression of wet AMD with new SRF despite q8 Vabysmo requiring evaluation of agent switch; concurrent management of cataract and dry eye; imaging and treatment history reviewed."
+- For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
+
+ANTI-REPETITION RULE (CRITICAL):
+- NEVER use the same MDM justification wording across different notes. Each sentence must be unique to the specific visit.
+- Reference the ACTUAL diagnoses, findings, and decisions from THIS visit — not generic filler.
+- Vary your phrasing naturally: "data reviewed and analyzed" one time, "imaging findings reviewed and incorporated into treatment plan" another. "Management change" one time, "treatment adjustment" another.
+- The auditor should see language that reflects real clinical thinking for this specific patient, not a templated stamp.
+
 G2211 LANGUAGE:
-- If G2211 qualifies, add a sentence at the very end of the Plan section (no special header or label).
+- If G2211 qualifies, add a separate sentence (after the MDM justification) at the end of the Plan section. No header or label.
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
-- Just a plain sentence at the bottom of the plan, not a separate labeled section.
+- This must also be visit-specific and varied in wording.
 
 OUTPUT FORMAT — use ONLY these exact delimiters:
 
@@ -133,7 +142,7 @@ YES or NO
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
-the full formatted A/P note with [+] before each inserted billing phrase. If G2211 = YES, the last sentence of the plan should be the G2211 supporting language (no header).
+the full formatted A/P note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that.
 ---END---`;
   }
 
@@ -158,10 +167,20 @@ DECISION RULES:
 - 99215: multiple chronic conditions OR progression requiring complex MDM (agent switch, new treatment)
 - G2211: only with 99215 + established patient + serious chronic condition
 
+MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and 99215):
+- For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
+- For 99215: add a sentence summarizing high MDM — reference multiple chronic conditions or progression requiring complex decisions. Example: "[+] High complexity medical decision-making: progression of wet AMD with new SRF despite q8 Vabysmo requiring evaluation of agent switch; concurrent management of cataract and dry eye; imaging and treatment history reviewed."
+- For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
+
+ANTI-REPETITION RULE (CRITICAL):
+- NEVER use the same MDM or G2211 wording across notes. Each sentence must be unique to the specific visit.
+- Reference the ACTUAL diagnoses, findings, and decisions from THIS note — not generic filler.
+- Vary phrasing naturally each time. The auditor should see language that reflects real clinical thinking, not a templated stamp.
+
 G2211 LANGUAGE:
-- If G2211 qualifies, add a sentence at the very end of the Plan section (no special header or label).
+- If G2211 qualifies, add a separate sentence (after the MDM justification) at the end of the Plan. No header or label.
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
-- Just a plain sentence at the bottom of the plan, not a separate labeled section.
+- Must also be visit-specific and varied.
 
 OUTPUT FORMAT — use ONLY these exact delimiters:
 
@@ -172,7 +191,7 @@ YES or NO
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
-the full note with [+] before each inserted billing phrase. If G2211 = YES, the last sentence of the plan should be the G2211 supporting language (no header).
+the full note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that.
 ---END---`;
 }
 
