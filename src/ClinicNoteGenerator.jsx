@@ -160,7 +160,7 @@ ABBREVIATION DICTIONARY:
 - T1DM = type 1 diabetes mellitus, T2DM = type 2 diabetes mellitus
 - IDDM = insulin-dependent diabetes mellitus, NIDDM = non-insulin-dependent diabetes mellitus
 - FP = fundus photos, SDE = scleral depressed exam, LRP = laser retinopexy
-- PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange, SO = silicone oil, PVR = proliferative vitreoretinopathy, C3F8 = perfluoropropane gas, TRD = tractional retinal detachment, PRP = panretinal photocoagulation
+- PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange, SO = silicone oil, PVR = proliferative vitreoretinopathy, C3F8 = perfluoropropane gas, SF6 = sulfur hexafluoride gas, TRD = tractional retinal detachment, PRP = panretinal photocoagulation
 - HST = horseshoe tear, PVD = posterior vitreous detachment, RD = retinal detachment, RT = retinal tear
 - ST = superotemporal, SN = superonasal, IT = inferotemporal, IN = inferonasal
 - "at 1" = at 1 o'clock position (clock hour notation)
