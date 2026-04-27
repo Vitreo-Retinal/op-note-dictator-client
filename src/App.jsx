@@ -1,6 +1,6 @@
 import { useState } from "react";
 import OpNoteDictator from "./OpNoteDictator.jsx";
-import EmNoteOptimizer from "./EmNoteOptimizer.jsx";
+import ClinicNoteGenerator from "./ClinicNoteGenerator.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -185,13 +185,13 @@ function LandingPage({ onSelect }) {
     },
     {
       id: "optimizer",
-      title: "E/M Note Optimizer",
-      subtitle: "Billing & Coding",
+      title: "Clinic Note Generator",
+      subtitle: "A/P Notes & Billing",
       description:
-        "Paste a clinic note, auto-expand counseling language, and get AI-recommended billing codes with minimum additions.",
+        "Free-type shorthand to generate structured A/P notes with counseling language, or paste a note to add billing-compliant language and coding.",
       icon: "\u{1F4CB}",
       gradient: "linear-gradient(135deg,#6366f1,#8b5cf6)",
-      tags: ["99213-99215", "G2211", "Eye Codes"],
+      tags: ["Shorthand", "Billing", "A/P Notes"],
     },
   ];
 
@@ -369,7 +369,7 @@ export default function App() {
   }
 
   if (page === "optimizer") {
-    return <EmNoteOptimizer onBack={() => setPage("home")} />;
+    return <ClinicNoteGenerator onBack={() => setPage("home")} />;
   }
 
   return <LandingPage onSelect={(id) => setPage(id)} />;
