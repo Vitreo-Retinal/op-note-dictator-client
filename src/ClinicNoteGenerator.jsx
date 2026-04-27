@@ -247,7 +247,7 @@ BILLING ADDITIONS to insert where needed (mark with [+]):
 - Do NOT add what's already there
 
 DECISION RULES:
-- 92014/92004 (eye code): stable visits, observation only, no complex MDM
+- 92014/92004 (eye code): stable visits, observation only, no complex MDM. When billing an eye code for a stable exam, include "[+] No changes in the periphery OU" to document the comprehensive dilated exam.
 - 99213: single chronic condition, straightforward management
 - 99214: chronic condition with management decision, data reviewed
 - 99215: multiple chronic conditions OR progression requiring complex MDM (agent switch, new treatment)
