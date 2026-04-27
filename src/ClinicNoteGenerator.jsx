@@ -118,6 +118,11 @@ BILLING-COMPLIANT LANGUAGE — insert these where appropriate and mark with [+]:
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
 
+G2211 LANGUAGE PLACEMENT:
+- If G2211 qualifies, add the G2211 justification sentence BELOW the A/P note as a separate section labeled "G2211 Justification:"
+- Example: "G2211 Justification: Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
+- Do NOT embed it inside the A/P section — it goes after the note ends.
+
 OUTPUT FORMAT — use ONLY these exact delimiters:
 
 ---CODE---
@@ -128,6 +133,10 @@ YES or NO
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
 the full formatted A/P note with [+] before each inserted billing phrase
+
+If G2211 = YES, add at the very end of the note:
+
+G2211 Justification: [+] Longitudinal managing physician for this patient's [condition]; ongoing complexity given [brief reason].
 ---END---`;
   }
 
@@ -143,7 +152,6 @@ BILLING ADDITIONS to insert where needed (mark with [+]):
 - [+] "OCT reviewed" — if imaging mentioned but "reviewed" not stated
 - [+] "Data reviewed including OCT/imaging" — for 99214/99215 support
 - [+] "Treatment options discussed" — for agent switching or progression visits
-- [+] "Longitudinal managing physician for this patient's [condition]; ongoing complexity given [brief reason]" — for G2211
 - Do NOT add what's already there
 
 DECISION RULES:
@@ -152,6 +160,11 @@ DECISION RULES:
 - 99214: chronic condition with management decision, data reviewed
 - 99215: multiple chronic conditions OR progression requiring complex MDM (agent switch, new treatment)
 - G2211: only with 99215 + established patient + serious chronic condition
+
+G2211 LANGUAGE PLACEMENT:
+- If G2211 qualifies, add the G2211 justification sentence BELOW the A/P note as a separate section
+- Example: "G2211 Justification: Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with agent switching due to sub-optimal response."
+- Do NOT embed it inside the A/P section — it goes after the note ends.
 
 OUTPUT FORMAT — use ONLY these exact delimiters:
 
@@ -163,6 +176,10 @@ YES or NO
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
 the full note with [+] before each inserted billing phrase
+
+If G2211 = YES, add at the very end of the note:
+
+G2211 Justification: [+] Longitudinal managing physician for this patient's [condition]; ongoing complexity given [brief reason].
 ---END---`;
 }
 
@@ -197,8 +214,6 @@ const isEyeCode = (code) => code === "92014" || code === "92004";
 export default function ClinicNoteGenerator({ onBack }) {
   const [mode, setMode] = useState("generate"); // generate | optimize
   const [note, setNote] = useState("");
-  const [apiKey, setApiKey] = useState("");
-  const [showApiKey, setShowApiKey] = useState(false);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -323,7 +338,6 @@ export default function ClinicNoteGenerator({ onBack }) {
   // ── Run ───────────────────────────────────────────────────────────
   async function run() {
     if (!note.trim()) return;
-    if (!apiKey.trim()) { setError("Enter your Anthropic API key above."); return; }
     setLoading(true); setError(""); setResult(null);
     try {
       const systemPrompt = buildSystemPrompt(mode, examples);
@@ -331,23 +345,18 @@ export default function ClinicNoteGenerator({ onBack }) {
         ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}`
         : `Optimize this existing A/P note with minimum billing language:\n\n${note}`;
 
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch(`${API_BASE}/api/generate-note`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey.trim(),
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          system: systemPrompt,
+          userMessage,
           model: "claude-sonnet-4-6",
           max_tokens: 3000,
-          system: systemPrompt,
-          messages: [{ role: "user", content: userMessage }],
         }),
       });
       const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
+      if (data.error) throw new Error(data.error.message || data.error);
       const text = (data.content || []).map(b => b.text || "").join("");
       if (!text.includes("---CODE---")) throw new Error("Unexpected response format. First 300 chars: " + text.substring(0, 300));
       const parsed = parseResponse(text);
@@ -441,23 +450,6 @@ export default function ClinicNoteGenerator({ onBack }) {
                   {label}
                 </button>
               ))}
-            </div>
-
-            {/* API key */}
-            <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 4 }}>Anthropic API Key</label>
-              <div style={{ display: "flex", gap: 6 }}>
-                <input
-                  type={showApiKey ? "text" : "password"}
-                  value={apiKey}
-                  onChange={e => setApiKey(e.target.value)}
-                  placeholder="sk-ant-..."
-                  style={inputStyle({ flex: 1 })}
-                />
-                <button onClick={() => setShowApiKey(!showApiKey)} style={btnStyle("transparent", S.muted, { border: `1px solid ${S.border}`, fontSize: "0.7rem", padding: "6px 10px" })}>
-                  {showApiKey ? "Hide" : "Show"}
-                </button>
-              </div>
             </div>
 
             {/* Hint */}
