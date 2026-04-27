@@ -89,6 +89,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_rd_complex_pvr",
+    label: "Complex RD w PVR — re-operation",
+    shorthand: `67 yo lady here for f/u\n\n1. Complex RD OD w PVR\ns/p PPV/EL/FAX/14%C3F8 (MR, 3/27/26) developed PVR and new SRF\ns/p pneumatic (MR, 3/10/2026) w sequential laser (MR, 3/11/2026) w new break\n\nPlan\nNeeds PPV/MS/FAX/SO OD for complex RD w PVR\nDiscussed higher risk of failure\nRBA discussed in detail`,
+    builtin: true,
+  },
+  {
     id: "ex_plaquenil",
     label: "Plaquenil toxicity screening",
     shorthand: `67 yo lady here for f/u\n\n1. Long-term use of Plaquenil\nTakes for RA\nOn 200mg BID x 10 years\nIS/OS intact on OCT\nExam and FAF without BEM\n\nPlan\nObservation\nF/u in 1 year`,
@@ -139,7 +145,7 @@ FORMATTING RULES:
   OS: [status/history/treatment for left eye]
   For example: "OD: s/p PPV/EL/FAX/gas in 2022" on one line, "OS: h/o HST s/p LRP (MR, 3/11/2023)" on the next.
 - If a condition is UNILATERAL (only one eye), just state the single eye — do NOT add a line for the unaffected eye.
-- List treatment history chronologically with dates when provided
+- List surgical/treatment history per eye in REVERSE chronological order (most recent intervention on top, oldest at bottom)
 - Place the Plan section at the bottom
 - Preserve the physician's exact abbreviations and shorthand (wet AMD, SRF, IRF, nAMD, s/p, f/u, q8, NPDR, etc.)
 - Do NOT add exam findings, HPI, or review of systems — only A/P
@@ -154,7 +160,7 @@ ABBREVIATION DICTIONARY:
 - T1DM = type 1 diabetes mellitus, T2DM = type 2 diabetes mellitus
 - IDDM = insulin-dependent diabetes mellitus, NIDDM = non-insulin-dependent diabetes mellitus
 - FP = fundus photos, SDE = scleral depressed exam, LRP = laser retinopexy
-- PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange
+- PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange, SO = silicone oil, PVR = proliferative vitreoretinopathy, C3F8 = perfluoropropane gas
 - HST = horseshoe tear, PVD = posterior vitreous detachment, RD = retinal detachment, RT = retinal tear
 - ST = superotemporal, SN = superonasal, IT = inferotemporal, IN = inferonasal
 - "at 1" = at 1 o'clock position (clock hour notation)
