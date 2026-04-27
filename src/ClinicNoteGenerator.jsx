@@ -160,7 +160,8 @@ FORMATTING RULES:
   OS: [status/history/treatment for left eye]
   For example: "OD: s/p PPV/EL/FAX/gas in 2022" on one line, "OS: h/o HST s/p LRP (MR, 3/11/2023)" on the next.
 - If a condition is UNILATERAL (only one eye), just state the single eye — do NOT add a line for the unaffected eye.
-- List surgical/treatment history per eye in REVERSE chronological order (most recent intervention on top, oldest at bottom)
+- INJECTION/anti-VEGF history: list in CHRONOLOGICAL order (oldest first, most recent/current treatment at the BOTTOM). This shows the progression of treatment changes over time.
+- SURGICAL history: list in REVERSE chronological order (most recent surgery on top, oldest at bottom).
 - Place the Plan section at the bottom
 - Preserve the physician's exact abbreviations and shorthand (wet AMD, SRF, IRF, nAMD, s/p, f/u, q8, NPDR, etc.)
 - Do NOT add exam findings, HPI, or review of systems — only A/P
