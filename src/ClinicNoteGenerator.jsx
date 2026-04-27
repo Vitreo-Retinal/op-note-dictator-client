@@ -188,6 +188,7 @@ ABBREVIATION DICTIONARY:
 - BEM = bull's eye maculopathy, FAF = fundus autofluorescence, IS/OS = inner segment/outer segment junction, OCT-A = OCT angiography
 - FAZ = foveal avascular zone, MAs = microaneurysms, CNVM = choroidal neovascular membrane
 - SRHRM = subretinal hyperreflective material (usually blood on OCT)
+- CFT = central foveal thickness (in microns). When provided, include in the OCT review statement (e.g., "OCT reviewed, CFT 285 microns")
 - dd = disc diameters (unit of lesion size), FP = fundus photo/photography
 - orange pigment = lipofuscin (a risk factor for melanoma conversion in choroidal lesions)
 - RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
