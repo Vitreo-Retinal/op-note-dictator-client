@@ -197,7 +197,11 @@ PATIENT SHORTHAND:
 
 NOTE HEADER FORMAT:
 - The first line of the note should always be: age + gender + who referred + reason for visit
-- Examples: "77-year-old gentleman referred by Dr. Zacharia for evaluation of wet AMD" or "65-year-old lady here for yearly follow-up" or "72-year-old gentleman referred by Dr. Kleinberg for management of DME"
+- "ref by" or "ref" = "referred by"
+- "f/u" = "follow-up"
+- Examples: "67 yo W, ref by Dr. K for AMD" → "67-year-old lady referred by Dr. Kleinberg for evaluation of AMD"
+- "77 yo M, ref by Dr. Z for DME" → "77-year-old gentleman referred by Dr. Zacharia for management of DME"
+- "65 yo W, yearly f/u" → "65-year-old lady here for yearly follow-up"
 - If the physician provides a referring doctor, include them. If not, just use "here for [reason]"
 
 PHYSICIAN ABBREVIATIONS:
