@@ -65,6 +65,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_rd_pneumatic",
+    label: "RD — pneumatic retinopexy",
+    shorthand: `67 yo lady here for f/u\n\n1. RD OS\nVA 20/200\nSRF involves the fovea\nST HST at 1\nFP today captures\nPhakic\n+ PVD\n\nPlan\nPneumatic OS\nRBA discussed including endophthalmitis/hemorrhage/failure and need for surgery/glaucoma/vision loss\nR head tilt for 4 days\nOflox QID\nF/u in 1 day for sequential laser`,
+    builtin: true,
+  },
+  {
     id: "ex_plaquenil",
     label: "Plaquenil toxicity screening",
     shorthand: `67 yo lady here for f/u\n\n1. Long-term use of Plaquenil\nTakes for RA\nOn 200mg BID x 10 years\nIS/OS intact on OCT\nExam and FAF without BEM\n\nPlan\nObservation\nF/u in 1 year`,
@@ -125,7 +131,10 @@ ABBREVIATION DICTIONARY:
 - IDDM = insulin-dependent diabetes mellitus, NIDDM = non-insulin-dependent diabetes mellitus
 - FP = fundus photos, SDE = scleral depressed exam, LRP = laser retinopexy
 - PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange
-- HST = horseshoe tear, PVD = posterior vitreous detachment
+- HST = horseshoe tear, PVD = posterior vitreous detachment, RD = retinal detachment, RT = retinal tear
+- ST = superotemporal, SN = superonasal, IT = inferotemporal, IN = inferonasal
+- "at 1" = at 1 o'clock position (clock hour notation)
+- Oflox = ofloxacin, pneumatic = pneumatic retinopexy
 - cat = cataracts, AT QID = artificial tears four times daily
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
