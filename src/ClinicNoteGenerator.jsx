@@ -172,7 +172,7 @@ ERM DECISION LOGIC:
 
 VMT DECISION LOGIC:
 - If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
-- If VMT is VS (symptomatic, declining VA) → consider ocriplasmin (Jetrea) injection or PPV, discuss options with patient
+- If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
 - POD1 = post-op day 1, POW1 = post-op week 1, POM1/3/6 = post-op month 1/3/6
 
 POST-OP FOLLOW-UP DEFAULTS (use unless physician specifies otherwise):
