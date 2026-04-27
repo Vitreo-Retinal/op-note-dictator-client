@@ -195,6 +195,11 @@ PATIENT SHORTHAND:
 - "M" after age = gentleman (e.g., "77 yo M" → "77-year-old gentleman")
 - "W" after age = lady (e.g., "77 yo W" → "77-year-old lady")
 
+NOTE HEADER FORMAT:
+- The first line of the note should always be: age + gender + who referred + reason for visit
+- Examples: "77-year-old gentleman referred by Dr. Zacharia for evaluation of wet AMD" or "65-year-old lady here for yearly follow-up" or "72-year-old gentleman referred by Dr. Kleinberg for management of DME"
+- If the physician provides a referring doctor, include them. If not, just use "here for [reason]"
+
 PHYSICIAN ABBREVIATIONS:
 - Dr. Z = Dr. Zacharia, Dr. K = Dr. Kleinberg, Dr. G = Dr. Gallo
 - Dr. M = Dr. Meltzer, Dr. BJ = Dr. Ling, Dr. L = Dr. Luna
