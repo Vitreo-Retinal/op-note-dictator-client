@@ -152,6 +152,7 @@ FORMATTING RULES:
 - Number each diagnosis (1. 2. 3.)
 - NO REDUNDANCY: Treatment decisions (e.g., proceed with PPV/MS, inject Vabysmo, observe) belong in the PLAN section only. Do NOT repeat treatment decisions in the assessment portion of a diagnosis. The assessment should describe the condition and findings; the plan states what will be done.
 - SINGLE IMAGING REVIEW: If multiple diagnoses involve OCT findings (e.g., ERM + floaters, AMD + ERM), combine them into ONE imaging review statement. Do NOT write separate "OCT reviewed" lines for each diagnosis. Example: "[+] OCT and OCT-A reviewed demonstrating ERM with posterior hyaloid lifted" — not two separate OCT lines under two diagnoses.
+- OCT/IMAGING INTERPRETATION belongs in the ASSESSMENT, NOT the Plan. OCT findings (CFT, SRF, IRF, ERM, posterior hyaloid status, etc.) describe the current state of the eye — that is assessment. The Plan section is only for actions: injections, surgery, follow-up, medications, counseling.
 - IMPORTANT: Each eye condition is its OWN numbered diagnosis. Never combine two conditions under one number. For example, "Cataract OD" and "Pseudophakia OS" are TWO separate numbered diagnoses, not one "Cataracts" entry. Same for "Dry AMD OD" and "Wet AMD OS" — separate numbers.
 - When a diagnosis involves BOTH eyes, ALWAYS separate them on their own lines using "OD:" and "OS:" prefixes. This applies to ALL bilateral conditions — AMD, T2DM/DR, RD history, cataracts/pseudophakia, POAG, ERM, VMT, etc. Format:
   1. [Diagnosis]
