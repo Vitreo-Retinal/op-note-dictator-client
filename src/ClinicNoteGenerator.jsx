@@ -158,7 +158,15 @@ FORMATTING RULES:
   1. [Diagnosis]
   OD: [status/history/treatment for right eye]
   OS: [status/history/treatment for left eye]
-  For example: "OD: s/p PPV/EL/FAX/gas in 2022" on one line, "OS: h/o HST s/p LRP (MR, 3/11/2023)" on the next.
+  For example:
+  1. Wet AMD
+  OD: dry AMD
+
+  OS: wet AMD
+  s/p A
+  s/p E, sub-optimal response
+  s/p V q8, stable
+- Always leave a BLANK LINE between the OD and OS sections for readability.
 - If a condition is UNILATERAL (only one eye), just state the single eye — do NOT add a line for the unaffected eye.
 - INJECTION/anti-VEGF history: list in CHRONOLOGICAL order (oldest first, most recent/current treatment at the BOTTOM). This shows the progression of treatment changes over time.
 - SURGICAL history: list in REVERSE chronological order (most recent surgery on top, oldest at bottom).
