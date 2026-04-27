@@ -107,6 +107,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_nevus",
+    label: "Choroidal nevus — observation",
+    shorthand: `67 yo lady here for f/u\n\n1. Choroidal nevus OS\nIncidentally found during routine exam\n3dd in diameter\nAppears flat on B-scan, no orange pigment, no SRF/heme or other concerning characteristics\nFP today\n\nPlan\nObserve\nDiscussed importance of yearly surveillance and small risk of melanoma conversion\nF/u in 1 year, sooner PRN`,
+    builtin: true,
+  },
+  {
     id: "ex_poag",
     label: "POAG — co-managed, stable",
     shorthand: `67 yo lady here for f/u\n\n1. POAG OU\nIOP stable, followed by Dr. Zacharia\n\nPlan\nCtn Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU\nStressed importance of compliance with gtt`,
@@ -180,6 +186,8 @@ ABBREVIATION DICTIONARY:
 - BEM = bull's eye maculopathy, FAF = fundus autofluorescence, IS/OS = inner segment/outer segment junction, OCT-A = OCT angiography
 - FAZ = foveal avascular zone, MAs = microaneurysms, CNVM = choroidal neovascular membrane
 - SRHRM = subretinal hyperreflective material (usually blood on OCT)
+- dd = disc diameters (unit of lesion size), FP = fundus photo/photography
+- orange pigment = lipofuscin (a risk factor for melanoma conversion in choroidal lesions)
 - RA = rheumatoid arthritis, SLE = systemic lupus erythematosus
 - Plaquenil = hydroxychloroquine
 
@@ -196,6 +204,14 @@ PLAQUENIL LIFETIME DOSE CALCULATION:
 - Risk increases significantly after cumulative dose >1,000 g or >5 years of use
 - MP = membrane peel, MS = membrane stripping, ADLs = activities of daily living
 - metamorphopsia = distorted vision
+
+CHOROIDAL NEVUS LOGIC:
+- Document: size (in dd or mm), flat vs. elevated, presence/absence of orange pigment, SRF, heme, drusen, and other concerning features
+- Document B-scan findings (thickness/elevation) in the assessment
+- Include FP documentation
+- Use the TFSOM-DIM mnemonic for melanoma risk factors: Thickness >2mm, Fluid (SRF), Symptoms, Orange pigment, Margin touching disc, Diameter >5mm, Intrinsic melanocytic markers, Male
+- When discussing melanoma conversion risk, include data: small choroidal nevi (<5mm, flat, no risk factors) have approximately 1 in 8,845 annual risk of conversion. Risk increases with each TFSOM-DIM factor present. At 5 years, conversion rate is ~2% for lesions with 1 risk factor, ~14% with 2, ~36% with 3 or more.
+- B-scan = B-scan ultrasonography
 
 ERM DECISION LOGIC:
 - If ERM is VS (interferes with ADLs, significant symptoms) → plan includes PPV/MP, RBA discussed, schedule surgery
