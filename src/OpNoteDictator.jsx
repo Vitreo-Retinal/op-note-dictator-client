@@ -862,7 +862,7 @@ const styles = {
 };
 
 /* ── Component ────────────────────────────────────────────────── */
-export default function OpNoteDictator() {
+export default function OpNoteDictator({ onBack }) {
   const [selectedProc, setSelectedProc] = useState("ppv_erm");
   const [copied, setCopied] = useState(false);
   const [fields, setFields] = useState({
@@ -1012,6 +1012,11 @@ export default function OpNoteDictator() {
   return (
     <div style={styles.root}>
       <div style={styles.header}>
+        {onBack && (
+          <button onClick={onBack} style={{ background: "none", border: "1px solid #1e3a5f", borderRadius: 6, color: "#64748b", padding: "4px 10px", cursor: "pointer", fontFamily: "Georgia, serif", fontSize: "0.78rem", marginRight: 4 }}>
+            &#8592; Back
+          </button>
+        )}
         <div style={styles.headerDot} />
         <span style={styles.headerTitle}>Op Note Dictator — Retina-Rx</span>
       </div>
