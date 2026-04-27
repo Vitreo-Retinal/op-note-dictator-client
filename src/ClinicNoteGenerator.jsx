@@ -40,6 +40,12 @@ const DEFAULT_EXAMPLES = [
     shorthand: `67 yo lady here for f/u\n\n1. AMD\nFHx- none\nSmoker for 50 years\nOD: Non-foveal involving GA\nVA 20/50\nOS: Non-foveal involving GA\nVA 20/60\n\n1. Pseudophakia\nIOLs in excellent position\n\nPlan\nIzervay vs. observation reviewed. Discussed higher risk of wet AMD conversion w Izervay but decreased GA progression\nPt decided to proceed w Izervay OU\nRBA discussed\nF/u in 5 weeks\nHealthy diet, non-smoking, Amsler grid, AREDS2, UV protection`,
     builtin: true,
   },
+  {
+    id: "ex_poag",
+    label: "POAG — co-managed, stable",
+    shorthand: `67 yo lady here for f/u\n\n1. POAG OU\nIOP stable, followed by Dr. Zacharia\n\nPlan\nCtn Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU\nStressed importance of compliance with gtt`,
+    builtin: true,
+  },
 ];
 
 // ── Default expansion rules ─────────────────────────────────────────
@@ -89,6 +95,8 @@ ABBREVIATION DICTIONARY:
 - PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange
 - HST = horseshoe tear, PVD = posterior vitreous detachment
 - cat = cataracts, AT QID = artificial tears four times daily
+- POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
+- "followed by Dr. X" = co-managed with another physician (preserve their name)
 - POD1 = post-op day 1, POW1 = post-op week 1, POM1/3/6 = post-op month 1/3/6
 
 POST-OP FOLLOW-UP DEFAULTS (use unless physician specifies otherwise):
@@ -111,7 +119,8 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - T2DM/DR → BS/BP control emphasized
 - GA → Izervay vs. observation discussion
 - RD/PVD/HST → RD/RT precautions reviewed; call re: new onset flashes, floaters, or curtain over vision
-- Injection → RBA discussed including endophthalmitis/RD/VH`;
+- Injection → RBA discussed including endophthalmitis/RD/VH
+- POAG/Glaucoma → Stressed importance of compliance with drops; if co-managed, note the managing physician`;
 
   if (mode === "generate") {
     return `${baseRules}
