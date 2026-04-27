@@ -53,6 +53,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_vmt",
+    label: "VMT — asymptomatic, observation",
+    shorthand: `67 yo lady here for f/u\n\n1. VMT OU\nNot VS, asymptomatic\nVA 20/20\n\nPlan\nObserve\nF/u in 1 year\nDiscussed risk of FTMH and Amsler grid provided\nPt instructed to call if acute changes in the grid were to arise`,
+    builtin: true,
+  },
+  {
     id: "ex_pvd_acute",
     label: "Acute PVD — no breaks, observation",
     shorthand: `67 yo lady here for f/u\n\n1. Acute PVD OS\nAcute floaters started 1 week ago\nFlashes initially but now have subsided\nNo breaks on SDE\nFP today\nNo FHx of RD\n\nPlan\nRD/RT precautions discussed\nF/u in 6 weeks to repeat DFE OS`,
@@ -163,6 +169,10 @@ PLAQUENIL LIFETIME DOSE CALCULATION:
 ERM DECISION LOGIC:
 - If ERM is VS (interferes with ADLs, significant symptoms) → plan includes PPV/MP, RBA discussed, schedule surgery
 - If ERM is "not VS" → observation; note that it does not interfere with ADLs
+
+VMT DECISION LOGIC:
+- If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
+- If VMT is VS (symptomatic, declining VA) → consider ocriplasmin (Jetrea) injection or PPV, discuss options with patient
 - POD1 = post-op day 1, POW1 = post-op week 1, POM1/3/6 = post-op month 1/3/6
 
 POST-OP FOLLOW-UP DEFAULTS (use unless physician specifies otherwise):
