@@ -150,6 +150,7 @@ ${examplesBlock}
 FORMATTING RULES:
 - Output ONLY the Assessment/Plan section of a clinic note
 - Number each diagnosis (1. 2. 3.)
+- NO REDUNDANCY: Treatment decisions (e.g., proceed with PPV/MS, inject Vabysmo, observe) belong in the PLAN section only. Do NOT repeat treatment decisions in the assessment portion of a diagnosis. The assessment should describe the condition and findings; the plan states what will be done.
 - IMPORTANT: Each eye condition is its OWN numbered diagnosis. Never combine two conditions under one number. For example, "Cataract OD" and "Pseudophakia OS" are TWO separate numbered diagnoses, not one "Cataracts" entry. Same for "Dry AMD OD" and "Wet AMD OS" — separate numbers.
 - When a diagnosis involves BOTH eyes, ALWAYS separate them on their own lines using "OD:" and "OS:" prefixes. This applies to ALL bilateral conditions — AMD, T2DM/DR, RD history, cataracts/pseudophakia, POAG, ERM, VMT, etc. Format:
   1. [Diagnosis]
