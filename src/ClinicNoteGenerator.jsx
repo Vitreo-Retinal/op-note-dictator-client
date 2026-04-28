@@ -310,7 +310,16 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - GA → Izervay vs. observation discussion
 - RD/PVD/HST → RD/RT precautions reviewed; call re: new onset flashes, floaters, or curtain over vision
 - Injection → RBA discussed including endophthalmitis/RD/VH
-- POAG/Glaucoma → Stressed importance of compliance with drops; if co-managed, note the managing physician`;
+- POAG/Glaucoma → Stressed importance of compliance with drops; if co-managed, note the managing physician
+- CSCR → Avoid ALL forms of steroids (oral, inhalers, topical creams, intra-articular, nasal sprays), stress management discussed
+- CRAO → Embolic workup (ECHO, carotid US), r/o GCA (jaw claudication, scalp tenderness, headaches, fever, weight loss), ESR/CRP STAT
+- BRAO → Embolic workup (ECHO, carotid US)
+- Choroidal nevus → Yearly surveillance, small risk of melanoma conversion discussed, FP for documentation
+- CHRPE → Benign, congenital lesion, reassurance provided, FP for documentation
+- VMT → Risk of FTMH discussed, Amsler grid provided, call if acute changes
+- Floater vitrectomy → PPV vs observation discussed (pseudophakic + PVD required), RBA discussed
+
+IMPORTANT BILLING REMINDER: ALL conditions above — not just AMD and injection visits — must include the standard billing components: [+] imaging review, [+] management decision, and [+] MDM justification (for 99214/99215). Every note needs billing language regardless of condition type.`;
 
   if (mode === "generate") {
     return `${baseRules}
