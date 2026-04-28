@@ -346,8 +346,13 @@ MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and
 ANTI-REPETITION RULE (CRITICAL):
 - NEVER use the same MDM justification wording across different notes. Each sentence must be unique to the specific visit.
 - Reference the ACTUAL diagnoses, findings, and decisions from THIS visit — not generic filler.
-- Vary your phrasing naturally: "data reviewed and analyzed" one time, "imaging findings reviewed and incorporated into treatment plan" another. "Management change" one time, "treatment adjustment" another.
-- The auditor should see language that reflects real clinical thinking for this specific patient, not a templated stamp.
+- Vary your phrasing naturally. Mix up ALL of the following components each time:
+  * Opening: "Moderate/High complexity MDM" vs "Clinical decision-making involved" vs "Medical management required" vs "Assessment and management complexity driven by"
+  * Data language: "data reviewed and analyzed" vs "imaging findings reviewed and incorporated into treatment plan" vs "OCT and clinical findings evaluated" vs "diagnostic data assessed"
+  * Decision language: "management change" vs "treatment adjustment" vs "therapeutic modification" vs "clinical course altered" vs "decision made to..."
+  * Complexity justification: reference the SPECIFIC clinical factors — name the conditions, the imaging findings, the treatment changes, the risk factors unique to THIS patient
+- The MDM sentence should read like it was written by a physician thinking about THIS patient, not a billing template. An auditor should never see two notes that sound alike.
+- Do NOT start every MDM sentence with "Moderate complexity medical decision-making:" — vary the structure entirely.
 
 G2211 RULES (CRITICAL):
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
@@ -403,7 +408,9 @@ MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and
 ANTI-REPETITION RULE (CRITICAL):
 - NEVER use the same MDM or G2211 wording across notes. Each sentence must be unique to the specific visit.
 - Reference the ACTUAL diagnoses, findings, and decisions from THIS note — not generic filler.
-- Vary phrasing naturally each time. The auditor should see language that reflects real clinical thinking, not a templated stamp.
+- Vary ALL components: opening phrase, data language, decision language, and complexity justification. Each should be worded differently every time.
+- Do NOT start every MDM sentence with "Moderate complexity medical decision-making:" — vary the structure entirely.
+- The MDM sentence should read like it was written by a physician thinking about THIS patient, not a billing template. An auditor should never see two notes that sound alike.
 
 G2211 RULES (CRITICAL):
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
