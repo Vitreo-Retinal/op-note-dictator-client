@@ -119,6 +119,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_pdr_vh",
+    label: "PDR w VH — injection, missed appt",
+    shorthand: `67 yo M here for f/u\n\n1. T2DM, IDDM\nA1C 10.0 (uncontrolled)\nOD: PDR w new VH\nRequires A q2 months but was in hospital and missed appt\n\nOS: Regressed PDR\ns/p PRP\n\nPlan\nAvastin OD\nRBA discussed\nBS control\nKeep HOBE, avoid blood thinners and strenuous activity`,
+    builtin: true,
+  },
+  {
     id: "ex_cscr",
     label: "CSCR — persistent, Eplerenone",
     shorthand: `67 yo M here for f/u\n\n1. CSCR OD\nPersistent SRF over 3 months\nDenies steroids\nStressed at work\n\nPlan\nDiscussed Eplerenone 25mg PO daily\nWill obtain BMP in conjunction with PCP\nAlso discussed anti-VEGF therapy and PDT if doesn't respond\nF/u in 1 month, sooner PRN\nAvoid steroids and stress management discussed`,
@@ -199,6 +205,7 @@ ABBREVIATION DICTIONARY:
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
 - ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
+- VH = vitreous hemorrhage, HOBE = head of bed elevated
 - CSCR = central serous chorioretinopathy, PDT = photodynamic therapy
 - BMP = basic metabolic panel, PCP = primary care physician
 - CRAO = central retinal artery occlusion, BRAO = branch retinal artery occlusion
@@ -265,6 +272,13 @@ VMT DECISION LOGIC:
 - If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
 - If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
 
+VITREOUS HEMORRHAGE (VH) PRECAUTIONS:
+- Whenever VH is present — regardless of cause (PDR, HST, hemorrhagic PVD, or any other etiology) — ALWAYS include in the Plan:
+  * Keep head of bed elevated (HOBE)
+  * Avoid blood thinners (if not medically necessary)
+  * Avoid strenuous activity
+- These precautions apply to ALL VH, not just diabetic VH.
+
 CSCR LOGIC:
 - When patient "denies steroids" or steroid use is mentioned, ALWAYS expand to include the full steroid review: no oral steroids, no inhalers, no topical creams, no intra-articular injections, and no nasal sprays.
 - Plan for persistent CSCR (>3 months): Eplerenone 25mg PO daily, obtain BMP in conjunction with PCP (to monitor potassium), discuss anti-VEGF therapy and PDT as next steps if no response.
@@ -319,6 +333,7 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - CHRPE → Benign, congenital lesion, reassurance provided, FP for documentation
 - VMT → Risk of FTMH discussed, Amsler grid provided, call if acute changes
 - Floater vitrectomy → PPV vs observation discussed (pseudophakic + PVD required), RBA discussed
+- VH (any cause: PDR, HST, hemorrhagic PVD, etc.) → HOBE, avoid blood thinners, avoid strenuous activity
 
 IMPORTANT BILLING REMINDER: ALL conditions above — not just AMD and injection visits — must include the standard billing components: [+] imaging review, [+] management decision, and [+] MDM justification (for 99214/99215). Every note needs billing language regardless of condition type.`;
 
