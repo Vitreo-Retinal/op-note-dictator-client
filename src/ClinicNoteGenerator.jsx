@@ -125,6 +125,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_endophthalmitis",
+    label: "Endophthalmitis — post-cataract, tap & inject",
+    shorthand: `67 yo M here for urgent visit\n\n1. Post-cataract surgery endophthalmitis OD\ns/p phaco-IOL w Dr. Robbins (3/10/2026)\nToday with pain, photophobia and hypopyon\n\nPlan\nAC tap and send for cultures\nIntravitreal inj of Vanc + Ceftaz\nPF q1hr\nAtropine QD\nF/u tomorrow\nDiscussed guarded vision prognosis given this eye infection as well as the potential need for surgical intervention`,
+    builtin: true,
+  },
+  {
     id: "ex_cscr",
     label: "CSCR — persistent, Eplerenone",
     shorthand: `67 yo M here for f/u\n\n1. CSCR OD\nPersistent SRF over 3 months\nDenies steroids\nStressed at work\n\nPlan\nDiscussed Eplerenone 25mg PO daily\nWill obtain BMP in conjunction with PCP\nAlso discussed anti-VEGF therapy and PDT if doesn't respond\nF/u in 1 month, sooner PRN\nAvoid steroids and stress management discussed`,
@@ -206,6 +212,9 @@ ABBREVIATION DICTIONARY:
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
 - ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
 - VH = vitreous hemorrhage, HOBE = head of bed elevated
+- Vanc = vancomycin, Ceftaz = ceftazidime, PF = prednisolone forte (Pred Forte)
+- AC tap = anterior chamber tap, hypopyon = layered white cells in anterior chamber
+- phaco-IOL = phacoemulsification with intraocular lens implantation
 - CSCR = central serous chorioretinopathy, PDT = photodynamic therapy
 - BMP = basic metabolic panel, PCP = primary care physician
 - CRAO = central retinal artery occlusion, BRAO = branch retinal artery occlusion
@@ -272,6 +281,13 @@ VMT DECISION LOGIC:
 - If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
 - If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
 
+ENDOPHTHALMITIS LOGIC:
+- Document: onset of symptoms, pain, photophobia, hypopyon, visual acuity, recent surgery with surgeon name and date
+- Plan must include: AC tap and send for cultures, intravitreal injection of Vanc + Ceftaz, PF q1hr, Atropine QD
+- F/u next day
+- Discuss guarded vision prognosis and potential need for surgical intervention (PPV) if no improvement
+- This is a 99215 — high complexity MDM with urgent/emergent decision-making
+
 VITREOUS HEMORRHAGE (VH) PRECAUTIONS:
 - Whenever VH is present — regardless of cause (PDR, HST, hemorrhagic PVD, or any other etiology) — ALWAYS include in the Plan:
   * Keep head of bed elevated (HOBE)
@@ -334,6 +350,7 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - VMT → Risk of FTMH discussed, Amsler grid provided, call if acute changes
 - Floater vitrectomy → PPV vs observation discussed (pseudophakic + PVD required), RBA discussed
 - VH (any cause: PDR, HST, hemorrhagic PVD, etc.) → HOBE, avoid blood thinners, avoid strenuous activity
+- Endophthalmitis → Guarded vision prognosis discussed, potential need for surgical intervention (PPV) if no improvement
 
 IMPORTANT BILLING REMINDER: ALL conditions above — not just AMD and injection visits — must include the standard billing components: [+] imaging review, [+] management decision, and [+] MDM justification (for 99214/99215). Every note needs billing language regardless of condition type.`;
 
