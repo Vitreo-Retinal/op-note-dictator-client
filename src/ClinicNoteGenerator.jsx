@@ -280,6 +280,7 @@ TIME-BASED CODING (only when time is provided):
 
 COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - AMD → Healthy diet, non-smoking, Amsler grid, AREDS2, UV protection
+- Intermediate dry AMD with VA 20/40–20/70 → Also discuss Valeda PBM (photobiomodulation) as a treatment option. Include in Plan: "Discussed Valeda photobiomodulation therapy as a treatment option for intermediate dry AMD." Only for intermediate dry AMD patients with VA between 20/40 and 20/70. Do NOT mention Valeda for early dry AMD, wet AMD, or GA.
 - RVO (BRVO/CRVO) → Healthy lifestyle, healthy diet, low salt, BP control
 - T2DM/DR → BS/BP control emphasized
 - GA → Izervay vs. observation discussion
