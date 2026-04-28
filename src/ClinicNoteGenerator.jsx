@@ -738,42 +738,44 @@ export default function ClinicNoteGenerator({ onBack }) {
       <div style={{ padding: "10px 24px 0", maxWidth: 800, margin: "0 auto" }}>
         <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px" }}>
           <div style={{ fontSize: "0.72rem", color: S.muted, fontWeight: 700, marginBottom: 8 }}>Injection & F/U Calculator</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Last inj:</label>
-              <input
-                type="date"
-                value={lastInjDate}
-                onChange={e => setLastInjDate(e.target.value)}
-                style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", boxSizing: "border-box" }}
-              />
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>F/u in:</label>
-              <input
-                type="number"
-                value={fuWeeks}
-                onChange={e => setFuWeeks(e.target.value)}
-                placeholder="wks"
-                style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", width: 60, boxSizing: "border-box" }}
-              />
-              <span style={{ fontSize: "0.72rem", color: S.muted }}>weeks</span>
-            </div>
-          </div>
-          {injCalc && (
-            <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
-              {injCalc.weeksSince !== null && (
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+            {/* Last injection column */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Last inj:</label>
+                <input
+                  type="date"
+                  value={lastInjDate}
+                  onChange={e => setLastInjDate(e.target.value)}
+                  style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", boxSizing: "border-box" }}
+                />
+              </div>
+              {injCalc && injCalc.weeksSince !== null && (
                 <span style={{ fontSize: "0.82rem", color: S.accentLight, fontFamily: S.mono, fontWeight: 700 }}>
                   {injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""} since last inj
                 </span>
               )}
-              {injCalc.nextDate && (
+            </div>
+            {/* F/U weeks column */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>F/u in:</label>
+                <input
+                  type="number"
+                  value={fuWeeks}
+                  onChange={e => setFuWeeks(e.target.value)}
+                  placeholder="wks"
+                  style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", width: 60, boxSizing: "border-box" }}
+                />
+                <span style={{ fontSize: "0.72rem", color: S.muted }}>weeks</span>
+              </div>
+              {injCalc && injCalc.nextDate && (
                 <span style={{ fontSize: "0.82rem", color: S.green, fontFamily: S.mono, fontWeight: 700 }}>
                   Next appt: {formatDate(injCalc.nextDate)}
                 </span>
               )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
