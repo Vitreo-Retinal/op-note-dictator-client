@@ -390,7 +390,8 @@ G2211 RULES (CRITICAL):
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
 - NEVER recommend G2211 on INJECTION DAYS. If the plan includes an intravitreal injection (Avastin, Eylea, Vabysmo, Lucentis, Izervay, etc.), G2211 = NO. This is because injection visits use modifier -25 on the E/M code, and CMS does not reimburse G2211 when modifier -25 is present.
-- On non-injection visits for chronic retina conditions (AMD follow-up without injection, post-op visits, observation visits, PVD/HST follow-up, etc.), G2211 is appropriate if the physician is the longitudinal manager.
+- DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients seen in this retina practice — whether the condition is AMD, DR, glaucoma, meningioma, or any other chronic/serious condition being followed over time.
+- G2211 is appropriate for: observation visits, PRN monitoring visits (not injecting today), post-op visits, stable chronic disease f/u, any visit where no injection is performed.
 - No frequency limit — can be billed at every eligible non-injection visit.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with monitoring for treatment response and fellow eye conversion."
@@ -448,7 +449,7 @@ G2211 RULES (CRITICAL):
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
 - NEVER recommend G2211 on INJECTION DAYS. If the note includes an intravitreal injection (Avastin, Eylea, Vabysmo, Lucentis, Izervay, etc.), G2211 = NO. Injection visits use modifier -25, and CMS does not reimburse G2211 with modifier -25.
-- On non-injection visits for chronic retina conditions, G2211 is appropriate.
+- DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients — whether AMD, DR, glaucoma, meningioma, or any chronic/serious condition being followed over time.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Must be visit-specific and varied in wording.
 
