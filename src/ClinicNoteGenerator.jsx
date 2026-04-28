@@ -213,7 +213,7 @@ ABBREVIATION DICTIONARY:
 - ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
 - VH = vitreous hemorrhage, HOBE = head of bed elevated
 - Vanc = vancomycin, Ceftaz = ceftazidime, PF = prednisolone forte (Pred Forte)
-- AC tap = anterior chamber tap, hypopyon = layered white cells in anterior chamber
+- AC tap = anterior chamber tap, Vit tap = vitreous tap, hypopyon = layered white cells in anterior chamber
 - phaco-IOL = phacoemulsification with intraocular lens implantation
 - CSCR = central serous chorioretinopathy, PDT = photodynamic therapy
 - BMP = basic metabolic panel, PCP = primary care physician
@@ -283,7 +283,7 @@ VMT DECISION LOGIC:
 
 ENDOPHTHALMITIS LOGIC:
 - Document: onset of symptoms, pain, photophobia, hypopyon, visual acuity, recent surgery with surgeon name and date
-- Plan must include: AC tap and send for cultures, intravitreal injection of Vanc + Ceftaz, PF q1hr, Atropine QD
+- Plan must include: AC tap and/or Vit tap and send for cultures, intravitreal injection of Vanc + Ceftaz, PF q1hr, Atropine QD
 - F/u next day
 - Discuss guarded vision prognosis and potential need for surgical intervention (PPV) if no improvement
 - This is a 99215 — high complexity MDM with urgent/emergent decision-making
