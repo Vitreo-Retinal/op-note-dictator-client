@@ -131,6 +131,12 @@ const DEFAULT_EXAMPLES = [
     builtin: true,
   },
   {
+    id: "ex_endophthalmitis_late",
+    label: "Late-onset endophthalmitis — P. acnes, chronic",
+    shorthand: `67 yo M here for f/u\n\n1. Late-onset endophthalmitis OD\ns/p phaco-IOL w Dr. K (1/15/2026)\nChronic low-grade inflammation, white plaque on capsule\nr/o P. acnes\n\nPlan\nAC tap + Vit tap, send for cultures (hold 2+ weeks for P. acnes)\nIntravitreal Vanc\nPF q1hr\nAtropine QD\nMay need PPV/capsulectomy/IOL exchange if no improvement\nF/u tomorrow\nDiscussed guarded prognosis and potential need for additional surgical intervention`,
+    builtin: true,
+  },
+  {
     id: "ex_cscr",
     label: "CSCR — persistent, Eplerenone",
     shorthand: `67 yo M here for f/u\n\n1. CSCR OD\nPersistent SRF over 3 months\nDenies steroids\nStressed at work\n\nPlan\nDiscussed Eplerenone 25mg PO daily\nWill obtain BMP in conjunction with PCP\nAlso discussed anti-VEGF therapy and PDT if doesn't respond\nF/u in 1 month, sooner PRN\nAvoid steroids and stress management discussed`,
@@ -249,7 +255,7 @@ NOTE HEADER FORMAT:
 
 PHYSICIAN ABBREVIATIONS:
 - Dr. Z = Dr. Zacharia, Dr. K = Dr. Kleinberg, Dr. G = Dr. Gallo
-- Dr. M = Dr. Meltzer, Dr. BJ = Dr. Ling, Dr. L = Dr. Luna
+- Dr. M = Dr. Meltzer, Dr. BJ = Dr. Ling, Dr. L = Dr. Luna, Dr. R = Dr. Robbins
 - Always expand these to the full name in the generated note.
 
 PLAQUENIL LIFETIME DOSE CALCULATION:
@@ -283,11 +289,19 @@ VMT DECISION LOGIC:
 - If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
 
 ENDOPHTHALMITIS LOGIC:
-- Document: onset of symptoms, pain, photophobia, hypopyon, visual acuity, recent surgery with surgeon name and date
-- Plan must include: AC tap and/or Vit tap and send for cultures, intravitreal injection of Vanc + Ceftaz, PF q1hr, Atropine QD
-- F/u next day
-- Discuss guarded vision prognosis and potential need for surgical intervention (PPV) if no improvement
-- This is a 99215 — high complexity MDM with urgent/emergent decision-making
+- ACUTE: Document onset of symptoms, pain, photophobia, hypopyon, visual acuity, recent surgery with surgeon name and date
+  * Plan: AC tap and/or Vit tap → send for cultures, intravitreal Vanc + Ceftaz, PF q1hr, Atropine QD
+  * F/u next day
+  * Discuss guarded vision prognosis and potential need for surgical intervention (PPV) if no improvement
+  * This is a 99215 — high complexity MDM with urgent/emergent decision-making
+- LATE-ONSET / ATYPICAL (P. acnes): Chronic low-grade inflammation weeks to months after cataract surgery, white plaque on capsule
+  * Plan: AC tap + Vit tap → send for cultures (HOLD cultures 2+ weeks for P. acnes — slow-growing organism)
+  * Intravitreal Vanc (NO Ceftaz for P. acnes — Vanc alone is sufficient)
+  * PF q1hr, Atropine QD
+  * May need PPV/capsulectomy/IOL exchange if no improvement
+  * F/u next day
+  * Discuss guarded prognosis and potential need for additional surgical intervention
+  * This is a 99215 — high complexity MDM
 
 VITREOUS HEMORRHAGE (VH) PRECAUTIONS:
 - Whenever VH is present — regardless of cause (PDR, HST, hemorrhagic PVD, or any other etiology) — ALWAYS include in the Plan:
@@ -351,7 +365,8 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - VMT → Risk of FTMH discussed, Amsler grid provided, call if acute changes
 - Floater vitrectomy → PPV vs observation discussed (pseudophakic + PVD required), RBA discussed
 - VH (any cause: PDR, HST, hemorrhagic PVD, etc.) → HOBE, avoid blood thinners, avoid strenuous activity
-- Endophthalmitis → Guarded vision prognosis discussed, potential need for surgical intervention (PPV) if no improvement
+- Acute endophthalmitis → Guarded vision prognosis discussed, potential need for surgical intervention (PPV) if no improvement
+- Late-onset/atypical endophthalmitis (P. acnes) → Guarded prognosis, cultures held 2+ weeks, may need PPV/capsulectomy/IOL exchange
 
 IMPORTANT BILLING REMINDER: ALL conditions above — not just AMD and injection visits — must include the standard billing components: [+] imaging review, [+] management decision, and [+] MDM justification (for 99214/99215). Every note needs billing language regardless of condition type.`;
 
