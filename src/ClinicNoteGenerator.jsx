@@ -492,18 +492,26 @@ export default function ClinicNoteGenerator({ onBack }) {
   const [fuWeeks, setFuWeeks] = useState("");
 
   const injCalc = (() => {
-    if (!lastInjDate) return null;
-    const last = new Date(lastInjDate + "T12:00:00");
-    if (isNaN(last)) return null;
     const today = new Date();
     today.setHours(12, 0, 0, 0);
-    const diffMs = today - last;
-    const weeksSince = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
-    const daysSince = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    let weeksSince = null;
+    let daysSince = null;
     let nextDate = null;
+
+    if (lastInjDate) {
+      const last = new Date(lastInjDate + "T12:00:00");
+      if (!isNaN(last)) {
+        const diffMs = today - last;
+        weeksSince = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+        daysSince = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+      }
+    }
+
     if (fuWeeks && parseInt(fuWeeks) > 0) {
       nextDate = new Date(today.getTime() + parseInt(fuWeeks) * 7 * 24 * 60 * 60 * 1000);
     }
+
+    if (weeksSince === null && nextDate === null) return null;
     return { weeksSince, daysSince, nextDate };
   })();
 
@@ -754,11 +762,13 @@ export default function ClinicNoteGenerator({ onBack }) {
           </div>
           {injCalc && (
             <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
-              <span style={{ fontSize: "0.78rem", color: S.accentLight, fontFamily: S.mono }}>
-                {injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""} since last inj
-              </span>
+              {injCalc.weeksSince !== null && (
+                <span style={{ fontSize: "0.82rem", color: S.accentLight, fontFamily: S.mono, fontWeight: 700 }}>
+                  {injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""} since last inj
+                </span>
+              )}
               {injCalc.nextDate && (
-                <span style={{ fontSize: "0.78rem", color: S.green, fontFamily: S.mono }}>
+                <span style={{ fontSize: "0.82rem", color: S.green, fontFamily: S.mono, fontWeight: 700 }}>
                   Next appt: {formatDate(injCalc.nextDate)}
                 </span>
               )}
