@@ -193,6 +193,10 @@ ABBREVIATION DICTIONARY:
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
 - ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
+- CRAO = central retinal artery occlusion, BRAO = branch retinal artery occlusion
+- GCA = giant cell arteritis, ESR = erythrocyte sedimentation rate, CRP = C-reactive protein
+- ECHO = echocardiogram, carotid US = carotid ultrasound
+- w/u = workup, r/o = rule out
 - PI = peripheral iridectomy, AC-IOL = anterior chamber intraocular lens, CF = counting fingers
 - PXF = pseudo-exfoliation, lens calcs = lens calculations
 - BEM = bull's eye maculopathy, FAF = fundus autofluorescence, IS/OS = inner segment/outer segment junction, OCT-A = OCT angiography
@@ -252,6 +256,12 @@ ERM DECISION LOGIC:
 VMT DECISION LOGIC:
 - If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
 - If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
+
+CRAO/BRAO LOGIC:
+- For CRAO and BRAO: always include embolic workup in the Plan — ECHO and carotid US
+- For CRAO specifically: must also rule out GCA. Document GCA symptom review: jaw claudication, scalp tenderness, headaches, fever, weight loss. Order ESR/CRP STAT.
+- Plan should include: "Embolic workup ordered including ECHO and carotid US. GCA symptoms reviewed (jaw claudication, scalp tenderness, headaches, fever, weight loss) — [present/denied]. ESR/CRP ordered STAT to rule out GCA."
+- For BRAO: embolic workup (ECHO, carotid US) but GCA workup is less critical unless clinical suspicion exists
 
 BLOOD THINNER + WET AMD RULE:
 - If a patient is on a blood thinner (Eliquis, Aggrenox, Coumadin, Xarelto, or any anticoagulant/antiplatelet) and has wet AMD, they CANNOT be extended beyond q8 weeks for anti-VEGF injections.
