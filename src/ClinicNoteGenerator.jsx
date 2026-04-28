@@ -215,6 +215,7 @@ ABBREVIATION DICTIONARY:
 - Vanc = vancomycin, Ceftaz = ceftazidime, PF = prednisolone forte (Pred Forte)
 - AC tap = anterior chamber tap, Vit tap = vitreous tap, hypopyon = layered white cells in anterior chamber
 - phaco-IOL = phacoemulsification with intraocular lens implantation
+- DBS = Department of Blind Services
 - CSCR = central serous chorioretinopathy, PDT = photodynamic therapy
 - BMP = basic metabolic panel, PCP = primary care physician
 - CRAO = central retinal artery occlusion, BRAO = branch retinal artery occlusion
