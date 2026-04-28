@@ -726,6 +726,47 @@ export default function ClinicNoteGenerator({ onBack }) {
         ))}
       </div>
 
+      {/* Injection / F/U Calculator — always visible */}
+      <div style={{ padding: "10px 24px 0", maxWidth: 800, margin: "0 auto" }}>
+        <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px" }}>
+          <div style={{ fontSize: "0.72rem", color: S.muted, fontWeight: 700, marginBottom: 8 }}>Injection & F/U Calculator</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Last inj:</label>
+              <input
+                type="date"
+                value={lastInjDate}
+                onChange={e => setLastInjDate(e.target.value)}
+                style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", boxSizing: "border-box" }}
+              />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>F/u in:</label>
+              <input
+                type="number"
+                value={fuWeeks}
+                onChange={e => setFuWeeks(e.target.value)}
+                placeholder="wks"
+                style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", width: 60, boxSizing: "border-box" }}
+              />
+              <span style={{ fontSize: "0.72rem", color: S.muted }}>weeks</span>
+            </div>
+          </div>
+          {injCalc && (
+            <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
+              <span style={{ fontSize: "0.78rem", color: S.accentLight, fontFamily: S.mono }}>
+                {injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""} since last inj
+              </span>
+              {injCalc.nextDate && (
+                <span style={{ fontSize: "0.78rem", color: S.green, fontFamily: S.mono }}>
+                  Next appt: {formatDate(injCalc.nextDate)}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div style={{ padding: "20px 24px", maxWidth: 800, margin: "0 auto" }}>
 
         {/* ── INPUT TAB ──────────────────────────────────────────── */}
@@ -775,44 +816,6 @@ export default function ClinicNoteGenerator({ onBack }) {
               <span style={{ fontSize: "0.66rem", color: "#475569" }}>99213=20 min · 99214=30 min · 99215=40 min</span>
             </div>
 
-            {/* Injection calculator */}
-            <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", marginTop: 10 }}>
-              <div style={{ fontSize: "0.72rem", color: S.muted, fontWeight: 700, marginBottom: 8 }}>Injection Calculator (optional)</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Last inj:</label>
-                  <input
-                    type="date"
-                    value={lastInjDate}
-                    onChange={e => setLastInjDate(e.target.value)}
-                    style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", boxSizing: "border-box" }}
-                  />
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>F/u in:</label>
-                  <input
-                    type="number"
-                    value={fuWeeks}
-                    onChange={e => setFuWeeks(e.target.value)}
-                    placeholder="wks"
-                    style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", width: 60, boxSizing: "border-box" }}
-                  />
-                  <span style={{ fontSize: "0.72rem", color: S.muted }}>weeks</span>
-                </div>
-              </div>
-              {injCalc && (
-                <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: "0.78rem", color: S.accentLight, fontFamily: S.mono }}>
-                    {injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""} since last inj
-                  </span>
-                  {injCalc.nextDate && (
-                    <span style={{ fontSize: "0.78rem", color: S.green, fontFamily: S.mono }}>
-                      Next appt: {formatDate(injCalc.nextDate)}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
 
             {error && (
               <div style={{ color: "#f87171", fontSize: "0.72rem", background: "#1a0808", padding: "8px 12px", borderRadius: 6, border: "1px solid #7f1d1d", marginTop: 10, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
