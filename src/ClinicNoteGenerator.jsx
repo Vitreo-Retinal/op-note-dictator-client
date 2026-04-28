@@ -118,6 +118,12 @@ const DEFAULT_EXAMPLES = [
     shorthand: `67 yo lady here for f/u\n\n1. POAG OU\nIOP stable, followed by Dr. Zacharia\n\nPlan\nCtn Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU\nStressed importance of compliance with gtt`,
     builtin: true,
   },
+  {
+    id: "ex_cscr",
+    label: "CSCR — persistent, Eplerenone",
+    shorthand: `67 yo M here for f/u\n\n1. CSCR OD\nPersistent SRF over 3 months\nDenies steroids\nStressed at work\n\nPlan\nDiscussed Eplerenone 25mg PO daily\nWill obtain BMP in conjunction with PCP\nAlso discussed anti-VEGF therapy and PDT if doesn't respond\nF/u in 1 month, sooner PRN\nAvoid steroids and stress management discussed`,
+    builtin: true,
+  },
 ];
 
 // ── Default expansion rules ─────────────────────────────────────────
@@ -193,6 +199,8 @@ ABBREVIATION DICTIONARY:
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
 - ERM = epiretinal membrane, FTMH = full-thickness macular hole, VMT = vitreomacular traction, VS = visually significant
+- CSCR = central serous chorioretinopathy, PDT = photodynamic therapy
+- BMP = basic metabolic panel, PCP = primary care physician
 - CRAO = central retinal artery occlusion, BRAO = branch retinal artery occlusion
 - GCA = giant cell arteritis, ESR = erythrocyte sedimentation rate, CRP = C-reactive protein
 - ECHO = echocardiogram, carotid US = carotid ultrasound
@@ -256,6 +264,12 @@ ERM DECISION LOGIC:
 VMT DECISION LOGIC:
 - If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
 - If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
+
+CSCR LOGIC:
+- When patient "denies steroids" or steroid use is mentioned, ALWAYS expand to include the full steroid review: no oral steroids, no inhalers, no topical creams, no intra-articular injections, and no nasal sprays.
+- Plan for persistent CSCR (>3 months): Eplerenone 25mg PO daily, obtain BMP in conjunction with PCP (to monitor potassium), discuss anti-VEGF therapy and PDT as next steps if no response.
+- Counseling: avoid ALL forms of steroids, stress management discussed.
+- F/u typically in 1 month for persistent CSCR.
 
 CRAO/BRAO LOGIC:
 - For CRAO and BRAO: always include embolic workup in the Plan — ECHO and carotid US
