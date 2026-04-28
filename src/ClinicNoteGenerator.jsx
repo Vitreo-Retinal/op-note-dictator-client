@@ -253,6 +253,11 @@ VMT DECISION LOGIC:
 - If VMT is "not VS" / asymptomatic → observation, discuss risk of progression to FTMH, provide Amsler grid, instruct to call if acute changes
 - If VMT is VS (symptomatic, declining VA) → consider PPV, discuss options with patient
 
+BLOOD THINNER + WET AMD RULE:
+- If a patient is on a blood thinner (Eliquis, Aggrenox, Coumadin, Xarelto, or any anticoagulant/antiplatelet) and has wet AMD, they CANNOT be extended beyond q8 weeks for anti-VEGF injections.
+- Document in the Plan: "Patient is on [blood thinner name]; unable to extend treatment interval beyond q8 weeks due to increased hemorrhagic risk."
+- This applies regardless of how well the patient is responding to treatment.
+
 FLOATER VITRECTOMY RULES:
 - PPV for symptomatic floaters is ONLY offered to pseudophakic patients with a documented PVD
 - If the patient is phakic, do NOT recommend PPV for floaters — observe instead
