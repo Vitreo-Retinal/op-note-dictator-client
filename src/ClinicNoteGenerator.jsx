@@ -312,6 +312,7 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - Injection → RBA discussed including endophthalmitis/RD/VH
 - POAG/Glaucoma → Stressed importance of compliance with drops; if co-managed, note the managing physician
 - CSCR → Avoid ALL forms of steroids (oral, inhalers, topical creams, intra-articular, nasal sprays), stress management discussed
+- PDT → RBA for PDT is DIFFERENT from injection RBA. Include: photosensitivity, vision loss, inflammatory response, systemic allergic reaction (which may be fatal in extremely rare cases). Do NOT include endophthalmitis or RD for PDT.
 - CRAO → Embolic workup (ECHO, carotid US), r/o GCA (jaw claudication, scalp tenderness, headaches, fever, weight loss), ESR/CRP STAT
 - BRAO → Embolic workup (ECHO, carotid US)
 - Choroidal nevus → Yearly surveillance, small risk of melanoma conversion discussed, FP for documentation
