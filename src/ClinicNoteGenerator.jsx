@@ -203,6 +203,7 @@ ABBREVIATION DICTIONARY:
 - "failed A" or "sub-optimal on A" = s/p Avastin with sub-optimal response
 - "unable to extend on E" = s/p Eylea, unable to extend
 - "on V q8" = on Vabysmo, requires q8 weeks
+- "direct-A", "direct-E", "direct-V", "direct-L" = plan to inject that drug at the NEXT visit, NOT today. "direct-E next week" = will administer Eylea next week. This means NO injection is performed today → G2211 IS eligible. Write in plan: "Will proceed with [drug] injection at next visit."
 - NPDR = non-proliferative diabetic retinopathy, PDR = proliferative diabetic retinopathy
 - DME = diabetic macular edema, SRF = subretinal fluid, IRF = intraretinal fluid
 - T1DM = type 1 diabetes mellitus, T2DM = type 2 diabetes mellitus
