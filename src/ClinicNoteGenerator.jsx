@@ -405,9 +405,10 @@ ANTI-REPETITION RULE (CRITICAL):
 G2211 RULES (CRITICAL):
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
-- NEVER recommend G2211 on INJECTION DAYS. If the plan includes an intravitreal injection (Avastin, Eylea, Vabysmo, Lucentis, Izervay, etc.), G2211 = NO. This is because injection visits use modifier -25 on the E/M code, and CMS does not reimburse G2211 when modifier -25 is present.
+- NEVER recommend G2211 on INJECTION DAYS. G2211 = NO only when an injection is being PERFORMED TODAY (i.e., the plan says "inject Avastin/Eylea/Vabysmo/Lucentis/Izervay TODAY"). This is because injection visits use modifier -25 on the E/M code, and CMS does not reimburse G2211 when modifier -25 is present.
+- IMPORTANT: If the patient is on an injection regimen but is NOT being injected TODAY (e.g., "plan to inject next week", "will resume injections at next visit", "monitoring today, injection next visit", "PRN and not treating today"), G2211 IS appropriate. The key question is: is the needle going in TODAY? If no → G2211 = YES.
 - DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients seen in this retina practice — whether the condition is AMD, DR, glaucoma, meningioma, or any other chronic/serious condition being followed over time.
-- G2211 is appropriate for: observation visits, PRN monitoring visits (not injecting today), post-op visits, stable chronic disease f/u, any visit where no injection is performed.
+- G2211 is appropriate for: observation visits, PRN monitoring visits (not injecting today even if patient is on injection therapy), post-op visits, stable chronic disease f/u, any visit where no injection is performed TODAY.
 - No frequency limit — can be billed at every eligible non-injection visit.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with monitoring for treatment response and fellow eye conversion."
@@ -464,7 +465,8 @@ ANTI-REPETITION RULE (CRITICAL):
 G2211 RULES (CRITICAL):
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
-- NEVER recommend G2211 on INJECTION DAYS. If the note includes an intravitreal injection (Avastin, Eylea, Vabysmo, Lucentis, Izervay, etc.), G2211 = NO. Injection visits use modifier -25, and CMS does not reimburse G2211 with modifier -25.
+- NEVER recommend G2211 on INJECTION DAYS. G2211 = NO only when an injection is PERFORMED TODAY. Injection visits use modifier -25, and CMS does not reimburse G2211 with modifier -25.
+- IMPORTANT: If the patient receives injections but is NOT being injected TODAY (monitoring visit, plan to inject next visit, PRN and not treating today), G2211 IS appropriate. The question is: is the needle going in TODAY? If no → G2211 = YES.
 - DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients — whether AMD, DR, glaucoma, meningioma, or any chronic/serious condition being followed over time.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Must be visit-specific and varied in wording.
