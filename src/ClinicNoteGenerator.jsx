@@ -160,7 +160,7 @@ const DEFAULT_PLAN_RULES = [
 ];
 
 // ── Build system prompt ─────────────────────────────────────────────
-function buildSystemPrompt(mode, examples) {
+function buildSystemPrompt(mode, examples, customInstructions) {
   const examplesBlock = examples.map((ex, i) =>
     `--- Example ${i + 1}: ${ex.label} ---\n${ex.shorthand}`
   ).join("\n\n");
@@ -420,7 +420,10 @@ G2211 RULES (CRITICAL):
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with monitoring for treatment response and fellow eye conversion."
 - Must be visit-specific and varied in wording.
 
-OUTPUT FORMAT — use ONLY these exact delimiters:
+${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
+${customInstructions}
+
+` : "" }OUTPUT FORMAT — use ONLY these exact delimiters:
 
 ---CODE---
 one of: 99215 / 99214 / 99213 / 92014 / 92004
@@ -477,7 +480,10 @@ G2211 RULES (CRITICAL):
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Must be visit-specific and varied in wording.
 
-OUTPUT FORMAT — use ONLY these exact delimiters:
+${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
+${customInstructions}
+
+` : "" }OUTPUT FORMAT — use ONLY these exact delimiters:
 
 ---CODE---
 one of: 99215 / 99214 / 99213 / 92014 / 92004
@@ -625,6 +631,9 @@ export default function ClinicNoteGenerator({ onBack }) {
   const [showAddExample, setShowAddExample] = useState(false);
   const [newExample, setNewExample] = useState({ label: "", shorthand: "" });
 
+  // Custom instructions (free-form style/formatting rules for Claude)
+  const [customInstructions, setCustomInstructions] = useState("");
+
   // Expansion rules state
   const [inlineRules, setInlineRules] = useState(DEFAULT_INLINE_RULES);
   const [planRules, setPlanRules] = useState(DEFAULT_PLAN_RULES);
@@ -642,6 +651,7 @@ export default function ClinicNoteGenerator({ onBack }) {
           if (json.data.examples?.length > 0) setExamples(json.data.examples);
           if (json.data.inlineRules?.length > 0) setInlineRules(json.data.inlineRules);
           if (json.data.planRules?.length > 0) setPlanRules(json.data.planRules);
+          if (json.data.customInstructions) setCustomInstructions(json.data.customInstructions);
         }
       } catch (e) {
         console.log("Could not load user data, using defaults:", e.message);
@@ -658,11 +668,11 @@ export default function ClinicNoteGenerator({ onBack }) {
       fetch(`${API_BASE}/api/user-data`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ examples, inlineRules, planRules }),
+        body: JSON.stringify({ examples, inlineRules, planRules, customInstructions }),
       }).catch(() => {});
     }, 500);
     return () => clearTimeout(timer);
-  }, [examples, inlineRules, planRules, dataLoaded]);
+  }, [examples, inlineRules, planRules, customInstructions, dataLoaded]);
 
   // ── Copy to clipboard ─────────────────────────────────────────────
   const copyNote = useCallback(async () => {
@@ -738,7 +748,7 @@ export default function ClinicNoteGenerator({ onBack }) {
     if (!note.trim()) return;
     setLoading(true); setError(""); setResult(null);
     try {
-      const systemPrompt = buildSystemPrompt(mode, examples);
+      const systemPrompt = buildSystemPrompt(mode, examples, customInstructions);
       const timeNote = timeSpent.trim() ? `\n\nTIME SPENT WITH PATIENT: ${timeSpent.trim()} minutes (use for time-based coding if it supports a higher E/M level than MDM alone)` : "";
       const userMessage = mode === "generate"
         ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}`
@@ -820,7 +830,7 @@ export default function ClinicNoteGenerator({ onBack }) {
 
       {/* Tabs */}
       <div style={{ display: "flex", borderBottom: `1px solid ${S.card}`, paddingLeft: 24, overflowX: "auto" }}>
-        {[["input", "Input"], ["output", "Output"], ["examples", "Examples"], ["rules", "Expansion Rules"]].map(([id, label]) => (
+        {[["input", "Input"], ["output", "Output"], ["examples", "Examples"], ["rules", "Expansion Rules"], ["instructions", "My Instructions"]].map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} style={{
             padding: "9px 14px", background: "none", border: "none",
             borderBottom: tab === id ? `2px solid ${S.accent}` : "2px solid transparent",
@@ -1228,6 +1238,31 @@ export default function ClinicNoteGenerator({ onBack }) {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── MY INSTRUCTIONS TAB ─────────────────────────────────── */}
+        {tab === "instructions" && (
+          <div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>My Instructions</div>
+              <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 2 }}>Tell Claude how you want your notes formatted. Write in plain English — these get sent directly to Claude with every note.</div>
+            </div>
+            <textarea
+              value={customInstructions}
+              onChange={e => setCustomInstructions(e.target.value)}
+              placeholder={"Examples:\n- OCT-A review goes after OD and OS as a global statement for AMD patients\n- Never use ocriplasmin for VMT\n- Surgical history in reverse chronological order\n- Always mention AREDS2 for intermediate dry AMD\n- For PDT, RBA includes photosensitivity and systemic allergic reaction, NOT endophthalmitis/RD"}
+              style={{
+                ...inputStyle({ width: "100%", minHeight: 200 }),
+                resize: "vertical",
+                lineHeight: 1.6,
+                fontSize: "0.82rem",
+                fontFamily: "inherit",
+              }}
+            />
+            <div style={{ fontSize: "0.68rem", color: S.muted, marginTop: 8 }}>
+              Auto-saved to your profile. Changes apply to the next note you generate.
             </div>
           </div>
         )}
