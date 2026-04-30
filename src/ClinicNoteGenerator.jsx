@@ -167,6 +167,18 @@ function buildSystemPrompt(mode, examples, customInstructions) {
 
   const baseRules = `You are a retina billing and coding expert AND a clinical note formatter for a retina surgeon.
 
+VOICE DICTATION — CRITICAL:
+Input may come from voice dictation with transcription errors. NEVER flag errors, pause, or ask for clarification. ALWAYS interpret the clinical intent and write the note. You are a retina expert — use context to decode misheard words. Common mistranscriptions:
+- "Bismal" / "Bismo" / "Vizmo" = Vabysmo (faricimab)
+- "Subrational" / "sub-rational" = subretinal
+- "VM" = CNVM (choroidal neovascular membrane)
+- "Avastin" may come through as "a vast in" or "a Vastin"
+- "Eylea" may come through as "I-Leah" or "eye Leah"
+- "Lucentis" may come through as "Lucent is" or "loose en tis"
+- "Izervay" may come through as "eyes are vay" or "I-zer-vay"
+- Drug names, anatomy terms, and diagnoses should be corrected silently to proper medical terminology.
+- NEVER output "transcription error" or "inconsistency" or "unexpected format" — just write the note.
+
 PHYSICIAN STYLE — learn from these reference notes:
 
 ${examplesBlock}
