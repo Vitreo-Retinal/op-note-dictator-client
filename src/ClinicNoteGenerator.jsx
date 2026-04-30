@@ -174,7 +174,8 @@ ${examplesBlock}
 FORMATTING RULES:
 - Output ONLY the Assessment/Plan section of a clinic note
 - Number each diagnosis (1. 2. 3.)
-- NO REDUNDANCY: Treatment decisions (e.g., proceed with PPV/MS, inject Vabysmo, observe) belong in the PLAN section only. Do NOT repeat treatment decisions in the assessment portion of a diagnosis. The assessment should describe the condition and findings; the plan states what will be done.
+- NO REDUNDANCY — this is CRITICAL: Never state the same information twice in a note. Treatment decisions belong in the PLAN section ONLY — do NOT repeat them in the assessment. Rationale or reasoning (e.g., "staying on Avastin due to CCA constraints", "unable to extend beyond q8") belongs in ONE place only — whichever section it fits most naturally (usually Plan). The assessment describes findings; the plan states actions and reasoning. If something is said in the plan, do NOT paraphrase it in the assessment or vice versa.
+- BREVITY: Write the most succinct note possible that still carries the necessary billing language. Every sentence must earn its place. No filler, no restating what's obvious, no padding. If the physician's shorthand says it clearly, don't embellish — just format it properly and add billing language.
 - SINGLE IMAGING REVIEW: If multiple diagnoses involve OCT findings (e.g., ERM + floaters, AMD + ERM), combine them into ONE imaging review statement. Do NOT write separate "OCT reviewed" lines for each diagnosis. Example: "[+] OCT and OCT-A reviewed demonstrating ERM with posterior hyaloid lifted" — not two separate OCT lines under two diagnoses.
 - OCT-A PLACEMENT FOR AMD: For AMD patients, the OCT-A review statement goes AFTER the individual OD and OS assessments, as a GLOBAL imaging statement covering both eyes. It should NOT be nested under OD or OS individually. Place it as a standalone line after the bilateral assessment, before the Plan. Example format:
   1. AMD
@@ -392,16 +393,22 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
 
+AMD BILLING CAP (CRITICAL):
+- AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is a 99214 (moderate complexity), NOT 99215.
+- AMD + cataracts, dry eye, or other routine co-managed conditions = still 99214.
+- 99215 for an AMD patient ONLY if there is ALSO a separate serious/vision-threatening condition on top: new retinal detachment, new macular hole, systemic disease requiring urgent workup (e.g., GCA), endophthalmitis, or similar. The second condition must independently warrant high-complexity decision-making.
+- When in doubt for AMD patients, bill 99214.
+
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and 99215):
 - For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
-- For 99215: add a sentence summarizing high MDM — reference multiple chronic conditions or progression requiring complex decisions. Example: "[+] High complexity medical decision-making: progression of wet AMD with new SRF despite q8 Vabysmo requiring evaluation of agent switch; concurrent management of cataract and dry eye; imaging and treatment history reviewed."
+- For 99215: add a sentence summarizing high MDM — reference multiple chronic conditions or progression requiring complex decisions. Only use 99215 when warranted per the AMD BILLING CAP rule above.
 - For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
 
 ANTI-REPETITION RULE (CRITICAL):
 - NEVER use the same MDM justification wording across different notes. Each sentence must be unique to the specific visit.
 - Reference the ACTUAL diagnoses, findings, and decisions from THIS visit — not generic filler.
 - Vary your phrasing naturally. Mix up ALL of the following components each time:
-  * Opening: "Moderate/High complexity MDM" vs "Clinical decision-making involved" vs "Medical management required" vs "Assessment and management complexity driven by"
+  * Opening: "Moderate complexity MDM" vs "Clinical decision-making involved" vs "Medical management required" vs "Assessment and management complexity driven by"
   * Data language: "data reviewed and analyzed" vs "imaging findings reviewed and incorporated into treatment plan" vs "OCT and clinical findings evaluated" vs "diagnostic data assessed"
   * Decision language: "management change" vs "treatment adjustment" vs "therapeutic modification" vs "clinical course altered" vs "decision made to..."
   * Complexity justification: reference the SPECIFIC clinical factors — name the conditions, the imaging findings, the treatment changes, the risk factors unique to THIS patient
@@ -456,12 +463,18 @@ DECISION RULES:
 - 92014/92004 (eye code): stable visits, observation only, no complex MDM. When billing an eye code for a stable exam, include "[+] No changes in the periphery OU" to document the comprehensive dilated exam.
 - 99213: single chronic condition, straightforward management
 - 99214: chronic condition with management decision, data reviewed
-- 99215: multiple chronic conditions OR progression requiring complex MDM (agent switch, new treatment)
+- 99215: multiple chronic conditions OR progression requiring complex MDM — but see AMD BILLING CAP below
 - G2211: established patient + serious chronic condition + NOT an injection day (see G2211 rules below)
+
+AMD BILLING CAP (CRITICAL):
+- AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is a 99214 (moderate complexity), NOT 99215.
+- AMD + cataracts, dry eye, or other routine co-managed conditions = still 99214.
+- 99215 for an AMD patient ONLY if there is ALSO a separate serious/vision-threatening condition on top: new retinal detachment, new macular hole, systemic disease requiring urgent workup (e.g., GCA), endophthalmitis, or similar.
+- When in doubt for AMD patients, bill 99214.
 
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and 99215):
 - For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
-- For 99215: add a sentence summarizing high MDM — reference multiple chronic conditions or progression requiring complex decisions. Example: "[+] High complexity medical decision-making: progression of wet AMD with new SRF despite q8 Vabysmo requiring evaluation of agent switch; concurrent management of cataract and dry eye; imaging and treatment history reviewed."
+- For 99215: add a sentence summarizing high MDM — only use 99215 when warranted per the AMD BILLING CAP rule above.
 - For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
 
 ANTI-REPETITION RULE (CRITICAL):
