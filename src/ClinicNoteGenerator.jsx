@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -528,6 +528,63 @@ export default function ClinicNoteGenerator({ onBack }) {
   const [lastInjDate, setLastInjDate] = useState("");
   const [fuWeeks, setFuWeeks] = useState("");
 
+  // Voice dictation (Deepgram)
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const timerRef = useRef(null);
+
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
+      audioChunksRef.current = [];
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        clearInterval(timerRef.current);
+        setRecordingTime(0);
+        if (audioChunksRef.current.length === 0) return;
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        setIsTranscribing(true);
+        try {
+          const resp = await fetch(`${API_BASE}/api/transcribe`, {
+            method: "POST",
+            headers: { "Content-Type": "audio/webm" },
+            body: audioBlob,
+          });
+          const data = await resp.json();
+          if (data.success && data.transcript) {
+            setNote(prev => prev ? prev + "\n" + data.transcript : data.transcript);
+          } else {
+            setError(data.error || "Transcription failed");
+          }
+        } catch (e) {
+          setError("Transcription error: " + e.message);
+        }
+        setIsTranscribing(false);
+      };
+      mediaRecorder.start(1000);
+      mediaRecorderRef.current = mediaRecorder;
+      setIsRecording(true);
+      setRecordingTime(0);
+      timerRef.current = setInterval(() => setRecordingTime(t => t + 1), 1000);
+    } catch (e) {
+      setError("Microphone access denied. Please allow mic access and try again.");
+    }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+  }, []);
+
   const injCalc = (() => {
     const today = new Date();
     today.setHours(12, 0, 0, 0);
@@ -840,6 +897,51 @@ export default function ClinicNoteGenerator({ onBack }) {
               {mode === "generate"
                 ? "Type your shorthand — the tool expands it into a formatted A/P note with billing language."
                 : "Paste your structured A/P note — the tool inserts minimum billing-compliant language."}
+            </div>
+
+            {/* Dictation mic button */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isTranscribing}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "8px 16px", borderRadius: 8,
+                  border: isRecording ? "2px solid #ef4444" : `1px solid ${S.border}`,
+                  background: isRecording ? "#7f1d1d" : S.card,
+                  color: isRecording ? "#fca5a5" : S.text,
+                  fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600,
+                  cursor: isTranscribing ? "wait" : "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                {isRecording ? (
+                  <>
+                    <span style={{ width: 10, height: 10, borderRadius: 2, background: "#ef4444", display: "inline-block" }} />
+                    Stop ({Math.floor(recordingTime / 60)}:{String(recordingTime % 60).padStart(2, "0")})
+                  </>
+                ) : isTranscribing ? (
+                  <>
+                    <span style={{ fontSize: "0.9rem" }}>⏳</span>
+                    Transcribing...
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="1" width="6" height="12" rx="3" />
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                      <line x1="12" y1="19" x2="12" y2="23" />
+                      <line x1="8" y1="23" x2="16" y2="23" />
+                    </svg>
+                    Dictate
+                  </>
+                )}
+              </button>
+              {isRecording && (
+                <span style={{ fontSize: "0.72rem", color: "#ef4444", fontWeight: 600 }}>
+                  ● Recording — speak now
+                </span>
+              )}
             </div>
 
             <textarea
