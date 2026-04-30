@@ -588,6 +588,7 @@ export default function ClinicNoteGenerator({ onBack }) {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
         setIsTranscribing(true);
         try {
+          // Step 1: Whisper transcription
           const resp = await fetch(`${API_BASE}/api/transcribe`, {
             method: "POST",
             headers: { "Content-Type": "audio/webm" },
@@ -595,7 +596,20 @@ export default function ClinicNoteGenerator({ onBack }) {
           });
           const data = await resp.json();
           if (data.success && data.transcript) {
-            setNote(prev => prev ? prev + "\n" + data.transcript : data.transcript);
+            // Step 2: Clean up medical terminology via Haiku
+            try {
+              const cleanResp = await fetch(`${API_BASE}/api/cleanup-transcript`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ transcript: data.transcript }),
+              });
+              const cleanData = await cleanResp.json();
+              const finalText = cleanData.success && cleanData.cleaned ? cleanData.cleaned : data.transcript;
+              setNote(prev => prev ? prev + "\n" + finalText : finalText);
+            } catch {
+              // If cleanup fails, use raw transcript
+              setNote(prev => prev ? prev + "\n" + data.transcript : data.transcript);
+            }
           } else {
             setError(data.error || "Transcription failed");
           }
