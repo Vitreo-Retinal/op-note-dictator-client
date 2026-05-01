@@ -430,15 +430,15 @@ ANTI-REPETITION RULE (CRITICAL):
 G2211 RULES (CRITICAL):
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
-- NEVER recommend G2211 on INJECTION DAYS. G2211 = NO only when an injection is being PERFORMED TODAY (i.e., the plan says "inject Avastin/Eylea/Vabysmo/Lucentis/Izervay TODAY"). This is because injection visits use modifier -25 on the E/M code, and CMS does not reimburse G2211 when modifier -25 is present.
+- NEVER recommend G2211 on INJECTION DAYS or POST-OP VISITS. G2211 = NO when: (1) an injection is being PERFORMED TODAY, OR (2) the visit is a post-operative visit (POD1, POW1, or any visit up to POM3 — post-op month 3).
 - IMPORTANT: If the patient is on an injection regimen but is NOT being injected TODAY (e.g., "plan to inject next week", "will resume injections at next visit", "monitoring today, injection next visit", "PRN and not treating today"), G2211 IS appropriate. The key question is: is the needle going in TODAY? If no → G2211 = YES.
-- DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients seen in this retina practice — whether the condition is AMD, DR, glaucoma, meningioma, or any other chronic/serious condition being followed over time.
-- G2211 is appropriate for: observation visits, PRN monitoring visits (not injecting today even if patient is on injection therapy), post-op visits, stable chronic disease f/u, any visit where no injection is performed TODAY.
+- DEFAULT TO G2211 = YES on any non-injection, non-post-op visit. The physician is the longitudinal managing physician for virtually all patients seen in this retina practice — whether the condition is AMD, DR, glaucoma, meningioma, or any other chronic/serious condition being followed over time.
+- G2211 is appropriate for: observation visits, PRN monitoring visits (not injecting today even if patient is on injection therapy), stable chronic disease f/u, any visit where no injection is performed TODAY and the visit is NOT a post-op visit (POD1 through POM3).
 - No frequency limit — can be billed at every eligible non-injection visit.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with monitoring for treatment response and fellow eye conversion."
 - Must be visit-specific and varied in wording.
-- If G2211 does NOT apply (injection day), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
+- If G2211 does NOT apply (injection day or post-op visit), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
@@ -448,7 +448,7 @@ ${customInstructions}
 ---CODE---
 one of: 99215 / 99214 / 99213 / 92014 / 92004
 ---G2211---
-YES or NO (always NO on injection days)
+YES or NO (always NO on injection days and post-op visits through POM3)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
@@ -505,7 +505,7 @@ G2211 RULES (CRITICAL):
 - DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients — whether AMD, DR, glaucoma, meningioma, or any chronic/serious condition being followed over time.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Must be visit-specific and varied in wording.
-- If G2211 does NOT apply (injection day), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
+- If G2211 does NOT apply (injection day or post-op visit), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
@@ -515,7 +515,7 @@ ${customInstructions}
 ---CODE---
 one of: 99215 / 99214 / 99213 / 92014 / 92004
 ---G2211---
-YES or NO (always NO on injection days)
+YES or NO (always NO on injection days and post-op visits through POM3)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
