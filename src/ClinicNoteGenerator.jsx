@@ -438,6 +438,7 @@ G2211 RULES (CRITICAL):
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with monitoring for treatment response and fellow eye conversion."
 - Must be visit-specific and varied in wording.
+- If G2211 does NOT apply (injection day), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
@@ -451,7 +452,7 @@ YES or NO (always NO on injection days)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
-the full formatted A/P note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that.
+the full formatted A/P note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that. If G2211 = NO, do NOT mention G2211 anywhere in the note.
 ---END---`;
   }
 
@@ -504,6 +505,7 @@ G2211 RULES (CRITICAL):
 - DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients — whether AMD, DR, glaucoma, meningioma, or any chronic/serious condition being followed over time.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Must be visit-specific and varied in wording.
+- If G2211 does NOT apply (injection day), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
@@ -517,7 +519,7 @@ YES or NO (always NO on injection days)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
-the full note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that.
+the full note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that. If G2211 = NO, do NOT mention G2211 anywhere in the note.
 ---END---`;
 }
 
