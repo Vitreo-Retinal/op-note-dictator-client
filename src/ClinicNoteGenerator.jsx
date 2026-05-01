@@ -718,7 +718,7 @@ export default function ClinicNoteGenerator({ onBack }) {
   // ── Copy to clipboard ─────────────────────────────────────────────
   const copyNote = useCallback(async () => {
     if (!result?.note) return;
-    const clean = result.note.replace(/\[\+\]\s*/g, "");
+    const clean = result.note.replace(/\[\+\]\s*/g, "").replace(/\*\*/g, "");
     try {
       await navigator.clipboard.writeText(clean);
       setCopied(true);
@@ -820,12 +820,22 @@ export default function ClinicNoteGenerator({ onBack }) {
   }
 
   // ── Render note with [+] badges ───────────────────────────────────
+  function renderBold(segment, segKey) {
+    // Split on **bold** patterns and render as <strong>
+    const parts = segment.split(/\*\*(.+?)\*\*/g);
+    return parts.map((p, j) =>
+      j % 2 === 1
+        ? <strong key={`${segKey}-b${j}`}>{p}</strong>
+        : <span key={`${segKey}-t${j}`}>{p}</span>
+    );
+  }
+
   function renderNote(text) {
     if (!text) return null;
     return text.split("[+]").map((part, i) => (
       <span key={i}>
         {i > 0 && <span style={{ background: "#fef08a", color: "#713f12", fontWeight: 700, fontSize: "0.6rem", padding: "1px 4px", borderRadius: 3, marginRight: 3, border: "1px solid #eab308", verticalAlign: "middle" }}>+</span>}
-        {part}
+        {renderBold(part, i)}
       </span>
     ));
   }
