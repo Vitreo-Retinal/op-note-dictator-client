@@ -146,7 +146,7 @@ const DEFAULT_EXAMPLES = [
 
 // ── Default expansion rules ─────────────────────────────────────────
 const DEFAULT_INLINE_RULES = [
-  { id: "rba", trigger: "RBA", expansion: "RBA discussed: endophthalmitis, RD, VH, IOP elevation, and vision loss", type: "inline", builtin: true },
+  { id: "rba", trigger: "RBA", expansion: "RBA discussed", type: "inline", builtin: true },
   { id: "brvo", trigger: "BRVO", expansion: "BRVO — healthy lifestyle: healthy diet, low salt, BP control", type: "inline", builtin: true },
   { id: "crvo", trigger: "CRVO", expansion: "CRVO — healthy lifestyle: healthy diet, low salt, BP control", type: "inline", builtin: true },
   { id: "rvo", trigger: "RVO", expansion: "RVO — healthy lifestyle: healthy diet, low salt, BP control", type: "inline", builtin: true },
@@ -400,7 +400,15 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
    - [+] "Decision was made to switch from Eylea to Vabysmo given sub-optimal response."
    - [+] "Decision was made to proceed with surgical intervention given worsening TRD."
    - [+] "Decision was made to observe given stable exam and asymptomatic status."
-3. RBA: For injection visits: [+] "Risks, benefits, and alternatives discussed" (if not already present as RBA). For surgical visits, RBA should already be in the dictation.
+3. RBA EXPANSION (CRITICAL): When the physician writes ANY of these — "RBA discussed", "RBA", "risks benefits and alternatives discussed", "risks discussed", "risks reviewed", "RBA reviewed", or any similar phrasing about risks/benefits/alternatives — WITHOUT listing specific risks, you MUST expand it based on the procedure context:
+   - Injection (anti-VEGF): "RBA discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss"
+   - PPV/vitrectomy: "RBA discussed in detail including endophthalmitis, retinal detachment, vitreous hemorrhage, cataract progression, glaucoma, and vision loss"
+   - Pneumatic retinopexy: "RBA discussed including endophthalmitis, hemorrhage, failure and need for surgery, glaucoma, and vision loss"
+   - Scleral buckle: "RBA discussed including infection, retinal detachment, vitreous hemorrhage, diplopia, myopic shift, exposure of the buckle, and vision loss"
+   - PDT: "RBA discussed including photosensitivity, inflammatory response, systemic allergic reaction to fluorescein or verteporfin, and vision loss"
+   - IOL exchange: "RBA discussed in detail including risks of endophthalmitis, retinal detachment, vitreous hemorrhage, glaucoma, corneal edema, and vision loss"
+   If the physician already listed specific risks (e.g., "RBA discussed including endophthalmitis/RD/VH"), keep their exact list — do NOT override it.
+   For injection visits where no RBA is mentioned at all: [+] "Risks, benefits, and alternatives discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss." For surgical visits, RBA should already be in the dictation.
 4. COMPLEXITY: For 99214/99215, the MDM justification sentence (see below) captures this. But within the note body, document what makes this visit complex — e.g., agent switching, progression, multiple conditions, surgical planning, treatment failure.
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
