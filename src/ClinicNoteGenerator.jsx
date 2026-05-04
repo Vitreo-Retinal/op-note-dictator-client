@@ -195,7 +195,18 @@ FORMATTING RULES:
   OS: [assessment]
   [+] OCT and OCT-A reviewed demonstrating [findings for both eyes]
 - OCT/IMAGING INTERPRETATION belongs in the ASSESSMENT, NOT the Plan. OCT findings (CFT, SRF, IRF, ERM, posterior hyaloid status, etc.) describe the current state of the eye — that is assessment. The Plan section is only for actions: injections, surgery, follow-up, medications, counseling.
-- IMPORTANT: Each eye condition is its OWN numbered diagnosis. Never combine two conditions under one number. For example, "Cataract OD" and "Pseudophakia OS" are TWO separate numbered diagnoses, not one "Cataracts" entry. Same for "Dry AMD OD" and "Wet AMD OS" — separate numbers.
+- IMPORTANT: Each DIFFERENT condition is its OWN numbered diagnosis. Never combine two different conditions under one number. For example, "Cataract OD" and "Pseudophakia OS" are TWO separate numbered diagnoses, not one "Cataracts" entry. Same for "Dry AMD OD" and "Wet AMD OS" — separate numbers. However, when BOTH eyes have the SAME condition (e.g., bilateral GA, bilateral NPDR), they go under ONE numbered diagnosis with OD/OS lines underneath — do NOT create separate numbered entries for each eye.
+- AMD FORMATTING: AMD is always ONE numbered diagnosis. Under it, list FHx (family history) and smoking history if pertinent, THEN OD and OS assessments with any per-eye treatment history. Example:
+  1. AMD
+  FHx- [positive/negative/denies]
+  [Smoking history if relevant]
+  OD: Extrafoveal GA
+  OS: Extrafoveal GA
+  s/p Izervay OS x3
+- YAG CAPSULOTOMY PLACEMENT: s/p YAG goes under the LENS diagnosis (Pseudophakia/Cataract), NOT under the retinal diagnosis. Example:
+  2. Pseudophakia OU
+  OD: IOL in good position
+  OS: s/p YAG capsulotomy [date]
 - When a diagnosis involves BOTH eyes, ALWAYS separate them on their own lines using "OD:" and "OS:" prefixes. This applies to ALL bilateral conditions — AMD, T2DM/DR, RD history, cataracts/pseudophakia, POAG, ERM, VMT, etc. Format:
   1. [Diagnosis]
   OD: [status/history/treatment for right eye]
@@ -368,10 +379,10 @@ TIME-BASED CODING (only when time is provided):
 
 COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - AMD → Healthy diet, non-smoking, Amsler grid, AREDS2, UV protection
-- Intermediate dry AMD with VA 20/40–20/70 OR extrafoveal GA → Also discuss Valeda PBM (photobiomodulation) as a treatment option. Include in Plan: "Discussed Valeda photobiomodulation therapy as a treatment option." Eligible patients: intermediate dry AMD with VA 20/40–20/70, or extrafoveal GA. Do NOT mention Valeda for early dry AMD, wet AMD, or foveal-involving GA.
+- Intermediate dry AMD with VA 20/40–20/70 → Also discuss Valeda PBM (photobiomodulation) as a treatment option. Include in Plan: "Discussed Valeda photobiomodulation therapy as a treatment option." Eligible patients: ONLY intermediate dry AMD with VA between 20/40–20/70. Do NOT mention Valeda for early dry AMD, wet AMD, GA (geographic atrophy) of any kind, or any other condition.
 - RVO (BRVO/CRVO) → Healthy lifestyle, healthy diet, low salt, BP control
 - T2DM/DR → BS/BP control emphasized
-- GA → Izervay vs. observation discussion
+- GA → Izervay vs. observation discussion. IMPORTANT: GA patients get IZERVAY, not Eylea or any anti-VEGF. If a benefits investigation (BI) is mentioned for a GA patient, it is for IZERVAY — never Eylea, Avastin, Vabysmo, or any other anti-VEGF for GA.
 - RD/PVD/HST → RD/RT precautions reviewed; call re: new onset flashes, floaters, or curtain over vision
 - Injection → RBA discussed including endophthalmitis/RD/VH
 - POAG/Glaucoma → Stressed importance of compliance with drops; if co-managed, note the managing physician
