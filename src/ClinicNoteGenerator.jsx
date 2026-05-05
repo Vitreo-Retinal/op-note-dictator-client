@@ -415,8 +415,8 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
    - Injection (anti-VEGF): "RBA discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss"
    - PPV/vitrectomy: "RBA discussed in detail including endophthalmitis, retinal detachment, vitreous hemorrhage, cataract progression, glaucoma, and vision loss"
    - Pneumatic retinopexy: "RBA discussed including endophthalmitis, hemorrhage, failure and need for surgery, glaucoma, and vision loss"
-   - Scleral buckle: "RBA discussed including infection, retinal detachment, vitreous hemorrhage, diplopia, myopic shift, exposure of the buckle, and vision loss"
-   - PDT: "RBA discussed including photosensitivity, inflammatory response, systemic allergic reaction to fluorescein or verteporfin, and vision loss"
+   - Scleral buckle: "RBA discussed including infection, diplopia, refractive change, failure and need for additional surgery, and vision loss"
+   - PDT: "RBA discussed including photosensitivity, vision loss, inflammatory response, and systemic allergic reaction"
    - IOL exchange: "RBA discussed in detail including risks of endophthalmitis, retinal detachment, vitreous hemorrhage, glaucoma, corneal edema, and vision loss"
    If the physician already listed specific risks (e.g., "RBA discussed including endophthalmitis/RD/VH"), keep their exact list — do NOT override it.
    For injection visits where no RBA is mentioned at all: [+] "Risks, benefits, and alternatives discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss." For surgical visits, RBA should already be in the dictation.
@@ -577,9 +577,15 @@ export default function ClinicNoteGenerator({ onBack }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [tab, setTab] = useState("input"); // input | output | examples | rules
+  const [tab, setTab] = useState("input"); // input | output | examples | rules | codes
+  const [codeSearch, setCodeSearch] = useState("");
   const [copied, setCopied] = useState(false);
+  const [copiedCodes, setCopiedCodes] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  // ICD-10 auto-suggest
+  const [icd10Codes, setIcd10Codes] = useState([]);
+  const [icd10Loading, setIcd10Loading] = useState(false);
 
   // Injection calculator
   const [lastInjDate, setLastInjDate] = useState("");
@@ -831,6 +837,21 @@ export default function ClinicNoteGenerator({ onBack }) {
       const parsed = parseResponse(text);
       setResult(parsed);
       setTab("output");
+
+      // Fire ICD-10 suggestion in background (non-blocking)
+      if (parsed.note) {
+        setIcd10Loading(true);
+        setIcd10Codes([]);
+        fetch(`${API_BASE}/api/suggest-icd10`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ note: parsed.note }),
+        })
+          .then(r => r.json())
+          .then(d => { if (d.success && d.codes?.length) setIcd10Codes(d.codes); })
+          .catch(() => {})
+          .finally(() => setIcd10Loading(false));
+      }
     } catch (e) {
       setError(e.message || String(e));
     } finally {
@@ -900,7 +921,7 @@ export default function ClinicNoteGenerator({ onBack }) {
 
       {/* Tabs */}
       <div style={{ display: "flex", borderBottom: `1px solid ${S.card}`, paddingLeft: 24, overflowX: "auto" }}>
-        {[["input", "Input"], ["output", "Output"], ["examples", "Examples"], ["rules", "Expansion Rules"], ["instructions", "My Instructions"]].map(([id, label]) => (
+        {[["input", "Input"], ["output", "Output"], ["examples", "Examples"], ["rules", "Expansion Rules"], ["instructions", "My Instructions"], ["codes", "ICD-10"]].map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} style={{
             padding: "9px 14px", background: "none", border: "none",
             borderBottom: tab === id ? `2px solid ${S.accent}` : "2px solid transparent",
@@ -1108,6 +1129,51 @@ export default function ClinicNoteGenerator({ onBack }) {
                         <span style={{ position: "absolute", left: 0, color: "#16a34a" }}>&#10003;</span>{c}
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {/* ICD-10 Codes */}
+                {(icd10Loading || icd10Codes.length > 0) && (
+                  <div style={{ background: "#0c0f1a", border: "1px solid #4f46e5", borderRadius: 8, padding: "10px 14px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
+                      <div style={{ fontSize: "0.66rem", color: "#818cf8", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        ICD-10 Codes
+                      </div>
+                      {icd10Codes.length > 0 && (
+                        <button onClick={async () => {
+                          const text = icd10Codes.map(c => `${c.code} — ${c.description}`).join("\n");
+                          try { await navigator.clipboard.writeText(text); setCopiedCodes(true); setTimeout(() => setCopiedCodes(false), 2000); }
+                          catch { setCopiedCodes(false); }
+                        }} style={{
+                          background: copiedCodes ? "#059669" : S.bg, color: copiedCodes ? "#fff" : "#94a3b8",
+                          border: `1px solid ${copiedCodes ? "#059669" : S.border}`, borderRadius: 6,
+                          padding: "3px 10px", fontSize: "0.68rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+                        }}>
+                          {copiedCodes ? "Copied!" : "Copy codes"}
+                        </button>
+                      )}
+                    </div>
+                    {icd10Loading ? (
+                      <div style={{ fontSize: "0.78rem", color: "#6366f1", fontStyle: "italic" }}>Analyzing diagnoses...</div>
+                    ) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {icd10Codes.map((c, i) => (
+                          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                            <span style={{
+                              background: c.primary ? "#312e81" : S.bg, color: c.primary ? "#a5b4fc" : "#94a3b8",
+                              border: `1px solid ${c.primary ? "#4f46e5" : S.border}`, borderRadius: 4,
+                              padding: "2px 8px", fontSize: "0.76rem", fontFamily: S.mono, fontWeight: 700, flexShrink: 0,
+                            }}>
+                              {c.code}
+                            </span>
+                            <span style={{ fontSize: "0.78rem", color: c.primary ? "#c7d2fe" : "#94a3b8", lineHeight: 1.4 }}>
+                              {c.description}
+                            </span>
+                            {c.primary && <span style={{ fontSize: "0.58rem", color: "#6366f1", fontWeight: 700, flexShrink: 0 }}>PRIMARY</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1336,6 +1402,174 @@ export default function ClinicNoteGenerator({ onBack }) {
             </div>
           </div>
         )}
+
+        {/* ── CODES TAB ─────────────────────────────────────────── */}
+        {tab === "codes" && (() => {
+          const ICD10_DB = [
+            { cat: "Diabetic", code: "E11.3211", desc: "T2DM mild NPDR w/o DME OD" },
+            { cat: "Diabetic", code: "E11.3212", desc: "T2DM mild NPDR w/o DME OS" },
+            { cat: "Diabetic", code: "E11.3311", desc: "T2DM moderate NPDR w/o DME OD" },
+            { cat: "Diabetic", code: "E11.3312", desc: "T2DM moderate NPDR w/o DME OS" },
+            { cat: "Diabetic", code: "E11.3411", desc: "T2DM severe NPDR w/o DME OD" },
+            { cat: "Diabetic", code: "E11.3412", desc: "T2DM severe NPDR w/o DME OS" },
+            { cat: "Diabetic", code: "E11.3511", desc: "T2DM PDR w DME OD" },
+            { cat: "Diabetic", code: "E11.3512", desc: "T2DM PDR w DME OS" },
+            { cat: "Diabetic", code: "E11.3521", desc: "T2DM PDR w/o DME OD" },
+            { cat: "Diabetic", code: "E11.3522", desc: "T2DM PDR w/o DME OS" },
+            { cat: "Diabetic", code: "E11.311", desc: "T2DM w DME (unspecified NPDR)" },
+            { cat: "Diabetic", code: "E11.37X1", desc: "T2DM DME resolved after tx OD" },
+            { cat: "Diabetic", code: "E11.37X2", desc: "T2DM DME resolved after tx OS" },
+            { cat: "Diabetic", code: "E10.3511", desc: "T1DM PDR w DME OD" },
+            { cat: "Diabetic", code: "E10.3512", desc: "T1DM PDR w DME OS" },
+            { cat: "AMD", code: "H35.3111A", desc: "Dry AMD early stage OD" },
+            { cat: "AMD", code: "H35.3112A", desc: "Dry AMD intermediate OD" },
+            { cat: "AMD", code: "H35.3113A", desc: "Dry AMD non-foveal GA OD" },
+            { cat: "AMD", code: "H35.3114A", desc: "Dry AMD subfoveal GA OD" },
+            { cat: "AMD", code: "H35.3121A", desc: "Dry AMD early stage OS" },
+            { cat: "AMD", code: "H35.3122A", desc: "Dry AMD intermediate OS" },
+            { cat: "AMD", code: "H35.3123A", desc: "Dry AMD non-foveal GA OS" },
+            { cat: "AMD", code: "H35.3124A", desc: "Dry AMD subfoveal GA OS" },
+            { cat: "AMD", code: "H35.3211A", desc: "Wet AMD active CNV OD" },
+            { cat: "AMD", code: "H35.3212A", desc: "Wet AMD inactive/involuted OD" },
+            { cat: "AMD", code: "H35.3213A", desc: "Wet AMD inactive scar OD" },
+            { cat: "AMD", code: "H35.3221A", desc: "Wet AMD active CNV OS" },
+            { cat: "AMD", code: "H35.3222A", desc: "Wet AMD inactive/involuted OS" },
+            { cat: "AMD", code: "H35.3223A", desc: "Wet AMD inactive scar OS" },
+            { cat: "RVO", code: "H34.8110", desc: "BRVO w macular edema OD" },
+            { cat: "RVO", code: "H34.8120", desc: "BRVO w macular edema OS" },
+            { cat: "RVO", code: "H34.8111", desc: "BRVO w retinal NV OD" },
+            { cat: "RVO", code: "H34.8112", desc: "BRVO stable OD" },
+            { cat: "RVO", code: "H34.8310", desc: "CRVO w macular edema OD" },
+            { cat: "RVO", code: "H34.8320", desc: "CRVO w macular edema OS" },
+            { cat: "RVO", code: "H34.8311", desc: "CRVO w retinal NV OD" },
+            { cat: "RVO", code: "H34.8312", desc: "CRVO stable OD" },
+            { cat: "RVO", code: "H34.8210", desc: "HRVO w macular edema OD" },
+            { cat: "Artery", code: "H34.11", desc: "CRAO OD" },
+            { cat: "Artery", code: "H34.12", desc: "CRAO OS" },
+            { cat: "Artery", code: "H34.231", desc: "BRAO OD" },
+            { cat: "Artery", code: "H34.232", desc: "BRAO OS" },
+            { cat: "Artery", code: "H34.01", desc: "Transient RAO OD" },
+            { cat: "RD", code: "H33.001", desc: "RRD OD" },
+            { cat: "RD", code: "H33.002", desc: "RRD OS" },
+            { cat: "RD", code: "H33.011", desc: "Horseshoe tear OD" },
+            { cat: "RD", code: "H33.012", desc: "Horseshoe tear OS" },
+            { cat: "RD", code: "H33.21", desc: "Serous RD OD" },
+            { cat: "RD", code: "H33.22", desc: "Serous RD OS" },
+            { cat: "RD", code: "H33.41", desc: "Tractional RD OD" },
+            { cat: "RD", code: "H33.42", desc: "Tractional RD OS" },
+            { cat: "RD", code: "H33.31", desc: "Retinal break w/o detachment OD" },
+            { cat: "RD", code: "H33.111", desc: "Lattice degeneration OD" },
+            { cat: "Vitreous", code: "H43.11", desc: "Vitreous hemorrhage OD (non-diabetic)" },
+            { cat: "Vitreous", code: "H43.12", desc: "Vitreous hemorrhage OS (non-diabetic)" },
+            { cat: "Vitreous", code: "H43.811", desc: "PVD OD" },
+            { cat: "Vitreous", code: "H43.812", desc: "PVD OS" },
+            { cat: "Vitreous", code: "H43.391", desc: "Vitreous opacities/floaters OD" },
+            { cat: "Macular", code: "H35.371", desc: "ERM OD" },
+            { cat: "Macular", code: "H35.372", desc: "ERM OS" },
+            { cat: "Macular", code: "H35.341", desc: "Full-thickness macular hole OD" },
+            { cat: "Macular", code: "H35.342", desc: "Full-thickness macular hole OS" },
+            { cat: "Macular", code: "H35.011", desc: "CSCR OD" },
+            { cat: "Macular", code: "H35.012", desc: "CSCR OS" },
+            { cat: "Macular", code: "H35.351", desc: "Cystoid macular edema OD" },
+            { cat: "Macular", code: "H35.352", desc: "Cystoid macular edema OS" },
+            { cat: "Macular", code: "H35.711", desc: "VMT OD" },
+            { cat: "Macular", code: "H35.712", desc: "VMT OS" },
+            { cat: "Macular", code: "H35.3811", desc: "Drusen of macula OD" },
+            { cat: "Glaucoma", code: "H40.1111", desc: "POAG mild stage OD" },
+            { cat: "Glaucoma", code: "H40.1112", desc: "POAG moderate stage OD" },
+            { cat: "Glaucoma", code: "H40.1113", desc: "POAG severe stage OD" },
+            { cat: "Glaucoma", code: "H40.1211", desc: "POAG mild stage OS" },
+            { cat: "Glaucoma", code: "H40.1212", desc: "POAG moderate stage OS" },
+            { cat: "Glaucoma", code: "H40.1213", desc: "POAG severe stage OS" },
+            { cat: "Glaucoma", code: "H40.051", desc: "Ocular hypertension OD" },
+            { cat: "Glaucoma", code: "H40.052", desc: "Ocular hypertension OS" },
+            { cat: "Glaucoma", code: "H40.053", desc: "Ocular hypertension OU" },
+            { cat: "Glaucoma", code: "H40.2111", desc: "Acute ACG OD mild" },
+            { cat: "Glaucoma", code: "H40.2211", desc: "Chronic ACG OD mild" },
+            { cat: "Glaucoma", code: "H40.89", desc: "NVG / other specified glaucoma" },
+            { cat: "Glaucoma", code: "H40.9", desc: "Glaucoma unspecified" },
+            { cat: "Lens", code: "H25.11", desc: "Nuclear cataract OD" },
+            { cat: "Lens", code: "H25.12", desc: "Nuclear cataract OS" },
+            { cat: "Lens", code: "H25.13", desc: "Nuclear cataract OU" },
+            { cat: "Lens", code: "H25.041", desc: "PSC OD" },
+            { cat: "Lens", code: "H25.042", desc: "PSC OS" },
+            { cat: "Lens", code: "Z96.1", desc: "Pseudophakia (IOL status)" },
+            { cat: "Optic Nerve", code: "H47.011", desc: "NAION OD" },
+            { cat: "Optic Nerve", code: "H47.012", desc: "NAION OS" },
+            { cat: "Optic Nerve", code: "H47.211", desc: "Papilledema OD" },
+            { cat: "Optic Nerve", code: "H46.11", desc: "Retrobulbar neuritis OD" },
+            { cat: "Optic Nerve", code: "H47.311", desc: "Optic disc coloboma OD" },
+            { cat: "Infection", code: "H44.001", desc: "Panophthalmitis / acute endophthalmitis OD" },
+            { cat: "Infection", code: "H44.002", desc: "Panophthalmitis / acute endophthalmitis OS" },
+            { cat: "Infection", code: "H44.011", desc: "Chronic endophthalmitis OD" },
+            { cat: "Infection", code: "H44.012", desc: "Chronic endophthalmitis OS" },
+            { cat: "Infection", code: "T81.44XA", desc: "Post-procedural infection (initial)" },
+            { cat: "Choroidal", code: "D31.31", desc: "Choroidal nevus OD" },
+            { cat: "Choroidal", code: "D31.32", desc: "Choroidal nevus OS" },
+            { cat: "Choroidal", code: "D31.41", desc: "Choroidal melanoma OD" },
+            { cat: "Other Retinal", code: "D49.81", desc: "CHRPE / neoplasm unspecified eye" },
+            { cat: "Other Retinal", code: "H35.61", desc: "Retinal hemorrhage OD" },
+            { cat: "Other Retinal", code: "H35.62", desc: "Retinal hemorrhage OS" },
+            { cat: "Other Retinal", code: "H35.81", desc: "Retinal edema OD" },
+            { cat: "Systemic", code: "E11.65", desc: "T2DM w/o complications" },
+            { cat: "Systemic", code: "I10", desc: "Essential hypertension" },
+            { cat: "Systemic", code: "Z79.899", desc: "Long-term medication use (Plaquenil)" },
+            { cat: "Systemic", code: "E53.8", desc: "Vitamin deficiency" },
+            { cat: "Screening", code: "Z01.00", desc: "Eye exam unspecified" },
+            { cat: "Screening", code: "Z01.01", desc: "Eye exam w abnormal findings" },
+            { cat: "Screening", code: "Z87.39", desc: "H/o retinal diseases" },
+            { cat: "Symptoms", code: "H53.11", desc: "Day blindness" },
+            { cat: "Symptoms", code: "H53.2", desc: "Diplopia" },
+            { cat: "Symptoms", code: "H53.141", desc: "Visual disturbances / scotoma OD" },
+            { cat: "Symptoms", code: "H57.11", desc: "Ocular pain OD" },
+            { cat: "Symptoms", code: "H53.8", desc: "Metamorphopsia / visual disturbances" },
+          ];
+
+          const q = codeSearch.toLowerCase();
+          const filtered = q ? ICD10_DB.filter(c =>
+            c.code.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q) || c.cat.toLowerCase().includes(q)
+          ) : ICD10_DB;
+          const cats = [...new Set(filtered.map(c => c.cat))];
+
+          return (
+            <div>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>ICD-10 Code Lookup</div>
+                <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 2 }}>Search by code, diagnosis, or category. Quick reference from your retina coding dictionary.</div>
+              </div>
+              <input
+                value={codeSearch}
+                onChange={e => setCodeSearch(e.target.value)}
+                placeholder="Search codes... (e.g., AMD, H35, BRVO, glaucoma, DME)"
+                style={{
+                  display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8,
+                  padding: "10px 14px", color: S.text, fontFamily: S.mono, fontSize: "0.84rem", boxSizing: "border-box", marginBottom: 14,
+                }}
+              />
+              <div style={{ fontSize: "0.68rem", color: S.muted, marginBottom: 10 }}>
+                {filtered.length} codes {q ? "matching" : "total"} across {cats.length} categories
+              </div>
+              {cats.map(cat => (
+                <div key={cat} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: "0.7rem", color: S.accent, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
+                    {cat}
+                  </div>
+                  {filtered.filter(c => c.cat === cat).map((c, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "3px 0" }}>
+                      <span style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 4, padding: "1px 7px", fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700, color: S.accentLight, flexShrink: 0, minWidth: 90 }}>
+                        {c.code}
+                      </span>
+                      <span style={{ fontSize: "0.78rem", color: "#94a3b8", lineHeight: 1.4 }}>{c.desc}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+              {filtered.length === 0 && (
+                <div style={{ textAlign: "center", padding: "40px 0", color: "#475569" }}>No codes match "{codeSearch}"</div>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

@@ -58,6 +58,9 @@ const SYSTEM_PROMPT = `You are a retina billing and coding expert. A physician g
 1. Recommend the best billing code for this visit
 2. Make minimum language additions to support that code
 3. Flag if a comprehensive eye exam code (92014 established / 92004 new) would be more appropriate than an E/M code
+4. Flag applicable modifiers based on the clinical scenario
+5. Flag imaging mutual exclusivity issues if imaging is mentioned
+6. Flag documentation opportunities that elevate visit complexity
 
 DECISION RULES:
 
@@ -67,13 +70,36 @@ SUGGEST EYE CODE (92014/92004) when:
 - No new prescriptions, no treatment changes, no complex management decisions
 - Note lacks MDM complexity elements
 
-USE E/M CODE (99213/99214/99215) when:
-- Visit involves new drug initiation or change
-- Treatment decision requires complex MDM (e.g. switching anti-VEGF, managing progression)
-- Multiple chronic conditions with active management
-- Intravitreal injection being given (MDM-driven)
+E/M LEVEL SHORTCUTS (use as baseline, then adjust per MDM complexity):
+- Level 3 (99213): No treatment — observation only (PVD, dry AMD, stable ERM, stable post-op)
+- Level 4 (99214): Rx/injection/surgery decision — new or changed treatment, injection given, surgery planned (wet AMD injection, RVO with anti-VEGF, DME treatment, laser)
+- Level 5 (99215): ER/emergency-level complexity — urgent conditions, multiple complex decisions (endophthalmitis, acute RD, oncology, disease progression requiring therapy switch with extensive risk discussion)
 
 G2211 applies only when: 99215 is supported AND established patient with serious chronic condition
+
+MODIFIER RULES — flag when applicable:
+- -25: Significant, separately identifiable E/M on same day as a minor procedure (injection, laser, YAG). Example: wet AMD injection (linked to AMD) + new PVD symptoms evaluated (exam linked to PVD with -25). ONLY flag when there are TWO distinct clinical reasons for the visit.
+- -57: Decision for major surgery made at this visit (e.g., scheduling RD repair, PPV, scleral buckle). The E/M note supports the surgical decision.
+- -24: Unrelated E/M during a postop global period. Example: patient is 3 weeks post-PPV but presents with new fellow-eye wet AMD.
+- -58: Planned/staged procedure during postop period (e.g., planned second-eye surgery, planned laser after initial PPV).
+- -78: Unplanned return to OR for complication of original procedure during postop (e.g., re-PPV for recurrent RD within global period).
+- -79: Unrelated procedure during postop period (e.g., cataract surgery on fellow eye during PPV global period).
+
+IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
+- 92250 covers ALL fundus photography modes: color photos, FAF (fundus autofluorescence), NIR, red-free. FAF is NOT a separate code — it is billed as 92250.
+- OCT (92134) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE — cannot bill both same eye same day per NCCI edits
+- OCTA (92137) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE — same NCCI bundling as 92134. For GA patients getting both FAF and OCTA, alternate imaging across visits.
+- ICG (92240) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE
+- 92242 (combo FA/ICG): MUTUALLY EXCLUSIVE with 92235, 92240, 92250 — but CAN be billed with 92134 (OCT) or 92137 (OCTA)
+- FA (92235) and fundus photos/FAF (92250): NOT mutually exclusive — can bill both same day
+- FA (92235) and OCTA (92137): NOT mutually exclusive — can bill both same day
+- CPT 92137 (OCTA + retinal OCT combo, new 1/1/2025): Use 92137 instead of 92134 when OCTA is performed. 92134 reimbursement reduced as of 1/1/2025. 92133, 92134, and 92137 are all mutually exclusive with each other.
+
+DOCUMENTATION PEARLS — flag opportunities:
+- Phone calls with referring/consulting physicians: should be documented (adds to MDM data reviewed)
+- Independent historian: if family member provides history (dementia, language barrier, pediatric) — document it, adds complexity
+- New prescriptions or drug management changes: elevates to at minimum Level 4 (99214)
+- Data reviewed (OCT, photos, labs, outside records): must be explicitly stated as "reviewed" to count for MDM
 
 ABSOLUTE RULES:
 - Never invent clinical findings
@@ -98,6 +124,12 @@ one of: 99215 / 99214 / 99213 / 92014 / 92004
 YES or NO
 ---EYE_CODE_NOTE---
 If suggesting eye code: one sentence explaining why 92014/92004 fits better. If not: NONE
+---MODIFIERS---
+List any applicable modifiers with one-line explanation each (e.g., "-25: separate E/M for PVD evaluation on same day as AMD injection"). If none apply: NONE
+---IMAGING---
+List any imaging mutual exclusivity issues or recommendations (e.g., "OCTA performed — bill 92137 instead of 92134"). If no imaging mentioned or no issues: NONE
+---DOC_TIPS---
+List documentation opportunities to strengthen the note (e.g., "Document phone call with referring MD to add to data reviewed"). If none: NONE
 ---CHANGES---
 - each addition in plain language (max 5 bullets), or "None needed" if eye code
 ---NOTE---
@@ -116,7 +148,10 @@ function parse(text) {
   return {
     code: sec("CODE", "G2211"),
     g2211: sec("G2211", "EYE_CODE_NOTE").trim() === "YES",
-    eyeCodeNote: sec("EYE_CODE_NOTE", "CHANGES"),
+    eyeCodeNote: sec("EYE_CODE_NOTE", "MODIFIERS"),
+    modifiers: sec("MODIFIERS", "IMAGING").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
+    imaging: sec("IMAGING", "DOC_TIPS").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
+    docTips: sec("DOC_TIPS", "CHANGES").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
     changes: sec("CHANGES", "NOTE").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
     note: sec("NOTE", "END"),
   };
@@ -283,7 +318,7 @@ export default function EmNoteOptimizer({ onBack }) {
         <div style={{ width: 38, height: 38, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>&#9877;</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>E/M Note Optimizer</div>
-          <div style={{ fontSize: "0.68rem", color: S.muted, fontFamily: S.mono }}>99213-99215 | G2211 | Eye Codes</div>
+          <div style={{ fontSize: "0.68rem", color: S.muted, fontFamily: S.mono }}>99213-99215 | G2211 | Eye Codes | Modifiers | Imaging</div>
         </div>
       </div>
 
@@ -384,6 +419,39 @@ export default function EmNoteOptimizer({ onBack }) {
                       <div style={{ fontSize: "0.83rem", color: "#e9d5ff", lineHeight: 1.5 }}>{result.eyeCodeNote}</div>
                       <div style={{ fontSize: "0.75rem", color: "#a855f7", marginTop: 6 }}>No MDM documentation needed — exam elements justify this code.</div>
                     </div>
+                  </div>
+                )}
+
+                {result.modifiers?.filter(m => m && m !== "NONE" && m !== "None").length > 0 && (
+                  <div style={{ background: "#1a1a2e", border: "1px solid #f59e0b", borderRadius: 8, padding: "10px 14px" }}>
+                    <div style={{ fontSize: "0.66rem", color: "#f59e0b", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Modifier Alert</div>
+                    {result.modifiers.filter(m => m && m !== "NONE" && m !== "None").map((m, i) => (
+                      <div key={i} style={{ fontSize: "0.82rem", color: "#fcd34d", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
+                        <span style={{ position: "absolute", left: 0, color: "#f59e0b" }}>&#9888;</span>{m}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {result.imaging?.filter(m => m && m !== "NONE" && m !== "None").length > 0 && (
+                  <div style={{ background: "#0c1222", border: "1px solid #3b82f6", borderRadius: 8, padding: "10px 14px" }}>
+                    <div style={{ fontSize: "0.66rem", color: "#60a5fa", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Imaging / CPT</div>
+                    {result.imaging.filter(m => m && m !== "NONE" && m !== "None").map((m, i) => (
+                      <div key={i} style={{ fontSize: "0.82rem", color: "#93c5fd", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
+                        <span style={{ position: "absolute", left: 0, color: "#3b82f6" }}>&#128247;</span>{m}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {result.docTips?.filter(m => m && m !== "NONE" && m !== "None").length > 0 && (
+                  <div style={{ background: "#0f1a14", border: "1px solid #10b981", borderRadius: 8, padding: "10px 14px" }}>
+                    <div style={{ fontSize: "0.66rem", color: "#34d399", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Documentation Tips</div>
+                    {result.docTips.filter(m => m && m !== "NONE" && m !== "None").map((m, i) => (
+                      <div key={i} style={{ fontSize: "0.82rem", color: "#6ee7b7", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
+                        <span style={{ position: "absolute", left: 0, color: "#10b981" }}>&#128161;</span>{m}
+                      </div>
+                    ))}
                   </div>
                 )}
 
