@@ -408,6 +408,11 @@ TIME-BASED CODING (only when time is provided):
 - If time-based coding is used, add at the end of the note: "[+] Total time spent on date of encounter: [X] minutes, including [brief description of what time was spent on — e.g., counseling regarding treatment options, reviewing extensive imaging, coordinating care]."
 - If MDM alone supports the same or higher level, do NOT add the time sentence — just use MDM.
 
+AVASTIN THROMBOEMBOLIC SAFETY ALERT:
+- If the note mentions history of stroke, CVA, TIA, MI, or myocardial infarction, include in the Plan: "[+] Bevacizumab (Avastin) deferred given history of cerebrovascular/cardiovascular event; proceeding with [Eylea/Vabysmo/Lucentis] to minimize thromboembolic risk."
+- Use whichever alternative anti-VEGF the physician specifies. If none specified, leave as "[Eylea/Vabysmo/Lucentis]" for the physician to choose.
+- This applies whether or not the physician explicitly says to avoid Avastin — if stroke/CVA/TIA/MI history is documented, always flag it.
+
 COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - AMD → Healthy diet, non-smoking, Amsler grid, AREDS2, UV protection
 - Intermediate dry AMD with VA 20/40–20/70 → Also discuss Valeda PBM (photobiomodulation) as a treatment option. Include in Plan: "Discussed Valeda photobiomodulation therapy as a treatment option." Eligible patients: ONLY intermediate dry AMD with VA between 20/40–20/70. Do NOT mention Valeda for early dry AMD, wet AMD, GA (geographic atrophy) of any kind, or any other condition.
