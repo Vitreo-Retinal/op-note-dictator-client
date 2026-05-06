@@ -237,6 +237,17 @@ ABBREVIATION DICTIONARY:
 - DME = diabetic macular edema, SRF = subretinal fluid, IRF = intraretinal fluid
 - T1DM = type 1 diabetes mellitus, T2DM = type 2 diabetes mellitus
 - IDDM = insulin-dependent diabetes mellitus, NIDDM = non-insulin-dependent diabetes mellitus
+
+Z79 MEDICATION STATUS CODES — when the physician mentions a diabetic medication by name, add the appropriate Z79 code to your ICD-10 suggestions:
+- Z79.4 (Long-term insulin use) — add ONLY for T2DM patients on insulin. Insulin names: Lantus, Basaglar, Tresiba, Levemir, Humalog, Novolog, Humulin, Toujeo, Fiasp, Admelog, Semglee, Afrezza, NPH, glargine, lispro, aspart, detemir, degludec. Do NOT add Z79.4 for T1DM — insulin is inherent to T1DM.
+- Z79.84 (Long-term oral hypoglycemic use) — add when patient takes oral diabetes meds. Drug names: metformin/Glucophage, glipizide/Glucotrol, glyburide/Micronase/DiaBeta, glimepiride/Amaryl, pioglitazone/Actos, sitagliptin/Januvia, empagliflozin/Jardiance, dapagliflozin/Farxiga, canagliflozin/Invokana, linagliptin/Tradjenta, saxagliptin/Onglyza, rosiglitazone/Avandia, acarbose/Precose, repaglinide/Prandin.
+- Z79.85 (Long-term injectable non-insulin antidiabetic use) — add when patient takes injectable non-insulin diabetes meds. Drug names: semaglutide/Ozempic/Wegovy/Rybelsus, dulaglutide/Trulicity, tirzepatide/Mounjaro/Zepbound, liraglutide/Victoza/Saxenda, exenatide/Byetta/Bydureon.
+- If the physician says "on insulin" or "IDDM" for a T2DM patient → Z79.4. If they say "on metformin" → Z79.84. If they say "on Ozempic" or "on Mounjaro" → Z79.85. A patient may have multiple Z79 codes (e.g., on metformin AND insulin → both Z79.84 and Z79.4).
+
+GLP-1 PERIOPERATIVE ALERT — ONLY when ALL of the following are true: (1) the patient is on a GLP-1 agonist (Ozempic, Wegovy, Rybelsus, Trulicity, Mounjaro, Zepbound, Victoza, Saxenda, Byetta, Bydureon, semaglutide, dulaglutide, tirzepatide, liraglutide, exenatide), AND (2) surgery is being planned (PPV, scleral buckle, IOL exchange, pneumatic retinopexy, or any procedure requiring sedation/general anesthesia) — then insert this sentence in the Plan:
+"[+] GLP-1 agonist use noted; if surgery is planned, hold medication 7 days prior or consider 24-hour liquid diet per ASA/AGA perioperative guidance to mitigate aspiration risk."
+Do NOT insert this sentence for: intravitreal injections, observation/monitoring visits, or in-office laser procedures (PRP, LRP, focal laser, PDT, YAG). These do not require sedation/general anesthesia and the GLP-1 alert is irrelevant.
+
 - FP = fundus photos, SDE = scleral depressed exam, LRP = laser retinopexy
 - PPV = pars plana vitrectomy, EL = endolaser, FAX = fluid-air exchange, SO = silicone oil, PVR = proliferative vitreoretinopathy, C3F8 = perfluoropropane gas, SF6 = sulfur hexafluoride gas, TRD = tractional retinal detachment, PRP = panretinal photocoagulation
 - HST = horseshoe tear, PVD = posterior vitreous detachment, RD = retinal detachment, RT = retinal tear
@@ -273,6 +284,12 @@ ABBREVIATION DICTIONARY:
 PATIENT SHORTHAND:
 - "M" after age = gentleman (e.g., "77 yo M" → "77-year-old gentleman")
 - "W" after age = lady (e.g., "77 yo W" → "77-year-old lady")
+
+NEW PATIENT vs. FOLLOW-UP DETERMINATION:
+- If the dictation says "referred by Dr. X" or "ref by Dr. X" or "TOC" (transfer of care) WITHOUT "f/u" or "follow-up" → this is a NEW PATIENT. Use new patient E/M codes (99203/99204/99205 or 92004).
+- If the dictation says "f/u" or "follow-up" or "here for follow-up" (even if it also mentions "initially referred by Dr. X") → this is an ESTABLISHED PATIENT. Use established patient E/M codes (99213/99214/99215 or 92014).
+- "TOC" = transfer of care = new patient.
+- The key signal: "ref by" without "f/u" = new. "f/u" present = established. When in doubt, "ref by" alone = new.
 
 NOTE HEADER FORMAT:
 - The first line of the note should always be: age + gender + who referred + reason for visit
@@ -447,27 +464,58 @@ ANTI-REPETITION RULE (CRITICAL):
 - Do NOT start every MDM sentence with "Moderate complexity medical decision-making:" — vary the structure entirely.
 
 G2211 RULES (CRITICAL):
-- G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
+- G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215. IMPORTANT: G2211 can ONLY be added to E/M codes (99xxx), NOT to eye exam codes (92014, 92004, 92012). If G2211 is eligible, prefer 99214 over 92014 for better reimbursement.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
-- NEVER recommend G2211 on INJECTION DAYS or POST-OP VISITS. G2211 = NO when: (1) an injection is being PERFORMED TODAY, OR (2) the visit is a post-operative visit (POD1, POW1, or any visit up to POM3 — post-op month 3).
+- NEVER recommend G2211 on INJECTION DAYS or POST-OP VISITS within a global period. G2211 = NO when: (1) an injection is being PERFORMED TODAY, OR (2) the visit is within the postoperative global period of a prior surgery (90-day global: PPV, scleral buckle, pneumatic retinopexy, IOL exchange; 10-day global: intravitreal injection, laser). A post-op visit for a 90-day global procedure means any visit within 90 days of surgery. A post-op visit for a 10-day global procedure (injection/laser) is only within 10 days.
+- NEVER recommend G2211 for PRIMARILY SURGICAL PATIENTS. G2211 = NO when the patient's condition is one that will be resolved by a single surgical intervention. This includes: ERM (epiretinal membrane peel), FTMH (full-thickness macular hole repair), retinal detachment repair, scleral buckle, vitrectomy for floaters/VH, IOL exchange, pneumatic retinopexy. These are discrete surgical episodes — consult → operate → recover → discharge — NOT longitudinal complexity. CMS defines G2211 as inappropriate for "surgical treatment that resolves a condition" and "time-limited conditions."
+- G2211 IS appropriate for: chronic medical retina conditions requiring ongoing longitudinal management — AMD (wet or dry), diabetic retinopathy, glaucoma, RVO, uveitis, meningioma, or any other chronic/serious condition being followed over time.
 - IMPORTANT: If the patient is on an injection regimen but is NOT being injected TODAY (e.g., "plan to inject next week", "will resume injections at next visit", "monitoring today, injection next visit", "PRN and not treating today"), G2211 IS appropriate. The key question is: is the needle going in TODAY? If no → G2211 = YES.
-- DEFAULT TO G2211 = YES on any non-injection, non-post-op visit. The physician is the longitudinal managing physician for virtually all patients seen in this retina practice — whether the condition is AMD, DR, glaucoma, meningioma, or any other chronic/serious condition being followed over time.
-- G2211 is appropriate for: observation visits, PRN monitoring visits (not injecting today even if patient is on injection therapy), stable chronic disease f/u, any visit where no injection is performed TODAY and the visit is NOT a post-op visit (POD1 through POM3).
+- DEFAULT TO G2211 = YES on any non-injection, non-post-op, non-surgical-condition visit where the physician is the longitudinal managing physician for the patient's chronic condition.
 - No frequency limit — can be billed at every eligible non-injection visit.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with monitoring for treatment response and fellow eye conversion."
 - Must be visit-specific and varied in wording.
-- If G2211 does NOT apply (injection day or post-op visit), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
+- If G2211 does NOT apply (injection day, post-op visit, or primarily surgical patient), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
 
+MODIFIER RULES:
+- Modifier -25: Append "-25" to the E/M code when a significant, separately identifiable E/M service is performed on the SAME DAY as a minor procedure (0 or 10-day global). Most common scenario: injection day with an exam → 99214-25. The exam must be separately documented and medically necessary beyond the procedure itself.
+- Modifier -57: Append "-57" to the E/M code ONLY when the decision for MAJOR surgery (90-day global period) is made at THIS visit AND surgery is performed the SAME DAY or the NEXT DAY. Examples: emergent RD, decision for PPV made today, surgery today → 99215-57. Pneumatic retinopexy (90-day global) — decision and procedure same day → 99215-57 or 99214-57. If surgery is scheduled for later (e.g., next week), NO modifier is needed — the E/M stands alone because it is outside the global period.
+- Modifier -24: Use when an UNRELATED E/M service occurs during another surgery's 90-day postoperative global period. Example: patient 3 weeks post-PPV OD (still in global) comes in for wet AMD injection OS → E/M billed with -24. The condition must be truly unrelated to the surgery.
+- Modifier -58: Use on a PLANNED/STAGED procedure performed during the postoperative global period of the original surgery. Examples: PPV for RD → planned silicone oil removal 3 months later (still in 90-day global) → -58. Pneumatic retinopexy → staged laser retinopexy (LRP) at follow-up visit (within 90-day global) → -58 on the laser. Starts a new global period.
+- Modifier -78: Use for an UNPLANNED RETURN TO THE OR for a complication during the global period. Example: PPV → endophthalmitis POW2, needs tap/inject or re-PPV → -78. Does NOT reset the global period. Reimbursed at reduced rate (intraoperative portion only).
+- Modifier -79: Use for an UNRELATED PROCEDURE during the global period. Example: PPV OD → 4 weeks later needs injection OS for wet AMD → -79 on the injection. Starts a new global period for the new procedure.
+- Modifier -50 (Bilateral procedure): Use when the same procedure is performed on both eyes same day. Example: bilateral intravitreal injections → 67028-50.
+- Modifier -59 (Distinct procedural service): Use when two normally-bundled procedures are performed same eye same day and are truly separate services. Example: intravitreal injection + focal laser same eye same day → -59 on the second (lesser) procedure to indicate it is distinct.
+- If NO procedure is performed today and no same-day/next-day surgical decision is made → no modifier needed, just the bare E/M code.
+- IMPORTANT: Modifiers -24, -58, -78, -79 are relevant when the patient is WITHIN a prior surgery's global period. If not in a global period, these do not apply.
+
+MODIFIER STACKING — multiple modifiers can apply to the same code when multiple conditions are met:
+- E/M with unrelated condition during global + injection same day → E/M code with BOTH -24 and -25 (e.g., 99214-24-25). The -24 tells the payer the E/M is unrelated to the prior surgery; the -25 tells them it's separate from today's injection.
+- Injection that is unrelated to the prior surgery's global period → 67028-79.
+- Example: POM2 post-PPV OD patient with wet AMD OS, recommend Avastin injection → E/M: 99214-24-25, Injection: 67028-79, G2211: NO (injection day).
+- When stacking, list modifiers in this priority order: pricing/global modifiers first (-24, -25, -57, -58, -78, -79), then informational modifiers (-50, -59).
+
+GLOBAL PERIOD REFERENCE:
+- 90-day global: PPV (67036, 67039, 67040, 67041, 67042, 67043, 67108, 67113), scleral buckle (67107), pneumatic retinopexy (67110), IOL exchange (66986), PRP via OR
+- 10-day global: intravitreal injection (67028), office-based laser (67210, 67228, 67145), YAG (66821)
+- 0-day global: OCT, fundus photos, visual fields, fluorescein angiography
+
+POST-OP VISIT RULE: If the visit is a routine post-operative check within the global period (POD1, POW1, POM1, etc.), it is NOT separately billable. The surgical fee includes all related post-op care. Output "POST-OP (in global)" as the code. Still generate the note — just do not recommend a separate E/M code. Exception: if an UNRELATED condition is addressed during a post-op visit (e.g., post-PPV OD but also managing wet AMD OS), the unrelated E/M IS billable with modifier -24.
+
 ` : "" }OUTPUT FORMAT — use ONLY these exact delimiters:
 
 ---CODE---
-one of: 99215 / 99214 / 99213 / 92014 / 92004
+E/M code with modifiers (e.g., 99214-25, 99215-57, 99214-24-25, or "POST-OP (in global)" if routine post-op within global period).
+NEW patients: 99203-99205 or 92004. ESTABLISHED: 99213-99215, 92014, or 92012.
+Use 92012 for simple interim visits with minimal MDM (e.g., pressure recheck, quick interim look). For YEARLY/ANNUAL follow-ups, use 92014 even if stable — a yearly comprehensive exam justifies 92014. Use 99213+ for active management decisions.
+POST-OP visits within global period are NOT separately billable — output "POST-OP (in global)".
+---PROCEDURE---
+Procedure code(s) with modifiers if a procedure is performed today. Examples: "67028" (injection), "67028-79" (injection unrelated to prior surgery global), "67028-50" (bilateral injection), "67210-58" (staged laser in global). If no procedure today, output "None".
 ---G2211---
-YES or NO (always NO on injection days and post-op visits through POM3)
+YES or NO (always NO on injection days, post-op visits within global period, and primarily surgical patients)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
@@ -492,7 +540,8 @@ BILLING ADDITIONS — ensure these components are present in every note (add wit
 - Do NOT add what's already there
 
 DECISION RULES:
-- 92014/92004 (eye code): stable visits, observation only, no complex MDM. When billing an eye code for a stable exam, include "[+] No changes in the periphery OU" to document the comprehensive dilated exam.
+- 92014/92004 (eye code): Use ONLY when G2211 is NOT eligible (injection day, surgical patient, post-op) AND the visit is a stable observation with no complex MDM. When billing an eye code for a stable exam, include "[+] No changes in the periphery OU" to document the comprehensive dilated exam. When G2211 IS eligible, prefer 99214 over 92014 — G2211 cannot be added to eye codes, so 99214 + G2211 reimburses better.
+- 92012 (intermediate eye exam): Simple interim visits with minimal MDM (e.g., pressure recheck, quick interim look). NOT for yearly/annual exams — those get 92014 or 99214.
 - 99213: single chronic condition, straightforward management
 - 99214: chronic condition with management decision, data reviewed
 - 99215: multiple chronic conditions OR progression requiring complex MDM — but see AMD BILLING CAP below
@@ -517,14 +566,31 @@ ANTI-REPETITION RULE (CRITICAL):
 - The MDM sentence should read like it was written by a physician thinking about THIS patient, not a billing template. An auditor should never see two notes that sound alike.
 
 G2211 RULES (CRITICAL):
-- G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215.
+- G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215. IMPORTANT: G2211 can ONLY be added to E/M codes (99xxx), NOT to eye exam codes (92014, 92004, 92012). If G2211 is eligible, prefer 99214 over 92014 for better reimbursement.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
-- NEVER recommend G2211 on INJECTION DAYS. G2211 = NO only when an injection is PERFORMED TODAY. Injection visits use modifier -25, and CMS does not reimburse G2211 with modifier -25.
+- NEVER recommend G2211 on INJECTION DAYS or POST-OP VISITS within a global period. G2211 = NO when: (1) injection PERFORMED TODAY (uses modifier -25, CMS does not reimburse G2211 with -25), OR (2) visit is within postoperative global period (90-day: PPV, SB, pneumatic, IOL exchange; 10-day: injection, laser).
+- NEVER recommend G2211 for PRIMARILY SURGICAL PATIENTS (ERM, FTMH, RD, scleral buckle, floaters/VH vitrectomy, IOL exchange, pneumatic). These are discrete surgical episodes, not longitudinal complexity.
 - IMPORTANT: If the patient receives injections but is NOT being injected TODAY (monitoring visit, plan to inject next visit, PRN and not treating today), G2211 IS appropriate. The question is: is the needle going in TODAY? If no → G2211 = YES.
-- DEFAULT TO G2211 = YES on any non-injection visit. The physician is the longitudinal managing physician for virtually all patients — whether AMD, DR, glaucoma, meningioma, or any chronic/serious condition being followed over time.
+- DEFAULT TO G2211 = YES on any non-injection, non-post-op, non-surgical-condition visit. The physician is the longitudinal managing physician for chronic medical retina patients — AMD, DR, glaucoma, RVO, uveitis, or any chronic/serious condition being followed over time.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
 - Must be visit-specific and varied in wording.
-- If G2211 does NOT apply (injection day or post-op visit), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
+- If G2211 does NOT apply (injection day, post-op visit, or primarily surgical patient), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
+
+MODIFIER RULES:
+- Modifier -25: Append "-25" to the E/M code when exam is performed on the SAME DAY as a minor procedure (injection). Example: injection day with exam → 99214-25.
+- Modifier -57: Append "-57" ONLY when decision for MAJOR surgery (90-day global) is made at THIS visit AND surgery is same day or next day. Examples: emergent PPV same day, pneumatic retinopexy same day. If surgery is scheduled for later (next week+), no modifier needed.
+- Modifier -24: Unrelated E/M during another surgery's 90-day global period. Example: post-PPV OD, seen for AMD OS → -24.
+- Modifier -58: Planned/staged procedure during global period. Examples: oil removal after PPV → -58. Laser retinopexy after pneumatic → -58.
+- Modifier -78: Unplanned return to OR for complication during global period. Example: endophthalmitis after PPV → -78.
+- Modifier -79: Unrelated procedure during global period. Example: injection OS during PPV OD global → -79.
+- Modifier -50: Bilateral procedure same day. Example: bilateral injections → 67028-50.
+- Modifier -59: Distinct procedural service. Use when two normally-bundled procedures are performed same eye same day and are truly separate (e.g., injection + focal laser same eye same day → -59 on the second procedure).
+- No procedure today and not in a global period → no modifier needed.
+
+GLOBAL PERIOD REFERENCE:
+- 90-day global: PPV, scleral buckle, pneumatic retinopexy, IOL exchange, PRP via OR
+- 10-day global: intravitreal injection (67028), office laser (focal, PRP, LRP, YAG)
+- 0-day global: OCT, fundus photos, visual fields, FA
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
@@ -532,9 +598,14 @@ ${customInstructions}
 ` : "" }OUTPUT FORMAT — use ONLY these exact delimiters:
 
 ---CODE---
-one of: 99215 / 99214 / 99213 / 92014 / 92004
+E/M code with modifiers (e.g., 99214-25, 99215-57, 99214-24-25, or "POST-OP (in global)" if routine post-op).
+NEW patients: 99203-99205 or 92004. ESTABLISHED: 99213-99215, 92014, or 92012.
+Use 92012 for simple interim visits with minimal MDM (e.g., pressure recheck, quick interim look). For YEARLY/ANNUAL follow-ups, use 92014 even if stable — a yearly comprehensive exam justifies 92014.
+POST-OP visits within global period are NOT separately billable — output "POST-OP (in global)".
+---PROCEDURE---
+Procedure code(s) with modifiers if performed today. Examples: "67028" (injection), "67028-79" (unrelated to prior surgery global), "67028-50" (bilateral), "67210-58" (staged laser in global). If no procedure today, output "None".
 ---G2211---
-YES or NO (always NO on injection days and post-op visits through POM3)
+YES or NO (always NO on injection days, post-op visits within global period, and primarily surgical patients)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
 ---NOTE---
@@ -551,8 +622,10 @@ function parseResponse(text) {
     return (e === -1 ? text.slice(s) : text.slice(s, e))
       .replace("---" + a + "---", "").trim();
   };
+  const hasProcedure = text.includes("---PROCEDURE---");
   return {
-    code: sec("CODE", "G2211"),
+    code: sec("CODE", hasProcedure ? "PROCEDURE" : "G2211"),
+    procedure: hasProcedure ? sec("PROCEDURE", "G2211") : "",
     g2211: sec("G2211", "CHANGES").trim() === "YES",
     changes: sec("CHANGES", "NOTE").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
     note: sec("NOTE", "END"),
@@ -1112,6 +1185,9 @@ export default function ClinicNoteGenerator({ onBack }) {
                   <span style={{ background: cc.bg, color: cc.color, border: `1.5px solid ${cc.border}`, borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>
                     {result.code}
                   </span>
+                  {result.procedure && result.procedure !== "None" && (
+                    <span style={{ background: "#dbeafe", color: "#1e40af", border: "1.5px solid #3b82f6", borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>+ {result.procedure}</span>
+                  )}
                   {result.g2211 && (
                     <span style={{ background: "#fef3c7", color: "#92400e", border: "1.5px solid #f59e0b", borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>+ G2211</span>
                   )}
@@ -2190,7 +2266,9 @@ export default function ClinicNoteGenerator({ onBack }) {
             { cat: "Z-Codes & Status", code: "H54.02", desc: "Low vision / blindness classification (OS)" },
             { cat: "Z-Codes & Status", code: "H54.03", desc: "Low vision / blindness classification (OU)" },
             { cat: "Z-Codes & Status", code: "Z14.8", desc: "Genetic carrier status (HLA-B27)" },
-            { cat: "Z-Codes & Status", code: "Z79.4", desc: "Long-term (current) use of insulin" },
+            { cat: "Z-Codes & Status", code: "Z79.4", desc: "Long-term (current) use of insulin (T2DM only)" },
+            { cat: "Z-Codes & Status", code: "Z79.84", desc: "Long-term (current) use of oral hypoglycemic drugs (metformin, glipizide)" },
+            { cat: "Z-Codes & Status", code: "Z79.85", desc: "Long-term (current) use of injectable non-insulin antidiabetic drugs (Ozempic, Trulicity)" },
             { cat: "Z-Codes & Status", code: "Z79.899", desc: "Other long-term drug therapy (Plaquenil, tamoxifen, etc.)" }
           ];
 
