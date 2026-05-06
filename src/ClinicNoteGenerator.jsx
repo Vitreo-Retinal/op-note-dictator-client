@@ -244,6 +244,20 @@ Z79 MEDICATION STATUS CODES — when the physician mentions a diabetic medicatio
 - Z79.85 (Long-term injectable non-insulin antidiabetic use) — add when patient takes injectable non-insulin diabetes meds. Drug names: semaglutide/Ozempic/Wegovy/Rybelsus, dulaglutide/Trulicity, tirzepatide/Mounjaro/Zepbound, liraglutide/Victoza/Saxenda, exenatide/Byetta/Bydureon.
 - If the physician says "on insulin" or "IDDM" for a T2DM patient → Z79.4. If they say "on metformin" → Z79.84. If they say "on Ozempic" or "on Mounjaro" → Z79.85. A patient may have multiple Z79 codes (e.g., on metformin AND insulin → both Z79.84 and Z79.4).
 
+DIABETES NOTE FORMATTING — when diabetes is a diagnosis, structure the section in this order:
+1. Diagnosis header line: T2DM (or T1DM, IDDM, NIDDM as appropriate)
+2. Diabetic medication line: "On [medication name(s)]" (e.g., "On Ozempic", "On metformin and Lantus")
+3. A1c line: "Last A1c [value] ([date])" if provided
+4. OD findings and management (diagnosis, staging, treatment/laser/drug)
+5. OS findings and management (same structure)
+Example:
+  **2. Type 2 diabetes mellitus (NIDDM)**
+  On Ozempic
+  Last A1c 7.1 (12/11/2025)
+  OD: moderate NPDR without DME, stable
+  OS: mild NPDR with DME, s/p Avastin x3, persistent IRF on OCT
+If no diabetic medications or A1c mentioned, skip those lines — only include what was dictated.
+
 GLP-1 PERIOPERATIVE ALERT — ONLY when ALL of the following are true: (1) the patient is on a GLP-1 agonist (Ozempic, Wegovy, Rybelsus, Trulicity, Mounjaro, Zepbound, Victoza, Saxenda, Byetta, Bydureon, semaglutide, dulaglutide, tirzepatide, liraglutide, exenatide), AND (2) surgery is being planned (PPV, scleral buckle, IOL exchange, pneumatic retinopexy, or any procedure requiring sedation/general anesthesia) — then insert this sentence in the Plan:
 "[+] GLP-1 agonist use noted; if surgery is planned, hold medication 7 days prior or consider 24-hour liquid diet per ASA/AGA perioperative guidance to mitigate aspiration risk."
 Do NOT insert this sentence for: intravitreal injections, observation/monitoring visits, or in-office laser procedures (PRP, LRP, focal laser, PDT, YAG). These do not require sedation/general anesthesia and the GLP-1 alert is irrelevant.
@@ -302,7 +316,7 @@ NOTE HEADER FORMAT:
 
 PHYSICIAN ABBREVIATIONS:
 - Dr. Z = Dr. Zacharia, Dr. K = Dr. Kleinberg, Dr. G = Dr. Gallo
-- Dr. M = Dr. Meltzer, Dr. BJ = Dr. Ling, Dr. L = Dr. Luna, Dr. R = Dr. Robbins
+- Dr. M = Dr. Meltzer, Dr. BJ = Dr. Ling, Dr. L = Dr. Luna, Dr. R = Dr. Robbins, Dr. S = Dr. Surdovel
 - Always expand these to the full name in the generated note.
 
 PLAQUENIL LIFETIME DOSE CALCULATION:
