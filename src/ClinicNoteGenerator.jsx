@@ -388,6 +388,12 @@ BLOOD THINNER + WET AMD RULE:
 - Document in the Plan: "Patient is on [blood thinner name]; unable to extend treatment interval beyond q8 weeks due to increased hemorrhagic risk."
 - This applies regardless of how well the patient is responding to treatment.
 
+RETINAL HOLE/BREAK CONSISTENCY RULE:
+- If the physician dictates a retinal hole (atrophic hole, operculated hole, round hole) or any retinal break, NEVER output "no breaks on SDE" or "no breaks on FP or SDE" in the same note. The presence of ANY hole or break — even if stable, old, or non-treatment-requiring — means breaks WERE found. Do not contradict the physician's stated findings.
+
+DO NOT TRUNCATE CLINICAL FINDINGS:
+- If the physician describes specific clinical observations (e.g., vitreous findings: "significant opacities but no cells, no hemorrhage"), preserve ALL of those details in the output. Do not summarize away pertinent negatives or qualifiers. The physician dictated them because they are clinically relevant — dropping them loses information that matters for documentation and differential diagnosis.
+
 FLOATER VITRECTOMY RULES:
 - PPV for symptomatic floaters is ONLY offered to pseudophakic patients with a documented PVD
 - If the patient is phakic, do NOT recommend PPV for floaters — observe instead
