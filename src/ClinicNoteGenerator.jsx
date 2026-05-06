@@ -555,6 +555,7 @@ TASK: The physician will give you an already-structured A/P note. Your job is to
 1. Recommend the best billing code
 2. Insert MINIMUM billing-compliant language to support that code, marked with [+]
 3. Do NOT rewrite or restructure the note — only add what's needed
+4. NEVER REMOVE any diagnoses, findings, clinical observations, or content from the input. ALL numbered diagnoses the physician wrote MUST appear in the output exactly as given. You may only ADD [+] insertions — never delete, merge, or omit existing content. If a diagnosis does not affect billing (e.g., Pseudophakia, stable conditions), it still MUST remain in the output.
 
 BILLING ADDITIONS — ensure these components are present in every note (add with [+] only if missing):
 1. IMAGING REVIEW: [+] "OCT reviewed" or [+] "OCT and imaging reviewed" — if imaging mentioned but "reviewed" not stated. For complex cases: [+] "Data reviewed including OCT/imaging and prior surgical records."
