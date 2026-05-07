@@ -997,12 +997,12 @@ const CODE_RULES = {
   // Laser
   "67210": { require: [["focal_laser","laser"]], exclude: ["rd","prp","ppv","tear","yag","pdt"], boost: ["dme"] },
   "67228": { require: [["prp","pdr"]], exclude: ["ppv","rd"], boost: ["laser"] },
-  "67145": { require: [["tear","laser"]], exclude: ["rd"], boost: ["laser"] },
+  "67145": { require: [["tear"]], exclude: ["rd","ppv"], boost: ["laser"] },
   "67105": { require: [["rd","laser"]], exclude: ["ppv","buckle","pneumatic"], boost: [] },
   "67101": { require: [["rd","cryo"]], boost: [] },
   "66821": { require: [["yag"]], boost: [] },
   // Cryo
-  "67141": { require: [["cryo","tear"]], exclude: ["rd"], boost: [] },
+  "67141": { require: [["tear"],["cryo"]], exclude: ["rd","ppv"], boost: [] },
   // IOL / Scleral Fixation
   "66986": { require: [["iol"]], exclude: ["ac_iol","yamane","akreos","scleral_fixation"], boost: ["ppv","rlf"] },
   "66985": { require: [["iol","ac_iol","yamane","akreos","scleral_fixation"]], exclude: [], boost: ["ppv","yamane","akreos","scleral_fixation"] },
@@ -1044,11 +1044,28 @@ function smartSearch(query, list) {
   for (const tok of tokens) {
     for (const [group, terms] of Object.entries(TERM_GROUPS)) {
       for (const term of terms) {
-        if (term === tok || (tok.length >= 3 && term.split(/\s+/).length === 1 && (term.startsWith(tok) || tok.startsWith(term)))) {
+        if (term === tok || (tok.length >= 3 && term.length >= 3 && term.split(/\s+/).length === 1 && (term.startsWith(tok) || tok.startsWith(term)))) {
           activeGroups.add(group);
         }
       }
     }
+  }
+
+  // ── Combination inference: detect implied diagnoses from surgical context ──
+  // PPV + gas + laser (without a specific non-RD diagnosis) strongly implies RD
+  if (activeGroups.has("ppv") && activeGroups.has("gas") && activeGroups.has("laser") &&
+      !activeGroups.has("ilm") && !activeGroups.has("macular_hole") && !activeGroups.has("dme") &&
+      !activeGroups.has("erm") && !activeGroups.has("subretinal") && !activeGroups.has("pdr")) {
+    activeGroups.add("rd");
+  }
+  // PPV + buckle always implies RD
+  if (activeGroups.has("ppv") && activeGroups.has("buckle")) {
+    activeGroups.add("rd");
+  }
+  // PPV + cryo + gas implies RD (cryo retinopexy during RD repair)
+  if (activeGroups.has("ppv") && activeGroups.has("cryo") && activeGroups.has("gas") &&
+      !activeGroups.has("ilm") && !activeGroups.has("macular_hole") && !activeGroups.has("erm")) {
+    activeGroups.add("rd");
   }
 
   if (activeGroups.size === 0) {
