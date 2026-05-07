@@ -1145,13 +1145,13 @@ const DECISION_TREE = {
                     },
                   },
                   {
-                    label: "Sulcus or bag (standard placement)",
+                    label: "AC-IOL, sulcus, or bag (no scleral fixation)",
                     next: {
                       id: "result_66986_standard",
                       result: true,
                       code: "66986",
-                      title: "IOL exchange + PPV",
-                      detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU). 67121 (removal of implant) is BUNDLED — do not bill separately.",
+                      title: "IOL exchange + PPV (standard placement)",
+                      detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU: 22.87 vs 22.72). 67121 (removal of implant) is BUNDLED — do not bill separately. No 66682 needed when not scleral-fixated.",
                     },
                   },
                 ],
@@ -1174,13 +1174,13 @@ const DECISION_TREE = {
                     },
                   },
                   {
-                    label: "AC-IOL or sulcus",
+                    label: "AC-IOL, sulcus, or iris-fixated (no scleral fixation)",
                     next: {
                       id: "result_66985_standard",
                       result: true,
                       code: "66985",
-                      title: "Secondary IOL + PPV",
-                      detail: "Bill 66985 (secondary IOL implant) + 67036 (PPV). 66985 is for any secondary IOL placement without concurrent cataract removal.",
+                      title: "Secondary IOL (AC-IOL / sulcus) + PPV",
+                      detail: "Bill 66985 (secondary IOL implant) + 67036 (PPV). AC-IOL, sulcus, and iris-fixated IOLs all use 66985. No 66682 — scleral suturing was not performed. 66985 covers any secondary IOL placement without concurrent cataract removal.",
                     },
                   },
                 ],
