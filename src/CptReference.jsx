@@ -1017,118 +1017,122 @@ const CATEGORIES = [
 // ── Vitrectomy Decision Tree ────────────────────────────────────────
 const DECISION_TREE = {
   id: "start",
-  question: "Is a retinal detachment present?",
-  yes: {
-    id: "rd_approach",
-    question: "What is the surgical approach?",
-    options: [
-      {
-        label: "PPV (vitrectomy)",
-        next: {
-          id: "rd_complex",
-          question: "Is this a complex RD?\n(PVR ≥ C1, diabetic traction RD, giant tear >90°, ROP)",
-          yes: {
-            id: "result_67113",
-            result: true,
-            code: "67113",
-            title: "Complex RD repair with vitrectomy",
-            detail: "Includes: vitrectomy, membrane peel, tamponade, cryo, laser, SRF drainage, buckle, lens removal. Highest RVU in RD family. Document complexity (PVR grade, traction, giant tear).",
-          },
-          no: {
-            id: "result_67108",
-            result: true,
-            code: "67108",
-            title: "RD repair with vitrectomy (non-complex)",
-            detail: "Includes: laser, cryo, tamponade, SRF drainage, buckle, lens removal. Use when NO PVR ≥ C1, no traction RD, no giant tear.",
-          },
-        },
-      },
-      {
-        label: "Scleral buckle",
-        next: {
-          id: "result_67107",
-          result: true,
-          code: "67107",
-          title: "Scleral buckle repair of RD",
-          detail: "Includes: drainage, cryotherapy, photocoagulation. If combined with PPV, may bill both 67107 + vitrectomy code (check NCCI edits).",
-        },
-      },
-      {
-        label: "Pneumatic retinopexy",
-        next: {
-          id: "result_67110",
-          result: true,
-          code: "67110",
-          title: "Pneumatic retinopexy",
-          detail: "Gas injection for RD. Bundled with 67105 (laser) and 67101 (cryo) same session. AC tap (65800) is NOT bundled — bill separately. Office RVU > facility RVU.",
-        },
-      },
-    ],
-  },
-  no: {
-    id: "no_rd_membrane",
-    question: "Is a membrane being peeled?",
-    yes: {
-      id: "membrane_type",
-      question: "What membrane / what diagnosis?",
-      options: [
-        {
-          label: "ILM peel — Macular hole",
-          next: {
-            id: "result_67042_mh",
-            result: true,
-            code: "67042",
-            title: "PPV with ILM peel (macular hole)",
-            detail: "Diagnosis: full-thickness macular hole (FTMH). Tamponade (air/gas/oil) is INCLUDED — do NOT separately bill 67025. If also using dye (ICG/BBG), it's included.",
-          },
-        },
-        {
-          label: "ILM peel — DME",
-          next: {
-            id: "result_67042_dme",
-            result: true,
-            code: "67042",
-            title: "PPV with ILM peel (DME)",
-            detail: "Diagnosis: diabetic macular edema requiring ILM peel. Same code as macular hole. Tamponade included if performed.",
-          },
-        },
-        {
-          label: "ERM / macular pucker peel",
-          next: {
-            id: "result_67041",
-            result: true,
-            code: "67041",
-            title: "PPV with preretinal membrane peel (ERM)",
-            detail: "Diagnosis must be ERM / macular pucker. Even if ILM is also peeled, if primary diagnosis is ERM → use 67041. If diagnosis is macular hole → use 67042 instead.",
-          },
-        },
-        {
-          label: "Subretinal membrane (CNVM)",
-          next: {
-            id: "result_67043",
-            result: true,
-            code: "67043",
-            title: "PPV with subretinal membrane removal",
-            detail: "Rarely used in modern practice (anti-VEGF has replaced surgical CNVM removal). Tamponade and laser included.",
-          },
-        },
-      ],
-    },
-    no: {
-      id: "no_membrane_laser",
-      question: "Is endolaser being performed during the PPV?",
-      yes: {
-        id: "laser_type",
-        question: "What type of endolaser?",
+  question: "What is the diagnosis?",
+  options: [
+    {
+      label: "Retinal detachment (RRD)",
+      next: {
+        id: "rd_approach",
+        question: "What is the surgical approach?",
         options: [
           {
-            label: "PRP (panretinal photocoagulation)",
+            label: "PPV (vitrectomy)",
             next: {
-              id: "result_67040",
+              id: "rd_complex",
+              question: "Is this a complex RD?\n(PVR ≥ C1, diabetic traction RD, giant tear >90°, ROP)",
+              yes: {
+                id: "result_67113",
+                result: true,
+                code: "67113",
+                title: "Complex RD repair with vitrectomy",
+                detail: "Includes: vitrectomy, membrane peel, tamponade, cryo, laser, SRF drainage, buckle, lens removal. Highest RVU in RD family. Document complexity (PVR grade, traction, giant tear).",
+              },
+              no: {
+                id: "result_67108",
+                result: true,
+                code: "67108",
+                title: "RD repair with vitrectomy (non-complex)",
+                detail: "Includes: laser, cryo, tamponade, SRF drainage, buckle, lens removal. Use when NO PVR ≥ C1, no traction RD, no giant tear.",
+              },
+            },
+          },
+          {
+            label: "Scleral buckle",
+            next: {
+              id: "result_67107",
               result: true,
-              code: "67040",
-              title: "PPV with endolaser PRP",
-              detail: "Classic code for PDR + VH: PPV to clear hemorrhage + PRP. Do NOT separately bill 67228. If also peeling membrane, compare RVU with 67041 — bill higher one.",
+              code: "67107",
+              title: "Scleral buckle repair of RD",
+              detail: "Includes: drainage, cryotherapy, photocoagulation. If combined with PPV, may bill both 67107 + vitrectomy code (check NCCI edits).",
+            },
+          },
+          {
+            label: "Pneumatic retinopexy",
+            next: {
+              id: "result_67110",
+              result: true,
+              code: "67110",
+              title: "Pneumatic retinopexy",
+              detail: "Gas injection for RD. Bundled with 67105 (laser) and 67101 (cryo) same session. AC tap (65800) is NOT bundled — bill separately. Office RVU > facility RVU.",
+            },
+          },
+        ],
+      },
+    },
+    {
+      label: "Macular hole (FTMH)",
+      next: {
+        id: "result_67042_mh",
+        result: true,
+        code: "67042",
+        title: "PPV with ILM peel (macular hole)",
+        detail: "Diagnosis: full-thickness macular hole (FTMH). Tamponade (air/gas/oil) is INCLUDED — do NOT separately bill 67025. Dye (ICG/BBG) is included.",
+      },
+    },
+    {
+      label: "ERM / macular pucker",
+      next: {
+        id: "result_67041",
+        result: true,
+        code: "67041",
+        title: "PPV with preretinal membrane peel (ERM)",
+        detail: "Diagnosis must be ERM / macular pucker. Even if ILM is also peeled, if primary diagnosis is ERM → use 67041. If diagnosis is macular hole → use 67042 instead.",
+      },
+    },
+    {
+      label: "DME (ILM peel)",
+      next: {
+        id: "result_67042_dme",
+        result: true,
+        code: "67042",
+        title: "PPV with ILM peel (DME)",
+        detail: "Diagnosis: diabetic macular edema requiring ILM peel. Same code as macular hole (67042). Tamponade included if performed.",
+      },
+    },
+    {
+      label: "PDR / VH needing PRP",
+      next: {
+        id: "result_67040",
+        result: true,
+        code: "67040",
+        title: "PPV with endolaser PRP",
+        detail: "Classic code for PDR + VH: PPV to clear hemorrhage + PRP. Do NOT separately bill 67228. If also peeling membrane, compare RVU with 67041 — bill higher one.",
+      },
+    },
+    {
+      label: "Subretinal membrane (CNVM)",
+      next: {
+        id: "result_67043",
+        result: true,
+        code: "67043",
+        title: "PPV with subretinal membrane removal",
+        detail: "Rarely used in modern practice (anti-VEGF has replaced surgical CNVM removal). Tamponade and laser included.",
+      },
+    },
+    {
+      label: "VH / floaters / RLF / dislocated IOL / endophthalmitis",
+      next: {
+        id: "base_ppv_laser",
+        question: "Is endolaser being performed during the PPV?",
+        options: [
+          {
+            label: "No endolaser",
+            next: {
+              id: "result_67036",
+              result: true,
+              code: "67036",
+              title: "PPV — base vitrectomy",
+              detail: "Use when: NO membrane peel, NO endolaser, and diagnosis is NOT retinal detachment. Common indications: VH, floaters, dislocated IOL, retained lens fragments, endophthalmitis, VMT.",
             },
           },
           {
@@ -1141,17 +1145,20 @@ const DECISION_TREE = {
               detail: "Non-RD diagnosis requiring PPV + focal laser (e.g., VH with focal laser for bleeding source). Do NOT separately bill 67210.",
             },
           },
+          {
+            label: "PRP endolaser",
+            next: {
+              id: "result_67040_vh",
+              result: true,
+              code: "67040",
+              title: "PPV with endolaser PRP",
+              detail: "PPV to clear hemorrhage + PRP. Do NOT separately bill 67228.",
+            },
+          },
         ],
       },
-      no: {
-        id: "result_67036",
-        result: true,
-        code: "67036",
-        title: "PPV — base vitrectomy",
-        detail: "Use when: NO membrane peel, NO endolaser, and diagnosis is NOT retinal detachment. Common indications: VH, vitreous opacities, dislocated IOL, retained lens fragments, endophthalmitis, VMT.",
-      },
     },
-  },
+  ],
 };
 
 function DecisionTreeView() {
@@ -1305,26 +1312,27 @@ function TreeDiagram() {
   const connector = { width: 2, height: 16, background: "#334155", margin: "0 auto" };
 
   return (
-    <div style={{ padding: "20px", maxWidth: 900, margin: "0 auto", overflowX: "auto" }}>
+    <div style={{ padding: "20px", maxWidth: 950, margin: "0 auto", overflowX: "auto" }}>
       <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright, marginBottom: 16, textAlign: "center" }}>
         Vitrectomy Code Decision Tree
       </div>
       <div style={{ fontSize: "0.72rem", color: S.muted, textAlign: "center", marginBottom: 24, fontFamily: S.mono }}>
-        Diagnosis determines the code, not the surgical technique
+        Start with the diagnosis — it determines the code
       </div>
 
-      {/* Level 1: RD? */}
+      {/* Level 1: What is the diagnosis? */}
       <div style={col}>
-        <div style={questionStyle}>Is a retinal detachment present?</div>
+        <div style={questionStyle}>What is the diagnosis?</div>
         <div style={connector} />
-        <div style={row}>
-          {/* YES → RD branch */}
+        <div style={{ ...row, gap: 14 }}>
+
+          {/* RD branch */}
           <div style={col}>
-            <div style={arrowLabel("YES", "#22c55e")} />
+            <div style={arrowLabel("Retinal Detachment", "#ef4444")} />
             <div style={connector} />
-            <div style={questionStyle}>Surgical approach?</div>
+            <div style={questionStyle}>Approach?</div>
             <div style={connector} />
-            <div style={{ ...row, gap: 10 }}>
+            <div style={{ ...row, gap: 8 }}>
               {/* PPV */}
               <div style={col}>
                 <div style={arrowLabel("PPV")} />
@@ -1337,7 +1345,7 @@ function TreeDiagram() {
                     <div style={connector} />
                     <div style={codeStyle("#ef4444")}>
                       <div style={{ fontWeight: 800, fontSize: "1rem" }}>67113</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Complex RD repair</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Complex RD</div>
                     </div>
                   </div>
                   <div style={col}>
@@ -1345,7 +1353,7 @@ function TreeDiagram() {
                     <div style={connector} />
                     <div style={codeStyle("#3b82f6")}>
                       <div style={{ fontWeight: 800, fontSize: "1rem" }}>67108</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>RD repair w/ PPV</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>RD + PPV</div>
                     </div>
                   </div>
                 </div>
@@ -1365,87 +1373,78 @@ function TreeDiagram() {
                 <div style={connector} />
                 <div style={codeStyle("#06b6d4")}>
                   <div style={{ fontWeight: 800, fontSize: "1rem" }}>67110</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Pneumatic retinopexy</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Pneumatic</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* NO → Non-RD branch */}
+          {/* Macular hole */}
           <div style={col}>
-            <div style={arrowLabel("NO", "#ef4444")} />
+            <div style={arrowLabel("Macular Hole", "#f59e0b")} />
             <div style={connector} />
-            <div style={questionStyle}>Membrane peel?</div>
+            <div style={codeStyle("#f59e0b")}>
+              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67042</div>
+              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ILM peel</div>
+            </div>
+          </div>
+
+          {/* ERM */}
+          <div style={col}>
+            <div style={arrowLabel("ERM", "#f97316")} />
             <div style={connector} />
-            <div style={row}>
-              {/* YES membrane */}
+            <div style={codeStyle("#f97316")}>
+              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67041</div>
+              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ERM peel</div>
+            </div>
+          </div>
+
+          {/* DME (ILM peel) */}
+          <div style={col}>
+            <div style={arrowLabel("DME (ILM peel)", "#f59e0b")} />
+            <div style={connector} />
+            <div style={codeStyle("#f59e0b")}>
+              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67042</div>
+              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ILM peel</div>
+            </div>
+          </div>
+
+          {/* PDR / VH + PRP */}
+          <div style={col}>
+            <div style={arrowLabel("PDR / VH + PRP", "#10b981")} />
+            <div style={connector} />
+            <div style={codeStyle("#10b981")}>
+              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67040</div>
+              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + PRP</div>
+            </div>
+          </div>
+
+          {/* VH / floaters / other */}
+          <div style={col}>
+            <div style={arrowLabel("VH / floaters / other", "#64748b")} />
+            <div style={connector} />
+            <div style={questionStyle}>Endolaser?</div>
+            <div style={connector} />
+            <div style={{ ...row, gap: 8 }}>
               <div style={col}>
-                <div style={arrowLabel("YES", "#22c55e")} />
+                <div style={arrowLabel("None")} />
                 <div style={connector} />
-                <div style={questionStyle}>Which membrane / diagnosis?</div>
-                <div style={connector} />
-                <div style={{ ...row, gap: 8 }}>
-                  <div style={col}>
-                    <div style={arrowLabel("ILM: MH/DME")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#f59e0b")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67042</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ILM peel</div>
-                    </div>
-                  </div>
-                  <div style={col}>
-                    <div style={arrowLabel("ERM")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#f97316")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67041</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ERM peel</div>
-                    </div>
-                  </div>
-                  <div style={col}>
-                    <div style={arrowLabel("Subretinal")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#a855f7")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67043</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Subretinal</div>
-                    </div>
-                  </div>
+                <div style={codeStyle("#64748b")}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67036</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Base PPV</div>
                 </div>
               </div>
-              {/* NO membrane */}
               <div style={col}>
-                <div style={arrowLabel("NO", "#ef4444")} />
+                <div style={arrowLabel("Focal")} />
                 <div style={connector} />
-                <div style={questionStyle}>Endolaser?</div>
-                <div style={connector} />
-                <div style={row}>
-                  <div style={col}>
-                    <div style={arrowLabel("PRP")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#10b981")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67040</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + PRP</div>
-                    </div>
-                  </div>
-                  <div style={col}>
-                    <div style={arrowLabel("Focal")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#14b8a6")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67039</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + focal</div>
-                    </div>
-                  </div>
-                  <div style={col}>
-                    <div style={arrowLabel("NONE")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#64748b")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67036</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Base PPV</div>
-                    </div>
-                  </div>
+                <div style={codeStyle("#14b8a6")}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67039</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + focal</div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
