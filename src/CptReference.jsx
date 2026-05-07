@@ -1374,195 +1374,179 @@ function DecisionTreeView() {
 
 // ── Visual Decision Tree Diagram ────────────────────────────────────
 function TreeDiagram() {
-  const nodeStyle = (bg, border) => ({
-    padding: "10px 14px", borderRadius: 10, border: `2px solid ${border}`,
-    background: bg, fontSize: "0.78rem", color: S.bright, textAlign: "center",
-    fontFamily: S.font, lineHeight: 1.35, minWidth: 100, maxWidth: 160,
-  });
-  const questionStyle = nodeStyle("#1e3a5f", "#3b82f6");
-  const codeStyle = (color) => nodeStyle(color + "22", color);
-  const arrowLabel = (text, color) => ({
-    fontSize: "0.68rem", fontWeight: 600, color: color || "#94a3b8",
-    fontFamily: S.mono, textAlign: "center", padding: "2px 0",
-  });
   const col = { display: "flex", flexDirection: "column", alignItems: "center", gap: 6 };
-  const row = { display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", alignItems: "flex-start" };
-  const connector = { width: 2, height: 16, background: "#334155", margin: "0 auto" };
+  const row = { display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap", alignItems: "flex-start" };
+  const connector = { width: 2, height: 14, background: "#334155", margin: "0 auto" };
+
+  // Diagnosis card: big prominent diagnosis label on top, code underneath
+  const diagCard = (diagnosis, code, codeDesc, color, extra) => (
+    <div style={{
+      background: S.card, border: `2px solid ${color}`, borderRadius: 12,
+      padding: "14px 16px", minWidth: 130, maxWidth: 170, textAlign: "center",
+    }}>
+      <div style={{
+        fontSize: "0.82rem", fontWeight: 700, color, lineHeight: 1.3,
+        marginBottom: 8, fontFamily: S.font,
+      }}>{diagnosis}</div>
+      <div style={{
+        background: color + "18", borderRadius: 8, padding: "8px 10px",
+      }}>
+        <div style={{ fontWeight: 800, fontSize: "1.1rem", color: S.bright, fontFamily: S.mono }}>{code}</div>
+        <div style={{ fontSize: "0.68rem", color: "#94a3b8", marginTop: 2 }}>{codeDesc}</div>
+      </div>
+      {extra && <div style={{ fontSize: "0.65rem", color: "#94a3b8", marginTop: 6, lineHeight: 1.3 }}>{extra}</div>}
+    </div>
+  );
+
+  const questionBox = (text) => (
+    <div style={{
+      padding: "8px 14px", borderRadius: 10, border: "2px solid #3b82f6",
+      background: "#1e3a5f", fontSize: "0.78rem", color: S.bright, textAlign: "center",
+      fontFamily: S.font, lineHeight: 1.35,
+    }}>{text}</div>
+  );
+
+  const label = (text, color) => (
+    <div style={{ fontSize: "0.7rem", fontWeight: 600, color: color || "#94a3b8", fontFamily: S.mono, textAlign: "center" }}>{text}</div>
+  );
 
   return (
-    <div style={{ padding: "20px", maxWidth: 950, margin: "0 auto", overflowX: "auto" }}>
-      <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright, marginBottom: 16, textAlign: "center" }}>
-        Vitrectomy Code Decision Tree
+    <div style={{ padding: "20px", maxWidth: 980, margin: "0 auto", overflowX: "auto" }}>
+      <div style={{ fontSize: "1.1rem", fontWeight: 700, color: S.bright, marginBottom: 6, textAlign: "center" }}>
+        Vitrectomy CPT Code Reference
       </div>
-      <div style={{ fontSize: "0.72rem", color: S.muted, textAlign: "center", marginBottom: 24, fontFamily: S.mono }}>
-        Start with the diagnosis — it determines the code
+      <div style={{ fontSize: "0.75rem", color: S.muted, textAlign: "center", marginBottom: 28, fontFamily: S.mono }}>
+        Diagnosis determines the code — not the surgical technique
       </div>
 
-      {/* Level 1: What is the diagnosis? */}
-      <div style={col}>
-        <div style={questionStyle}>What is the diagnosis?</div>
-        <div style={connector} />
-        <div style={{ ...row, gap: 14 }}>
+      {/* Main grid: diagnosis → code */}
+      <div style={{ ...row, gap: 12, marginBottom: 24 }}>
 
-          {/* RD branch */}
-          <div style={col}>
-            <div style={arrowLabel("Retinal Detachment", "#ef4444")} />
-            <div style={connector} />
-            <div style={questionStyle}>Approach?</div>
-            <div style={connector} />
-            <div style={{ ...row, gap: 8 }}>
-              {/* PPV */}
+        {/* RD */}
+        <div style={col}>
+          <div style={{
+            background: S.card, border: "2px solid #ef4444", borderRadius: 12,
+            padding: "14px 16px", minWidth: 260, textAlign: "center",
+          }}>
+            <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#ef4444", marginBottom: 10 }}>
+              Retinal Detachment
+            </div>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
               <div style={col}>
-                <div style={arrowLabel("PPV")} />
-                <div style={connector} />
-                <div style={questionStyle}>Complex?<br/><span style={{ fontSize: "0.65rem", color: "#94a3b8" }}>(PVR≥C1, traction, giant tear)</span></div>
-                <div style={connector} />
-                <div style={row}>
-                  <div style={col}>
-                    <div style={arrowLabel("YES", "#22c55e")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#ef4444")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67113</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Complex RD</div>
-                    </div>
-                  </div>
-                  <div style={col}>
-                    <div style={arrowLabel("NO", "#ef4444")} />
-                    <div style={connector} />
-                    <div style={codeStyle("#3b82f6")}>
-                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67108</div>
-                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>RD + PPV</div>
-                    </div>
-                  </div>
+                <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>PPV — Complex</div>
+                <div style={{ background: "#ef444418", borderRadius: 8, padding: "6px 12px" }}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67113</div>
+                </div>
+                <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>PVR≥C1, traction, giant tear</div>
+              </div>
+              <div style={col}>
+                <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>PPV — Standard</div>
+                <div style={{ background: "#3b82f618", borderRadius: 8, padding: "6px 12px" }}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67108</div>
+                </div>
+                <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Non-complex RRD</div>
+              </div>
+              <div style={col}>
+                <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Buckle</div>
+                <div style={{ background: "#8b5cf618", borderRadius: 8, padding: "6px 12px" }}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67107</div>
                 </div>
               </div>
-              {/* Buckle */}
               <div style={col}>
-                <div style={arrowLabel("Buckle")} />
-                <div style={connector} />
-                <div style={codeStyle("#8b5cf6")}>
-                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67107</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Scleral buckle</div>
-                </div>
-              </div>
-              {/* Pneumatic */}
-              <div style={col}>
-                <div style={arrowLabel("Pneumatic")} />
-                <div style={connector} />
-                <div style={codeStyle("#06b6d4")}>
-                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67110</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Pneumatic</div>
+                <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Pneumatic</div>
+                <div style={{ background: "#06b6d418", borderRadius: 8, padding: "6px 12px" }}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67110</div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Macular hole */}
-          <div style={col}>
-            <div style={arrowLabel("Macular Hole", "#f59e0b")} />
-            <div style={connector} />
-            <div style={codeStyle("#f59e0b")}>
-              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67042</div>
-              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ILM peel</div>
-            </div>
-          </div>
-
-          {/* ERM */}
-          <div style={col}>
-            <div style={arrowLabel("ERM", "#f97316")} />
-            <div style={connector} />
-            <div style={codeStyle("#f97316")}>
-              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67041</div>
-              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ERM peel</div>
-            </div>
-          </div>
-
-          {/* DME (ILM peel) */}
-          <div style={col}>
-            <div style={arrowLabel("DME (ILM peel)", "#f59e0b")} />
-            <div style={connector} />
-            <div style={codeStyle("#f59e0b")}>
-              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67042</div>
-              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ILM peel</div>
-            </div>
-          </div>
-
-          {/* PDR / VH + PRP */}
-          <div style={col}>
-            <div style={arrowLabel("PDR / VH + PRP", "#10b981")} />
-            <div style={connector} />
-            <div style={codeStyle("#10b981")}>
-              <div style={{ fontWeight: 800, fontSize: "1rem" }}>67040</div>
-              <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + PRP</div>
-            </div>
-          </div>
-
-          {/* Dislocated IOL / aphakia */}
-          <div style={col}>
-            <div style={arrowLabel("Dislocated IOL", "#ec4899")} />
-            <div style={connector} />
-            <div style={questionStyle}>Secondary IOL placed?</div>
-            <div style={connector} />
-            <div style={{ ...row, gap: 8 }}>
-              <div style={col}>
-                <div style={arrowLabel("Exchange", "#ec4899")} />
-                <div style={connector} />
-                <div style={codeStyle("#ec4899")}>
-                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>66986</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>IOL exchange<br/>+ 67036</div>
-                </div>
-              </div>
-              <div style={col}>
-                <div style={arrowLabel("Aphakic")} />
-                <div style={connector} />
-                <div style={codeStyle("#d946ef")}>
-                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>66985</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Secondary IOL<br/>+ 67036</div>
-                </div>
-              </div>
-              <div style={col}>
-                <div style={arrowLabel("No IOL")} />
-                <div style={connector} />
-                <div style={codeStyle("#64748b")}>
-                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67036</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV only</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* VH / floaters / other */}
-          <div style={col}>
-            <div style={arrowLabel("VH / floaters / other", "#64748b")} />
-            <div style={connector} />
-            <div style={questionStyle}>Endolaser?</div>
-            <div style={connector} />
-            <div style={{ ...row, gap: 8 }}>
-              <div style={col}>
-                <div style={arrowLabel("None")} />
-                <div style={connector} />
-                <div style={codeStyle("#64748b")}>
-                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67036</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Base PPV</div>
-                </div>
-              </div>
-              <div style={col}>
-                <div style={arrowLabel("Focal")} />
-                <div style={connector} />
-                <div style={codeStyle("#14b8a6")}>
-                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67039</div>
-                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + focal</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
+
+        {/* Macular Hole / DME */}
+        {diagCard("Macular Hole\nor DME (ILM peel)", "67042", "PPV + ILM peel", "#f59e0b", "Tamponade included")}
+
+        {/* ERM */}
+        {diagCard("ERM /\nMacular Pucker", "67041", "PPV + ERM peel", "#f97316", "Even if ILM also peeled")}
+
+        {/* PDR + VH */}
+        {diagCard("PDR + VH\n(needs PRP)", "67040", "PPV + endo PRP", "#10b981", "PRP included in code")}
+
+        {/* Subretinal */}
+        {diagCard("Subretinal\nMembrane", "67043", "PPV + subretinal", "#a855f7", "Tamponade & laser incl.")}
+
+      </div>
+
+      {/* Second row */}
+      <div style={{ ...row, gap: 12, marginBottom: 24 }}>
+
+        {/* Dislocated IOL */}
+        <div style={{
+          background: S.card, border: "2px solid #ec4899", borderRadius: 12,
+          padding: "14px 16px", minWidth: 240, textAlign: "center",
+        }}>
+          <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#ec4899", marginBottom: 10 }}>
+            Dislocated IOL / Aphakia
+          </div>
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>IOL Exchange</div>
+              <div style={{ background: "#ec489918", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>66986</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>+ 67036 (PPV)</div>
+            </div>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Secondary IOL</div>
+              <div style={{ background: "#d946ef18", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>66985</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>+ 67036 (PPV)</div>
+            </div>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>No new IOL</div>
+              <div style={{ background: "#64748b18", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67036</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>PPV alone</div>
+            </div>
+          </div>
+          <div style={{ fontSize: "0.62rem", color: "#94a3b8", marginTop: 8 }}>Scleral-fixated (Akreos): + 66682 · Yamane: 66682 debatable</div>
+        </div>
+
+        {/* VH / Floaters / Other */}
+        <div style={{
+          background: S.card, border: "2px solid #64748b", borderRadius: 12,
+          padding: "14px 16px", minWidth: 200, textAlign: "center",
+        }}>
+          <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#94a3b8", marginBottom: 10 }}>
+            VH / Floaters / RLF / Other
+          </div>
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>No laser</div>
+              <div style={{ background: "#64748b18", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67036</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Base PPV</div>
+            </div>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>+ Focal laser</div>
+              <div style={{ background: "#14b8a618", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67039</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ fontSize: "0.62rem", color: "#94a3b8", marginTop: 8 }}>Endophthalmitis, VMT, vitreous opacities</div>
+        </div>
+
+        {/* Endophthalmitis tap */}
+        {diagCard("Endophthalmitis\n(tap & inject only)", "67015", "Vitreous tap", "#f87171", "67028 bundled into 67015")}
+
       </div>
 
       {/* Key notes */}
       <div style={{
-        marginTop: 28, padding: "14px 18px", background: S.card, border: `1px solid ${S.border}`,
+        marginTop: 8, padding: "14px 18px", background: S.card, border: `1px solid ${S.border}`,
         borderRadius: 10, fontSize: "0.78rem", color: S.text, lineHeight: 1.5,
       }}>
         <div style={{ fontWeight: 700, color: S.bright, marginBottom: 6, fontSize: "0.8rem" }}>Key Rules</div>
