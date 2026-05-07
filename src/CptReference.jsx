@@ -299,6 +299,16 @@ const CPT_DB = [
     modifiers: "None typically.",
     tips: "Kenalog = preservative-containing (off-label intravitreal). Triescence = preservative-free (preferred for intravitreal). 4 mg intravitreal dose = bill based on amount used.",
   },
+  {
+    code: "J2997",
+    desc: "Alteplase recombinant (tPA) — injection, 1 mg",
+    category: "J-Codes",
+    global: "N/A",
+    indication: "Subretinal tPA for submacular hemorrhage displacement. Bill per mg used (typical retinal dose: 25–50 μg = 0.025–0.05 units).",
+    bundling: "Drug supply code — bill alongside 0810T (subretinal injection) for the pharmacologic agent. Reimbursement varies by payer; some MACs may not separately reimburse tPA in the surgical context.",
+    modifiers: "None typically.",
+    tips: "Alteplase (Activase) is the standard tPA used for subretinal injection. Typical dose is 25–50 μg diluted in BSS. Check payer policy for drug reimbursement when used with 0810T. Some practices use tenecteplase (TNK) off-label — J-code may differ.",
+  },
 
   // ═══════════════════════════════════════════════════════════════════
   // LASER PROCEDURES
@@ -597,6 +607,20 @@ const CPT_DB = [
   },
 
   // ═══════════════════════════════════════════════════════════════════
+  // SUBRETINAL INJECTION
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    code: "0810T",
+    desc: "Subretinal injection of a pharmacologic agent, including vitrectomy and one or more retinotomies",
+    category: "Vitrectomy",
+    global: "90 days",
+    indication: "PPV + subretinal tPA injection for submacular hemorrhage displacement, subretinal gene therapy (e.g., Luxturna/voretigene), any subretinal drug delivery requiring vitrectomy and retinotomy",
+    bundling: "Category III code — includes vitrectomy, retinotomy, fluid-air exchange, and gas tamponade. Do NOT separately bill 67036 (PPV), 67028 (injection), or 67025 (gas). All bundled into 0810T. J2997 (alteplase) may be billed separately for drug supply — check payer policy.",
+    modifiers: "-LT/-RT.",
+    tips: "Effective July 1, 2023 (Category III). Use when subretinal injection is the PRIMARY procedure — PPV + retinotomy + subretinal injection of tPA/gene therapy + gas. For submacular hemorrhage: typical dose is 25–50 μg alteplase subretinally, then gas tamponade. If a different primary procedure is performed (e.g., membrane removal with incidental subretinal injection), use the appropriate 67036–67043 code instead. Category III codes may have limited payer coverage — verify reimbursement.",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
   // OTHER PROCEDURES
   // ═══════════════════════════════════════════════════════════════════
   {
@@ -836,11 +860,20 @@ const KEYWORD_MAP = {
   "ac tap": ["65800"],
   "paracentesis": ["65800"],
   "anterior chamber": ["65800"],
-  "submacular hemorrhage": ["67025","65800"],
-  "submacular": ["67025","65800"],
+  "submacular hemorrhage": ["0810T","67025","65800"],
+  "submacular": ["0810T","67025","65800"],
   "pneumatic displacement": ["67025","65800"],
   "vmt": ["67025","65800"],
   "vitreomacular traction": ["67025","65800"],
+  "subretinal tpa": ["0810T","J2997"],
+  "subretinal injection": ["0810T"],
+  "tpa": ["0810T","J2997"],
+  "alteplase": ["J2997","0810T"],
+  "activase": ["J2997","0810T"],
+  "gene therapy": ["0810T"],
+  "luxturna": ["0810T"],
+  "voretigene": ["0810T"],
+  "0810t": ["0810T"],
   "tear": ["67145","67141"],
   "retinal tear": ["67145","67141"],
   "lattice": ["67145","67141"],
@@ -883,6 +916,7 @@ const TERM_GROUPS = {
   buckle_removal: ["buckle removal","band removal","sponge removal","explant"],
   submacular: ["submacular hemorrhage","submacular","pneumatic displacement"],
   vmt: ["vmt","vitreomacular traction"],
+  subretinal_injection: ["subretinal tpa","subretinal injection","tpa","alteplase","activase","gene therapy","luxturna","voretigene","0810t"],
   phaco: ["phaco","phacoemulsification","phacofragmentation"],
   tear: ["tear","retinal tear","break","lattice"],
   pdt: ["pdt","photodynamic","verteporfin","cscr"],
@@ -935,8 +969,10 @@ const CODE_RULES = {
   "67040": { require: [["prp","pdr"]], exclude: ["rd"], boost: ["ppv","vh"] },
   "67039": { require: [["focal_laser"]], exclude: ["rd"], boost: ["ppv"] },
   "67036": { require: [["ppv","vh","floaters","rlf","endophthalmitis"]], exclude: ["rd","ilm","macular_hole","erm","subretinal","prp","focal_laser","buckle","pneumatic","injection","laser","yag","cryo","pdt","biopsy"], boost: ["vh","floaters","rlf","endophthalmitis"] },
+  // Subretinal injection
+  "0810T": { require: [["subretinal_injection"]], boost: ["ppv","submacular"] },
   // Gas/oil/implant standalone
-  "67025": { require: [["gas","oil","submacular","vmt"]], exclude: ["rd","ppv","ilm","macular_hole"], boost: ["submacular","vmt"] },
+  "67025": { require: [["gas","oil","submacular","vmt"]], exclude: ["rd","ppv","ilm","macular_hole","subretinal_injection"], boost: ["submacular","vmt"] },
   "67120": { require: [["buckle_removal"]], boost: [] },
   "67121": { require: [["oil"]], exclude: ["rd"], boost: [] },
   // Vitreous tap/biopsy
@@ -957,6 +993,7 @@ const CODE_RULES = {
   "J2782": { require: [["izervay"]], boost: ["injection"] },
   "J1094": { require: [["ozurdex"]], boost: ["injection"] },
   "J3301": { require: [["kenalog"]], boost: ["injection"] },
+  "J2997": { require: [["subretinal_injection"]], boost: ["submacular"] },
   // Laser
   "67210": { require: [["focal_laser","laser"]], exclude: ["rd","prp","ppv","tear","yag","pdt"], boost: ["dme"] },
   "67228": { require: [["prp","pdr"]], exclude: ["ppv","rd"], boost: ["laser"] },
@@ -1327,13 +1364,32 @@ const DECISION_TREE = {
       },
     },
     {
-      label: "Submacular hemorrhage / VMT (pneumatic, no PPV)",
+      label: "Submacular hemorrhage / VMT",
       next: {
-        id: "result_67025_pneumatic",
-        result: true,
-        code: "67025",
-        title: "Pneumatic displacement (67025 + 65800)",
-        detail: "For submacular hemorrhage displacement or VMT treatment without PPV: bill 67025 (injection of vitreous substitute) + 65800 (paracentesis of anterior chamber). These are NOT bundled — bill both. If diagnosis is retinal detachment, use 67110 instead.",
+        id: "submacular_approach",
+        question: "What was the surgical approach?",
+        options: [
+          {
+            label: "PPV + subretinal tPA injection",
+            next: {
+              id: "result_0810T",
+              result: true,
+              code: "0810T",
+              title: "Subretinal injection with vitrectomy (0810T)",
+              detail: "Category III code (eff. 7/1/2023). Includes PPV, retinotomy, subretinal tPA injection, fluid-air exchange, and gas tamponade — all bundled. Do NOT separately bill 67036, 67028, or 67025. Bill J2997 (alteplase) for drug supply — check payer policy for reimbursement.",
+            },
+          },
+          {
+            label: "Pneumatic displacement only (no PPV)",
+            next: {
+              id: "result_67025_pneumatic",
+              result: true,
+              code: "67025",
+              title: "Pneumatic displacement (67025 + 65800)",
+              detail: "For submacular hemorrhage displacement or VMT without PPV: bill 67025 (injection of vitreous substitute) + 65800 (paracentesis of anterior chamber). These are NOT bundled — bill both. If diagnosis is retinal detachment, use 67110 instead.",
+            },
+          },
+        ],
       },
     },
     {
@@ -1684,31 +1740,39 @@ function TreeDiagram() {
       {/* Third row: pneumatic, implant removal, laser */}
       <div style={{ ...row, gap: 12, marginBottom: 24 }}>
 
-        {/* Pneumatic cases (non-RD) */}
+        {/* Submacular hemorrhage / pneumatic */}
         <div style={{
           background: S.card, border: "2px solid #06b6d4", borderRadius: 12,
-          padding: "14px 16px", minWidth: 240, textAlign: "center",
+          padding: "14px 16px", minWidth: 280, textAlign: "center",
         }}>
           <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#06b6d4", marginBottom: 10 }}>
-            Pneumatic Cases (no PPV)
+            Submacular Hemorrhage / Pneumatic
           </div>
           <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
             <div style={col}>
-              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>RD</div>
-              <div style={{ background: "#06b6d418", borderRadius: 8, padding: "6px 12px" }}>
-                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67110</div>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>PPV + subretinal tPA</div>
+              <div style={{ background: "#0891b218", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>0810T</div>
               </div>
-              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Pneumatic retinopexy</div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>All-inclusive (Cat III)</div>
             </div>
             <div style={col}>
-              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Submacular heme / VMT</div>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Pneumatic (no PPV)</div>
               <div style={{ background: "#06b6d418", borderRadius: 8, padding: "6px 12px" }}>
                 <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67025</div>
                 <div style={{ fontWeight: 800, fontSize: "0.85rem", color: S.bright, fontFamily: S.mono }}>+ 65800</div>
               </div>
               <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Gas inject + AC tap</div>
             </div>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>RD (pneumatic)</div>
+              <div style={{ background: "#06b6d418", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67110</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Pneumatic retinopexy</div>
+            </div>
           </div>
+          <div style={{ fontSize: "0.62rem", color: "#94a3b8", marginTop: 8 }}>0810T: + J2997 (alteplase) for drug supply</div>
         </div>
 
         {/* Implant removal */}
