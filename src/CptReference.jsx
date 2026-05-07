@@ -1120,7 +1120,85 @@ const DECISION_TREE = {
       },
     },
     {
-      label: "VH / floaters / RLF / dislocated IOL / endophthalmitis",
+      label: "Dislocated IOL / aphakia",
+      next: {
+        id: "iol_secondary",
+        question: "Was a secondary IOL placed?",
+        yes: {
+          id: "iol_exchange_or_new",
+          question: "Was an existing IOL removed and replaced, or was a new IOL placed in an aphakic eye?",
+          options: [
+            {
+              label: "IOL removed → new IOL placed (exchange)",
+              next: {
+                id: "iol_exchange_fixation",
+                question: "How was the new IOL fixated?",
+                options: [
+                  {
+                    label: "Scleral-fixated (Yamane / Akreos / sutured)",
+                    next: {
+                      id: "result_66986_sf",
+                      result: true,
+                      code: "66986",
+                      title: "IOL exchange + PPV (scleral-fixated)",
+                      detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU: 22.87 vs 22.72). For Akreos with Gore-Tex sutures, can add 66682 (suture fixation). For Yamane (sutureless flanged haptic), 66682 is debatable.",
+                    },
+                  },
+                  {
+                    label: "Sulcus or bag (standard placement)",
+                    next: {
+                      id: "result_66986_standard",
+                      result: true,
+                      code: "66986",
+                      title: "IOL exchange + PPV",
+                      detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU). 67121 (removal of implant) is BUNDLED — do not bill separately.",
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              label: "No IOL removed — new IOL placed in aphakic eye",
+              next: {
+                id: "iol_secondary_fixation",
+                question: "How was the IOL fixated?",
+                options: [
+                  {
+                    label: "Scleral-fixated (Yamane / Akreos / sutured)",
+                    next: {
+                      id: "result_66985_sf",
+                      result: true,
+                      code: "66985",
+                      title: "Secondary IOL (scleral-fixated) + PPV",
+                      detail: "Bill 66985 (secondary IOL) + 67036 (PPV). For Akreos with Gore-Tex sutures: add 66682. For Yamane (sutureless): 66682 is debatable. AC-IOL also uses 66985.",
+                    },
+                  },
+                  {
+                    label: "AC-IOL or sulcus",
+                    next: {
+                      id: "result_66985_standard",
+                      result: true,
+                      code: "66985",
+                      title: "Secondary IOL + PPV",
+                      detail: "Bill 66985 (secondary IOL implant) + 67036 (PPV). 66985 is for any secondary IOL placement without concurrent cataract removal.",
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        no: {
+          id: "result_67036_iol",
+          result: true,
+          code: "67036",
+          title: "PPV for dislocated IOL (no new IOL placed)",
+          detail: "Bill 67036 (base PPV) alone. If IOL was removed but NOT replaced, 67121 (removal of implanted material) is BUNDLED with 67036 — do not bill separately.",
+        },
+      },
+    },
+    {
+      label: "VH / floaters / RLF / endophthalmitis",
       next: {
         id: "base_ppv_laser",
         question: "Is endolaser being performed during the PPV?",
@@ -1416,6 +1494,40 @@ function TreeDiagram() {
             <div style={codeStyle("#10b981")}>
               <div style={{ fontWeight: 800, fontSize: "1rem" }}>67040</div>
               <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + PRP</div>
+            </div>
+          </div>
+
+          {/* Dislocated IOL / aphakia */}
+          <div style={col}>
+            <div style={arrowLabel("Dislocated IOL", "#ec4899")} />
+            <div style={connector} />
+            <div style={questionStyle}>Secondary IOL placed?</div>
+            <div style={connector} />
+            <div style={{ ...row, gap: 8 }}>
+              <div style={col}>
+                <div style={arrowLabel("Exchange", "#ec4899")} />
+                <div style={connector} />
+                <div style={codeStyle("#ec4899")}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>66986</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>IOL exchange<br/>+ 67036</div>
+                </div>
+              </div>
+              <div style={col}>
+                <div style={arrowLabel("Aphakic")} />
+                <div style={connector} />
+                <div style={codeStyle("#d946ef")}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>66985</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Secondary IOL<br/>+ 67036</div>
+                </div>
+              </div>
+              <div style={col}>
+                <div style={arrowLabel("No IOL")} />
+                <div style={connector} />
+                <div style={codeStyle("#64748b")}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67036</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV only</div>
+                </div>
+              </div>
             </div>
           </div>
 
