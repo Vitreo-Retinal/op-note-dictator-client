@@ -611,6 +611,8 @@ const KEYWORD_MAP = {
   "soro": ["67121"],
   "tamponade": ["67025","67042","67108","67113"],
   "fluid gas exchange": ["67025"],
+  "fluid air exchange": ["67025"],
+  "fax": ["67025"],
   "fge": ["67025"],
 
   // RD
@@ -725,15 +727,19 @@ const KEYWORD_MAP = {
 };
 
 // Tokenize and score: split query into words, match each token against keywords
+// Then aggressively cut low-relevance results so only the top 1-3 codes show
 function smartSearch(query, list) {
   const q = query.toLowerCase().trim();
   if (!q) return list;
 
-  // First try: exact phrase match in keyword map
-  const phraseMatches = KEYWORD_MAP[q];
+  // Strip filler words that add noise
+  const FILLER = new Set(["for","with","and","the","a","an","of","in","to","on","by","or","no","via"]);
 
-  // Then: tokenize and collect all matched codes with scores
-  const tokens = q.split(/[\s,;+\/]+/).filter(Boolean);
+  // Tokenize and clean
+  const rawTokens = q.split(/[\s,;+\/]+/).filter(Boolean);
+  const tokens = rawTokens.filter((t) => !FILLER.has(t));
+  if (tokens.length === 0) return list;
+
   const codeScores = {};
 
   // Check multi-word phrases first (longest match wins)
@@ -742,13 +748,12 @@ function smartSearch(query, list) {
 
   for (const key of sortedKeys) {
     const keyTokens = key.split(/\s+/);
-    // Try to find this key phrase in the query tokens
     for (let i = 0; i <= tokens.length - keyTokens.length; i++) {
       if (matchedTokenIndices.has(i)) continue;
       const slice = tokens.slice(i, i + keyTokens.length).join(" ");
-      if (slice === key || slice.startsWith(key)) {
+      if (slice === key) {
         for (const code of KEYWORD_MAP[key]) {
-          codeScores[code] = (codeScores[code] || 0) + keyTokens.length * 2;
+          codeScores[code] = (codeScores[code] || 0) + keyTokens.length * 3;
         }
         for (let j = i; j < i + keyTokens.length; j++) matchedTokenIndices.add(j);
         break;
@@ -756,39 +761,49 @@ function smartSearch(query, list) {
     }
   }
 
-  // For remaining unmatched tokens, try partial matches
+  // For remaining unmatched tokens, try keyword map matches
   for (let i = 0; i < tokens.length; i++) {
     if (matchedTokenIndices.has(i)) continue;
     const tok = tokens[i];
+    let found = false;
     for (const [key, codes] of Object.entries(KEYWORD_MAP)) {
-      if (key.includes(tok) || tok.includes(key)) {
+      if (key === tok || (tok.length >= 3 && key.includes(tok)) || (key.length >= 3 && tok.includes(key))) {
         for (const code of codes) {
-          codeScores[code] = (codeScores[code] || 0) + 1;
+          codeScores[code] = (codeScores[code] || 0) + (key === tok ? 2 : 1);
+        }
+        found = true;
+      }
+    }
+    // Fallback: search CPT fields directly only if no keyword match
+    if (!found) {
+      for (const cpt of list) {
+        const searchable = `${cpt.code} ${cpt.desc} ${cpt.indication}`.toLowerCase();
+        if (searchable.includes(tok)) {
+          codeScores[cpt.code] = (codeScores[cpt.code] || 0) + 1;
         }
       }
     }
-    // Also search directly in the CPT fields (fallback)
-    for (const cpt of list) {
-      const searchable = `${cpt.code} ${cpt.desc} ${cpt.indication} ${cpt.tips || ""} ${cpt.bundling || ""}`.toLowerCase();
-      if (searchable.includes(tok)) {
-        codeScores[cpt.code] = (codeScores[cpt.code] || 0) + 1;
-      }
-    }
   }
 
-  // If exact phrase match found, give those codes a big boost
-  if (phraseMatches) {
-    for (const code of phraseMatches) {
-      codeScores[code] = (codeScores[code] || 0) + 10;
-    }
-  }
-
-  // Filter and sort by score (highest first)
   if (Object.keys(codeScores).length === 0) return [];
+
+  // Sort by score descending
   const scored = list
     .filter((c) => codeScores[c.code])
-    .sort((a, b) => (codeScores[b.code] || 0) - (codeScores[a.code] || 0));
-  return scored;
+    .map((c) => ({ ...c, _score: codeScores[c.code] || 0 }))
+    .sort((a, b) => b._score - a._score);
+
+  if (scored.length === 0) return [];
+
+  // Aggressive relevance cutoff: only show codes that scored at least
+  // 40% of the top score. For multi-term surgical queries this eliminates
+  // codes that only matched 1 of 4 terms.
+  const topScore = scored[0]._score;
+  const threshold = topScore * 0.4;
+  const relevant = scored.filter((c) => c._score >= threshold);
+
+  // Cap at 5 results max — if you need more, use category filters
+  return relevant.slice(0, 5);
 }
 
 // ── Category metadata ───────────────────────────────────────────────
