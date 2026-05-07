@@ -1840,12 +1840,210 @@ function TreeDiagram() {
   );
 }
 
+// ── AI Coding Assistant ─────────────────────────────────────────────
+const AI_API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
+
+function AICodingAssistant() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const chatEndRef = { current: null };
+
+  const scrollToBottom = () => {
+    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const sendMessage = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+
+    const userMsg = { role: "user", content: text };
+    const updated = [...messages, userMsg];
+    setMessages(updated);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${AI_API_BASE}/api/cpt-assist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: updated }),
+      });
+      const data = await res.json();
+      if (data.success && data.reply) {
+        setMessages([...updated, { role: "assistant", content: data.reply }]);
+      } else {
+        setMessages([...updated, { role: "assistant", content: "Sorry, something went wrong. Try again." }]);
+      }
+    } catch (e) {
+      setMessages([...updated, { role: "assistant", content: "Network error — check your connection." }]);
+    }
+    setLoading(false);
+    setTimeout(scrollToBottom, 100);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    setInput("");
+  };
+
+  // Simple markdown-ish rendering: bold (**text**), line breaks, bullet points
+  const renderContent = (text) => {
+    const lines = text.split("\n");
+    return lines.map((line, i) => {
+      // Bold
+      let rendered = line.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#f1f5f9">$1</strong>');
+      // Bullet points
+      const isBullet = /^\s*[-•]\s/.test(line);
+      if (isBullet) {
+        rendered = rendered.replace(/^\s*[-•]\s*/, "");
+        return (
+          <div key={i} style={{ display: "flex", gap: 6, marginBottom: 3, paddingLeft: 8 }}>
+            <span style={{ color: S.accent, flexShrink: 0 }}>•</span>
+            <span dangerouslySetInnerHTML={{ __html: rendered }} />
+          </div>
+        );
+      }
+      if (line.trim() === "") return <div key={i} style={{ height: 8 }} />;
+      return <div key={i} style={{ marginBottom: 3 }} dangerouslySetInnerHTML={{ __html: rendered }} />;
+    });
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 70px)", maxWidth: 800, margin: "0 auto" }}>
+      {/* Chat messages */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
+        {messages.length === 0 && (
+          <div style={{ textAlign: "center", marginTop: 60, color: S.muted }}>
+            <div style={{ fontSize: "1.3rem", marginBottom: 12, color: S.accentLight }}>AI Coding Assistant</div>
+            <div style={{ fontSize: "0.85rem", lineHeight: 1.6, maxWidth: 500, margin: "0 auto" }}>
+              Ask any retina billing question — CPT codes, ICD-10 pairing, modifiers, bundling, E/M, global periods.
+            </div>
+            <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+              {[
+                "PPV ILM peel gas for mac hole",
+                "Can I bill E/M with injection?",
+                "PPV + buckle for macula-off RD",
+                "How do I code Yamane?",
+                "67041 vs 67042 — when to use each?",
+              ].map((q) => (
+                <button
+                  key={q}
+                  onClick={() => { setInput(q); }}
+                  style={{
+                    padding: "8px 14px", borderRadius: 20, border: `1px solid ${S.border}`,
+                    background: S.card, color: S.text, fontSize: "0.75rem", cursor: "pointer",
+                    fontFamily: S.font, transition: "border-color 0.2s",
+                  }}
+                  onMouseOver={(e) => e.target.style.borderColor = S.accent}
+                  onMouseOut={(e) => e.target.style.borderColor = S.border}
+                >{q}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+              marginBottom: 12,
+            }}
+          >
+            <div style={{
+              maxWidth: "85%",
+              padding: "10px 14px",
+              borderRadius: msg.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+              background: msg.role === "user" ? S.accent : S.card,
+              color: msg.role === "user" ? "#fff" : S.text,
+              fontSize: "0.85rem",
+              lineHeight: 1.5,
+              fontFamily: S.font,
+              border: msg.role === "user" ? "none" : `1px solid ${S.border}`,
+            }}>
+              {msg.role === "user" ? msg.content : renderContent(msg.content)}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
+            <div style={{
+              padding: "10px 14px", borderRadius: "16px 16px 16px 4px",
+              background: S.card, border: `1px solid ${S.border}`,
+              fontSize: "0.85rem", color: S.muted,
+            }}>
+              Thinking...
+            </div>
+          </div>
+        )}
+
+        <div ref={(el) => { chatEndRef.current = el; }} />
+      </div>
+
+      {/* Input area */}
+      <div style={{
+        padding: "12px 20px 16px", borderTop: `1px solid ${S.border}`,
+        display: "flex", gap: 8, alignItems: "flex-end",
+      }}>
+        {messages.length > 0 && (
+          <button
+            onClick={clearChat}
+            style={{
+              background: "none", border: `1px solid ${S.border}`, borderRadius: 8,
+              color: S.muted, cursor: "pointer", padding: "10px", fontSize: "0.75rem",
+              fontFamily: S.font, flexShrink: 0,
+            }}
+            title="Clear chat"
+          >Clear</button>
+        )}
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Describe your case or ask a billing question..."
+          rows={1}
+          style={{
+            flex: 1, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`,
+            borderRadius: 12, color: S.bright, fontSize: "0.9rem", fontFamily: S.font,
+            outline: "none", resize: "none", lineHeight: 1.4,
+            minHeight: 42, maxHeight: 120,
+          }}
+          onInput={(e) => {
+            e.target.style.height = "auto";
+            e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+          }}
+        />
+        <button
+          onClick={sendMessage}
+          disabled={loading || !input.trim()}
+          style={{
+            padding: "10px 18px", borderRadius: 12, border: "none",
+            background: loading || !input.trim() ? S.border : S.accent,
+            color: "#fff", cursor: loading || !input.trim() ? "default" : "pointer",
+            fontSize: "0.85rem", fontWeight: 600, fontFamily: S.font, flexShrink: 0,
+          }}
+        >Send</button>
+      </div>
+    </div>
+  );
+}
+
 // ── Component ───────────────────────────────────────────────────────
 export default function CptReference({ onBack }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [expanded, setExpanded] = useState(null);
-  const [view, setView] = useState("search"); // "search" | "tree"
+  const [view, setView] = useState("search"); // "search" | "tree" | "diagram" | "ai"
 
   const filtered = useMemo(() => {
     let list = CPT_DB;
@@ -1879,6 +2077,7 @@ export default function CptReference({ onBack }) {
         <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>Retina Surgery CPT Reference</div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 3, background: S.bg, borderRadius: 8, padding: 3 }}>
           {[
+            { id: "ai", label: "AI Assistant", bg: "#8b5cf6" },
             { id: "search", label: "Search", bg: S.accent },
             { id: "tree", label: "Guided", bg: "#10b981" },
             { id: "diagram", label: "Diagram", bg: "#f59e0b" },
@@ -1897,6 +2096,7 @@ export default function CptReference({ onBack }) {
         </div>
       </div>
 
+      {view === "ai" && <AICodingAssistant />}
       {view === "tree" && <DecisionTreeView />}
       {view === "diagram" && <TreeDiagram />}
 
