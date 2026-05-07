@@ -84,7 +84,7 @@ const CPT_DB = [
     category: "Retinal Detachment",
     global: "90 days",
     indication: "Rhegmatogenous retinal detachment — scleral buckle approach",
-    bundling: "Cryotherapy and laser are included. Do NOT separately bill 67101 or 67105. If combined with PPV, may bill both 67107 + vitrectomy code if NCCI allows (check edits).",
+    bundling: "Cryotherapy and laser are included. Do NOT separately bill 67101, 67105, or 67141. BUNDLED with PPV codes (67108) — if PPV + buckle combined, bill 67108 only (NOT 67107 + 67108).",
     modifiers: "-LT/-RT. -57 if decision for surgery same day/next day.",
     tips: "Includes drainage of SRF, cryotherapy, and photocoagulation when performed. Band/tire/sponge materials are included in the surgical fee.",
   },
@@ -876,7 +876,7 @@ const TERM_GROUPS = {
 const CODE_RULES = {
   // RD family
   "67113": { require: [["rd"],["complex"]], boost: ["ppv","oil","gas"] },
-  "67108": { require: [["rd"],["ppv"]], exclude: ["complex","buckle","pneumatic"], boost: ["gas"] },
+  "67108": { require: [["rd"],["ppv"]], exclude: ["complex","pneumatic"], boost: ["gas","buckle"] },
   "67107": { require: [["buckle"]], boost: ["rd"] },
   "67110": { require: [["pneumatic"]], boost: ["rd"] },
   // Vitrectomy family (non-RD)
@@ -1042,7 +1042,7 @@ const DECISION_TREE = {
                 result: true,
                 code: "67108",
                 title: "RD repair with vitrectomy (non-complex)",
-                detail: "Includes: laser, cryo, tamponade, SRF drainage, buckle, lens removal. Use when NO PVR ≥ C1, no traction RD, no giant tear.",
+                detail: "Includes: laser, cryo, tamponade, SRF drainage, scleral buckle, lens removal. PPV + buckle combined = bill 67108 alone. Use when NO PVR ≥ C1, no traction RD, no giant tear.",
               },
             },
           },
@@ -1053,7 +1053,7 @@ const DECISION_TREE = {
               result: true,
               code: "67107",
               title: "Scleral buckle repair of RD",
-              detail: "Includes: drainage, cryotherapy, photocoagulation. If combined with PPV, may bill both 67107 + vitrectomy code (check NCCI edits).",
+              detail: "Includes: drainage, cryotherapy, photocoagulation. If combined with PPV, bill 67108 only — do NOT bill 67107 + 67108 together (NCCI bundled).",
             },
           },
           {
@@ -1413,7 +1413,7 @@ function TreeDiagram() {
   return (
     <div style={{ padding: "20px", maxWidth: 980, margin: "0 auto", overflowX: "auto" }}>
       <div style={{ fontSize: "1.1rem", fontWeight: 700, color: S.bright, marginBottom: 6, textAlign: "center" }}>
-        Vitrectomy CPT Code Reference
+        Retina Surgery CPT Code Reference
       </div>
       <div style={{ fontSize: "0.75rem", color: S.muted, textAlign: "center", marginBottom: 28, fontFamily: S.mono }}>
         Diagnosis determines the code — not the surgical technique
@@ -1444,13 +1444,14 @@ function TreeDiagram() {
                 <div style={{ background: "#3b82f618", borderRadius: 8, padding: "6px 12px" }}>
                   <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67108</div>
                 </div>
-                <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Non-complex RRD</div>
+                <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Incl. buckle if combined</div>
               </div>
               <div style={col}>
-                <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Buckle</div>
+                <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Buckle only</div>
                 <div style={{ background: "#8b5cf618", borderRadius: 8, padding: "6px 12px" }}>
                   <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67107</div>
                 </div>
+                <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Cryo included</div>
               </div>
               <div style={col}>
                 <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Pneumatic</div>
@@ -1462,11 +1463,11 @@ function TreeDiagram() {
           </div>
         </div>
 
-        {/* Macular Hole / DME */}
-        {diagCard("Macular Hole\nor DME (ILM peel)", "67042", "PPV + ILM peel", "#f59e0b", "Tamponade included")}
+        {/* ILM Peel — any indication */}
+        {diagCard("ILM Peel\n(any indication)", "67042", "PPV + ILM peel", "#f59e0b", "Mac hole, DME, VMT, etc.\nTamponade included")}
 
         {/* ERM */}
-        {diagCard("ERM /\nMacular Pucker", "67041", "PPV + ERM peel", "#f97316", "Even if ILM also peeled")}
+        {diagCard("ERM /\nMacular Pucker", "67041", "PPV + ERM peel", "#f97316", "If ERM + ILM peeled together:\n67041 & 67042 bundled — bill one")}
 
         {/* PDR + VH */}
         {diagCard("PDR + VH\n(needs PRP)", "67040", "PPV + endo PRP", "#10b981", "PRP included in code")}
@@ -1552,6 +1553,9 @@ function TreeDiagram() {
         <div style={{ fontWeight: 700, color: S.bright, marginBottom: 6, fontSize: "0.8rem" }}>Key Rules</div>
         <div style={{ marginBottom: 4 }}>All vitrectomy codes (67036–67043) are <span style={{ color: "#eab308", fontWeight: 600 }}>bundled under NCCI</span> — bill only ONE per eye per session.</div>
         <div style={{ marginBottom: 4 }}>Tamponade (gas/oil) is <span style={{ color: "#22c55e", fontWeight: 600 }}>included</span> in 67042, 67043, 67108, and 67113.</div>
+        <div style={{ marginBottom: 4 }}><span style={{ color: "#a855f7", fontWeight: 600 }}>PPV + scleral buckle</span> = 67108 alone (buckle is included). Do NOT bill 67107 separately.</div>
+        <div style={{ marginBottom: 4 }}><span style={{ color: "#ec4899", fontWeight: 600 }}>Cryo</span> is bundled into 67107, 67108, and 67113 — never separately billable with these.</div>
+        <div style={{ marginBottom: 4 }}><span style={{ color: "#f97316", fontWeight: 600 }}>ERM + ILM peel</span> together: 67041 & 67042 are bundled — bill the one matching the primary indication.</div>
         <div>If multiple vitrectomy techniques are performed same eye, bill the code with the <span style={{ color: "#6366f1", fontWeight: 600 }}>highest RVU</span>.</div>
       </div>
     </div>
@@ -1594,7 +1598,7 @@ export default function CptReference({ onBack }) {
         >
           &larr; Back
         </button>
-        <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>CPT Code Reference</div>
+        <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>Retina Surgery CPT Reference</div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 3, background: S.bg, borderRadius: 8, padding: 3 }}>
           {[
             { id: "search", label: "Search", bg: S.accent },
