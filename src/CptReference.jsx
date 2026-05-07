@@ -727,91 +727,180 @@ const KEYWORD_MAP = {
   "amd": ["J0178","J0177","J2778","J3398","67028","99214"],
 };
 
-// Smart search: tokenize query, match against keyword map, score by
-// how many DISTINCT query concepts each code matches. Codes that only
-// match 1 out of 4 terms get cut — only codes matching most terms survive.
+// ── Decision-tree search engine ─────────────────────────────────────
+// Encodes the vitrectomy/RD decision tree as qualifier logic.
+// Each surgical code has REQUIRED qualifiers — without them, the code
+// is suppressed even if other generic terms match.
+
+// Term groups: detect which clinical concepts are present in the query
+const TERM_GROUPS = {
+  rd: ["rd","retinal detachment","detachment","rhegmatogenous"],
+  complex: ["complex","pvr","traction","tractional","giant tear","rop","proliferative vitreoretinopathy"],
+  ppv: ["ppv","vit","vitrectomy","pars plana"],
+  buckle: ["buckle","scleral buckle","sb","band","sponge"],
+  pneumatic: ["pneumatic","pneumatic retinopexy"],
+  ilm: ["ilm","ilm peel","internal limiting membrane"],
+  macular_hole: ["mac hole","macular hole","ftmh","full thickness macular hole"],
+  erm: ["erm","epiretinal membrane","macular pucker","pucker","preretinal membrane"],
+  subretinal: ["subretinal","cnvm","subretinal membrane"],
+  prp: ["prp","panretinal","panretinal photocoagulation"],
+  focal_laser: ["focal","focal laser","grid","focal endolaser"],
+  gas: ["gas","c3f8","sf6","air","tamponade","fax","fluid air exchange","fluid gas exchange","fge"],
+  oil: ["oil","silicone oil","soro","silicone"],
+  dme: ["dme","diabetic macular edema"],
+  vh: ["vh","vitreous hemorrhage","hemorrhage"],
+  pdr: ["pdr","proliferative diabetic"],
+  injection: ["injection","inject","intravitreal","ivt"],
+  laser: ["laser","lrp","laser retinopexy","barricade","photocoagulation"],
+  yag: ["yag","capsulotomy","pco"],
+  cryo: ["cryo","cryotherapy","cryopexy"],
+  iol: ["iol","iol exchange","dislocated iol","lens","secondary iol","aphakia"],
+  tear: ["tear","retinal tear","break","lattice"],
+  pdt: ["pdt","photodynamic","verteporfin","cscr"],
+  // Drugs
+  avastin: ["avastin","bevacizumab","bev"],
+  eylea: ["eylea","aflibercept"],
+  eylea_hd: ["eylea hd","aflibercept 8"],
+  lucentis: ["lucentis","ranibizumab"],
+  vabysmo: ["vabysmo","faricimab"],
+  syfovre: ["syfovre","pegcetacoplan"],
+  izervay: ["izervay","avacincaptad"],
+  ozurdex: ["ozurdex","dexamethasone","dex implant"],
+  kenalog: ["kenalog","triamcinolone","triam"],
+  ga: ["ga","geographic atrophy"],
+  // Diagnostics
+  oct: ["oct","oct retina"],
+  oct_nerve: ["oct nerve","rnfl","optic nerve"],
+  fa: ["fa","fluorescein","angiography"],
+  icg: ["icg","indocyanine"],
+  photo: ["fundus photo","photo","photography"],
+  vf: ["visual field","hvf","humphrey","plaquenil"],
+  // E/M
+  new_patient: ["new patient","new"],
+  established: ["established","follow up","follow-up","f/u"],
+};
+
+// Decision rules: code → which term groups MUST be present (at least one from each required array)
+// and which groups EXCLUDE this code (if present, code is suppressed)
+const CODE_RULES = {
+  // RD family
+  "67113": { require: [["rd"],["complex"]], boost: ["ppv","oil","gas"] },
+  "67108": { require: [["rd"],["ppv"]], exclude: ["complex","buckle","pneumatic"], boost: ["gas"] },
+  "67107": { require: [["buckle"]], boost: ["rd"] },
+  "67110": { require: [["pneumatic"]], boost: ["rd"] },
+  // Vitrectomy family (non-RD)
+  "67042": { require: [["ilm","macular_hole","dme"]], exclude: ["rd","erm"], boost: ["ppv","gas"] },
+  "67041": { require: [["erm"]], exclude: ["rd","macular_hole"], boost: ["ppv"] },
+  "67043": { require: [["subretinal"]], exclude: ["rd"], boost: ["ppv"] },
+  "67040": { require: [["prp","pdr"]], exclude: ["rd"], boost: ["ppv","vh"] },
+  "67039": { require: [["focal_laser"]], exclude: ["rd"], boost: ["ppv"] },
+  "67036": { require: [["ppv","vh"]], exclude: ["rd","ilm","macular_hole","erm","subretinal","prp","focal_laser","buckle","pneumatic","injection","laser","yag","cryo","iol","pdt"], boost: ["vh"] },
+  // Gas/oil standalone
+  "67025": { require: [["gas","oil"]], exclude: ["rd","ppv","ilm","macular_hole"], boost: [] },
+  "67121": { require: [["oil"]], exclude: ["rd"], boost: [] },
+  // Injection
+  "67028": { require: [["injection"]], boost: [] },
+  // J-codes
+  "J9035": { require: [["avastin"]], boost: ["injection"] },
+  "J0178": { require: [["eylea"]], exclude: ["eylea_hd"], boost: ["injection"] },
+  "J0177": { require: [["eylea_hd"]], boost: ["injection"] },
+  "J2778": { require: [["lucentis"]], boost: ["injection"] },
+  "J3398": { require: [["vabysmo"]], boost: ["injection"] },
+  "J2781": { require: [["syfovre","ga"]], exclude: ["izervay"], boost: ["injection"] },
+  "J2782": { require: [["izervay"]], boost: ["injection"] },
+  "J1094": { require: [["ozurdex"]], boost: ["injection"] },
+  "J3301": { require: [["kenalog"]], boost: ["injection"] },
+  // Laser
+  "67210": { require: [["focal_laser","laser"]], exclude: ["rd","prp","ppv","tear","yag","pdt"], boost: ["dme"] },
+  "67228": { require: [["prp","pdr"]], exclude: ["ppv","rd"], boost: ["laser"] },
+  "67145": { require: [["tear","laser"]], exclude: ["rd"], boost: ["laser"] },
+  "67105": { require: [["rd","laser"]], exclude: ["ppv","buckle","pneumatic"], boost: [] },
+  "67101": { require: [["rd","cryo"]], boost: [] },
+  "66821": { require: [["yag"]], boost: [] },
+  // Cryo
+  "67141": { require: [["cryo","tear"]], exclude: ["rd"], boost: [] },
+  // IOL
+  "66986": { require: [["iol"]], boost: ["ppv"] },
+  "66985": { require: [["iol"]], exclude: [], boost: [] },
+  // Diagnostics
+  "92134": { require: [["oct"]], exclude: ["oct_nerve"], boost: [] },
+  "92133": { require: [["oct_nerve"]], boost: [] },
+  "92235": { require: [["fa"]], exclude: ["icg"], boost: [] },
+  "92240": { require: [["icg"]], boost: [] },
+  "92250": { require: [["photo"]], boost: [] },
+  "92083": { require: [["vf"]], boost: [] },
+  // PDT
+  "67221": { require: [["pdt"]], boost: [] },
+  // E/M (only show if explicitly asked)
+  "99214": { require: [["established"]], exclude: ["injection","ppv","rd","laser"], boost: [] },
+  "99204": { require: [["new_patient"]], exclude: ["injection","ppv","rd","laser"], boost: [] },
+};
+
 function smartSearch(query, list) {
   const q = query.toLowerCase().trim();
   if (!q) return list;
 
-  const FILLER = new Set(["for","with","and","the","a","an","of","in","to","on","by","or","no","via","using","then","also","after","before","during"]);
-
-  const rawTokens = q.split(/[\s,;+\/]+/).filter(Boolean);
-  const tokens = rawTokens.filter((t) => !FILLER.has(t));
-  if (tokens.length === 0) return list;
-
-  // Track which "concept slots" each code matches (concept = a token or phrase)
-  // codeHits[code] = Set of concept indices matched
-  const codeHits = {};
-  const addHit = (code, conceptIdx) => {
-    if (!codeHits[code]) codeHits[code] = new Set();
-    codeHits[code].add(conceptIdx);
-  };
-
-  let conceptCount = 0;
-  const sortedKeys = Object.keys(KEYWORD_MAP).sort((a, b) => b.length - a.length);
-  const matchedTokenIndices = new Set();
-
-  // Phase 1: multi-word phrase matching (longest first)
-  for (const key of sortedKeys) {
-    const keyTokens = key.split(/\s+/);
-    if (keyTokens.length < 2) continue;
-    for (let i = 0; i <= tokens.length - keyTokens.length; i++) {
-      if (matchedTokenIndices.has(i)) continue;
-      const slice = tokens.slice(i, i + keyTokens.length).join(" ");
-      if (slice === key) {
-        for (const code of KEYWORD_MAP[key]) addHit(code, conceptCount);
-        for (let j = i; j < i + keyTokens.length; j++) matchedTokenIndices.add(j);
-        conceptCount++;
+  // Detect which term groups are present in the query
+  const activeGroups = new Set();
+  for (const [group, terms] of Object.entries(TERM_GROUPS)) {
+    // Sort terms longest-first so multi-word phrases match before their parts
+    const sorted = [...terms].sort((a, b) => b.length - a.length);
+    for (const term of sorted) {
+      if (q.includes(term)) {
+        activeGroups.add(group);
         break;
       }
     }
   }
 
-  // Phase 2: single-token matching
-  for (let i = 0; i < tokens.length; i++) {
-    if (matchedTokenIndices.has(i)) continue;
-    const tok = tokens[i];
-    let found = false;
-    for (const [key, codes] of Object.entries(KEYWORD_MAP)) {
-      if (key === tok || (tok.length >= 3 && key === tok) || (key.split(/\s+/).length === 1 && (key.includes(tok) || tok.includes(key)) && tok.length >= 3)) {
-        for (const code of codes) addHit(code, conceptCount);
-        found = true;
+  // Also check individual tokens for single-word group matches
+  const FILLER = new Set(["for","with","and","the","a","an","of","in","to","on","by","or","no","via","using","then","also","after","before","during"]);
+  const tokens = q.split(/[\s,;+\/]+/).filter((t) => !FILLER.has(t) && t.length > 0);
+  for (const tok of tokens) {
+    for (const [group, terms] of Object.entries(TERM_GROUPS)) {
+      for (const term of terms) {
+        if (term === tok || (tok.length >= 3 && term.split(/\s+/).length === 1 && (term.startsWith(tok) || tok.startsWith(term)))) {
+          activeGroups.add(group);
+        }
       }
     }
-    if (!found) {
-      // Fallback: direct CPT field search
-      for (const cpt of list) {
-        const searchable = `${cpt.code} ${cpt.desc} ${cpt.indication}`.toLowerCase();
-        if (searchable.includes(tok)) addHit(cpt.code, conceptCount);
-      }
+  }
+
+  if (activeGroups.size === 0) {
+    // Pure text fallback — search code/desc/indication directly
+    return list.filter((c) => {
+      const s = `${c.code} ${c.desc} ${c.indication}`.toLowerCase();
+      return tokens.some((t) => s.includes(t));
+    }).slice(0, 3);
+  }
+
+  // Run decision rules
+  const results = [];
+  for (const [code, rule] of Object.entries(CODE_RULES)) {
+    // Check excludes first — if any excluded group is active, skip
+    if (rule.exclude && rule.exclude.some((g) => activeGroups.has(g))) continue;
+
+    // Check requires — each require array needs at least one of its groups active
+    const satisfied = rule.require.every((reqGroup) =>
+      reqGroup.some((g) => activeGroups.has(g))
+    );
+    if (!satisfied) continue;
+
+    // Score: required matches + boost matches
+    let score = rule.require.length * 3;
+    if (rule.boost) {
+      score += rule.boost.filter((g) => activeGroups.has(g)).length * 2;
     }
-    conceptCount++;
+    results.push({ code, score });
   }
 
-  if (Object.keys(codeHits).length === 0) return [];
+  // Sort by score, map to CPT entries
+  results.sort((a, b) => b.score - a.score);
+  const topResults = results.slice(0, 3);
 
-  // Score = number of distinct concepts matched
-  const maxHits = Math.max(...Object.values(codeHits).map((s) => s.size));
-
-  // For multi-concept queries (3+ concepts), require matching at least 60% of concepts
-  // For 2-concept queries, require both. For 1-concept, show top matches.
-  let minHits;
-  if (conceptCount >= 3) {
-    minHits = Math.ceil(conceptCount * 0.6);
-  } else if (conceptCount === 2) {
-    minHits = 2;
-  } else {
-    minHits = 1;
-  }
-
-  const scored = list
-    .filter((c) => codeHits[c.code] && codeHits[c.code].size >= minHits)
-    .map((c) => ({ ...c, _hits: codeHits[c.code].size }))
-    .sort((a, b) => b._hits - a._hits);
-
-  // Cap at 3 results — this is a "what code do I bill?" tool, not a browser
-  return scored.slice(0, 3);
+  return topResults
+    .map((r) => list.find((c) => c.code === r.code))
+    .filter(Boolean);
 }
 
 // ── Category metadata ───────────────────────────────────────────────
@@ -1102,6 +1191,182 @@ function DecisionTreeView() {
   );
 }
 
+// ── Visual Decision Tree Diagram ────────────────────────────────────
+function TreeDiagram() {
+  const nodeStyle = (bg, border) => ({
+    padding: "10px 14px", borderRadius: 10, border: `2px solid ${border}`,
+    background: bg, fontSize: "0.78rem", color: S.bright, textAlign: "center",
+    fontFamily: S.font, lineHeight: 1.35, minWidth: 100, maxWidth: 160,
+  });
+  const questionStyle = nodeStyle("#1e3a5f", "#3b82f6");
+  const codeStyle = (color) => nodeStyle(color + "22", color);
+  const arrowLabel = (text, color) => ({
+    fontSize: "0.68rem", fontWeight: 600, color: color || "#94a3b8",
+    fontFamily: S.mono, textAlign: "center", padding: "2px 0",
+  });
+  const col = { display: "flex", flexDirection: "column", alignItems: "center", gap: 6 };
+  const row = { display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", alignItems: "flex-start" };
+  const connector = { width: 2, height: 16, background: "#334155", margin: "0 auto" };
+
+  return (
+    <div style={{ padding: "20px", maxWidth: 900, margin: "0 auto", overflowX: "auto" }}>
+      <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright, marginBottom: 16, textAlign: "center" }}>
+        Vitrectomy Code Decision Tree
+      </div>
+      <div style={{ fontSize: "0.72rem", color: S.muted, textAlign: "center", marginBottom: 24, fontFamily: S.mono }}>
+        Diagnosis determines the code, not the surgical technique
+      </div>
+
+      {/* Level 1: RD? */}
+      <div style={col}>
+        <div style={questionStyle}>Is a retinal detachment present?</div>
+        <div style={connector} />
+        <div style={row}>
+          {/* YES → RD branch */}
+          <div style={col}>
+            <div style={arrowLabel("YES", "#22c55e")} />
+            <div style={connector} />
+            <div style={questionStyle}>Surgical approach?</div>
+            <div style={connector} />
+            <div style={{ ...row, gap: 10 }}>
+              {/* PPV */}
+              <div style={col}>
+                <div style={arrowLabel("PPV")} />
+                <div style={connector} />
+                <div style={questionStyle}>Complex?<br/><span style={{ fontSize: "0.65rem", color: "#94a3b8" }}>(PVR≥C1, traction, giant tear)</span></div>
+                <div style={connector} />
+                <div style={row}>
+                  <div style={col}>
+                    <div style={arrowLabel("YES", "#22c55e")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#ef4444")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67113</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Complex RD repair</div>
+                    </div>
+                  </div>
+                  <div style={col}>
+                    <div style={arrowLabel("NO", "#ef4444")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#3b82f6")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67108</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>RD repair w/ PPV</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Buckle */}
+              <div style={col}>
+                <div style={arrowLabel("Buckle")} />
+                <div style={connector} />
+                <div style={codeStyle("#8b5cf6")}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67107</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Scleral buckle</div>
+                </div>
+              </div>
+              {/* Pneumatic */}
+              <div style={col}>
+                <div style={arrowLabel("Pneumatic")} />
+                <div style={connector} />
+                <div style={codeStyle("#06b6d4")}>
+                  <div style={{ fontWeight: 800, fontSize: "1rem" }}>67110</div>
+                  <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Pneumatic retinopexy</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* NO → Non-RD branch */}
+          <div style={col}>
+            <div style={arrowLabel("NO", "#ef4444")} />
+            <div style={connector} />
+            <div style={questionStyle}>Membrane peel?</div>
+            <div style={connector} />
+            <div style={row}>
+              {/* YES membrane */}
+              <div style={col}>
+                <div style={arrowLabel("YES", "#22c55e")} />
+                <div style={connector} />
+                <div style={questionStyle}>Which membrane / diagnosis?</div>
+                <div style={connector} />
+                <div style={{ ...row, gap: 8 }}>
+                  <div style={col}>
+                    <div style={arrowLabel("ILM: MH/DME")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#f59e0b")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67042</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ILM peel</div>
+                    </div>
+                  </div>
+                  <div style={col}>
+                    <div style={arrowLabel("ERM")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#f97316")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67041</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>ERM peel</div>
+                    </div>
+                  </div>
+                  <div style={col}>
+                    <div style={arrowLabel("Subretinal")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#a855f7")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67043</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Subretinal</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* NO membrane */}
+              <div style={col}>
+                <div style={arrowLabel("NO", "#ef4444")} />
+                <div style={connector} />
+                <div style={questionStyle}>Endolaser?</div>
+                <div style={connector} />
+                <div style={row}>
+                  <div style={col}>
+                    <div style={arrowLabel("PRP")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#10b981")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67040</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + PRP</div>
+                    </div>
+                  </div>
+                  <div style={col}>
+                    <div style={arrowLabel("Focal")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#14b8a6")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67039</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>PPV + focal</div>
+                    </div>
+                  </div>
+                  <div style={col}>
+                    <div style={arrowLabel("NONE")} />
+                    <div style={connector} />
+                    <div style={codeStyle("#64748b")}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem" }}>67036</div>
+                      <div style={{ fontSize: "0.65rem", marginTop: 2 }}>Base PPV</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Key notes */}
+      <div style={{
+        marginTop: 28, padding: "14px 18px", background: S.card, border: `1px solid ${S.border}`,
+        borderRadius: 10, fontSize: "0.78rem", color: S.text, lineHeight: 1.5,
+      }}>
+        <div style={{ fontWeight: 700, color: S.bright, marginBottom: 6, fontSize: "0.8rem" }}>Key Rules</div>
+        <div style={{ marginBottom: 4 }}>All vitrectomy codes (67036–67043) are <span style={{ color: "#eab308", fontWeight: 600 }}>bundled under NCCI</span> — bill only ONE per eye per session.</div>
+        <div style={{ marginBottom: 4 }}>Tamponade (gas/oil) is <span style={{ color: "#22c55e", fontWeight: 600 }}>included</span> in 67042, 67043, 67108, and 67113.</div>
+        <div>If multiple vitrectomy techniques are performed same eye, bill the code with the <span style={{ color: "#6366f1", fontWeight: 600 }}>highest RVU</span>.</div>
+      </div>
+    </div>
+  );
+}
+
 // ── Component ───────────────────────────────────────────────────────
 export default function CptReference({ onBack }) {
   const [search, setSearch] = useState("");
@@ -1139,29 +1404,28 @@ export default function CptReference({ onBack }) {
           &larr; Back
         </button>
         <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>CPT Code Reference</div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 4, background: S.bg, borderRadius: 8, padding: 3 }}>
-          <button
-            onClick={() => setView("search")}
-            style={{
-              padding: "6px 14px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: "0.78rem",
-              fontFamily: S.font, fontWeight: 600,
-              background: view === "search" ? S.accent : "transparent",
-              color: view === "search" ? "#fff" : S.muted,
-            }}
-          >Search</button>
-          <button
-            onClick={() => setView("tree")}
-            style={{
-              padding: "6px 14px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: "0.78rem",
-              fontFamily: S.font, fontWeight: 600,
-              background: view === "tree" ? "#10b981" : "transparent",
-              color: view === "tree" ? "#fff" : S.muted,
-            }}
-          >Decision Tree</button>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 3, background: S.bg, borderRadius: 8, padding: 3 }}>
+          {[
+            { id: "search", label: "Search", bg: S.accent },
+            { id: "tree", label: "Guided", bg: "#10b981" },
+            { id: "diagram", label: "Diagram", bg: "#f59e0b" },
+          ].map((v) => (
+            <button
+              key={v.id}
+              onClick={() => setView(v.id)}
+              style={{
+                padding: "6px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: "0.73rem",
+                fontFamily: S.font, fontWeight: 600,
+                background: view === v.id ? v.bg : "transparent",
+                color: view === v.id ? "#fff" : S.muted,
+              }}
+            >{v.label}</button>
+          ))}
         </div>
       </div>
 
       {view === "tree" && <DecisionTreeView />}
+      {view === "diagram" && <TreeDiagram />}
 
       {view === "search" && <>
       {/* Search */}
