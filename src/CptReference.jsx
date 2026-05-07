@@ -573,6 +573,224 @@ const CPT_DB = [
   },
 ];
 
+// ── Smart Search: keyword aliases for clinical shorthand ────────────
+// Maps common terms/abbreviations → CPT codes they should surface
+const KEYWORD_MAP = {
+  // Vitrectomy shorthand
+  "ppv": ["67036","67039","67040","67041","67042","67043","67108","67113"],
+  "vit": ["67036","67039","67040","67041","67042","67043","67108","67113"],
+  "vitrectomy": ["67036","67039","67040","67041","67042","67043","67108","67113"],
+  "core vit": ["67036"],
+  "ilm": ["67042"],
+  "ilm peel": ["67042"],
+  "membrane peel": ["67041","67042","67113"],
+  "erm": ["67041"],
+  "epiretinal membrane": ["67041"],
+  "macular pucker": ["67041"],
+  "mac hole": ["67042"],
+  "macular hole": ["67042"],
+  "ftmh": ["67042"],
+  "full thickness macular hole": ["67042"],
+  "vh": ["67036","67040"],
+  "vitreous hemorrhage": ["67036","67040"],
+  "pdr": ["67040","67228"],
+  "prp": ["67040","67228"],
+  "panretinal": ["67040","67228"],
+  "endolaser": ["67039","67040"],
+  "focal laser": ["67039","67210"],
+  "subretinal": ["67043"],
+  "cnvm": ["67043","67220"],
+
+  // Gas/tamponade
+  "gas": ["67042","67025","67108","67110","67113"],
+  "c3f8": ["67042","67025","67108","67110","67113"],
+  "sf6": ["67042","67025","67108","67110","67113"],
+  "air": ["67025","67108","67110"],
+  "oil": ["67121","67113"],
+  "silicone oil": ["67121","67113"],
+  "soro": ["67121"],
+  "tamponade": ["67025","67042","67108","67113"],
+  "fluid gas exchange": ["67025"],
+  "fge": ["67025"],
+
+  // RD
+  "rd": ["67107","67108","67110","67113"],
+  "retinal detachment": ["67107","67108","67110","67113"],
+  "detachment": ["67107","67108","67110","67113"],
+  "buckle": ["67107"],
+  "scleral buckle": ["67107"],
+  "sb": ["67107"],
+  "pneumatic": ["67110"],
+  "pneumatic retinopexy": ["67110"],
+  "pvr": ["67113"],
+  "complex rd": ["67113"],
+  "traction": ["67113"],
+  "tractional": ["67113"],
+  "giant tear": ["67113"],
+
+  // Injection
+  "injection": ["67028"],
+  "intravitreal": ["67028"],
+  "ivt": ["67028"],
+  "inject": ["67028"],
+
+  // Drugs
+  "avastin": ["J9035"],
+  "bevacizumab": ["J9035"],
+  "bev": ["J9035"],
+  "eylea": ["J0178","J0177"],
+  "aflibercept": ["J0178","J0177"],
+  "eylea hd": ["J0177"],
+  "lucentis": ["J2778"],
+  "ranibizumab": ["J2778"],
+  "vabysmo": ["J3398"],
+  "faricimab": ["J3398"],
+  "syfovre": ["J2781"],
+  "pegcetacoplan": ["J2781"],
+  "izervay": ["J2782"],
+  "avacincaptad": ["J2782"],
+  "ozurdex": ["J1094"],
+  "dexamethasone": ["J1094"],
+  "dex implant": ["J1094"],
+  "kenalog": ["J3301"],
+  "triamcinolone": ["J3301"],
+  "triam": ["J3301"],
+  "steroid": ["J1094","J3301"],
+  "ga": ["J2781","J2782"],
+  "geographic atrophy": ["J2781","J2782"],
+
+  // Laser
+  "laser": ["67210","67220","67228","67145","67105","66821"],
+  "lrp": ["67145"],
+  "laser retinopexy": ["67145"],
+  "barricade": ["67105","67145"],
+  "yag": ["66821"],
+  "capsulotomy": ["66821"],
+  "pco": ["66821"],
+  "grid": ["67210"],
+  "focal": ["67210"],
+  "pdt": ["67221","67225"],
+  "photodynamic": ["67221","67225"],
+  "verteporfin": ["67221"],
+  "cscr": ["67221"],
+
+  // Cryo
+  "cryo": ["67101","67141"],
+  "cryotherapy": ["67101","67141"],
+  "cryopexy": ["67101","67141"],
+
+  // IOL
+  "iol": ["66986","66985"],
+  "iol exchange": ["66986"],
+  "dislocated iol": ["66986","67036"],
+  "secondary iol": ["66985"],
+  "lens": ["66986","66985"],
+  "aphakia": ["66985"],
+
+  // Diagnostics
+  "oct": ["92134","92133"],
+  "oct retina": ["92134"],
+  "oct nerve": ["92133"],
+  "rnfl": ["92133"],
+  "fa": ["92235"],
+  "fluorescein": ["92235","92242"],
+  "angiography": ["92235","92240","92242"],
+  "icg": ["92240","92242"],
+  "fundus photo": ["92250"],
+  "photo": ["92250"],
+  "visual field": ["92083"],
+  "hvf": ["92083"],
+  "humphrey": ["92083"],
+  "plaquenil": ["92083"],
+
+  // E/M
+  "new patient": ["99203","99204","99205","92004"],
+  "established": ["99213","99214","99215","92014","92012"],
+  "follow up": ["99213","99214","99215","92014"],
+  "g2211": ["G2211"],
+  "complexity add-on": ["G2211"],
+
+  // Misc
+  "ac tap": ["65800"],
+  "paracentesis": ["65800"],
+  "anterior chamber": ["65800"],
+  "tear": ["67145","67141"],
+  "retinal tear": ["67145","67141"],
+  "lattice": ["67145","67141"],
+  "dme": ["67210","67042","J0178","J2778","J3398","J1094"],
+  "diabetic macular edema": ["67210","67042"],
+  "rvo": ["67210","J0178","J2778","J3398"],
+  "wet amd": ["J0178","J0177","J2778","J3398","67028"],
+  "amd": ["J0178","J0177","J2778","J3398","67028","99214"],
+};
+
+// Tokenize and score: split query into words, match each token against keywords
+function smartSearch(query, list) {
+  const q = query.toLowerCase().trim();
+  if (!q) return list;
+
+  // First try: exact phrase match in keyword map
+  const phraseMatches = KEYWORD_MAP[q];
+
+  // Then: tokenize and collect all matched codes with scores
+  const tokens = q.split(/[\s,;+\/]+/).filter(Boolean);
+  const codeScores = {};
+
+  // Check multi-word phrases first (longest match wins)
+  const sortedKeys = Object.keys(KEYWORD_MAP).sort((a, b) => b.length - a.length);
+  const matchedTokenIndices = new Set();
+
+  for (const key of sortedKeys) {
+    const keyTokens = key.split(/\s+/);
+    // Try to find this key phrase in the query tokens
+    for (let i = 0; i <= tokens.length - keyTokens.length; i++) {
+      if (matchedTokenIndices.has(i)) continue;
+      const slice = tokens.slice(i, i + keyTokens.length).join(" ");
+      if (slice === key || slice.startsWith(key)) {
+        for (const code of KEYWORD_MAP[key]) {
+          codeScores[code] = (codeScores[code] || 0) + keyTokens.length * 2;
+        }
+        for (let j = i; j < i + keyTokens.length; j++) matchedTokenIndices.add(j);
+        break;
+      }
+    }
+  }
+
+  // For remaining unmatched tokens, try partial matches
+  for (let i = 0; i < tokens.length; i++) {
+    if (matchedTokenIndices.has(i)) continue;
+    const tok = tokens[i];
+    for (const [key, codes] of Object.entries(KEYWORD_MAP)) {
+      if (key.includes(tok) || tok.includes(key)) {
+        for (const code of codes) {
+          codeScores[code] = (codeScores[code] || 0) + 1;
+        }
+      }
+    }
+    // Also search directly in the CPT fields (fallback)
+    for (const cpt of list) {
+      const searchable = `${cpt.code} ${cpt.desc} ${cpt.indication} ${cpt.tips || ""} ${cpt.bundling || ""}`.toLowerCase();
+      if (searchable.includes(tok)) {
+        codeScores[cpt.code] = (codeScores[cpt.code] || 0) + 1;
+      }
+    }
+  }
+
+  // If exact phrase match found, give those codes a big boost
+  if (phraseMatches) {
+    for (const code of phraseMatches) {
+      codeScores[code] = (codeScores[code] || 0) + 10;
+    }
+  }
+
+  // Filter and sort by score (highest first)
+  if (Object.keys(codeScores).length === 0) return [];
+  const scored = list
+    .filter((c) => codeScores[c.code])
+    .sort((a, b) => (codeScores[b.code] || 0) - (codeScores[a.code] || 0));
+  return scored;
+}
+
 // ── Category metadata ───────────────────────────────────────────────
 const CATEGORIES = [
   { id: "all", label: "All Codes" },
@@ -588,11 +806,285 @@ const CATEGORIES = [
   { id: "Other Procedures", label: "Other" },
 ];
 
+// ── Vitrectomy Decision Tree ────────────────────────────────────────
+const DECISION_TREE = {
+  id: "start",
+  question: "Is a retinal detachment present?",
+  yes: {
+    id: "rd_approach",
+    question: "What is the surgical approach?",
+    options: [
+      {
+        label: "PPV (vitrectomy)",
+        next: {
+          id: "rd_complex",
+          question: "Is this a complex RD?\n(PVR ≥ C1, diabetic traction RD, giant tear >90°, ROP)",
+          yes: {
+            id: "result_67113",
+            result: true,
+            code: "67113",
+            title: "Complex RD repair with vitrectomy",
+            detail: "Includes: vitrectomy, membrane peel, tamponade, cryo, laser, SRF drainage, buckle, lens removal. Highest RVU in RD family. Document complexity (PVR grade, traction, giant tear).",
+          },
+          no: {
+            id: "result_67108",
+            result: true,
+            code: "67108",
+            title: "RD repair with vitrectomy (non-complex)",
+            detail: "Includes: laser, cryo, tamponade, SRF drainage, buckle, lens removal. Use when NO PVR ≥ C1, no traction RD, no giant tear.",
+          },
+        },
+      },
+      {
+        label: "Scleral buckle",
+        next: {
+          id: "result_67107",
+          result: true,
+          code: "67107",
+          title: "Scleral buckle repair of RD",
+          detail: "Includes: drainage, cryotherapy, photocoagulation. If combined with PPV, may bill both 67107 + vitrectomy code (check NCCI edits).",
+        },
+      },
+      {
+        label: "Pneumatic retinopexy",
+        next: {
+          id: "result_67110",
+          result: true,
+          code: "67110",
+          title: "Pneumatic retinopexy",
+          detail: "Gas injection for RD. Bundled with 67105 (laser) and 67101 (cryo) same session. AC tap (65800) is NOT bundled — bill separately. Office RVU > facility RVU.",
+        },
+      },
+    ],
+  },
+  no: {
+    id: "no_rd_membrane",
+    question: "Is a membrane being peeled?",
+    yes: {
+      id: "membrane_type",
+      question: "What membrane / what diagnosis?",
+      options: [
+        {
+          label: "ILM peel — Macular hole",
+          next: {
+            id: "result_67042_mh",
+            result: true,
+            code: "67042",
+            title: "PPV with ILM peel (macular hole)",
+            detail: "Diagnosis: full-thickness macular hole (FTMH). Tamponade (air/gas/oil) is INCLUDED — do NOT separately bill 67025. If also using dye (ICG/BBG), it's included.",
+          },
+        },
+        {
+          label: "ILM peel — DME",
+          next: {
+            id: "result_67042_dme",
+            result: true,
+            code: "67042",
+            title: "PPV with ILM peel (DME)",
+            detail: "Diagnosis: diabetic macular edema requiring ILM peel. Same code as macular hole. Tamponade included if performed.",
+          },
+        },
+        {
+          label: "ERM / macular pucker peel",
+          next: {
+            id: "result_67041",
+            result: true,
+            code: "67041",
+            title: "PPV with preretinal membrane peel (ERM)",
+            detail: "Diagnosis must be ERM / macular pucker. Even if ILM is also peeled, if primary diagnosis is ERM → use 67041. If diagnosis is macular hole → use 67042 instead.",
+          },
+        },
+        {
+          label: "Subretinal membrane (CNVM)",
+          next: {
+            id: "result_67043",
+            result: true,
+            code: "67043",
+            title: "PPV with subretinal membrane removal",
+            detail: "Rarely used in modern practice (anti-VEGF has replaced surgical CNVM removal). Tamponade and laser included.",
+          },
+        },
+      ],
+    },
+    no: {
+      id: "no_membrane_laser",
+      question: "Is endolaser being performed during the PPV?",
+      yes: {
+        id: "laser_type",
+        question: "What type of endolaser?",
+        options: [
+          {
+            label: "PRP (panretinal photocoagulation)",
+            next: {
+              id: "result_67040",
+              result: true,
+              code: "67040",
+              title: "PPV with endolaser PRP",
+              detail: "Classic code for PDR + VH: PPV to clear hemorrhage + PRP. Do NOT separately bill 67228. If also peeling membrane, compare RVU with 67041 — bill higher one.",
+            },
+          },
+          {
+            label: "Focal endolaser",
+            next: {
+              id: "result_67039",
+              result: true,
+              code: "67039",
+              title: "PPV with focal endolaser",
+              detail: "Non-RD diagnosis requiring PPV + focal laser (e.g., VH with focal laser for bleeding source). Do NOT separately bill 67210.",
+            },
+          },
+        ],
+      },
+      no: {
+        id: "result_67036",
+        result: true,
+        code: "67036",
+        title: "PPV — base vitrectomy",
+        detail: "Use when: NO membrane peel, NO endolaser, and diagnosis is NOT retinal detachment. Common indications: VH, vitreous opacities, dislocated IOL, retained lens fragments, endophthalmitis, VMT.",
+      },
+    },
+  },
+};
+
+function DecisionTreeView() {
+  const [path, setPath] = useState([DECISION_TREE]);
+  const current = path[path.length - 1];
+
+  const reset = () => setPath([DECISION_TREE]);
+  const goBack = () => {
+    if (path.length > 1) setPath(path.slice(0, -1));
+  };
+  const advance = (next) => setPath([...path, next]);
+
+  if (current.result) {
+    const cptEntry = CPT_DB.find((c) => c.code === current.code);
+    return (
+      <div style={{ padding: "20px", maxWidth: 700, margin: "0 auto" }}>
+        {/* Breadcrumb */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+          {path.slice(0, -1).map((step, i) => (
+            <span key={i} style={{ fontSize: "0.7rem", color: S.muted, fontFamily: S.mono }}>
+              {step.question ? step.question.split("\n")[0].slice(0, 30) + "..." : ""} →
+            </span>
+          ))}
+        </div>
+
+        {/* Result card */}
+        <div style={{
+          background: "linear-gradient(135deg, #064e3b, #065f46)",
+          border: `1px solid #10b981`,
+          borderRadius: 14,
+          padding: "24px",
+        }}>
+          <div style={{ fontSize: "0.75rem", color: "#6ee7b7", fontFamily: S.mono, marginBottom: 6 }}>
+            ✓ RECOMMENDED CODE
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 8 }}>
+            <span style={{ fontSize: "1.8rem", fontWeight: 800, color: "#ecfdf5" }}>{current.code}</span>
+          </div>
+          <div style={{ fontSize: "1rem", fontWeight: 600, color: "#d1fae5", marginBottom: 12 }}>
+            {current.title}
+          </div>
+          <div style={{ fontSize: "0.85rem", color: "#a7f3d0", lineHeight: 1.5 }}>
+            {current.detail}
+          </div>
+          {cptEntry && (
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #10b98144" }}>
+              <div style={{ fontSize: "0.75rem", color: "#6ee7b7", fontFamily: S.mono, marginBottom: 4 }}>MODIFIERS</div>
+              <div style={{ fontSize: "0.82rem", color: "#d1fae5" }}>{cptEntry.modifiers}</div>
+              <div style={{ fontSize: "0.75rem", color: "#6ee7b7", fontFamily: S.mono, marginBottom: 4, marginTop: 12 }}>GLOBAL PERIOD</div>
+              <div style={{ fontSize: "0.82rem", color: "#d1fae5" }}>{cptEntry.global}</div>
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+          <button onClick={goBack} style={{
+            padding: "10px 18px", borderRadius: 8, border: `1px solid ${S.border}`,
+            background: S.card, color: S.text, fontFamily: S.font, cursor: "pointer", fontSize: "0.85rem",
+          }}>← Back</button>
+          <button onClick={reset} style={{
+            padding: "10px 18px", borderRadius: 8, border: `1px solid ${S.accent}`,
+            background: S.accent + "22", color: S.accentLight, fontFamily: S.font, cursor: "pointer", fontSize: "0.85rem",
+          }}>Start Over</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: "20px", maxWidth: 700, margin: "0 auto" }}>
+      {/* Progress indicator */}
+      <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+        {path.map((_, i) => (
+          <div key={i} style={{
+            width: 24, height: 4, borderRadius: 2,
+            background: i === path.length - 1 ? S.accent : S.accent + "44",
+          }} />
+        ))}
+      </div>
+
+      {/* Question */}
+      <div style={{
+        background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: "24px",
+      }}>
+        <div style={{ fontSize: "0.72rem", color: S.accent, fontFamily: S.mono, marginBottom: 8 }}>
+          STEP {path.length}
+        </div>
+        <div style={{ fontSize: "1.15rem", fontWeight: 600, color: S.bright, lineHeight: 1.4, whiteSpace: "pre-line" }}>
+          {current.question}
+        </div>
+      </div>
+
+      {/* Answer buttons */}
+      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+        {current.options ? (
+          current.options.map((opt, i) => (
+            <button key={i} onClick={() => advance(opt.next)} style={{
+              padding: "14px 20px", borderRadius: 10, border: `1px solid ${S.border}`,
+              background: S.card, color: S.bright, fontFamily: S.font, cursor: "pointer",
+              fontSize: "0.95rem", textAlign: "left", transition: "border-color 0.2s",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.borderColor = S.accent}
+            onMouseLeave={(e) => e.currentTarget.style.borderColor = S.border}
+            >
+              {opt.label}
+            </button>
+          ))
+        ) : (
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => advance(current.yes)} style={{
+              flex: 1, padding: "14px 20px", borderRadius: 10, border: `1px solid #10b981`,
+              background: "#064e3b", color: "#d1fae5", fontFamily: S.font, cursor: "pointer",
+              fontSize: "1rem", fontWeight: 600,
+            }}>Yes</button>
+            <button onClick={() => advance(current.no)} style={{
+              flex: 1, padding: "14px 20px", borderRadius: 10, border: `1px solid ${S.border}`,
+              background: S.card, color: S.text, fontFamily: S.font, cursor: "pointer",
+              fontSize: "1rem", fontWeight: 600,
+            }}>No</button>
+          </div>
+        )}
+      </div>
+
+      {/* Back button */}
+      {path.length > 1 && (
+        <button onClick={goBack} style={{
+          marginTop: 14, padding: "8px 16px", borderRadius: 8, border: "none",
+          background: "transparent", color: S.muted, fontFamily: S.font, cursor: "pointer", fontSize: "0.82rem",
+        }}>← Back to previous question</button>
+      )}
+    </div>
+  );
+}
+
 // ── Component ───────────────────────────────────────────────────────
 export default function CptReference({ onBack }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [expanded, setExpanded] = useState(null);
+  const [view, setView] = useState("search"); // "search" | "tree"
 
   const filtered = useMemo(() => {
     let list = CPT_DB;
@@ -600,15 +1092,7 @@ export default function CptReference({ onBack }) {
       list = list.filter((c) => c.category === category);
     }
     if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(
-        (c) =>
-          c.code.toLowerCase().includes(q) ||
-          c.desc.toLowerCase().includes(q) ||
-          c.indication.toLowerCase().includes(q) ||
-          (c.tips && c.tips.toLowerCase().includes(q)) ||
-          (c.bundling && c.bundling.toLowerCase().includes(q))
-      );
+      list = smartSearch(search, list);
     }
     return list;
   }, [search, category]);
@@ -632,35 +1116,58 @@ export default function CptReference({ onBack }) {
           &larr; Back
         </button>
         <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>CPT Code Reference</div>
-        <div style={{ fontSize: "0.75rem", color: S.muted, fontFamily: S.mono, marginLeft: "auto" }}>
-          {filtered.length} code{filtered.length !== 1 ? "s" : ""}
+        <div style={{ marginLeft: "auto", display: "flex", gap: 4, background: S.bg, borderRadius: 8, padding: 3 }}>
+          <button
+            onClick={() => setView("search")}
+            style={{
+              padding: "6px 14px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: "0.78rem",
+              fontFamily: S.font, fontWeight: 600,
+              background: view === "search" ? S.accent : "transparent",
+              color: view === "search" ? "#fff" : S.muted,
+            }}
+          >Search</button>
+          <button
+            onClick={() => setView("tree")}
+            style={{
+              padding: "6px 14px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: "0.78rem",
+              fontFamily: S.font, fontWeight: 600,
+              background: view === "tree" ? "#10b981" : "transparent",
+              color: view === "tree" ? "#fff" : S.muted,
+            }}
+          >Decision Tree</button>
         </div>
       </div>
 
+      {view === "tree" && <DecisionTreeView />}
+
+      {view === "search" && <>
       {/* Search */}
-      <div style={{ padding: "16px 20px 8px" }}>
+      <div style={{ padding: "16px 20px 8px", maxWidth: 800, margin: "0 auto" }}>
         <input
           type="text"
-          placeholder="Search by code, procedure, indication, or keyword..."
+          placeholder="Describe the case: PPV, ILM peel, C3F8 for mac hole..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
             width: "100%",
-            padding: "12px 16px",
+            padding: "14px 18px",
             background: S.card,
             border: `1px solid ${S.border}`,
-            borderRadius: 10,
+            borderRadius: 12,
             color: S.bright,
-            fontSize: "0.95rem",
+            fontSize: "1.05rem",
             fontFamily: S.font,
             outline: "none",
             boxSizing: "border-box",
           }}
         />
+        <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 6, fontFamily: S.mono }}>
+          Try: "PPV ILM peel gas mac hole" · "buckle RD" · "avastin injection" · "focal laser DME" · "YAG"
+        </div>
       </div>
 
       {/* Category pills */}
-      <div style={{ padding: "8px 20px 12px", display: "flex", flexWrap: "wrap", gap: 6 }}>
+      <div style={{ padding: "8px 20px 12px", display: "flex", flexWrap: "wrap", gap: 6, maxWidth: 800, margin: "0 auto" }}>
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
@@ -799,6 +1306,7 @@ export default function CptReference({ onBack }) {
           );
         })}
       </div>
+      </>}
     </div>
   );
 }
