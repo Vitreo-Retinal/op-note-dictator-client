@@ -1,6 +1,7 @@
 import { useState } from "react";
 import OpNoteDictator from "./OpNoteDictator.jsx";
 import ClinicNoteGenerator from "./ClinicNoteGenerator.jsx";
+import CptReference from "./CptReference.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -193,6 +194,16 @@ function LandingPage({ onSelect }) {
       gradient: "linear-gradient(135deg,#6366f1,#8b5cf6)",
       tags: ["Shorthand", "Billing", "A/P Notes"],
     },
+    {
+      id: "cpt",
+      title: "CPT Code Reference",
+      subtitle: "Retina Billing Codes",
+      description:
+        "Searchable retina CPT database with bundling rules, modifiers, global periods, and coding tips for surgery, injection, laser, and diagnostics.",
+      icon: "\u{1F4D6}",
+      gradient: "linear-gradient(135deg,#10b981,#059669)",
+      tags: ["CPT", "Bundling", "Modifiers", "NCCI"],
+    },
   ];
 
   return (
@@ -358,7 +369,7 @@ function LandingPage({ onSelect }) {
 // ── App Router ──────────────────────────────────────────────────────
 export default function App() {
   const [authed, setAuthed] = useState(false);
-  const [page, setPage] = useState("home"); // home | dictator | optimizer
+  const [page, setPage] = useState("home"); // home | dictator | optimizer | cpt
 
   if (!authed) {
     return <PasswordGate onSuccess={() => setAuthed(true)} />;
@@ -370,6 +381,10 @@ export default function App() {
 
   if (page === "optimizer") {
     return <ClinicNoteGenerator onBack={() => setPage("home")} />;
+  }
+
+  if (page === "cpt") {
+    return <CptReference onBack={() => setPage("home")} />;
   }
 
   return <LandingPage onSelect={(id) => setPage(id)} />;
