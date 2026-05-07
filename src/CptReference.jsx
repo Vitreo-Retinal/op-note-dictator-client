@@ -625,6 +625,7 @@ const KEYWORD_MAP = {
   "pneumatic": ["67110"],
   "pneumatic retinopexy": ["67110"],
   "pvr": ["67113"],
+  "complex": ["67113"],
   "complex rd": ["67113"],
   "traction": ["67113"],
   "tractional": ["67113"],
@@ -726,84 +727,91 @@ const KEYWORD_MAP = {
   "amd": ["J0178","J0177","J2778","J3398","67028","99214"],
 };
 
-// Tokenize and score: split query into words, match each token against keywords
-// Then aggressively cut low-relevance results so only the top 1-3 codes show
+// Smart search: tokenize query, match against keyword map, score by
+// how many DISTINCT query concepts each code matches. Codes that only
+// match 1 out of 4 terms get cut — only codes matching most terms survive.
 function smartSearch(query, list) {
   const q = query.toLowerCase().trim();
   if (!q) return list;
 
-  // Strip filler words that add noise
-  const FILLER = new Set(["for","with","and","the","a","an","of","in","to","on","by","or","no","via"]);
+  const FILLER = new Set(["for","with","and","the","a","an","of","in","to","on","by","or","no","via","using","then","also","after","before","during"]);
 
-  // Tokenize and clean
   const rawTokens = q.split(/[\s,;+\/]+/).filter(Boolean);
   const tokens = rawTokens.filter((t) => !FILLER.has(t));
   if (tokens.length === 0) return list;
 
-  const codeScores = {};
+  // Track which "concept slots" each code matches (concept = a token or phrase)
+  // codeHits[code] = Set of concept indices matched
+  const codeHits = {};
+  const addHit = (code, conceptIdx) => {
+    if (!codeHits[code]) codeHits[code] = new Set();
+    codeHits[code].add(conceptIdx);
+  };
 
-  // Check multi-word phrases first (longest match wins)
+  let conceptCount = 0;
   const sortedKeys = Object.keys(KEYWORD_MAP).sort((a, b) => b.length - a.length);
   const matchedTokenIndices = new Set();
 
+  // Phase 1: multi-word phrase matching (longest first)
   for (const key of sortedKeys) {
     const keyTokens = key.split(/\s+/);
+    if (keyTokens.length < 2) continue;
     for (let i = 0; i <= tokens.length - keyTokens.length; i++) {
       if (matchedTokenIndices.has(i)) continue;
       const slice = tokens.slice(i, i + keyTokens.length).join(" ");
       if (slice === key) {
-        for (const code of KEYWORD_MAP[key]) {
-          codeScores[code] = (codeScores[code] || 0) + keyTokens.length * 3;
-        }
+        for (const code of KEYWORD_MAP[key]) addHit(code, conceptCount);
         for (let j = i; j < i + keyTokens.length; j++) matchedTokenIndices.add(j);
+        conceptCount++;
         break;
       }
     }
   }
 
-  // For remaining unmatched tokens, try keyword map matches
+  // Phase 2: single-token matching
   for (let i = 0; i < tokens.length; i++) {
     if (matchedTokenIndices.has(i)) continue;
     const tok = tokens[i];
     let found = false;
     for (const [key, codes] of Object.entries(KEYWORD_MAP)) {
-      if (key === tok || (tok.length >= 3 && key.includes(tok)) || (key.length >= 3 && tok.includes(key))) {
-        for (const code of codes) {
-          codeScores[code] = (codeScores[code] || 0) + (key === tok ? 2 : 1);
-        }
+      if (key === tok || (tok.length >= 3 && key === tok) || (key.split(/\s+/).length === 1 && (key.includes(tok) || tok.includes(key)) && tok.length >= 3)) {
+        for (const code of codes) addHit(code, conceptCount);
         found = true;
       }
     }
-    // Fallback: search CPT fields directly only if no keyword match
     if (!found) {
+      // Fallback: direct CPT field search
       for (const cpt of list) {
         const searchable = `${cpt.code} ${cpt.desc} ${cpt.indication}`.toLowerCase();
-        if (searchable.includes(tok)) {
-          codeScores[cpt.code] = (codeScores[cpt.code] || 0) + 1;
-        }
+        if (searchable.includes(tok)) addHit(cpt.code, conceptCount);
       }
     }
+    conceptCount++;
   }
 
-  if (Object.keys(codeScores).length === 0) return [];
+  if (Object.keys(codeHits).length === 0) return [];
 
-  // Sort by score descending
+  // Score = number of distinct concepts matched
+  const maxHits = Math.max(...Object.values(codeHits).map((s) => s.size));
+
+  // For multi-concept queries (3+ concepts), require matching at least 60% of concepts
+  // For 2-concept queries, require both. For 1-concept, show top matches.
+  let minHits;
+  if (conceptCount >= 3) {
+    minHits = Math.ceil(conceptCount * 0.6);
+  } else if (conceptCount === 2) {
+    minHits = 2;
+  } else {
+    minHits = 1;
+  }
+
   const scored = list
-    .filter((c) => codeScores[c.code])
-    .map((c) => ({ ...c, _score: codeScores[c.code] || 0 }))
-    .sort((a, b) => b._score - a._score);
+    .filter((c) => codeHits[c.code] && codeHits[c.code].size >= minHits)
+    .map((c) => ({ ...c, _hits: codeHits[c.code].size }))
+    .sort((a, b) => b._hits - a._hits);
 
-  if (scored.length === 0) return [];
-
-  // Aggressive relevance cutoff: only show codes that scored at least
-  // 40% of the top score. For multi-term surgical queries this eliminates
-  // codes that only matched 1 of 4 terms.
-  const topScore = scored[0]._score;
-  const threshold = topScore * 0.4;
-  const relevant = scored.filter((c) => c._score >= threshold);
-
-  // Cap at 5 results max — if you need more, use category filters
-  return relevant.slice(0, 5);
+  // Cap at 3 results — this is a "what code do I bill?" tool, not a browser
+  return scored.slice(0, 3);
 }
 
 // ── Category metadata ───────────────────────────────────────────────
