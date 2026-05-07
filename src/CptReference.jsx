@@ -362,20 +362,30 @@ const CPT_DB = [
     desc: "Exchange of intraocular lens (IOL exchange)",
     category: "IOL / Lens",
     global: "90 days",
-    indication: "Dislocated IOL, wrong-power IOL, damaged IOL requiring removal and replacement",
+    indication: "Dislocated IOL, wrong-power IOL, damaged IOL requiring removal and replacement. Includes Yamane or Akreos scleral fixation when an existing IOL is removed and replaced.",
     bundling: "NOT bundled with 67036 (PPV) — can bill both when PPV + IOL exchange performed same session. 67121 IS bundled (removal of implant is included in the exchange). List from highest to lowest RVU: 66986 (22.87) then 67036 (22.72).",
     modifiers: "-LT/-RT. -57 if decision same day.",
-    tips: "Correct code when an IOL is REMOVED and a NEW one is placed. If just inserting a secondary IOL (no removal), use 66985. Order matters: 66986 has slightly higher RVU than 67036, so list first for maximum reimbursement.",
+    tips: "Correct code when an IOL is REMOVED and a NEW one is placed — this includes dislocated IOL removed via PPV then replaced with Yamane or Akreos scleral-fixated IOL. If just inserting a secondary IOL (no removal), use 66985. Order matters: 66986 has slightly higher RVU than 67036, so list first. For Akreos (sutured): can add 66682 for the suture fixation. For Yamane (sutureless flanged haptic): 66682 is debatable since no sutures are used.",
   },
   {
     code: "66985",
     desc: "Insertion of intraocular lens prosthesis (secondary implant), not associated with concurrent cataract removal",
     category: "IOL / Lens",
     global: "90 days",
-    indication: "Secondary IOL placement in aphakic eye (no concurrent cataract extraction). Includes AC-IOL, sutured scleral-fixated IOL, iris-fixated IOL.",
-    bundling: "Check NCCI edits when combined with vitrectomy codes.",
+    indication: "Secondary IOL placement in aphakic eye (no concurrent cataract extraction). Includes AC-IOL, Yamane flanged haptic IOL, Akreos sutured scleral-fixated IOL, iris-fixated IOL.",
+    bundling: "NOT bundled with 67036 (PPV). Can add 66682 (suture fixation) when IOL is sutured to sclera (Akreos with Gore-Tex). Check NCCI edits when combined with vitrectomy codes.",
     modifiers: "-LT/-RT.",
-    tips: "Use for secondary IOL insertion when NO lens is being removed/exchanged — includes AC-IOL placement, scleral-fixated IOL, and iris-fixated IOL in an aphakic eye. If removing an IOL and replacing, use 66986 (exchange) instead. For PPV + AC-IOL in aphakic eye: bill 66985 + 67036.",
+    tips: "Use for secondary IOL insertion when NO lens is being removed/exchanged. Yamane technique: 66985 + 67036 (66682 is debatable — no sutures used, flanged haptics instead). Akreos with Gore-Tex sutures: 66985 + 66682 + 67036 (sutures justify 66682). If removing an IOL and replacing, use 66986 (exchange) instead.",
+  },
+  {
+    code: "66682",
+    desc: "Suture of iris, ciliary body (secondary fixation of IOL)",
+    category: "IOL / Lens",
+    global: "N/A (add-on)",
+    indication: "Scleral suture fixation of IOL — used as add-on when IOL is sutured to sclera/iris (e.g., Akreos with Gore-Tex, sutured scleral-fixated IOL, iris-sutured IOL)",
+    bundling: "Add-on to 66985 (secondary IOL) or 66986 (IOL exchange). CPT parenthetical after 66985 directs: 'For secondary fixation, use 66682.' NOT used as standalone.",
+    modifiers: "None typically — add-on code.",
+    tips: "KEY DISTINCTION: For Akreos IOL with Gore-Tex sutures → YES, bill 66682 (sutures are placed through sclera). For Yamane flanged haptic technique → 66682 is DEBATABLE because no sutures are used (haptics are cauterized into flanges and tucked into scleral tunnels). Some coders bill 66682 for Yamane arguing the fixation is analogous; others do not. Check your MAC policy. Conservative approach for Yamane: bill 66985 + 67036 without 66682.",
   },
 
   // ═══════════════════════════════════════════════════════════════════
@@ -763,6 +773,18 @@ const KEYWORD_MAP = {
   "ac iol": ["66985"],
   "ac-iol": ["66985"],
   "anterior chamber iol": ["66985"],
+  // Scleral fixation / Yamane / Akreos
+  "yamane": ["66985","67036"],
+  "flanged haptic": ["66985","67036"],
+  "intrascleral": ["66985","66682","67036"],
+  "scleral fixation": ["66985","66682","67036"],
+  "scleral fixated": ["66985","66682","67036"],
+  "sf iol": ["66985","66682","67036"],
+  "akreos": ["66985","66682","67036"],
+  "gore-tex": ["66985","66682","67036"],
+  "goretex": ["66985","66682","67036"],
+  "sutured scleral": ["66985","66682"],
+  "66682": ["66682"],
   // Contralateral
   "contralateral": [],
   "other eye": [],
@@ -823,6 +845,9 @@ const TERM_GROUPS = {
   antibiotics: ["antibiotics","antibiotic","antifungal","vancomycin","ceftazidime","voriconazole","amikacin"],
   contralateral: ["contralateral","other eye","fellow eye","bilateral","os","od","both eyes"],
   ac_iol: ["ac iol","ac-iol","anterior chamber iol","anterior chamber lens"],
+  yamane: ["yamane","flanged haptic","flanged","intrascleral","sutureless fixation","sutureless iol"],
+  akreos: ["akreos","gore-tex","goretex","gore tex","sutured scleral","4-point fixation","four point fixation"],
+  scleral_fixation: ["scleral fixation","scleral fixated","scleral-fixated","sf iol","sfiol","scleral fix"],
   // Drugs
   avastin: ["avastin","bevacizumab","bev"],
   eylea: ["eylea","aflibercept"],
@@ -889,9 +914,10 @@ const CODE_RULES = {
   "66821": { require: [["yag"]], boost: [] },
   // Cryo
   "67141": { require: [["cryo","tear"]], exclude: ["rd"], boost: [] },
-  // IOL
-  "66986": { require: [["iol"]], exclude: ["ac_iol"], boost: ["ppv","rlf"] },
-  "66985": { require: [["iol","ac_iol"]], exclude: [], boost: [] },
+  // IOL / Scleral Fixation
+  "66986": { require: [["iol"]], exclude: ["ac_iol","yamane","akreos","scleral_fixation"], boost: ["ppv","rlf"] },
+  "66985": { require: [["iol","ac_iol","yamane","akreos","scleral_fixation"]], exclude: [], boost: ["ppv","yamane","akreos","scleral_fixation"] },
+  "66682": { require: [["akreos","scleral_fixation"]], exclude: ["yamane"], boost: ["iol"] },
   // Diagnostics
   "92134": { require: [["oct"]], exclude: ["oct_nerve"], boost: [] },
   "92133": { require: [["oct_nerve"]], boost: [] },
