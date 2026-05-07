@@ -133,6 +133,16 @@ const CPT_DB = [
     tips: "Use for subretinal hemorrhage displacement (NOT retinal detachment — that's 67110). Also used for standalone fluid-gas exchange. Anterior chamber tap (65800) is NOT bundled and can be billed separately.",
   },
   {
+    code: "67120",
+    desc: "Removal of implanted material, posterior segment; extraocular (eg, scleral buckle removal)",
+    category: "Pneumatic / Tamponade",
+    global: "90 days",
+    indication: "Scleral buckle removal (band, sponge, or encircling element removal)",
+    bundling: "Standalone procedure. Check NCCI if performed with other procedures same session.",
+    modifiers: "-LT/-RT. -58 if staged during prior surgery's global period.",
+    tips: "Use for removal of scleral buckle material (band, sponge, tire). This is EXTRAOCULAR removal — distinct from 67121 (intraocular, e.g., silicone oil). Common indications: buckle infection, extrusion, diplopia, or patient discomfort.",
+  },
+  {
     code: "67121",
     desc: "Removal of implanted material, posterior segment; intraocular (eg, silicone oil removal)",
     category: "Pneumatic / Tamponade",
@@ -158,7 +168,7 @@ const CPT_DB = [
   },
 
   // ═══════════════════════════════════════════════════════════════════
-  // LENSECTOMY
+  // LENSECTOMY / LENS REMOVAL
   // ═══════════════════════════════════════════════════════════════════
   {
     code: "66852",
@@ -169,6 +179,16 @@ const CPT_DB = [
     bundling: "BUNDLED with ALL vitrectomy codes (67036–67043) and ALL RD codes (67108, 67113) under NCCI. Cannot bill 66852 + vitrectomy code. For combined PPV + lensectomy + IOL placement: bill 66986 (IOL exchange, higher RVU) + 67036 (base PPV). Lens removal is included in 67108 and 67113.",
     modifiers: "-LT/-RT.",
     tips: "Key coding pearl: 66852 is ALWAYS bundled with vitrectomy. If performing PPV + lensectomy + IOL implant, the correct coding is 66986-RT + 67036-RT (list 66986 first — higher RVU at 22.87 vs 22.72). Do NOT bill 66852 separately when vitrectomy is performed. 66852 standalone is only billable when NO vitrectomy is done (rare in retina practice).",
+  },
+  {
+    code: "66850",
+    desc: "Removal of lens material; phacofragmentation technique (mechanical or ultrasonic), with aspiration",
+    category: "IOL / Lens",
+    global: "90 days",
+    indication: "Phacoemulsification/phacofragmentation for dislocated crystalline lens or retained lens material — anterior approach",
+    bundling: "BUNDLED with vitrectomy codes (67036–67043) when performed same session. 66820, 66830, 66840, 66850 are all bundled with 67036.",
+    modifiers: "-LT/-RT.",
+    tips: "Use for dislocated natural lens removed via phaco technique. If pars plana approach is used instead, use 66852. Both 66850 and 66852 are bundled with vitrectomy — if PPV is also performed, bill 67036 (the vitrectomy absorbs the lensectomy).",
   },
 
   // ═══════════════════════════════════════════════════════════════════
@@ -376,6 +396,16 @@ const CPT_DB = [
     bundling: "NOT bundled with 67036 (PPV). Can add 66682 (suture fixation) when IOL is sutured to sclera (Akreos with Gore-Tex). Check NCCI edits when combined with vitrectomy codes.",
     modifiers: "-LT/-RT.",
     tips: "Use for secondary IOL insertion when NO lens is being removed/exchanged. Yamane technique: 66985 + 67036 (66682 is debatable — no sutures used, flanged haptics instead). Akreos with Gore-Tex sutures: 66985 + 66682 + 67036 (sutures justify 66682). If removing an IOL and replacing, use 66986 (exchange) instead.",
+  },
+  {
+    code: "66825",
+    desc: "Repositioning of intraocular lens prosthesis, requiring an incision",
+    category: "IOL / Lens",
+    global: "90 days",
+    indication: "Repositioning and suturing of a subluxated/dislocated IOL — the existing IOL is kept (not exchanged)",
+    bundling: "NOT bundled with 67036 (PPV) — can bill both when PPV + IOL reposition performed. NOT the same as 66986 (exchange, where IOL is removed and replaced).",
+    modifiers: "-LT/-RT.",
+    tips: "Use when the existing IOL is repositioned and sutured back into place (NOT removed). If the IOL is removed and a new one placed, use 66986 (exchange) instead. Per AAO: PPV with reposition and suture-in of IOL = 67036 + 66825. If IOL is exchanged instead, use 66986 + 67036.",
   },
   {
     code: "66682",
@@ -647,6 +677,10 @@ const KEYWORD_MAP = {
   "oil": ["67121","67113"],
   "silicone oil": ["67121","67113"],
   "soro": ["67121"],
+  "oil removal": ["67121"],
+  "buckle removal": ["67120"],
+  "band removal": ["67120"],
+  "implant removal": ["67120","67121"],
   "tamponade": ["67025","67042","67108","67113"],
   "fluid gas exchange": ["67025"],
   "fluid air exchange": ["67025"],
@@ -721,12 +755,17 @@ const KEYWORD_MAP = {
   "cryopexy": ["67101","67141"],
 
   // IOL
-  "iol": ["66986","66985"],
+  "iol": ["66986","66985","66825"],
   "iol exchange": ["66986"],
-  "dislocated iol": ["66986","67036"],
+  "iol reposition": ["66825"],
+  "reposition": ["66825"],
+  "dislocated iol": ["66986","66825","67036"],
+  "subluxated": ["66825","66986"],
   "secondary iol": ["66985"],
-  "lens": ["66986","66985"],
+  "lens": ["66986","66985","66850","66852"],
   "aphakia": ["66985"],
+  "dislocated lens": ["66850","66852","67036"],
+  "phaco": ["66850"],
 
   // Diagnostics
   "oct": ["92134","92133"],
@@ -797,6 +836,11 @@ const KEYWORD_MAP = {
   "ac tap": ["65800"],
   "paracentesis": ["65800"],
   "anterior chamber": ["65800"],
+  "submacular hemorrhage": ["67025","65800"],
+  "submacular": ["67025","65800"],
+  "pneumatic displacement": ["67025","65800"],
+  "vmt": ["67025","65800"],
+  "vitreomacular traction": ["67025","65800"],
   "tear": ["67145","67141"],
   "retinal tear": ["67145","67141"],
   "lattice": ["67145","67141"],
@@ -834,7 +878,12 @@ const TERM_GROUPS = {
   laser: ["laser","lrp","laser retinopexy","barricade","photocoagulation"],
   yag: ["yag","capsulotomy","pco"],
   cryo: ["cryo","cryotherapy","cryopexy"],
-  iol: ["iol","iol exchange","dislocated iol","lens","secondary iol","aphakia"],
+  iol: ["iol","iol exchange","dislocated iol","lens","secondary iol","aphakia","iol reposition","reposition","subluxated"],
+  dislocated_lens: ["dislocated lens","dropped lens","dropped nucleus","subluxated lens","dislocated crystalline"],
+  buckle_removal: ["buckle removal","band removal","sponge removal","explant"],
+  submacular: ["submacular hemorrhage","submacular","pneumatic displacement"],
+  vmt: ["vmt","vitreomacular traction"],
+  phaco: ["phaco","phacoemulsification","phacofragmentation"],
   tear: ["tear","retinal tear","break","lattice"],
   pdt: ["pdt","photodynamic","verteporfin","cscr"],
   floaters: ["floaters","floater","vitreous opacities","opacities","symptomatic floaters"],
@@ -886,13 +935,16 @@ const CODE_RULES = {
   "67040": { require: [["prp","pdr"]], exclude: ["rd"], boost: ["ppv","vh"] },
   "67039": { require: [["focal_laser"]], exclude: ["rd"], boost: ["ppv"] },
   "67036": { require: [["ppv","vh","floaters","rlf","endophthalmitis"]], exclude: ["rd","ilm","macular_hole","erm","subretinal","prp","focal_laser","buckle","pneumatic","injection","laser","yag","cryo","pdt","biopsy"], boost: ["vh","floaters","rlf","endophthalmitis"] },
-  // Gas/oil standalone
-  "67025": { require: [["gas","oil"]], exclude: ["rd","ppv","ilm","macular_hole"], boost: [] },
+  // Gas/oil/implant standalone
+  "67025": { require: [["gas","oil","submacular","vmt"]], exclude: ["rd","ppv","ilm","macular_hole"], boost: ["submacular","vmt"] },
+  "67120": { require: [["buckle_removal"]], boost: [] },
   "67121": { require: [["oil"]], exclude: ["rd"], boost: [] },
   // Vitreous tap/biopsy
   "67015": { require: [["biopsy","endophthalmitis"]], exclude: ["ppv","rd"], boost: ["endophthalmitis"] },
-  // Lensectomy (bundled with PPV — informational)
-  "66852": { require: [["ppl"]], exclude: ["iol"], boost: ["ppv"] },
+  // Lensectomy / lens removal (bundled with PPV — informational)
+  "66852": { require: [["ppl"]], exclude: ["iol","phaco"], boost: ["ppv"] },
+  "66850": { require: [["phaco","dislocated_lens"]], exclude: ["ppl"], boost: [] },
+  "66825": { require: [["iol"]], exclude: ["ac_iol","yamane","akreos","scleral_fixation"], boost: ["ppv"] },
   // Injection
   "67028": { require: [["injection","antibiotics"]], exclude: ["ppv","rd","biopsy","endophthalmitis"], boost: [] },
   // J-codes
@@ -1122,79 +1174,117 @@ const DECISION_TREE = {
     {
       label: "Dislocated IOL / aphakia",
       next: {
-        id: "iol_secondary",
-        question: "Was a secondary IOL placed?",
-        yes: {
-          id: "iol_exchange_or_new",
-          question: "Was an existing IOL removed and replaced, or was a new IOL placed in an aphakic eye?",
-          options: [
-            {
-              label: "IOL removed → new IOL placed (exchange)",
-              next: {
-                id: "iol_exchange_fixation",
-                question: "How was the new IOL fixated?",
-                options: [
-                  {
-                    label: "Scleral-fixated (Yamane / Akreos / sutured)",
-                    next: {
-                      id: "result_66986_sf",
-                      result: true,
-                      code: "66986",
-                      title: "IOL exchange + PPV (scleral-fixated)",
-                      detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU: 22.87 vs 22.72). For Akreos with Gore-Tex sutures, can add 66682 (suture fixation). For Yamane (sutureless flanged haptic), 66682 is debatable.",
-                    },
+        id: "iol_what_happened",
+        question: "What was done with the IOL?",
+        options: [
+          {
+            label: "IOL removed → new IOL placed (exchange)",
+            next: {
+              id: "iol_exchange_fixation",
+              question: "How was the new IOL fixated?",
+              options: [
+                {
+                  label: "Scleral-fixated (Yamane / Akreos / sutured)",
+                  next: {
+                    id: "result_66986_sf",
+                    result: true,
+                    code: "66986",
+                    title: "IOL exchange + PPV (scleral-fixated)",
+                    detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU: 22.87 vs 22.72). For Akreos with Gore-Tex sutures, can add 66682 (suture fixation). For Yamane (sutureless flanged haptic), 66682 is debatable.",
                   },
-                  {
-                    label: "AC-IOL, sulcus, or bag (no scleral fixation)",
-                    next: {
-                      id: "result_66986_standard",
-                      result: true,
-                      code: "66986",
-                      title: "IOL exchange + PPV (standard placement)",
-                      detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU: 22.87 vs 22.72). 67121 (removal of implant) is BUNDLED — do not bill separately. No 66682 needed when not scleral-fixated.",
-                    },
+                },
+                {
+                  label: "AC-IOL, sulcus, or bag (no scleral fixation)",
+                  next: {
+                    id: "result_66986_standard",
+                    result: true,
+                    code: "66986",
+                    title: "IOL exchange + PPV (standard placement)",
+                    detail: "Bill 66986 (IOL exchange) + 67036 (PPV). List 66986 first (higher RVU: 22.87 vs 22.72). 67121 (removal of implant) is BUNDLED — do not bill separately. No 66682 needed when not scleral-fixated.",
                   },
-                ],
-              },
+                },
+              ],
             },
-            {
-              label: "No IOL removed — new IOL placed in aphakic eye",
-              next: {
-                id: "iol_secondary_fixation",
-                question: "How was the IOL fixated?",
-                options: [
-                  {
-                    label: "Scleral-fixated (Yamane / Akreos / sutured)",
-                    next: {
-                      id: "result_66985_sf",
-                      result: true,
-                      code: "66985",
-                      title: "Secondary IOL (scleral-fixated) + PPV",
-                      detail: "Bill 66985 (secondary IOL) + 67036 (PPV). For Akreos with Gore-Tex sutures: add 66682. For Yamane (sutureless): 66682 is debatable. AC-IOL also uses 66985.",
-                    },
-                  },
-                  {
-                    label: "AC-IOL, sulcus, or iris-fixated (no scleral fixation)",
-                    next: {
-                      id: "result_66985_standard",
-                      result: true,
-                      code: "66985",
-                      title: "Secondary IOL (AC-IOL / sulcus) + PPV",
-                      detail: "Bill 66985 (secondary IOL implant) + 67036 (PPV). AC-IOL, sulcus, and iris-fixated IOLs all use 66985. No 66682 — scleral suturing was not performed. 66985 covers any secondary IOL placement without concurrent cataract removal.",
-                    },
-                  },
-                ],
-              },
+          },
+          {
+            label: "IOL repositioned and sutured in place (not exchanged)",
+            next: {
+              id: "result_66825",
+              result: true,
+              code: "66825",
+              title: "IOL repositioning + PPV",
+              detail: "Bill 66825 (IOL reposition) + 67036 (PPV). The existing IOL is kept — NOT removed and replaced. If the IOL cannot be salvaged and must be exchanged, use 66986 instead.",
             },
-          ],
-        },
-        no: {
-          id: "result_67036_iol",
-          result: true,
-          code: "67036",
-          title: "PPV for dislocated IOL (no new IOL placed)",
-          detail: "Bill 67036 (base PPV) alone. If IOL was removed but NOT replaced, 67121 (removal of implanted material) is BUNDLED with 67036 — do not bill separately.",
-        },
+          },
+          {
+            label: "No IOL removed — new IOL placed in aphakic eye",
+            next: {
+              id: "iol_secondary_fixation",
+              question: "How was the IOL fixated?",
+              options: [
+                {
+                  label: "Scleral-fixated (Yamane / Akreos / sutured)",
+                  next: {
+                    id: "result_66985_sf",
+                    result: true,
+                    code: "66985",
+                    title: "Secondary IOL (scleral-fixated) + PPV",
+                    detail: "Bill 66985 (secondary IOL) + 67036 (PPV). For Akreos with Gore-Tex sutures: add 66682. For Yamane (sutureless): 66682 is debatable. AC-IOL also uses 66985.",
+                  },
+                },
+                {
+                  label: "AC-IOL, sulcus, or iris-fixated (no scleral fixation)",
+                  next: {
+                    id: "result_66985_standard",
+                    result: true,
+                    code: "66985",
+                    title: "Secondary IOL (AC-IOL / sulcus) + PPV",
+                    detail: "Bill 66985 (secondary IOL implant) + 67036 (PPV). AC-IOL, sulcus, and iris-fixated IOLs all use 66985. No 66682 — scleral suturing was not performed.",
+                  },
+                },
+              ],
+            },
+          },
+          {
+            label: "IOL removed, no new IOL placed",
+            next: {
+              id: "result_67036_iol",
+              result: true,
+              code: "67036",
+              title: "PPV for dislocated IOL (no new IOL placed)",
+              detail: "Bill 67036 (base PPV) alone. 67121 (removal of implanted material) is BUNDLED with 67036 — do not bill separately.",
+            },
+          },
+        ],
+      },
+    },
+    {
+      label: "Dislocated crystalline lens / cataract",
+      next: {
+        id: "lens_technique",
+        question: "How was the lens removed?",
+        options: [
+          {
+            label: "Pars plana lensectomy (PPL)",
+            next: {
+              id: "result_66852_tree",
+              result: true,
+              code: "66852",
+              title: "Pars plana lensectomy (bundled with PPV)",
+              detail: "66852 is ALWAYS bundled with vitrectomy codes. If PPV + lensectomy + IOL: bill 66986 (IOL exchange) + 67036 (PPV). 66852 is absorbed. If no IOL placed: bill 67036 alone.",
+            },
+          },
+          {
+            label: "Phaco (anterior approach)",
+            next: {
+              id: "result_66850_tree",
+              result: true,
+              code: "66850",
+              title: "Phacofragmentation of dislocated lens",
+              detail: "Use for dislocated lens removed via phaco technique. Bundled with vitrectomy codes — if PPV is also performed, 67036 absorbs the lensectomy.",
+            },
+          },
+        ],
       },
     },
     {
@@ -1231,6 +1321,45 @@ const DECISION_TREE = {
               code: "67040",
               title: "PPV with endolaser PRP",
               detail: "PPV to clear hemorrhage + PRP. Do NOT separately bill 67228.",
+            },
+          },
+        ],
+      },
+    },
+    {
+      label: "Submacular hemorrhage / VMT (pneumatic, no PPV)",
+      next: {
+        id: "result_67025_pneumatic",
+        result: true,
+        code: "67025",
+        title: "Pneumatic displacement (67025 + 65800)",
+        detail: "For submacular hemorrhage displacement or VMT treatment without PPV: bill 67025 (injection of vitreous substitute) + 65800 (paracentesis of anterior chamber). These are NOT bundled — bill both. If diagnosis is retinal detachment, use 67110 instead.",
+      },
+    },
+    {
+      label: "Implant / material removal",
+      next: {
+        id: "implant_type",
+        question: "What is being removed?",
+        options: [
+          {
+            label: "Silicone oil (intraocular)",
+            next: {
+              id: "result_67121_tree",
+              result: true,
+              code: "67121",
+              title: "Silicone oil removal (intraocular)",
+              detail: "BUNDLED with all vitrectomy codes. If PPV is performed during oil removal, bill 67036 only — do NOT add 67121. Only bill 67121 as standalone when NO vitrectomy is done.",
+            },
+          },
+          {
+            label: "Scleral buckle (extraocular)",
+            next: {
+              id: "result_67120_tree",
+              result: true,
+              code: "67120",
+              title: "Scleral buckle removal (extraocular)",
+              detail: "Removal of scleral buckle material (band, sponge, tire). Common indications: infection, extrusion, diplopia, discomfort. Distinct from 67121 (intraocular removal).",
             },
           },
         ],
@@ -1497,6 +1626,13 @@ function TreeDiagram() {
               <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>+ 67036 (PPV)</div>
             </div>
             <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>IOL Reposition</div>
+              <div style={{ background: "#f472b618", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>66825</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>+ 67036 (PPV)</div>
+            </div>
+            <div style={col}>
               <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Secondary IOL</div>
               <div style={{ background: "#d946ef18", borderRadius: 8, padding: "6px 12px" }}>
                 <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>66985</div>
@@ -1542,6 +1678,67 @@ function TreeDiagram() {
 
         {/* Endophthalmitis tap */}
         {diagCard("Endophthalmitis\n(tap & inject only)", "67015", "Vitreous tap", "#f87171", "67028 bundled into 67015")}
+
+      </div>
+
+      {/* Third row: pneumatic, implant removal, laser */}
+      <div style={{ ...row, gap: 12, marginBottom: 24 }}>
+
+        {/* Pneumatic cases (non-RD) */}
+        <div style={{
+          background: S.card, border: "2px solid #06b6d4", borderRadius: 12,
+          padding: "14px 16px", minWidth: 240, textAlign: "center",
+        }}>
+          <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#06b6d4", marginBottom: 10 }}>
+            Pneumatic Cases (no PPV)
+          </div>
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>RD</div>
+              <div style={{ background: "#06b6d418", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67110</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Pneumatic retinopexy</div>
+            </div>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Submacular heme / VMT</div>
+              <div style={{ background: "#06b6d418", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67025</div>
+                <div style={{ fontWeight: 800, fontSize: "0.85rem", color: S.bright, fontFamily: S.mono }}>+ 65800</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Gas inject + AC tap</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Implant removal */}
+        <div style={{
+          background: S.card, border: "2px solid #78716c", borderRadius: 12,
+          padding: "14px 16px", minWidth: 200, textAlign: "center",
+        }}>
+          <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#a8a29e", marginBottom: 10 }}>
+            Implant / Material Removal
+          </div>
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Oil (intraocular)</div>
+              <div style={{ background: "#78716c18", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67121</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Bundled w/ PPV → 67036</div>
+            </div>
+            <div style={col}>
+              <div style={{ fontSize: "0.68rem", color: "#94a3b8", fontFamily: S.mono, marginBottom: 4 }}>Buckle (extraocular)</div>
+              <div style={{ background: "#78716c18", borderRadius: 8, padding: "6px 12px" }}>
+                <div style={{ fontWeight: 800, fontSize: "1rem", color: S.bright, fontFamily: S.mono }}>67120</div>
+              </div>
+              <div style={{ fontSize: "0.6rem", color: "#94a3b8", marginTop: 2 }}>Standalone</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dislocated lens */}
+        {diagCard("Dislocated Lens\n(crystalline)", "66852", "PPL (pars plana)", "#d97706", "Bundled w/ PPV → bill 67036\nPhaco approach → 66850")}
 
       </div>
 
