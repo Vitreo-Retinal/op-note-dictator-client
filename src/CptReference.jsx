@@ -19,10 +19,10 @@ const CPT_DB = [
     desc: "Vitrectomy, mechanical, pars plana approach",
     category: "Vitrectomy",
     global: "90 days",
-    indication: "VH, vitreous opacities, dislocated IOL, retained lens fragments, endophthalmitis, vitreomacular traction (non-RD diagnoses)",
-    bundling: "All vitrectomy codes 67036–67043 are bundled with each other under NCCI. If multiple vitrectomy techniques are performed same eye, bill the one with the highest RVU. 67121 (removal of implanted material) also bundles with all vitrectomy codes.",
+    indication: "VH, vitreous opacities/floaters, dislocated IOL, retained lens fragments (RLF), endophthalmitis, vitreomacular traction (non-RD diagnoses)",
+    bundling: "All vitrectomy codes 67036–67043 are bundled with each other under NCCI. If multiple vitrectomy techniques are performed same eye, bill the one with the highest RVU. 67121 (removal of implanted material) also bundles with all vitrectomy codes. 66852 (PPL) and 67028 (injection) are also BUNDLED with 67036.",
     modifiers: "-LT/-RT (laterality). -58 if staged. -78 if unplanned return to OR. -79 if unrelated procedure in global.",
-    tips: "Base vitrectomy code — use when NO membrane peel, NO laser, and diagnosis is NOT retinal detachment. For dislocated IOL cases, pair with 66986 (IOL exchange) which is NOT bundled with 67036.",
+    tips: "Base vitrectomy code — use when NO membrane peel, NO laser, and diagnosis is NOT retinal detachment. Common uses: VH, floaters, RLF after cataract surgery, dislocated IOL, endophthalmitis. For dislocated IOL cases, pair with 66986 (IOL exchange) which is NOT bundled with 67036. For RLF with IOL exchange: 66986 + 67036. Intravitreal antibiotics during PPV are bundled (no separate 67028).",
   },
   {
     code: "67039",
@@ -144,6 +144,34 @@ const CPT_DB = [
   },
 
   // ═══════════════════════════════════════════════════════════════════
+  // VITREOUS TAP / BIOPSY
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    code: "67015",
+    desc: "Aspiration or release of vitreous, subretinal or choroidal fluid, pars plana approach (vitreous tap/biopsy)",
+    category: "Vitrectomy",
+    global: "10 days",
+    indication: "Vitreous biopsy (endophthalmitis workup, lymphoma, uveitis), therapeutic vitreous tap",
+    bundling: "BUNDLED with 67028 (intravitreal injection). For endophthalmitis tap-and-inject, bill 67015 ONLY — do NOT add 67028. NOT bundled with full vitrectomy codes (67036–67043).",
+    modifiers: "-LT/-RT.",
+    tips: "Classic use: tap-and-inject for endophthalmitis. When performing tap + intravitreal antibiotics, bill 67015 alone (67028 bundles into it). If full PPV is performed instead of just a tap, bill the appropriate vitrectomy code, not 67015. Also used for diagnostic vitreous biopsy (lymphoma, chronic uveitis).",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // LENSECTOMY
+  // ═══════════════════════════════════════════════════════════════════
+  {
+    code: "66852",
+    desc: "Removal of lens material; pars plana approach, with or without vitrectomy (pars plana lensectomy)",
+    category: "IOL / Lens",
+    global: "90 days",
+    indication: "Pars plana lensectomy (PPL) — removal of crystalline lens via pars plana, typically combined with PPV",
+    bundling: "BUNDLED with ALL vitrectomy codes (67036–67043) and ALL RD codes (67108, 67113) under NCCI. Cannot bill 66852 + vitrectomy code. For combined PPV + lensectomy + IOL placement: bill 66986 (IOL exchange, higher RVU) + 67036 (base PPV). Lens removal is included in 67108 and 67113.",
+    modifiers: "-LT/-RT.",
+    tips: "Key coding pearl: 66852 is ALWAYS bundled with vitrectomy. If performing PPV + lensectomy + IOL implant, the correct coding is 66986-RT + 67036-RT (list 66986 first — higher RVU at 22.87 vs 22.72). Do NOT bill 66852 separately when vitrectomy is performed. 66852 standalone is only billable when NO vitrectomy is done (rare in retina practice).",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
   // INTRAVITREAL INJECTION
   // ═══════════════════════════════════════════════════════════════════
   {
@@ -152,9 +180,9 @@ const CPT_DB = [
     category: "Injection",
     global: "10 days",
     indication: "Intravitreal injection of anti-VEGF, steroid, or antibiotic",
-    bundling: "Bundled with vitrectomy if performed same session. E/M on same day requires -25 modifier on the E/M code. 'Separate procedure' designation but NCCI overrides this for Medicare.",
+    bundling: "BUNDLED with ALL vitrectomy codes (67036–67043) and ALL RD codes (67108, 67113) when performed same session. Intravitreal antibiotics given during PPV cannot be billed separately. BUNDLED with 67015 (vitreous tap) — for tap-and-inject, bill 67015 only. E/M on same day requires -25 modifier on the E/M code.",
     modifiers: "-LT/-RT. -50 for bilateral same day. -79 if unrelated to prior surgery global.",
-    tips: "Most common retina procedure code. Pair with appropriate J-code for the drug. G2211 is NOT billable on injection days. E/M requires -25 modifier.",
+    tips: "Most common retina procedure code. Pair with appropriate J-code for the drug. G2211 is NOT billable on injection days. E/M requires -25 modifier. KEY: intravitreal antibiotics/antifungals given AT THE TIME OF PPV are bundled — do NOT bill 67028 separately during vitrectomy. For endophthalmitis tap-and-inject (no PPV), bill 67015 only.",
     jcodes: "See J-code section for drug-specific codes.",
   },
 
@@ -344,10 +372,10 @@ const CPT_DB = [
     desc: "Insertion of intraocular lens prosthesis (secondary implant), not associated with concurrent cataract removal",
     category: "IOL / Lens",
     global: "90 days",
-    indication: "Secondary IOL placement in aphakic eye (no concurrent cataract extraction)",
+    indication: "Secondary IOL placement in aphakic eye (no concurrent cataract extraction). Includes AC-IOL, sutured scleral-fixated IOL, iris-fixated IOL.",
     bundling: "Check NCCI edits when combined with vitrectomy codes.",
     modifiers: "-LT/-RT.",
-    tips: "Use for secondary IOL insertion when NO lens is being removed/exchanged. If removing an IOL and replacing, use 66986 (exchange) instead. Common error: billing 66985 when 66986 is the correct code for exchange cases.",
+    tips: "Use for secondary IOL insertion when NO lens is being removed/exchanged — includes AC-IOL placement, scleral-fixated IOL, and iris-fixated IOL in an aphakic eye. If removing an IOL and replacing, use 66986 (exchange) instead. For PPV + AC-IOL in aphakic eye: bill 66985 + 67036.",
   },
 
   // ═══════════════════════════════════════════════════════════════════
@@ -713,6 +741,36 @@ const KEYWORD_MAP = {
   "g2211": ["G2211"],
   "complexity add-on": ["G2211"],
 
+  // Vitreous tap/biopsy
+  "vitreous tap": ["67015"],
+  "vitreous biopsy": ["67015"],
+  "biopsy": ["67015"],
+  "tap": ["67015","65800"],
+  "tap and inject": ["67015"],
+  "endophthalmitis": ["67015","67036"],
+  "endoph": ["67015","67036"],
+  // Lensectomy
+  "ppl": ["66852","66986","67036"],
+  "lensectomy": ["66852","66986","67036"],
+  "pars plana lensectomy": ["66852","66986","67036"],
+  "retained lens": ["67036","66986"],
+  "rlf": ["67036","66986"],
+  "dropped lens": ["67036","66986"],
+  "dropped nucleus": ["67036","66986"],
+  "floaters": ["67036"],
+  "vitreous opacities": ["67036"],
+  // AC-IOL
+  "ac iol": ["66985"],
+  "ac-iol": ["66985"],
+  "anterior chamber iol": ["66985"],
+  // Contralateral
+  "contralateral": [],
+  "other eye": [],
+  "bilateral": [],
+  // Antibiotics
+  "antibiotics": ["67028","67015"],
+  "vancomycin": ["67028","67015"],
+  "ceftazidime": ["67028","67015"],
   // Misc
   "ac tap": ["65800"],
   "paracentesis": ["65800"],
@@ -757,6 +815,14 @@ const TERM_GROUPS = {
   iol: ["iol","iol exchange","dislocated iol","lens","secondary iol","aphakia"],
   tear: ["tear","retinal tear","break","lattice"],
   pdt: ["pdt","photodynamic","verteporfin","cscr"],
+  floaters: ["floaters","floater","vitreous opacities","opacities","symptomatic floaters"],
+  rlf: ["rlf","retained lens","retained lens fragments","dropped lens","dropped nucleus","retained nuclear","lens fragment"],
+  ppl: ["ppl","pars plana lensectomy","lensectomy"],
+  biopsy: ["biopsy","tap","vitreous biopsy","vitreous tap","diagnostic tap"],
+  endophthalmitis: ["endophthalmitis","endoph","tap and inject","tap inject","tap-and-inject"],
+  antibiotics: ["antibiotics","antibiotic","antifungal","vancomycin","ceftazidime","voriconazole","amikacin"],
+  contralateral: ["contralateral","other eye","fellow eye","bilateral","os","od","both eyes"],
+  ac_iol: ["ac iol","ac-iol","anterior chamber iol","anterior chamber lens"],
   // Drugs
   avastin: ["avastin","bevacizumab","bev"],
   eylea: ["eylea","aflibercept"],
@@ -794,12 +860,16 @@ const CODE_RULES = {
   "67043": { require: [["subretinal"]], exclude: ["rd"], boost: ["ppv"] },
   "67040": { require: [["prp","pdr"]], exclude: ["rd"], boost: ["ppv","vh"] },
   "67039": { require: [["focal_laser"]], exclude: ["rd"], boost: ["ppv"] },
-  "67036": { require: [["ppv","vh"]], exclude: ["rd","ilm","macular_hole","erm","subretinal","prp","focal_laser","buckle","pneumatic","injection","laser","yag","cryo","iol","pdt"], boost: ["vh"] },
+  "67036": { require: [["ppv","vh","floaters","rlf","endophthalmitis"]], exclude: ["rd","ilm","macular_hole","erm","subretinal","prp","focal_laser","buckle","pneumatic","injection","laser","yag","cryo","pdt","biopsy"], boost: ["vh","floaters","rlf","endophthalmitis"] },
   // Gas/oil standalone
   "67025": { require: [["gas","oil"]], exclude: ["rd","ppv","ilm","macular_hole"], boost: [] },
   "67121": { require: [["oil"]], exclude: ["rd"], boost: [] },
+  // Vitreous tap/biopsy
+  "67015": { require: [["biopsy","endophthalmitis"]], exclude: ["ppv","rd"], boost: ["endophthalmitis"] },
+  // Lensectomy (bundled with PPV — informational)
+  "66852": { require: [["ppl"]], exclude: ["iol"], boost: ["ppv"] },
   // Injection
-  "67028": { require: [["injection"]], boost: [] },
+  "67028": { require: [["injection","antibiotics"]], exclude: ["ppv","rd","biopsy","endophthalmitis"], boost: [] },
   // J-codes
   "J9035": { require: [["avastin"]], boost: ["injection"] },
   "J0178": { require: [["eylea"]], exclude: ["eylea_hd"], boost: ["injection"] },
@@ -820,8 +890,8 @@ const CODE_RULES = {
   // Cryo
   "67141": { require: [["cryo","tear"]], exclude: ["rd"], boost: [] },
   // IOL
-  "66986": { require: [["iol"]], boost: ["ppv"] },
-  "66985": { require: [["iol"]], exclude: [], boost: [] },
+  "66986": { require: [["iol"]], exclude: ["ac_iol"], boost: ["ppv","rlf"] },
+  "66985": { require: [["iol","ac_iol"]], exclude: [], boost: [] },
   // Diagnostics
   "92134": { require: [["oct"]], exclude: ["oct_nerve"], boost: [] },
   "92133": { require: [["oct_nerve"]], boost: [] },
