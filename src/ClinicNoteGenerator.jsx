@@ -502,6 +502,26 @@ G2211 RULES (CRITICAL):
 - Must be visit-specific and varied in wording.
 - If G2211 does NOT apply (injection day, post-op visit, or primarily surgical patient), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
 
+E/M LEVEL SHORTCUTS (use as baseline, then adjust per MDM complexity):
+- Level 3 (99213): No treatment — observation only (PVD, dry AMD, stable ERM, stable post-op, no Rx changes)
+- Level 4 (99214): Rx/injection/surgery decision — new or changed treatment, injection given, surgery planned (wet AMD injection, RVO with anti-VEGF, DME treatment, laser). Also: drug management changes (new Rx, switch drugs), uveitis with intensive immunosuppressive management.
+- Level 5 (99215): ER/emergency-level complexity — urgent conditions, multiple complex decisions (endophthalmitis, acute RD, oncology, disease progression requiring therapy switch with extensive risk discussion). PITFALLS: "blinding disease in the future" is NOT Level 5 — must be threat TODAY. "Severe disease" alone is NOT Level 5. Decision for RD surgery is NOT automatically Level 5. Must meet 2 of 3 MDM categories: (1) illness posing threat to body function with near-term treatment, (2) decision regarding emergency major surgery or hospitalization.
+
+E/M vs EYE CODE SELECTION:
+- Default to E/M (99213-99215) when: injection day (-25), active management decisions, drug changes, G2211 is eligible.
+- Use Eye code (92014) when: stable observation, no injection, no complex MDM, and G2211 is NOT eligible. Eye codes include comprehensive dilated exam as part of the service — no separate imaging charge.
+- If G2211 is eligible, ALWAYS prefer 99214 over 92014 — the combination 99214 + G2211 reimburses better than 92014 alone.
+
+IMAGING MUTUAL EXCLUSIVITY (recommend appropriate codes):
+- 92250 covers ALL fundus photography modes: color photos, FAF, NIR, red-free. FAF is NOT a separate code — bill as 92250.
+- OCT (92134) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE — cannot bill both same eye same day per NCCI edits.
+- OCTA (92137) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE — same bundling as 92134.
+- ICG (92240) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE.
+- 92242 (combo FA/ICG): MUTUALLY EXCLUSIVE with 92235, 92240, 92250 — but CAN be billed with 92134 (OCT) or 92137 (OCTA).
+- FA (92235) and fundus photos/FAF (92250): NOT mutually exclusive — can bill both.
+- FA (92235) and OCTA (92137): NOT mutually exclusive — can bill both.
+- CPT 92137 (OCTA + retinal OCT combo, new 1/1/2025): Use 92137 instead of 92134 when OCTA is performed. 92133, 92134, and 92137 are all mutually exclusive with each other.
+
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
 
@@ -516,6 +536,16 @@ MODIFIER RULES:
 - Modifier -59 (Distinct procedural service): Use when two normally-bundled procedures are performed same eye same day and are truly separate services. Example: intravitreal injection + focal laser same eye same day → -59 on the second (lesser) procedure to indicate it is distinct.
 - If NO procedure is performed today and no same-day/next-day surgical decision is made → no modifier needed, just the bare E/M code.
 - IMPORTANT: Modifiers -24, -58, -78, -79 are relevant when the patient is WITHIN a prior surgery's global period. If not in a global period, these do not apply.
+
+SURGERY MODIFIER REIMBURSEMENT:
+- -58 (staged/planned): new postop period starts, 100% allowable.
+- -78 (unplanned return to OR): NO new postop period, 70% allowable (intraop only).
+- -79 (unrelated procedure in postop): new postop period starts, 100% allowable.
+
+TRANSFER OF CARE MODIFIERS (flag when postop care is split):
+- -54 = Surgical care only (surgeon operates, doesn't do postop). CMS now requires for ALL 90-day globals when providing surgery only, even informal transfers.
+- -55 = Postop management only. -56 = Preop management only. Only for formal documented transfer.
+- G0559 = Add-on for postop follow-up by non-surgeon physician, different specialty, within 90-day global, NO formal transfer. E/M add-on only. Medicare Part B only.
 
 MODIFIER STACKING — multiple modifiers can apply to the same code when multiple conditions are met:
 - E/M with unrelated condition during global + injection same day → E/M code with BOTH -24 and -25 (e.g., 99214-24-25). The -24 tells the payer the E/M is unrelated to the prior surgery; the -25 tells them it's separate from today's injection.
@@ -572,6 +602,31 @@ DECISION RULES:
 - 99214: chronic condition with management decision, data reviewed
 - 99215: multiple chronic conditions OR progression requiring complex MDM — but see AMD BILLING CAP below
 - G2211: established patient + serious chronic condition + NOT an injection day (see G2211 rules below)
+
+E/M LEVEL SHORTCUTS (use as baseline, then adjust per MDM complexity):
+- Level 3 (99213): No treatment — observation only (PVD, dry AMD, stable ERM, stable post-op, no Rx changes)
+- Level 4 (99214): Rx/injection/surgery decision — new or changed treatment, injection given, surgery planned. Also: drug management changes, uveitis with intensive immunosuppressive management.
+- Level 5 (99215): ER/emergency-level complexity — urgent conditions, multiple complex decisions. PITFALLS: "blinding disease in the future" is NOT Level 5 — must be threat TODAY. "Severe disease" alone is NOT Level 5. Decision for RD surgery is NOT automatically Level 5. Must meet 2 of 3 MDM categories: (1) illness posing threat to body function with near-term treatment, (2) decision regarding emergency major surgery or hospitalization.
+
+SURGERY MODIFIER REIMBURSEMENT:
+- -58 (staged/planned): new postop period starts, 100% allowable.
+- -78 (unplanned return to OR): NO new postop period, 70% allowable (intraop only).
+- -79 (unrelated procedure in postop): new postop period starts, 100% allowable.
+
+TRANSFER OF CARE (flag when postop care is split):
+- -54 = Surgical care only. CMS now requires for ALL 90-day globals when providing surgery only, even informal transfers.
+- -55 = Postop management only. -56 = Preop management only.
+- G0559 = Add-on for postop follow-up by non-surgeon physician, different specialty, within 90-day global, NO formal transfer. Medicare Part B only.
+
+IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
+- 92250 covers ALL fundus photography modes: color photos, FAF, NIR, red-free. FAF is NOT a separate code.
+- OCT (92134) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE same eye same day.
+- OCTA (92137) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE.
+- ICG (92240) and fundus photos/FAF (92250): MUTUALLY EXCLUSIVE.
+- 92242 (combo FA/ICG): MUTUALLY EXCLUSIVE with 92235, 92240, 92250 — but CAN bill with OCT/OCTA.
+- FA (92235) and fundus photos/FAF (92250): NOT mutually exclusive — can bill both.
+- FA (92235) and OCTA (92137): NOT mutually exclusive — can bill both.
+- CPT 92137 (OCTA + retinal OCT combo, new 1/1/2025): Use instead of 92134 when OCTA is performed. 92133, 92134, and 92137 all mutually exclusive with each other.
 
 AMD BILLING CAP (CRITICAL):
 - AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is a 99214 (moderate complexity), NOT 99215.

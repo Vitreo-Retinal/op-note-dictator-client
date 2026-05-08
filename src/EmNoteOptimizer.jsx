@@ -71,11 +71,26 @@ SUGGEST EYE CODE (92014/92004) when:
 - Note lacks MDM complexity elements
 
 E/M LEVEL SHORTCUTS (use as baseline, then adjust per MDM complexity):
-- Level 3 (99213): No treatment — observation only (PVD, dry AMD, stable ERM, stable post-op)
-- Level 4 (99214): Rx/injection/surgery decision — new or changed treatment, injection given, surgery planned (wet AMD injection, RVO with anti-VEGF, DME treatment, laser)
-- Level 5 (99215): ER/emergency-level complexity — urgent conditions, multiple complex decisions (endophthalmitis, acute RD, oncology, disease progression requiring therapy switch with extensive risk discussion)
+- Level 3 (99213): No treatment — observation only (PVD, dry AMD, stable ERM, stable post-op, no Rx changes)
+- Level 4 (99214): Rx/injection/surgery decision — new or changed treatment, injection given, surgery planned (wet AMD injection, RVO with anti-VEGF, DME treatment, laser). Also: drug management changes (new Rx, switch drugs), uveitis with intensive immunosuppressive management.
+- Level 5 (99215): ER/emergency-level complexity — urgent conditions, multiple complex decisions (endophthalmitis, acute RD, oncology, disease progression requiring therapy switch with extensive risk discussion). PITFALLS: "blinding disease in the future" is NOT Level 5 — must be threat TODAY. "Severe disease" alone is NOT Level 5. Decision for RD surgery is NOT automatically Level 5. Must meet 2 of 3 MDM categories: (1) illness posing threat to body function with near-term treatment, (2) decision regarding emergency major surgery or hospitalization.
 
-G2211 applies only when: 99215 is supported AND established patient with serious chronic condition
+G2211 applies only when: E/M code (99213-99215) supported AND established patient with serious chronic condition. Do NOT report G2211 with -25 modifier. NEVER with eye codes (92012/92014). 0.49 RVU / $16.04.
+
+SURGERY MODIFIER REIMBURSEMENT:
+- -58 (staged/planned): new postop period starts, 100% allowable.
+- -78 (unplanned return to OR): NO new postop period, 70% allowable.
+- -79 (unrelated procedure in postop): new postop period starts, 100% allowable.
+
+GLOBAL PERIODS — flag when relevant to modifier selection:
+- 90-day global: ALL vitrectomy (67036-67043), ALL RD codes (67107-67113), IOL codes, 0810T, focal laser 67210, choroidal photocoag 67220.
+- 10-day global: Injection 67028, tap 67015, prophylactic laser 67145, tear laser 67105, PRP 67228, YAG 66821.
+- Same-day exam modifier by global: 10-day procedures → use -25 on E/M. 90-day procedures → use -57 on E/M.
+
+TRANSFER OF CARE — flag when postop care is split:
+- -54 = Surgical care only (surgeon operates, doesn't do postop). CMS now requires for ALL 90-day globals when providing surgery only, even informal transfers.
+- -55 = Postop management only. -56 = Preop management only. Only for formal documented transfer.
+- G0559 = Add-on for postop follow-up by non-surgeon physician, different specialty, within 90-day global, NO formal transfer. E/M add-on only. Medicare Part B only.
 
 MODIFIER RULES — flag when applicable:
 - -25: Significant, separately identifiable E/M on same day as a minor procedure (injection, laser, YAG). Example: wet AMD injection (linked to AMD) + new PVD symptoms evaluated (exam linked to PVD with -25). ONLY flag when there are TWO distinct clinical reasons for the visit.
