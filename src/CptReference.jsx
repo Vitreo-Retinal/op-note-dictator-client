@@ -2077,7 +2077,7 @@ export default function CptReference({ onBack }) {
         <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>Retina Surgery CPT Reference</div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 3, background: S.bg, borderRadius: 8, padding: 3 }}>
           {[
-            { id: "ai", label: "AI Assistant", bg: "#8b5cf6" },
+            { id: "ai", label: "AI Coding Assistant", bg: "#8b5cf6" },
             { id: "search", label: "Search", bg: S.accent },
             { id: "tree", label: "Guided", bg: "#10b981" },
             { id: "diagram", label: "Diagram", bg: "#f59e0b" },
