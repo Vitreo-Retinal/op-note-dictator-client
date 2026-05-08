@@ -57,9 +57,8 @@ Before Your Appointment
 What Happens During the Injection
 1. Numbing drops and/or gel are applied — you should feel little to no pain.
 2. Your eye and eyelids are cleaned with an antiseptic (betadine).
-3. A small speculum gently holds your eyelids open.
-4. The injection is given through the white part of the eye (sclera).
-5. The entire process takes about 5–10 minutes.
+3. The injection is given through the white part of the eye (sclera).
+4. The entire process takes about 5–10 minutes.
 
 Common Sensations
 • Mild pressure or a brief pinch during the injection.
@@ -88,9 +87,8 @@ Antes de su Cita
 Qué Sucede Durante la Inyección
 1. Se aplican gotas y/o gel anestésico — debe sentir poco o ningún dolor.
 2. Su ojo y párpados se limpian con un antiséptico (betadine).
-3. Un pequeño espéculo mantiene sus párpados abiertos suavemente.
-4. La inyección se aplica a través de la parte blanca del ojo (esclera).
-5. Todo el proceso toma aproximadamente 5–10 minutos.
+3. La inyección se aplica a través de la parte blanca del ojo (esclera).
+4. Todo el proceso toma aproximadamente 5–10 minutos.
 
 Sensaciones Comunes
 • Presión leve o un breve pinchazo durante la inyección.
@@ -119,9 +117,8 @@ Trước Cuộc Hẹn
 Điều Gì Xảy Ra Trong Khi Tiêm
 1. Thuốc nhỏ mắt và/hoặc gel gây tê được bôi — bạn sẽ cảm thấy ít hoặc không đau.
 2. Mắt và mí mắt được làm sạch bằng chất sát trùng (betadine).
-3. Một dụng cụ nhỏ giữ mí mắt mở nhẹ nhàng.
-4. Mũi tiêm được thực hiện qua phần trắng của mắt (củng mạc).
-5. Toàn bộ quá trình mất khoảng 5–10 phút.
+3. Mũi tiêm được thực hiện qua phần trắng của mắt (củng mạc).
+4. Toàn bộ quá trình mất khoảng 5–10 phút.
 
 Cảm Giác Thường Gặp
 • Áp lực nhẹ hoặc cảm giác châm chích ngắn khi tiêm.
@@ -150,9 +147,8 @@ Antes da Consulta
 O Que Acontece Durante a Injeção
 1. Colírio e/ou gel anestésico são aplicados — você deve sentir pouca ou nenhuma dor.
 2. Seu olho e pálpebras são limpos com antisséptico (betadine).
-3. Um pequeno espéculo mantém suas pálpebras abertas gentilmente.
-4. A injeção é aplicada através da parte branca do olho (esclera).
-5. Todo o processo leva cerca de 5–10 minutos.
+3. A injeção é aplicada através da parte branca do olho (esclera).
+4. Todo o processo leva cerca de 5–10 minutos.
 
 Sensações Comuns
 • Leve pressão ou uma breve picada durante a injeção.
