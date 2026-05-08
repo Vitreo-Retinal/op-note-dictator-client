@@ -1843,7 +1843,7 @@ function TreeDiagram() {
 // ── AI Coding Assistant ─────────────────────────────────────────────
 const AI_API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
-function AICodingAssistant() {
+export function AICodingAssistant() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);

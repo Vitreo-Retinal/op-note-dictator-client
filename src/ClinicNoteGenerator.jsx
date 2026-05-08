@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { AICodingAssistant } from "./CptReference.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -1074,14 +1075,24 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         )}
         <div style={{ width: 38, height: 38, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>&#9877;</div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>Clinic Note Generator</div>
+          <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>Clinic Note Generator{surgeon ? ` — ${surgeon.name}` : ""}</div>
           <div style={{ fontSize: "0.68rem", color: S.muted, fontFamily: S.mono }}>A/P Notes | Billing Codes | Shorthand Expansion</div>
         </div>
       </div>
 
       {/* Tabs */}
       <div style={{ display: "flex", borderBottom: `1px solid ${S.card}`, paddingLeft: 24, overflowX: "auto" }}>
-        {[["input", "Input"], ["output", "Output"], ["examples", "Examples"], ["rules", "Expansion Rules"], ["instructions", "My Instructions"], ["codes", "ICD-10"]].map(([id, label]) => (
+        {[
+          ["input", "Input"],
+          ["output", "Output"],
+          ["examples", "Examples"],
+          ["rules", "Expansion Rules"],
+          ["instructions", "My Instructions"],
+          ["coding", "AI Coding"],
+          ["inject", "Can We Inject?"],
+          ["education", "Patient Ed"],
+          ...(surgeon && surgeon.hasRobocall ? [["robocall", "Robocall"]] : []),
+        ].map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} style={{
             padding: "9px 14px", background: "none", border: "none",
             borderBottom: tab === id ? `2px solid ${S.accent}` : "2px solid transparent",
@@ -1566,8 +1577,47 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           </div>
         )}
 
-        {/* ── CODES TAB ─────────────────────────────────────────── */}
-        {tab === "codes" && (() => {
+        {/* ── AI CODING TAB ────────────────────────────────────── */}
+        {tab === "coding" && (
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            <AICodingAssistant />
+          </div>
+        )}
+
+        {/* ── CAN WE INJECT TAB ──────────────────────────────── */}
+        {tab === "inject" && (
+          <div style={{ margin: "0 auto", maxWidth: "100%" }}>
+            <iframe
+              src="https://retina-rx.vercel.app"
+              title="Can We Inject? — Coverage Lookup"
+              style={{ border: "none", width: "100%", height: "calc(100vh - 160px)" }}
+              allow="clipboard-write"
+            />
+          </div>
+        )}
+
+        {/* ── PATIENT EDUCATION TAB ──────────────────────────── */}
+        {tab === "education" && (
+          <div style={{ padding: 40, textAlign: "center", color: S.muted, maxWidth: 800, margin: "0 auto" }}>
+            <div style={{ fontSize: "2rem", marginBottom: 12 }}>📄</div>
+            <div style={{ fontSize: "0.9rem" }}>Patient education library coming soon — searchable, printable handouts in EN/ES/VI/PT.</div>
+          </div>
+        )}
+
+        {/* ── ROBOCALL TAB (MR only) ─────────────────────────── */}
+        {tab === "robocall" && surgeon && surgeon.hasRobocall && (
+          <div style={{ padding: 20, textAlign: "center", color: S.muted, maxWidth: 800, margin: "0 auto" }}>
+            <div style={{ fontSize: "2rem", marginBottom: 12 }}>📞</div>
+            <div style={{ fontSize: "0.9rem", marginBottom: 16 }}>Robocall dictation system</div>
+            <button onClick={() => { if (onBack) onBack(); setTimeout(() => window.__openDictator && window.__openDictator(), 100); }}
+              style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: "0.9rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}>
+              Open Robocall
+            </button>
+          </div>
+        )}
+
+        {/* ── LEGACY CODES TAB (hidden, kept for reference) ─── */}
+        {false && tab === "codes" && (() => {
           const ICD10_DB = [
             { cat: "AMD", code: "H35.3110", desc: "Unspecified stage (OD)" },
             { cat: "AMD", code: "H35.3111", desc: "Early dry AMD (OD)" },
