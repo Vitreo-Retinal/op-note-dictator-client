@@ -730,7 +730,7 @@ const S = {
 const isEyeCode = (code) => code === "92014" || code === "92004";
 
 // ── Component ───────────────────────────────────────────────────────
-export default function ClinicNoteGenerator({ onBack }) {
+export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const [mode, setMode] = useState("generate"); // generate | optimize
   const [note, setNote] = useState("");
   const [timeSpent, setTimeSpent] = useState(""); // optional — minutes spent with patient
