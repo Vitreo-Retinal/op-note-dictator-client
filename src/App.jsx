@@ -182,17 +182,18 @@ export default function App() {
 
   // ── Shared tool pages ──
   if (page === "inject") {
-    // TODO: Build CanWeInject component (Task #26)
     return (
-      <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
-        <div style={{ padding: "16px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text, display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: "10px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
           <button onClick={() => setPage("home")} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Home</button>
           <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>💉 Can We Inject?</span>
         </div>
-        <div style={{ padding: 40, textAlign: "center", color: S.muted }}>
-          <div style={{ fontSize: "2rem", marginBottom: 12 }}>💉</div>
-          <div style={{ fontSize: "0.9rem" }}>Coverage lookup coming soon — this will show the full drug + insurance PA search.</div>
-        </div>
+        <iframe
+          src="https://retina-rx.vercel.app"
+          title="Can We Inject? — Coverage Lookup"
+          style={{ flex: 1, border: "none", width: "100%", minHeight: "calc(100vh - 52px)" }}
+          allow="clipboard-write"
+        />
       </div>
     );
   }
