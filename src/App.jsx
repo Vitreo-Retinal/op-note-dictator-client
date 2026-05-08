@@ -26,11 +26,11 @@ const S = {
 
 // ── Surgeon roster ──────────────────────────────────────────────────
 const SURGEONS = [
-  { id: "MR", name: "MR", fullName: "Dr. Rosenberg", surgeonId: "998eae6c-1516-43d5-8bc7-6905074cd8e3", hasRobocall: true },
-  { id: "BKH", name: "BKH", fullName: "Dr. Huang", surgeonId: null },
-  { id: "FJM", name: "FJM", fullName: "Dr. Mayer", surgeonId: null },
-  { id: "BJB", name: "BJB", fullName: "Dr. Bakri", surgeonId: null },
-  { id: "WSF", name: "WSF", fullName: "Dr. Fassbender", surgeonId: null },
+  { id: "MR", name: "MR", surgeonId: "998eae6c-1516-43d5-8bc7-6905074cd8e3", hasRobocall: true },
+  { id: "BKH", name: "BKH", surgeonId: null },
+  { id: "FJM", name: "FJM", surgeonId: null },
+  { id: "BJB", name: "BJB", surgeonId: null },
+  { id: "WSF", name: "WSF", surgeonId: null },
 ];
 
 // ── Password Gate ───────────────────────────────────────────────────
@@ -161,7 +161,6 @@ function Homepage({ onSelectTool, onSelectDoctor }) {
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = S.green; e.currentTarget.style.transform = "translateY(-2px)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = S.border; e.currentTarget.style.transform = "translateY(0)"; }}>
               <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", fontWeight: 700, color: "#fff", fontFamily: S.mono }}>{doc.name}</div>
-              <div style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.font }}>{doc.fullName}</div>
             </button>
           ))}
         </div>
