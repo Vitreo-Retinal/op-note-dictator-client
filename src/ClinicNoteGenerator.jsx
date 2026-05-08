@@ -448,6 +448,7 @@ IMPORTANT BILLING REMINDER: ALL conditions above — not just AMD and injection 
 BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marked with [+]):
 1. IMAGING REVIEW: Always include [+] "OCT reviewed" or [+] "OCT and imaging reviewed" when any imaging is mentioned or implied. For complex cases: [+] "Data reviewed including OCT/imaging and prior surgical records."
    - OCT-A is routinely reviewed. For DIABETIC patients: mention FAZ enlargement and/or MAs on OCT-A when relevant. For AMD or myopic CNVM: mention CNVM on OCT-A when relevant. Include [+] "OCT-A reviewed" alongside OCT review for these conditions.
+   - OCTA MEDICAL NECESSITY (critical for 92137 billing): When OCT-A is mentioned, always document WHY it was medically necessary and how findings influenced the treatment plan. Example: [+] "OCT-A reviewed demonstrating [findings] — this guided treatment decision to [action]." This language supports 92137 billing and audit defense.
 2. MANAGEMENT DECISION: Always document what was decided and why. Examples:
    - [+] "Decision was made to continue present management with Vabysmo q8 weeks given stable response."
    - [+] "Decision was made to switch from Eylea to Vabysmo given sub-optimal response."
@@ -521,6 +522,7 @@ IMAGING MUTUAL EXCLUSIVITY (recommend appropriate codes):
 - FA (92235) and fundus photos/FAF (92250): NOT mutually exclusive — can bill both.
 - FA (92235) and OCTA (92137): NOT mutually exclusive — can bill both.
 - CPT 92137 (OCTA + retinal OCT combo, new 1/1/2025): Use 92137 instead of 92134 when OCTA is performed. 92133, 92134, and 92137 are all mutually exclusive with each other.
+- APRIL 2026 UPDATE: NCCI removed PTP edits between 92137 and 92235/92240/92242 (retroactive to Oct 2025). OCTA + FA and OCTA + ICG CAN now be billed same day. Edits between 92137 and eye codes remain with CCMI indicator 1.
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
@@ -532,7 +534,7 @@ MODIFIER RULES:
 - Modifier -58: Use on a PLANNED/STAGED procedure performed during the postoperative global period of the original surgery. Examples: PPV for RD → planned silicone oil removal 3 months later (still in 90-day global) → -58. Pneumatic retinopexy → staged laser retinopexy (LRP) at follow-up visit (within 90-day global) → -58 on the laser. Starts a new global period.
 - Modifier -78: Use for an UNPLANNED RETURN TO THE OR for a complication during the global period. Example: PPV → endophthalmitis POW2, needs tap/inject or re-PPV → -78. Does NOT reset the global period. Reimbursed at reduced rate (intraoperative portion only).
 - Modifier -79: Use for an UNRELATED PROCEDURE during the global period. Example: PPV OD → 4 weeks later needs injection OS for wet AMD → -79 on the injection. Starts a new global period for the new procedure.
-- Modifier -50 (Bilateral procedure): Use when the same procedure is performed on both eyes same day. Example: bilateral intravitreal injections → 67028-50.
+- Modifier -50 (Bilateral procedure): Use when the same procedure is performed on both eyes same day. Example: bilateral intravitreal injections → 67028-50. MUE = 1 for 67028, bilateral indicator = 1 (150% payment). Bill single line, 1 unit, modifier -50, doubled fee. Wet AMD + GA same eye: only 1 unit of 67028 reimbursed — link both ICD-10 codes to 67028, separate drug J-codes to respective diagnoses.
 - Modifier -59 (Distinct procedural service): Use when two normally-bundled procedures are performed same eye same day and are truly separate services. Example: intravitreal injection + focal laser same eye same day → -59 on the second (lesser) procedure to indicate it is distinct.
 - If NO procedure is performed today and no same-day/next-day surgical decision is made → no modifier needed, just the bare E/M code.
 - IMPORTANT: Modifiers -24, -58, -78, -79 are relevant when the patient is WITHIN a prior surgery's global period. If not in a global period, these do not apply.
@@ -627,6 +629,9 @@ IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 - FA (92235) and fundus photos/FAF (92250): NOT mutually exclusive — can bill both.
 - FA (92235) and OCTA (92137): NOT mutually exclusive — can bill both.
 - CPT 92137 (OCTA + retinal OCT combo, new 1/1/2025): Use instead of 92134 when OCTA is performed. 92133, 92134, and 92137 all mutually exclusive with each other.
+- APRIL 2026 UPDATE: NCCI removed PTP edits between 92137 and 92235/92240/92242 (retroactive to Oct 2025). OCTA + FA and OCTA + ICG CAN now be billed same day. Edits between 92137 and eye codes remain with CCMI indicator 1.
+- OCTA DOCUMENTATION: Flag if OCTA mentioned but medical necessity not documented. Must document WHY OCTA needed instead of OCT alone and how findings influenced treatment.
+- BILATERAL INJECTION (67028): MUE = 1, bilateral indicator = 1 (150% payment). Bill single line with -50 modifier. Wet AMD + GA same eye → 1 unit of 67028 only, link both ICD-10 codes.
 
 AMD BILLING CAP (CRITICAL):
 - AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is a 99214 (moderate complexity), NOT 99215.

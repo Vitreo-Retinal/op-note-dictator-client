@@ -109,6 +109,10 @@ IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 - FA (92235) and fundus photos/FAF (92250): NOT mutually exclusive — can bill both same day
 - FA (92235) and OCTA (92137): NOT mutually exclusive — can bill both same day
 - CPT 92137 (OCTA + retinal OCT combo, new 1/1/2025): Use 92137 instead of 92134 when OCTA is performed. 92134 reimbursement reduced as of 1/1/2025. 92133, 92134, and 92137 are all mutually exclusive with each other.
+- APRIL 2026 UPDATE: NCCI removed PTP edits between 92137 and 92235/92240/92242 (retroactive to Oct 2025). OCTA + FA and OCTA + ICG CAN now be billed same day. Edits between 92137 and eye codes remain with CCMI indicator 1.
+- OCTA DOCUMENTATION: Flag if OCTA mentioned but medical necessity not documented. Must document WHY OCTA needed instead of OCT alone and how findings influenced treatment.
+- BILATERAL INJECTION (67028): MUE = 1, bilateral indicator = 1 (150% payment). Bill single line with -50 modifier. Wet AMD + GA same eye → 1 unit of 67028 only, link both ICD-10 codes.
+- 0996T (new 2026): Capsular bag prosthesis + IOL + scleral fixation + vitrectomy. Do NOT bill 66985/66986/67036 separately.
 
 DOCUMENTATION PEARLS — flag opportunities:
 - Phone calls with referring/consulting physicians: should be documented (adds to MDM data reviewed)
