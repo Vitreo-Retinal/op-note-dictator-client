@@ -2362,34 +2362,181 @@ export default function ClinicNoteGenerator({ onBack }) {
           // Smart search: expand clinical shorthand before matching
           const expandQuery = (raw) => {
             let q = raw.toLowerCase().trim();
+
             // Laterality synonyms
-            q = q.replace(/\bright\s*eye\b/g, "od").replace(/\bleft\s*eye\b/g, "os").replace(/\bboth\s*eyes\b/g, "ou").replace(/\bbilateral\b/g, "ou");
-            // Common abbreviations
+            q = q.replace(/\bright\s*eye\b/g, "(od)").replace(/\bleft\s*eye\b/g, "(os)").replace(/\bboth\s*eyes\b/g, "(ou)").replace(/\bbilateral\b/g, "(ou)");
+            q = q.replace(/\bright\b/g, "(od)").replace(/\bleft\b/g, "(os)");
+
+            // Common abbreviations → DB terms
             q = q.replace(/\bw\/o\b/g, "without").replace(/\bw\/\b/g, "with").replace(/\bw\s/g, "with ");
-            q = q.replace(/\bhtn\b/g, "hypertensive").replace(/\bhtn retinopathy\b/g, "hypertensive retinopathy");
-            q = q.replace(/\bnpdr\b/g, "npdr").replace(/\bpdr\b/g, "pdr").replace(/\bdme\b/g, "dme");
-            q = q.replace(/\bpoag\b/g, "primary open-angle").replace(/\bntg\b/g, "low-tension");
+
+            // AMD variants — "wet amd" → search for exudative/active CNV category
+            q = q.replace(/\bwet\s*amd\b/g, "amd cnv");
+            q = q.replace(/\bdry\s*amd\b/g, "amd dry");
+            q = q.replace(/\bwet\s*macular\s*degeneration\b/g, "amd cnv");
+            q = q.replace(/\bdry\s*macular\s*degeneration\b/g, "amd dry");
+            q = q.replace(/\bmacular\s*degeneration\b/g, "amd");
+            q = q.replace(/\bneovascular\s*amd\b/g, "amd cnv");
+            q = q.replace(/\bexudative\s*amd\b/g, "amd cnv");
+            q = q.replace(/\bnon-?exudative\s*amd\b/g, "amd dry");
+            q = q.replace(/\batrophic\s*amd\b/g, "amd atrophic");
+            q = q.replace(/\bwet\b/g, "cnv");
+
+            // Diabetic
+            q = q.replace(/\bdiabetic\s*macular\s*edema\b/g, "dme");
+            q = q.replace(/\bdiabetic\s*retinopathy\b/g, "diabetic");
+            q = q.replace(/\bnon-?proliferative\s*diabetic\b/g, "npdr");
+            q = q.replace(/\bproliferative\s*diabetic\b/g, "pdr");
+            q = q.replace(/\bdiabetes\b/g, "diabetic");
+            q = q.replace(/\bnpdr\b/g, "npdr");
+            q = q.replace(/\bpdr\b/g, "pdr");
+            q = q.replace(/\bdme\b/g, "dme");
+
+            // Glaucoma
+            q = q.replace(/\bpoag\b/g, "primary open-angle");
+            q = q.replace(/\bntg\b/g, "low-tension");
+            q = q.replace(/\bnvg\b/g, "neovascular glaucoma");
+            q = q.replace(/\bpxf\b/g, "pseudoexfoliation");
+            q = q.replace(/\bopen\s*angle\s*glaucoma\b/g, "primary open-angle");
+            q = q.replace(/\bangle\s*closure\b/g, "angle-closure");
+            q = q.replace(/\bnarrow\s*angle\b/g, "angle-closure");
+            q = q.replace(/\bocular\s*hypertension\b/g, "ocular hypertension");
+            q = q.replace(/\boht\b/g, "ocular hypertension");
+
+            // Vein/artery occlusions
+            q = q.replace(/\bbranch\s*retinal\s*vein\s*occlusion\b/g, "brvo");
+            q = q.replace(/\bcentral\s*retinal\s*vein\s*occlusion\b/g, "crvo");
+            q = q.replace(/\bhemi\s*retinal\s*vein\s*occlusion\b/g, "hrvo");
+            q = q.replace(/\bcentral\s*retinal\s*artery\s*occlusion\b/g, "crao");
+            q = q.replace(/\bbranch\s*retinal\s*artery\s*occlusion\b/g, "brao");
+            q = q.replace(/\bvein\s*occlusion\b/g, "rvo");
+            q = q.replace(/\bartery\s*occlusion\b/g, "artery occlusion");
             q = q.replace(/\bcrvo\b/g, "crvo").replace(/\bbrvo\b/g, "brvo").replace(/\bhrvo\b/g, "hrvo");
             q = q.replace(/\bcrao\b/g, "crao").replace(/\bbrao\b/g, "brao");
-            q = q.replace(/\berm\b/g, "epiretinal").replace(/\bpvd\b/g, "vitreous detachment").replace(/\bvmt\b/g, "vitreomacular traction");
+
+            // Retinal conditions
+            q = q.replace(/\bretinal\s*detachment\b/g, "retinal detachment");
             q = q.replace(/\brd\b/g, "retinal detachment").replace(/\brrd\b/g, "rhegmatogenous");
+            q = q.replace(/\bepiretinal\s*membrane\b/g, "epiretinal");
+            q = q.replace(/\bmacular\s*pucker\b/g, "epiretinal");
+            q = q.replace(/\berm\b/g, "epiretinal");
+            q = q.replace(/\bmacular\s*hole\b/g, "macular hole");
+            q = q.replace(/\bfull\s*thickness\s*macular\s*hole\b/g, "macular hole");
+            q = q.replace(/\bftmh\b/g, "macular hole");
+            q = q.replace(/\blamellar\s*hole\b/g, "lamellar");
+            q = q.replace(/\bpvd\b/g, "vitreous detachment");
+            q = q.replace(/\bvmt\b/g, "vitreomacular traction");
+            q = q.replace(/\bvh\b/g, "vitreous hemorrhage");
+            q = q.replace(/\bfloaters\b/g, "vitreous");
             q = q.replace(/\bcsr\b/g, "central serous").replace(/\bcscr\b/g, "central serous");
-            q = q.replace(/\bcme\b/g, "cystoid macular edema").replace(/\bpsc\b/g, "posterior subcapsular");
-            q = q.replace(/\bnvg\b/g, "neovascular glaucoma").replace(/\bpxf\b/g, "pseudoexfoliation");
-            q = q.replace(/\bnaion\b/g, "ischemic optic neuropathy").replace(/\baion\b/g, "ischemic optic");
-            q = q.replace(/\bvh\b/g, "vitreous hemorrhage").replace(/\bga\b/g, "geographic atrophy");
-            q = q.replace(/\bcnv\b/g, "choroidal neovascularization").replace(/\bped\b/g, "pigment epithelial detachment");
+            q = q.replace(/\bcme\b/g, "cystoid macular edema");
+
+            // Cataracts & lens
+            q = q.replace(/\bcataract\b/g, "cataract");
+            q = q.replace(/\bpsc\b/g, "posterior subcapsular");
+            q = q.replace(/\bnuclear\s*sclerosis\b/g, "nuclear");
+            q = q.replace(/\bns\b/g, "nuclear");
+            q = q.replace(/\bpseudophakia\b/g, "pseudophakia");
+            q = q.replace(/\biol\b/g, "pseudophakia");
+            q = q.replace(/\baphakia\b/g, "aphakia");
+            q = q.replace(/\bdislocated\s*lens\b/g, "subluxation");
+            q = q.replace(/\bdislocated\s*iol\b/g, "dislocated");
+
+            // Geographic atrophy
+            q = q.replace(/\bgeographic\s*atrophy\b/g, "geographic atrophy");
+            q = q.replace(/\bga\b/g, "geographic atrophy");
+
+            // Other mappings
+            q = q.replace(/\bcnv\b/g, "choroidal neovascularization");
+            q = q.replace(/\bcnvm\b/g, "choroidal neovascularization");
+            q = q.replace(/\bped\b/g, "pigment epithelial detachment");
             q = q.replace(/\brp\b/g, "retinitis pigmentosa").replace(/\brop\b/g, "retinopathy of prematurity");
+            q = q.replace(/\bnaion\b/g, "ischemic optic neuropathy").replace(/\baion\b/g, "ischemic optic");
+            q = q.replace(/\bhtn\s*retinopathy\b/g, "hypertensive retinopathy");
+            q = q.replace(/\bhtn\b/g, "hypertensive");
             q = q.replace(/\bt1dm\b/g, "t1dm").replace(/\bt2dm\b/g, "t2dm");
+            q = q.replace(/\btype\s*1\s*diabetes\b/g, "t1dm").replace(/\btype\s*2\s*diabetes\b/g, "t2dm");
             q = q.replace(/\btype\s*1\b/g, "t1dm").replace(/\btype\s*2\b/g, "t2dm");
+
+            // Symptoms
+            q = q.replace(/\bblurry\s*vision\b/g, "visual disturbance");
+            q = q.replace(/\bblurred\s*vision\b/g, "visual disturbance");
+            q = q.replace(/\bvision\s*loss\b/g, "visual disturbance");
+            q = q.replace(/\bflashes\b/g, "photopsia");
+            q = q.replace(/\bflash\b/g, "photopsia");
+
             return q;
           };
 
           const q = expandQuery(codeSearch);
-          // Split into words for AND matching — all terms must appear somewhere in code+desc+cat
+          // Split into words for AND matching — all terms must appear somewhere in enriched haystack
           const terms = q.split(/\s+/).filter(Boolean);
+
+          // Enrich each entry with extra searchable aliases so natural-language queries match
+          const enrichHay = (c) => {
+            let hay = (c.code + " " + c.desc + " " + c.cat).toLowerCase();
+            // Add laterality aliases: (OD) → right eye right od, (OS) → left eye left os, (OU) → both eyes bilateral ou
+            if (hay.includes("(od)")) hay += " right eye right od";
+            if (hay.includes("(os)")) hay += " left eye left os";
+            if (hay.includes("(ou)")) hay += " both eyes bilateral ou";
+            // AMD aliases
+            if (hay.includes("cnv") || hay.includes("exudative")) hay += " wet wet amd neovascular";
+            if (hay.includes("dry amd") || hay.includes("early dry") || hay.includes("intermediate dry") || hay.includes("drusen")) hay += " dry dry amd non-exudative nonexudative";
+            if (hay.includes("geographic atrophy") || hay.includes("atrophic")) hay += " ga geographic atrophy advanced dry";
+            if (c.cat === "AMD") hay += " macular degeneration armd";
+            // Diabetic aliases
+            if (hay.includes("dme")) hay += " diabetic macular edema";
+            if (hay.includes("npdr")) hay += " non-proliferative nonproliferative diabetic retinopathy";
+            if (hay.includes("pdr")) hay += " proliferative diabetic retinopathy";
+            if (c.cat === "Diabetic") hay += " diabetes diabetic retinopathy dr";
+            // RVO aliases
+            if (hay.includes("brvo")) hay += " branch retinal vein occlusion";
+            if (hay.includes("crvo")) hay += " central retinal vein occlusion";
+            if (hay.includes("hrvo")) hay += " hemiretinal hemi retinal vein occlusion";
+            if (c.cat === "RVO") hay += " vein occlusion rvo";
+            // Artery occlusion aliases
+            if (hay.includes("crao")) hay += " central retinal artery occlusion";
+            if (hay.includes("brao")) hay += " branch retinal artery occlusion";
+            // Macular aliases
+            if (hay.includes("epiretinal")) hay += " erm macular pucker membrane";
+            if (hay.includes("macular hole")) hay += " ftmh full thickness";
+            if (hay.includes("vitreomacular traction")) hay += " vmt";
+            if (hay.includes("cystoid macular edema")) hay += " cme";
+            if (hay.includes("central serous")) hay += " csr cscr";
+            if (hay.includes("pigment epithelial detachment")) hay += " ped";
+            if (hay.includes("choroidal neovascularization")) hay += " cnv cnvm";
+            // Vitreous aliases
+            if (hay.includes("vitreous detachment")) hay += " pvd posterior vitreous detachment";
+            if (hay.includes("vitreous hemorrhage")) hay += " vh";
+            if (hay.includes("vitreous opacities") || hay.includes("floaters")) hay += " floaters spots";
+            // Cataract aliases
+            if (hay.includes("nuclear")) hay += " ns nuclear sclerosis";
+            if (hay.includes("posterior subcapsular")) hay += " psc";
+            if (hay.includes("pseudophakia") || hay.includes("pseudophakic")) hay += " iol implant lens";
+            // Glaucoma aliases
+            if (hay.includes("primary open-angle")) hay += " poag open angle";
+            if (hay.includes("low-tension")) hay += " ntg normal tension";
+            if (hay.includes("neovascular glaucoma")) hay += " nvg";
+            if (hay.includes("pseudoexfoliation")) hay += " pxf pex";
+            if (hay.includes("ocular hypertension")) hay += " oht";
+            if (hay.includes("angle-closure")) hay += " narrow angle closed angle";
+            // Retinal detachment aliases
+            if (hay.includes("retinal detachment")) hay += " rd";
+            if (hay.includes("rhegmatogenous")) hay += " rrd";
+            // Other aliases
+            if (hay.includes("retinitis pigmentosa")) hay += " rp";
+            if (hay.includes("retinopathy of prematurity")) hay += " rop";
+            if (hay.includes("ischemic optic neuropathy")) hay += " naion aion";
+            if (hay.includes("hypertensive retinopathy")) hay += " htn";
+            if (hay.includes("photopsia")) hay += " flashes flash";
+            if (hay.includes("visual disturbance")) hay += " blurry blurred vision loss";
+            if (hay.includes("metamorphopsia")) hay += " distortion wavy";
+            if (hay.includes("scotoma")) hay += " blind spot";
+            return hay;
+          };
+
           const filtered = terms.length ? ICD10_DB.filter(c => {
-            const hay = (c.code + " " + c.desc + " " + c.cat).toLowerCase();
+            const hay = enrichHay(c);
             return terms.every(t => hay.includes(t));
           }) : ICD10_DB;
           const cats = [...new Set(filtered.map(c => c.cat))];
@@ -2403,7 +2550,7 @@ export default function ClinicNoteGenerator({ onBack }) {
               <input
                 value={codeSearch}
                 onChange={e => setCodeSearch(e.target.value)}
-                placeholder="Search codes... (e.g., AMD, H35, BRVO, glaucoma, DME)"
+                placeholder="Search codes... (e.g., wet amd left eye, BRVO, diabetic macular edema, floaters)"
                 style={{
                   display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8,
                   padding: "10px 14px", color: S.text, fontFamily: S.mono, fontSize: "0.84rem", boxSizing: "border-box", marginBottom: 14,
