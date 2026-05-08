@@ -169,11 +169,97 @@ function Homepage({ onSelectTool, onSelectDoctor }) {
   );
 }
 
+// ── PIN Gate (doctor space) ─────────────────────────────────────────
+function PinGate({ surgeon, onSuccess, onCancel }) {
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // On mount, check if this surgeon even has a PIN configured
+  useState(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/verify-pin`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ surgeonId: surgeon.id, pin: "__check__" }),
+        });
+        const data = await res.json();
+        // If server says success (no PIN set), skip the gate
+        if (data.success) {
+          onSuccess();
+          return;
+        }
+      } catch {
+        // If server unreachable, let them through
+        onSuccess();
+        return;
+      }
+      setChecking(false);
+    })();
+  });
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!pin.trim()) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/api/verify-pin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ surgeonId: surgeon.id, pin: pin.trim() }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        onSuccess();
+      } else {
+        setError("Incorrect PIN.");
+        setPin("");
+      }
+    } catch {
+      setError("Could not connect to server.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (checking) {
+    return (
+      <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
+        <div style={{ color: S.muted, fontSize: "0.9rem" }}>Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
+      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: "36px 32px", width: "100%", maxWidth: 340, textAlign: "center" }}>
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", fontWeight: 700, color: "#fff", fontFamily: S.mono, margin: "0 auto 14px" }}>{surgeon.name}</div>
+        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>Doctor Space</div>
+        <div style={{ fontSize: "0.76rem", color: S.muted, marginBottom: 20 }}>Enter PIN to continue</div>
+        <input type="password" inputMode="numeric" pattern="[0-9]*" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="PIN" autoFocus
+          style={{ display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px", color: S.text, fontFamily: S.mono, fontSize: "1.1rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center", letterSpacing: 6 }} />
+        {error && <div style={{ color: "#f87171", fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button type="button" onClick={onCancel}
+            style={{ flex: 1, background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 0", color: S.muted, fontFamily: S.font, fontSize: "0.85rem", cursor: "pointer" }}>Cancel</button>
+          <button type="submit" disabled={loading || !pin.trim()}
+            style={{ flex: 1, background: loading || !pin.trim() ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)", color: loading || !pin.trim() ? "#475569" : "#fff", border: "none", borderRadius: 8, padding: "10px 0", fontSize: "0.85rem", fontFamily: S.font, fontWeight: 600, cursor: loading || !pin.trim() ? "not-allowed" : "pointer" }}>
+            {loading ? "..." : "Enter"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 // ── App Router ──────────────────────────────────────────────────────
 export default function App() {
   const [authed, setAuthed] = useState(false);
   const [page, setPage] = useState("home");
-  // page: home | inject | coding | education | dictator | doctor
+  // page: home | inject | coding | education | dictator | doctor | pin
   const [activeSurgeon, setActiveSurgeon] = useState(null);
 
   if (!authed) {
@@ -224,6 +310,17 @@ export default function App() {
     return <OpNoteDictator onBack={() => setPage("home")} />;
   }
 
+  // ── PIN gate (verifies before entering doctor space) ──
+  if (page === "pin" && activeSurgeon) {
+    return (
+      <PinGate
+        surgeon={activeSurgeon}
+        onSuccess={() => setPage("doctor")}
+        onCancel={() => { setPage("home"); setActiveSurgeon(null); }}
+      />
+    );
+  }
+
   // ── Doctor space ──
   if (page === "doctor" && activeSurgeon) {
     return (
@@ -238,7 +335,7 @@ export default function App() {
   return (
     <Homepage
       onSelectTool={(id) => setPage(id)}
-      onSelectDoctor={(doc) => { setActiveSurgeon(doc); setPage("doctor"); }}
+      onSelectDoctor={(doc) => { setActiveSurgeon(doc); setPage("pin"); }}
     />
   );
 }
