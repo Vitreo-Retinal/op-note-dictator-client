@@ -2,6 +2,7 @@ import { useState } from "react";
 import OpNoteDictator from "./OpNoteDictator.jsx";
 import ClinicNoteGenerator from "./ClinicNoteGenerator.jsx";
 import CptReference from "./CptReference.jsx";
+import PatientEducation from "./PatientEducation.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -290,19 +291,7 @@ export default function App() {
   }
 
   if (page === "education") {
-    // TODO: Build PatientEducation component (Task #27)
-    return (
-      <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
-        <div style={{ padding: "16px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => setPage("home")} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Home</button>
-          <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>📄 Patient Education</span>
-        </div>
-        <div style={{ padding: 40, textAlign: "center", color: S.muted }}>
-          <div style={{ fontSize: "2rem", marginBottom: 12 }}>📄</div>
-          <div style={{ fontSize: "0.9rem" }}>Patient education library coming soon — searchable, printable handouts in EN/ES/VI/PT.</div>
-        </div>
-      </div>
-    );
+    return <PatientEducation onBack={() => setPage("home")} />;
   }
 
   // ── Legacy: Op Note Dictator (still accessible from Robocall tab) ──
