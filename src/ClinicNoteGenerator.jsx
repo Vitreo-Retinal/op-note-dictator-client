@@ -1380,9 +1380,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
                 {/* ── Auto-generated Patient Education ──────────────── */}
                 {(() => {
-                  const fullText = (input || "") + "\n" + (result.note || "");
+                  try {
+                  const fullText = (note || "") + "\n" + (result.note || "");
                   const detectedLang = detectLanguage(fullText);
-                  const matched = matchHandouts(fullText, icd10Codes);
+                  const matched = matchHandouts(fullText, icd10Codes || []);
                   const detectedDrops = detectDropsFromPlan(fullText);
                   if (matched.length === 0 && detectedDrops.length === 0) return null;
                   return (
@@ -1441,6 +1442,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       </div>
                     </div>
                   );
+                  } catch (e) { console.error("Education matcher error:", e); return null; }
                 })()}
               </div>
             )}
