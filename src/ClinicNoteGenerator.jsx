@@ -471,9 +471,9 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
    PSEUDOPHAKIA RBA RULE: If the patient is pseudophakic in the operative eye, REMOVE "cataract progression" from the PPV/vitrectomy RBA — it does not apply. Do NOT discuss cataract progression after vitrectomy for a pseudophakic eye.
    If the physician already listed specific risks (e.g., "RBA discussed including endophthalmitis/RD/VH"), keep their exact list — do NOT override it.
    For injection visits where no RBA is mentioned at all: [+] "Risks, benefits, and alternatives discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss." For surgical visits, RBA should already be in the dictation.
-   POST-PROCEDURE DROPS: When a procedure is performed in the office today, always include the antibiotic drop with duration in the Plan:
+   POST-PROCEDURE DROPS: When a PNEUMATIC RETINOPEXY is performed in the office today, include the antibiotic drop with duration in the Plan:
    - Pneumatic retinopexy: "Ofloxacin QID OD/OS x 4 days" (use correct laterality)
-   - Intravitreal injection: "Ofloxacin QID OD/OS x 4 days" (use correct laterality)
+   Do NOT add Ofloxacin or any antibiotic drops for intravitreal injections — injections do NOT get post-procedure antibiotic drops in this practice.
    If the physician already specified a different antibiotic or duration, use theirs. But ALWAYS include the duration (e.g., "x 4 days", "x 1 week") — never output just "Ofloxacin QID" without a timeframe.
 4. COMPLEXITY: For 99214/99215, the MDM justification sentence (see below) captures this. But within the note body, document what makes this visit complex — e.g., agent switching, progression, multiple conditions, surgical planning, treatment failure.
 
