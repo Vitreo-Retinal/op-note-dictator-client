@@ -34,7 +34,7 @@ const LANGUAGES = [
 
 // ── Handout library ────────────────────────────────────────────────
 // Each handout has content keyed by language code
-const HANDOUTS = [
+export const HANDOUTS = [
   // ═══════════════════════════════════════════════════════════════════
   // INJECTION INFO
   // ═══════════════════════════════════════════════════════════════════

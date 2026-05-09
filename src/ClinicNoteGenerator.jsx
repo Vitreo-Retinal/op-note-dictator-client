@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { AICodingAssistant } from "./CptReference.jsx";
+import PatientEducation from "./PatientEducation.jsx";
+import DropSchedule from "./DropSchedule.jsx";
+import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -1374,6 +1377,71 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 <button onClick={() => { setTab("input"); setResult(null); }} style={btnStyle("none", S.muted, { border: `1px solid ${S.border}`, alignSelf: "flex-start" })}>
                   &#8592; New note
                 </button>
+
+                {/* ── Auto-generated Patient Education ──────────────── */}
+                {(() => {
+                  const fullText = (input || "") + "\n" + (result.note || "");
+                  const detectedLang = detectLanguage(fullText);
+                  const matched = matchHandouts(fullText, icd10Codes);
+                  const detectedDrops = detectDropsFromPlan(fullText);
+                  if (matched.length === 0 && detectedDrops.length === 0) return null;
+                  return (
+                    <div style={{ background: "#0f1f2e", border: "1px solid #1d4ed8", borderRadius: 10, padding: "14px 18px", marginTop: 8 }}>
+                      <div style={{ fontSize: "0.72rem", color: "#60a5fa", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
+                        Patient Education — auto-matched from this note
+                      </div>
+                      <div style={{ fontSize: "0.78rem", color: S.text, marginBottom: 10 }}>
+                        {matched.length > 0 && <span>{matched.length} handout{matched.length !== 1 ? "s" : ""} matched</span>}
+                        {matched.length > 0 && detectedDrops.length > 0 && <span> &bull; </span>}
+                        {detectedDrops.length > 0 && <span>{detectedDrops.length} drop{detectedDrops.length !== 1 ? "s" : ""} detected</span>}
+                        {detectedLang !== "en" && <span style={{ marginLeft: 8, background: "#1e40af", color: "#bfdbfe", padding: "2px 8px", borderRadius: 4, fontSize: "0.68rem" }}>{detectedLang.toUpperCase()}</span>}
+                      </div>
+                      {matched.length > 0 && (
+                        <div style={{ marginBottom: 10 }}>
+                          {matched.map(h => (
+                            <span key={h.id} style={{ display: "inline-block", background: "#1e293b", border: "1px solid #334155", borderRadius: 6, padding: "3px 10px", fontSize: "0.7rem", color: "#94a3b8", marginRight: 6, marginBottom: 4 }}>
+                              {h.title[detectedLang] || h.title.en}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {detectedDrops.length > 0 && (
+                        <div style={{ marginBottom: 10 }}>
+                          <div style={{ fontSize: "0.7rem", color: S.muted, marginBottom: 4 }}>Detected drops:</div>
+                          {detectedDrops.map((d, i) => (
+                            <span key={i} style={{ display: "inline-block", background: "#1e293b", border: "1px solid #334155", borderRadius: 6, padding: "3px 10px", fontSize: "0.7rem", color: "#86efac", marginRight: 6, marginBottom: 4 }}>
+                              {d.name} {d.schedule} {d.eye}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {matched.length > 0 && (
+                          <button
+                            onClick={() => {
+                              const html = generateEducationPrintHTML(matched, detectedLang);
+                              const win = window.open("", "_blank");
+                              win.document.write(html);
+                              win.document.close();
+                              setTimeout(() => win.print(), 400);
+                            }}
+                            style={{ background: "linear-gradient(135deg,#2563eb,#3b82f6)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
+                          >
+                            Print Handouts ({(detectedLang || "en").toUpperCase()})
+                          </button>
+                        )}
+                        {detectedDrops.length > 0 && (
+                          <button
+                            onClick={() => setTab("education")}
+                            style={{ background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
+                          >
+                            Open Drop Schedule
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -1598,9 +1666,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
         {/* ── PATIENT EDUCATION TAB ──────────────────────────── */}
         {tab === "education" && (
-          <div style={{ padding: 40, textAlign: "center", color: S.muted, maxWidth: 800, margin: "0 auto" }}>
-            <div style={{ fontSize: "2rem", marginBottom: 12 }}>📄</div>
-            <div style={{ fontSize: "0.9rem" }}>Patient education library coming soon — searchable, printable handouts in EN/ES/VI/PT.</div>
+          <div style={{ margin: "-20px", minHeight: "80vh" }}>
+            <PatientEducation onBack={() => setTab("input")} />
           </div>
         )}
 

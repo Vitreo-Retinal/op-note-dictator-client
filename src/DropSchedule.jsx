@@ -155,6 +155,78 @@ const SLOT_LABELS = {
   bedtime: { label: "Bedtime", icon: "🌙" },
 };
 
+// ── Multi-language translations for output ─────────────────────────
+const TRANSLATIONS = {
+  en: {
+    title: "Your Eye Drop Schedule",
+    subtitle: "Check off each medication after you use it",
+    rightEye: "Right Eye (OD)",
+    leftEye: "Left Eye (OS)",
+    week: "Week",
+    morning: "Morning",
+    lunch: "Lunch",
+    dinner: "Dinner",
+    bedtime: "Bedtime",
+    drop: "instill 1 drop",
+    ointment: "apply ointment",
+    capGuide: "Cap color guide",
+    pink: "pink", tan: "tan", gray: "gray", yellow: "yellow", teal: "teal",
+    navy: "navy", orange: "orange", purple: "purple", white: "white",
+    "dark green": "dark green", red: "red",
+  },
+  es: {
+    title: "Su Horario de Gotas para los Ojos",
+    subtitle: "Marque cada medicamento después de usarlo",
+    rightEye: "Ojo Derecho (OD)",
+    leftEye: "Ojo Izquierdo (OS)",
+    week: "Semana",
+    morning: "Mañana",
+    lunch: "Mediodía",
+    dinner: "Cena",
+    bedtime: "Noche (antes de dormir)",
+    drop: "poner 1 gota",
+    ointment: "aplicar pomada",
+    capGuide: "Guía de colores de tapa",
+    pink: "rosado", tan: "marrón claro", gray: "gris", yellow: "amarillo", teal: "verde azulado",
+    navy: "azul marino", orange: "anaranjado", purple: "morado", white: "blanco",
+    "dark green": "verde oscuro", red: "rojo",
+  },
+  vi: {
+    title: "Lịch Nhỏ Thuốc Mắt Của Bạn",
+    subtitle: "Đánh dấu mỗi loại thuốc sau khi dùng",
+    rightEye: "Mắt Phải (OD)",
+    leftEye: "Mắt Trái (OS)",
+    week: "Tuần",
+    morning: "Sáng",
+    lunch: "Trưa",
+    dinner: "Chiều",
+    bedtime: "Tối (trước khi ngủ)",
+    drop: "nhỏ 1 giọt",
+    ointment: "bôi thuốc mỡ",
+    capGuide: "Hướng dẫn màu nắp",
+    pink: "hồng", tan: "nâu nhạt", gray: "xám", yellow: "vàng", teal: "xanh ngọc",
+    navy: "xanh đậm", orange: "cam", purple: "tím", white: "trắng",
+    "dark green": "xanh lá đậm", red: "đỏ",
+  },
+  pt: {
+    title: "Seu Horário de Colírios",
+    subtitle: "Marque cada medicamento após usá-lo",
+    rightEye: "Olho Direito (OD)",
+    leftEye: "Olho Esquerdo (OS)",
+    week: "Semana",
+    morning: "Manhã",
+    lunch: "Almoço",
+    dinner: "Jantar",
+    bedtime: "Noite (antes de dormir)",
+    drop: "pingar 1 gota",
+    ointment: "aplicar pomada",
+    capGuide: "Guia de cores da tampa",
+    pink: "rosa", tan: "bege", gray: "cinza", yellow: "amarelo", teal: "azul-petróleo",
+    navy: "azul marinho", orange: "laranja", purple: "roxo", white: "branco",
+    "dark green": "verde escuro", red: "vermelho",
+  },
+};
+
 // ── Lookup drug by name ────────────────────────────────────────────
 function lookupDrug(name) {
   const q = name.toLowerCase().trim();
@@ -165,13 +237,14 @@ function lookupDrug(name) {
 }
 
 // ── Component ──────────────────────────────────────────────────────
-export default function DropSchedule({ onBack }) {
+export default function DropSchedule({ onBack, initialLang = "en" }) {
   const [meds, setMeds] = useState([]);
   const [medName, setMedName] = useState("");
   const [medType, setMedType] = useState("drop"); // drop or ointment
   const [medEye, setMedEye] = useState("OU"); // OD, OS, OU
   const [medSchedule, setMedSchedule] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+  const [printLang, setPrintLang] = useState(initialLang); // language for printed output
 
   const detectedDrug = medName.trim() ? lookupDrug(medName) : null;
 
@@ -248,7 +321,7 @@ export default function DropSchedule({ onBack }) {
   // Print function
   const handlePrint = () => {
     const weeks = buildWeeklySchedule();
-    const html = generatePrintHTML(weeks);
+    const html = generatePrintHTML(weeks, printLang);
     const win = window.open("", "_blank");
     win.document.write(html);
     win.document.close();
@@ -258,11 +331,10 @@ export default function DropSchedule({ onBack }) {
   // PDF download
   const handlePDF = () => {
     const weeks = buildWeeklySchedule();
-    const html = generatePrintHTML(weeks);
+    const html = generatePrintHTML(weeks, printLang);
     const win = window.open("", "_blank");
     win.document.write(html);
     win.document.close();
-    // Browsers will let user "Save as PDF" from print dialog
     setTimeout(() => win.print(), 400);
   };
 
@@ -361,8 +433,28 @@ export default function DropSchedule({ onBack }) {
               </div>
             ))}
 
+            {/* Language selector for print output */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16, marginBottom: 10 }}>
+              <span style={{ fontSize: "0.75rem", color: S.muted }}>Print language:</span>
+              {["en", "es", "vi", "pt"].map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setPrintLang(l)}
+                  style={{
+                    background: printLang === l ? S.green : "transparent",
+                    color: printLang === l ? "#000" : S.muted,
+                    border: `1px solid ${printLang === l ? S.green : S.border}`,
+                    borderRadius: 6, padding: "4px 10px", fontSize: "0.7rem",
+                    fontFamily: S.mono, fontWeight: 700, cursor: "pointer",
+                  }}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
             {/* Action buttons */}
-            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+            <div style={{ display: "flex", gap: 10 }}>
               <button
                 onClick={() => setShowPreview(!showPreview)}
                 style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: "0.82rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
@@ -373,13 +465,13 @@ export default function DropSchedule({ onBack }) {
                 onClick={handlePrint}
                 style={{ background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: "0.82rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
               >
-                Print
+                Print ({printLang.toUpperCase()})
               </button>
               <button
                 onClick={handlePDF}
                 style={{ background: "linear-gradient(135deg,#d97706,#f59e0b)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: "0.82rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
               >
-                Download PDF
+                PDF ({printLang.toUpperCase()})
               </button>
             </div>
           </div>
@@ -460,8 +552,9 @@ function SlotPreview({ slot, meds }) {
 }
 
 // ── Generate print-friendly HTML ───────────────────────────────────
-function generatePrintHTML(weeks) {
-  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Eye Drop Schedule</title>
+function generatePrintHTML(weeks, lang = "en") {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${t.title}</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Georgia, serif; font-size: 18px; color: #111; padding: 24px; }
@@ -478,32 +571,32 @@ h2 { font-size: 22px; margin: 24px 0 10px; border-bottom: 2px solid #333; paddin
 .cap-circle { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(0,0,0,0.2); }
 .med-name { font-size: 18px; font-weight: 600; }
 .med-generic { font-size: 14px; color: #666; }
+.med-cap-label { font-size: 13px; color: #888; font-style: italic; }
 .med-action { font-size: 14px; color: #444; margin-left: auto; }
 .checkbox { width: 22px; height: 22px; border: 2px solid #666; border-radius: 4px; flex-shrink: 0; }
 .legend { margin-top: 20px; padding-top: 12px; border-top: 1px solid #ccc; font-size: 14px; color: #555; }
-.legend-item { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; margin-bottom: 4px; }
 .legend-dot { width: 14px; height: 14px; border-radius: 50%; }
-.note { font-size: 14px; color: #666; font-style: italic; margin-top: 8px; }
 @media print { body { padding: 12px; } }
 </style></head><body>
-<h1>Your Eye Drop Schedule</h1>
-<p style="text-align:center;font-size:14px;color:#666;margin-bottom:20px;">Check off each medication after you use it</p>`;
+<h1>${t.title}</h1>
+<p style="text-align:center;font-size:14px;color:#666;margin-bottom:20px;">${t.subtitle}</p>`;
 
   for (const week of weeks) {
     const hasOD = Object.values(week.od).some((a) => a.length > 0);
     const hasOS = Object.values(week.os).some((a) => a.length > 0);
     if (!hasOD && !hasOS) continue;
 
-    html += `<h2>Week ${week.weekNum}</h2><div class="cols">`;
+    html += `<h2>${t.week} ${week.weekNum}</h2><div class="cols">`;
 
     if (hasOD) {
-      html += `<div class="col col-od"><div class="col-header">Right Eye (OD)</div>`;
-      html += renderPrintSlots(week.od);
+      html += `<div class="col col-od"><div class="col-header">${t.rightEye}</div>`;
+      html += renderPrintSlots(week.od, t);
       html += `</div>`;
     }
     if (hasOS) {
-      html += `<div class="col col-os"><div class="col-header">Left Eye (OS)</div>`;
-      html += renderPrintSlots(week.os);
+      html += `<div class="col col-os"><div class="col-header">${t.leftEye}</div>`;
+      html += renderPrintSlots(week.os, t);
       html += `</div>`;
     }
 
@@ -521,10 +614,11 @@ h2 { font-size: 22px; margin: 24px 0 10px; border-bottom: 2px solid #333; paddin
       }
     }
   }
-  html += `<div class="legend"><strong>Cap color guide:</strong><br>`;
+  html += `<div class="legend"><strong>${t.capGuide}:</strong><br>`;
   for (const [name, color] of allCaps) {
     const border = color === "#FFFFFF" ? "border:1px solid #999;" : "";
-    html += `<span class="legend-item"><span class="legend-dot" style="background:${color};${border}"></span>${name} cap</span>`;
+    const translatedColor = t[name] || name;
+    html += `<span class="legend-item"><span class="legend-dot" style="background:${color};${border}"></span>${translatedColor}</span>`;
   }
   html += `</div>`;
 
@@ -532,18 +626,19 @@ h2 { font-size: 22px; margin: 24px 0 10px; border-bottom: 2px solid #333; paddin
   return html;
 }
 
-function renderPrintSlots(eye) {
-  const slotNames = { morning: "Morning", lunch: "Lunch", dinner: "Dinner", bedtime: "Bedtime" };
+function renderPrintSlots(eye, t) {
+  const slotKeys = ["morning", "lunch", "dinner", "bedtime"];
   let html = "";
-  for (const [slot, label] of Object.entries(slotNames)) {
+  for (const slot of slotKeys) {
     if (eye[slot].length === 0) continue;
-    html += `<div class="slot"><div class="slot-label">${label}</div>`;
+    html += `<div class="slot"><div class="slot-label">${t[slot]}</div>`;
     for (const m of eye[slot]) {
       const border = m.cap === "#FFFFFF" ? "border:2px solid #999;" : "";
+      const translatedColor = t[m.capName] || m.capName;
       html += `<div class="med-row">
         <span class="cap-circle" style="background:${m.cap};${border}"></span>
-        <div><span class="med-name">${m.trade}</span><br><span class="med-generic">${m.generic}</span></div>
-        <span class="med-action">${m.type === "ointment" ? "apply ointment" : "instill 1 drop"}</span>
+        <div><span class="med-name">${m.trade}</span><br><span class="med-generic">${m.generic}</span><br><span class="med-cap-label">(${translatedColor})</span></div>
+        <span class="med-action">${m.type === "ointment" ? t.ointment : t.drop}</span>
         <span class="checkbox"></span>
       </div>`;
     }
