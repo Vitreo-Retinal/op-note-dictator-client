@@ -595,33 +595,41 @@ function SlotPreview({ slot, meds }) {
 // ── Generate print-friendly HTML ───────────────────────────────────
 function generatePrintHTML(weeks, lang = "en") {
   const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const n = weeks.length; // number of weeks determines scaling
+
+  // Dynamic sizing: fewer weeks = bigger, more weeks = smaller
+  const s = n <= 1 ? { body: 18, h1: 28, h2: 22, sub: 14, subMb: 20, colH: 22, colP: 10, slotP: "12px 14px", slotMb: 10, slotL: 20, slotLmb: 8, medG: 6, cap: 24, name: 18, gen: 14, capL: 13, act: 14, cb: 22, legMt: 20, legPt: 12, legFs: 14, legDot: 14, h2mt: 24, h2mb: 10, gap: 20, colMb: 12, bodyP: 24, printP: 12 }
+       : n <= 2 ? { body: 15, h1: 24, h2: 18, sub: 12, subMb: 14, colH: 18, colP: 8, slotP: "8px 10px", slotMb: 8, slotL: 17, slotLmb: 6, medG: 5, cap: 20, name: 15, gen: 12, capL: 11, act: 12, cb: 20, legMt: 14, legPt: 8, legFs: 12, legDot: 13, h2mt: 16, h2mb: 8, gap: 16, colMb: 10, bodyP: 18, printP: 10 }
+       : n <= 3 ? { body: 12, h1: 20, h2: 14, sub: 10, subMb: 8, colH: 14, colP: 5, slotP: "5px 7px", slotMb: 4, slotL: 13, slotLmb: 3, medG: 4, cap: 16, name: 12, gen: 10, capL: 9, act: 10, cb: 16, legMt: 8, legPt: 5, legFs: 10, legDot: 11, h2mt: 8, h2mb: 4, gap: 10, colMb: 5, bodyP: 12, printP: 8 }
+       :           { body: 10, h1: 16, h2: 12, sub: 9, subMb: 6, colH: 12, colP: 4, slotP: "4px 6px", slotMb: 3, slotL: 11, slotLmb: 2, medG: 3, cap: 14, name: 10, gen: 9, capL: 8, act: 9, cb: 14, legMt: 6, legPt: 4, legFs: 9, legDot: 10, h2mt: 6, h2mb: 3, gap: 8, colMb: 4, bodyP: 8, printP: 6 };
+
   let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${t.title}</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Georgia, serif; font-size: 18px; color: #111; padding: 24px; }
-h1 { font-size: 28px; text-align: center; margin-bottom: 6px; }
-h2 { font-size: 22px; margin: 24px 0 10px; border-bottom: 2px solid #333; padding-bottom: 4px; }
-.cols { display: flex; gap: 20px; }
+body { font-family: Georgia, serif; font-size: ${s.body}px; color: #111; padding: ${s.bodyP}px; }
+h1 { font-size: ${s.h1}px; text-align: center; margin-bottom: 3px; }
+h2 { font-size: ${s.h2}px; margin: ${s.h2mt}px 0 ${s.h2mb}px; border-bottom: 1.5px solid #333; padding-bottom: 2px; }
+.cols { display: flex; gap: ${s.gap}px; }
 .col { flex: 1; }
-.col-header { text-align: center; font-size: 22px; font-weight: 700; padding: 10px; border-radius: 10px; margin-bottom: 12px; }
+.col-header { text-align: center; font-size: ${s.colH}px; font-weight: 700; padding: ${s.colP}px; border-radius: 8px; margin-bottom: ${s.colMb}px; }
 .col-od .col-header { background: #dbeafe; color: #1e3a8a; }
 .col-os .col-header { background: #dcfce7; color: #166534; }
-.slot { border: 1.5px solid #ddd; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
-.slot-label { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-.med-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.cap-circle { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(0,0,0,0.2); }
-.med-name { font-size: 18px; font-weight: 600; }
-.med-generic { font-size: 14px; color: #666; }
-.med-cap-label { font-size: 13px; color: #888; font-style: italic; }
-.med-action { font-size: 14px; color: #444; margin-left: auto; }
-.checkbox { width: 22px; height: 22px; border: 2px solid #666; border-radius: 4px; flex-shrink: 0; }
-.legend { margin-top: 20px; padding-top: 12px; border-top: 1px solid #ccc; font-size: 14px; color: #555; }
-.legend-item { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; margin-bottom: 4px; }
-.legend-dot { width: 14px; height: 14px; border-radius: 50%; }
-@media print { body { padding: 12px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; } }
+.slot { border: 1.5px solid #ddd; border-radius: 8px; padding: ${s.slotP}; margin-bottom: ${s.slotMb}px; }
+.slot-label { font-size: ${s.slotL}px; font-weight: 700; margin-bottom: ${s.slotLmb}px; }
+.med-row { display: flex; align-items: center; gap: ${s.medG}px; margin-bottom: ${Math.max(s.medG - 1, 2)}px; }
+.cap-circle { width: ${s.cap}px; height: ${s.cap}px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(0,0,0,0.2); }
+.med-name { font-size: ${s.name}px; font-weight: 600; }
+.med-generic { font-size: ${s.gen}px; color: #666; }
+.med-cap-label { font-size: ${s.capL}px; color: #888; font-style: italic; }
+.med-action { font-size: ${s.act}px; color: #444; margin-left: auto; }
+.checkbox { width: ${s.cb}px; height: ${s.cb}px; border: 2px solid #666; border-radius: 4px; flex-shrink: 0; }
+.legend { margin-top: ${s.legMt}px; padding-top: ${s.legPt}px; border-top: 1px solid #ccc; font-size: ${s.legFs}px; color: #555; }
+.legend-item { display: inline-flex; align-items: center; gap: 4px; margin-right: 12px; margin-bottom: 2px; }
+.legend-dot { width: ${s.legDot}px; height: ${s.legDot}px; border-radius: 50%; }
+@media print { body { padding: ${s.printP}px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; } }
 </style></head><body>
 <h1>${t.title}</h1>
-<p style="text-align:center;font-size:14px;color:#666;margin-bottom:20px;">${t.subtitle}</p>`;
+<p style="text-align:center;font-size:${s.sub}px;color:#666;margin-bottom:${s.subMb}px;">${t.subtitle}</p>`;
 
   for (const week of weeks) {
     const hasOD = Object.values(week.od).some((a) => a.length > 0);
