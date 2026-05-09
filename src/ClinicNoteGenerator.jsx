@@ -273,7 +273,6 @@ Do NOT insert this sentence for: intravitreal injections, observation/monitoring
 - ST = superotemporal, SN = superonasal, IT = inferotemporal, IN = inferonasal
 - "at 1" = at 1 o'clock position (clock hour notation)
 - Oflox = ofloxacin, pneumatic = pneumatic retinopexy
-- "R head tilt" = right head tilt positioning, "L head tilt" = left head tilt positioning. When the physician specifies R or L head tilt, use their exact direction — NEVER output [R/L] as a placeholder. If no direction is specified, ask or omit rather than using brackets.
 - cat = cataracts, AT QID = artificial tears four times daily
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
