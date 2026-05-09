@@ -147,6 +147,7 @@ export function detectDropsFromPlan(noteText) {
     // { regex, name }
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
     { regex: /(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
+    { regex: /(?:pf|pred\s*forte|pred(?:nisolone)?)\s+(od|os|ou)\s*[-—–:]+\s*((?:qid|tid|bid|qd).*?)(?:\n|$)/gi, name: "Prednisolone", isTaperShorthand: true },
     { regex: /(?:pf|pred\s*forte|pred(?:nisolone)?)\s+taper\s*(od|os|ou)?[:\s]*(.*?)(?:\n|$)/gi, name: "Prednisolone", isTaperShorthand: true },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },

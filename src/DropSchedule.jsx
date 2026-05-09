@@ -238,9 +238,13 @@ const TRANSLATIONS = {
 // ── Lookup drug by name ────────────────────────────────────────────
 function lookupDrug(name) {
   const q = name.toLowerCase().trim();
+  // Prefer exact match first, then fall back to startsWith
+  const exact = DRUG_DB.find(
+    (d) => d.trade.toLowerCase() === q || d.generic.toLowerCase() === q
+  );
+  if (exact) return exact;
   return DRUG_DB.find(
-    (d) => d.trade.toLowerCase() === q || d.generic.toLowerCase() === q ||
-           d.trade.toLowerCase().startsWith(q) || d.generic.toLowerCase().startsWith(q)
+    (d) => d.trade.toLowerCase().startsWith(q) || d.generic.toLowerCase().startsWith(q)
   );
 }
 
