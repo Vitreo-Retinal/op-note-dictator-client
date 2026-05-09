@@ -273,6 +273,7 @@ Do NOT insert this sentence for: intravitreal injections, observation/monitoring
 - ST = superotemporal, SN = superonasal, IT = inferotemporal, IN = inferonasal
 - "at 1" = at 1 o'clock position (clock hour notation)
 - Oflox = ofloxacin, pneumatic = pneumatic retinopexy
+- "R head tilt" = right head tilt positioning, "L head tilt" = left head tilt positioning. When the physician specifies R or L head tilt, use their exact direction — NEVER output [R/L] as a placeholder. If no direction is specified, ask or omit rather than using brackets.
 - cat = cataracts, AT QID = artificial tears four times daily
 - POAG = primary open-angle glaucoma, Ctn = continue, gtt = drops, qhs = at bedtime
 - "followed by Dr. X" = co-managed with another physician (preserve their name)
@@ -470,6 +471,10 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
    - IOL exchange: "RBA discussed in detail including risks of endophthalmitis, retinal detachment, vitreous hemorrhage, glaucoma, corneal edema, and vision loss"
    If the physician already listed specific risks (e.g., "RBA discussed including endophthalmitis/RD/VH"), keep their exact list — do NOT override it.
    For injection visits where no RBA is mentioned at all: [+] "Risks, benefits, and alternatives discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss." For surgical visits, RBA should already be in the dictation.
+   POST-PROCEDURE DROPS: When a procedure is performed in the office today, always include the antibiotic drop with duration in the Plan:
+   - Pneumatic retinopexy: "Ofloxacin QID OD/OS x 4 days" (use correct laterality)
+   - Intravitreal injection: "Ofloxacin QID OD/OS x 4 days" (use correct laterality)
+   If the physician already specified a different antibiotic or duration, use theirs. But ALWAYS include the duration (e.g., "x 4 days", "x 1 week") — never output just "Ofloxacin QID" without a timeframe.
 4. COMPLEXITY: For 99214/99215, the MDM justification sentence (see below) captures this. But within the note body, document what makes this visit complex — e.g., agent switching, progression, multiple conditions, surgical planning, treatment failure.
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.

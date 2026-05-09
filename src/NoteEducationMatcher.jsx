@@ -223,7 +223,7 @@ export function detectDropsFromPlan(noteText) {
 
         if (taperText) {
           // Try parsing expanded format: "TID x1 week, then BID x1 week, then QD x1 week, then stop"
-          const expandedParts = taperText.split(/,\s*(?:then\s*)?|;\s*(?:then\s*)?/).map(s => s.trim()).filter(Boolean);
+          const expandedParts = taperText.split(/,\s*(?:then\s*)?|;\s*(?:then\s*)?|→\s*(?:then\s*)?|>\s*(?:then\s*)?|\bthen\b\s*/).map(s => s.trim()).filter(Boolean);
           const steps = [];
           for (const part of expandedParts) {
             const lower = part.toLowerCase();
