@@ -468,6 +468,7 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
    - Scleral buckle: "RBA discussed including infection, diplopia, refractive change, failure and need for additional surgery, and vision loss"
    - PDT: "RBA discussed including photosensitivity, vision loss, inflammatory response, and systemic allergic reaction"
    - IOL exchange: "RBA discussed in detail including risks of endophthalmitis, retinal detachment, vitreous hemorrhage, glaucoma, corneal edema, and vision loss"
+   PSEUDOPHAKIA RBA RULE: If the patient is pseudophakic in the operative eye, REMOVE "cataract progression" from the PPV/vitrectomy RBA — it does not apply. Do NOT discuss cataract progression after vitrectomy for a pseudophakic eye.
    If the physician already listed specific risks (e.g., "RBA discussed including endophthalmitis/RD/VH"), keep their exact list — do NOT override it.
    For injection visits where no RBA is mentioned at all: [+] "Risks, benefits, and alternatives discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss." For surgical visits, RBA should already be in the dictation.
    POST-PROCEDURE DROPS: When a procedure is performed in the office today, always include the antibiotic drop with duration in the Plan:
