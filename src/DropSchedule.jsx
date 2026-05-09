@@ -636,20 +636,34 @@ h2 { font-size: ${s.h2}px; margin: ${s.h2mt}px 0 ${s.h2mb}px; border-bottom: 1.5
     const hasOS = Object.values(week.os).some((a) => a.length > 0);
     if (!hasOD && !hasOS) continue;
 
-    html += `<h2>${t.week} ${week.weekNum}</h2><div class="cols">`;
+    html += `<h2>${t.week} ${week.weekNum}</h2>`;
 
-    if (hasOD) {
-      html += `<div class="col col-od"><div class="col-header">${t.rightEye}</div>`;
-      html += renderPrintSlots(week.od, t);
-      html += `</div>`;
-    }
-    if (hasOS) {
-      html += `<div class="col col-os"><div class="col-header">${t.leftEye}</div>`;
-      html += renderPrintSlots(week.os, t);
-      html += `</div>`;
-    }
-
+    // Render headers
+    html += `<div class="cols">`;
+    if (hasOD) html += `<div class="col col-od"><div class="col-header">${t.rightEye}</div></div>`;
+    if (hasOS) html += `<div class="col col-os"><div class="col-header">${t.leftEye}</div></div>`;
     html += `</div>`;
+
+    // Render slots aligned row-by-row across both eyes
+    const slotKeys = ["morning", "lunch", "dinner", "bedtime"];
+    for (const slot of slotKeys) {
+      const odHas = hasOD && week.od[slot].length > 0;
+      const osHas = hasOS && week.os[slot].length > 0;
+      if (!odHas && !osHas) continue;
+
+      html += `<div class="cols">`;
+      if (hasOD) {
+        html += `<div class="col col-od">`;
+        if (odHas) html += renderPrintSlot(week.od[slot], slot, t);
+        html += `</div>`;
+      }
+      if (hasOS) {
+        html += `<div class="col col-os">`;
+        if (osHas) html += renderPrintSlot(week.os[slot], slot, t);
+        html += `</div>`;
+      }
+      html += `</div>`;
+    }
   }
 
   // Legend
@@ -675,6 +689,23 @@ h2 { font-size: ${s.h2}px; margin: ${s.h2mt}px 0 ${s.h2mb}px; border-bottom: 1.5
   return html;
 }
 
+function renderPrintSlot(meds, slotName, t) {
+  let html = `<div class="slot"><div class="slot-label">${t[slotName]}</div>`;
+  for (const m of meds) {
+    const border = m.cap === "#FFFFFF" ? "border:2px solid #999;" : "";
+    const translatedColor = t[m.capName] || m.capName;
+    html += `<div class="med-row">
+      <span class="cap-circle" style="background:${m.cap};${border}"></span>
+      <div><span class="med-name">${m.trade}</span><br><span class="med-generic">${m.generic}</span><br><span class="med-cap-label">(${translatedColor})</span></div>
+      <span class="med-action">${m.type === "ointment" ? t.ointment : t.drop}</span>
+      <span class="checkbox"></span>
+    </div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+// Keep for backward compat but no longer used in print layout
 function renderPrintSlots(eye, t) {
   const slotKeys = ["morning", "lunch", "dinner", "bedtime"];
   let html = "";
