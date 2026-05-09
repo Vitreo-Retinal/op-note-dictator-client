@@ -474,16 +474,25 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
 
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
 
-AMD BILLING CAP (CRITICAL — THIS OVERRIDES YOUR OWN MDM REASONING):
-- AMD is MODERATE complexity. Period. No exceptions based on how many co-managed conditions are present.
-- ESTABLISHED patients: AMD = 99214. NEVER 99215.
-- NEW patients: AMD = 99204. NEVER 99205.
-- This cap applies EVEN when AMD is combined with: cataracts, pseudophakia/post-op CE-IOL, POAG, dry eye, PVD, ERM, or any other routine co-managed ophthalmic condition. The total number of co-managed conditions does NOT elevate complexity. Having AMD + POAG + cataracts + pseudophakia at one visit is STILL 99204/99214.
-- Do NOT rationalize 99205/99215 by citing "multiple concurrent conditions" or "simultaneous management." These are routine retina practice conditions, not high-complexity emergencies.
-- 99215/99205 ONLY if there is a truly separate EMERGENT/VISION-THREATENING condition: new retinal detachment requiring same-day surgery, acute endophthalmitis, GCA with STAT ESR/CRP, or similar. Planned cataract surgery does NOT qualify.
-- When in doubt: 99204 (new) or 99214 (established). ALWAYS.
+E/M LEVEL RULES (CRITICAL — THIS OVERRIDES YOUR OWN MDM REASONING):
 
-MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and 99215):
+LEVEL 3 (99213 established / 99203 new): Observation visits — PVD follow-up, dry AMD, stable conditions, no treatment changes.
+
+LEVEL 4 (99214 established / 99204 new): The retina WORKHORSE. Use for: wet AMD, RVO, DME with drug management, agent switching, injection visits, prescription changes. This is the DEFAULT for most retina visits. AMD is ALWAYS Level 4 regardless of how many co-managed conditions are present (POAG, cataracts, pseudophakia, ERM, dry eye, PVD — none of these elevate it). Having 5 diagnoses at one visit does NOT make it Level 5.
+
+LEVEL 5 (99215 established / 99205 new): RARE. Requires BOTH of these criteria simultaneously:
+  1. Threat to body function TODAY (not "will go blind eventually" or "severe disease")
+  2. Decision for emergency major surgery/hospitalization made AND acted on at THIS visit
+  Level 5 examples (the ONLY scenarios that qualify):
+  - Endophthalmitis → tap/inject performed same day
+  - Retinal detachment (mac-on or mac-off) → PPV, scleral buckle, or pneumatic performed same day
+  - GCA suspected → STAT ESR/CRP ordered, temporal artery biopsy decision same day
+  - Acute CRAO within treatment window → emergent intervention same day
+  What does NOT qualify for Level 5: "multiple conditions at one visit", AMD with subretinal hemorrhage, agent switching, planned future surgery, "complex management", any number of routine co-managed conditions.
+
+When in doubt: Level 4 (99204 new / 99214 established). ALWAYS.
+
+MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99204/99214 and 99205/99215):
 - For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
 - For 99215: add a sentence summarizing high MDM — reference multiple chronic conditions or progression requiring complex decisions. Only use 99215 when warranted per the AMD BILLING CAP rule above.
 - For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
@@ -643,17 +652,15 @@ IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 - OCTA DOCUMENTATION: Flag if OCTA mentioned but medical necessity not documented. Must document WHY OCTA needed instead of OCT alone and how findings influenced treatment.
 - BILATERAL INJECTION (67028): MUE = 1, bilateral indicator = 1 (150% payment). Bill single line with -50 modifier. Wet AMD + GA same eye → 1 unit of 67028 only, link both ICD-10 codes.
 
-AMD BILLING CAP (CRITICAL):
-- AMD is MODERATE complexity. Period. No exceptions based on co-managed conditions.
-- ESTABLISHED: AMD = 99214. NEVER 99215.
-- NEW: AMD = 99204. NEVER 99205.
-- AMD + cataracts + pseudophakia + POAG + dry eye = STILL moderate. The number of routine ophthalmic conditions does NOT elevate complexity.
-- 99215/99205 ONLY for truly separate EMERGENT conditions (new RD, endophthalmitis, GCA). Planned cataract surgery does NOT qualify.
-- When in doubt: 99204 (new) or 99214 (established). ALWAYS.
+E/M LEVEL RULES (CRITICAL):
+LEVEL 3 (99213/99203): Observation — PVD, dry AMD, stable, no treatment changes.
+LEVEL 4 (99214/99204): Retina workhorse — wet AMD, RVO, DME, drug management, injections. AMD is ALWAYS Level 4 regardless of co-managed conditions.
+LEVEL 5 (99215/99205): RARE. Requires BOTH: (1) threat to body function TODAY + (2) emergency surgery/hospitalization acted on THIS visit. Examples: endophthalmitis + tap/inject same day, RD + PPV/buckle/pneumatic same day, GCA + STAT labs same day, acute CRAO + emergent intervention. "Multiple conditions" or planned future surgery does NOT qualify.
+When in doubt: Level 4. ALWAYS.
 
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99204/99214 and 99205/99215):
 - For 99204/99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: new patient with active wet AMD OD requiring initiation of anti-VEGF therapy, concurrent POAG and post-operative management; OCT-A reviewed guiding treatment decision."
-- For 99205/99215: add a sentence summarizing high MDM — only use 99205/99215 when warranted per the AMD BILLING CAP rule above. This is RARE for AMD patients.
+- For 99205/99215: add a sentence summarizing high MDM — only use when Level 5 criteria are met per the E/M LEVEL RULES above. This is RARE.
 - For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
 
 ANTI-REPETITION RULE (CRITICAL):
