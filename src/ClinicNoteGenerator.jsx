@@ -225,7 +225,10 @@ FORMATTING RULES:
   s/p E, sub-optimal response
   s/p V q8, stable
 - Always leave a BLANK LINE between the OD and OS sections for readability.
-- If a condition is UNILATERAL (only one eye), just state the single eye — do NOT add a line for the unaffected eye.
+- If a condition is UNILATERAL (only one eye), still use the header format with just the one eye line. Example:
+  2. AMD
+  OD: New wet AMD, metamorphopsia x 3 days, SRF with PED on OCT
+  Do NOT write "2. New wet AMD OD" — always use the condition name as the header, then OD/OS details on the next line.
 - INJECTION/anti-VEGF history: list in CHRONOLOGICAL order (oldest first, most recent/current treatment at the BOTTOM). This shows the progression of treatment changes over time.
 - SURGICAL history: list in REVERSE chronological order (most recent surgery on top, oldest at bottom).
 - Place the Plan section at the bottom
