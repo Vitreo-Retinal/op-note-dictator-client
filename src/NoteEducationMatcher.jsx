@@ -160,6 +160,8 @@ export function detectDropsFromPlan(noteText) {
     { regex: /(dorzolamide|trusopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Dorzolamide" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(moxifloxacin|vigamox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Moxifloxacin" },
     { regex: /(moxifloxacin|vigamox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Moxifloxacin" },
+    { regex: /(?:ctn|start|begin|continue|resume|add)\s+(ofloxacin|ocuflox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Ofloxacin" },
+    { regex: /(ofloxacin|ocuflox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Ofloxacin" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(bromfenac|prolensa)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Bromfenac" },
     { regex: /(bromfenac|prolensa)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Bromfenac" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(durezol)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Durezol" },
@@ -202,7 +204,7 @@ export function detectDropsFromPlan(noteText) {
       if (found.has(name)) continue;
 
       if (isTaperShorthand) {
-        // "pf taper OD" or "pred forte taper" → default QID x1wk taper
+        // "pf taper OD" or "pred forte taper 3/2/1/stop" or "PF taper 4/3/2/1"
         let eye = (match[1] || "").toUpperCase();
         // If no laterality captured from plan, scan full note for "PF taper OD" or "Pred Forte... OD"
         if (!eye) {
@@ -210,8 +212,25 @@ export function detectDropsFromPlan(noteText) {
           const pfLateralMatch = fullLower.match(/(?:pf|pred\s*forte|prednisolone)\s+(?:\(pf\)\s+)?taper\s+(?:[\w\s:]*?)(od|os|ou)/i);
           eye = pfLateralMatch ? pfLateralMatch[1].toUpperCase() : "OU";
         }
+        // Try to parse numeric taper from the matched text (e.g., "3/2/1/stop" or "4/3/2/1")
+        const freqNames = { 4: "QID", 3: "TID", 2: "BID", 1: "QD" };
+        const fullMatch = match[0] || "";
+        const taperNums = fullMatch.match(/(\d[\d\/\-\s]*(?:stop|discontinue)?)/i);
+        let schedule = "QID x1wk, TID x1wk, BID x1wk, QD x1wk"; // default
+        if (taperNums) {
+          const nums = taperNums[1].split(/[\/\-\s]+/).map(s => s.trim()).filter(Boolean);
+          const steps = [];
+          for (const n of nums) {
+            if (n === "stop" || n === "discontinue") break;
+            const val = parseInt(n);
+            if (!isNaN(val) && val >= 1 && val <= 4) {
+              steps.push((freqNames[val] || "QD") + " x1wk");
+            }
+          }
+          if (steps.length > 0) schedule = steps.join(", ");
+        }
         found.add(name);
-        drops.push({ name, eye, schedule: "QID x1wk, TID x1wk, BID x1wk, QD x1wk" });
+        drops.push({ name, eye, schedule });
         continue;
       }
 

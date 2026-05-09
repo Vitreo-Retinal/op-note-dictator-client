@@ -558,6 +558,12 @@ MODIFIER RULES:
 - If NO procedure is performed today and no same-day/next-day surgical decision is made → no modifier needed, just the bare E/M code.
 - IMPORTANT: Modifiers -24, -58, -78, -79 are relevant when the patient is WITHIN a prior surgery's global period. If not in a global period, these do not apply.
 
+CONTRALATERAL EYE GLOBAL PERIOD CHECK: When the patient has a recent surgery on one eye (e.g., s/p PPV OS), check if today's visit falls within that surgery's 90-day global period. If so:
+- Add -24 to the E/M code (unrelated E/M during global period) when today's visit is for a DIFFERENT problem on the other eye.
+- Add -79 to any unrelated PROCEDURE performed on the other eye (e.g., pneumatic OD while in PPV OS global → 67110-79).
+- If the f/u involves a STAGED/PLANNED procedure related to today's surgery (e.g., staged laser after pneumatic), note that -58 will apply at that visit.
+Example: Patient s/p PPV OS 4 weeks ago (in 90-day global), presents today with RD OD → pneumatic OD → E/M: 99215-24-57, Procedure: 67110-79.
+
 SURGERY MODIFIER REIMBURSEMENT:
 - -58 (staged/planned): new postop period starts, 100% allowable.
 - -78 (unplanned return to OR): NO new postop period, 70% allowable (intraop only).
@@ -693,6 +699,8 @@ MODIFIER RULES:
 - Modifier -50: Bilateral procedure same day. Example: bilateral injections → 67028-50.
 - Modifier -59: Distinct procedural service. Use when two normally-bundled procedures are performed same eye same day and are truly separate (e.g., injection + focal laser same eye same day → -59 on the second procedure).
 - No procedure today and not in a global period → no modifier needed.
+
+CONTRALATERAL EYE GLOBAL PERIOD CHECK: When patient has recent surgery on one eye, check if today falls within 90-day global. If so: add -24 to E/M (unrelated), -79 to unrelated procedure on other eye. Example: s/p PPV OS 4wks ago + RD OD today → 99215-24-57, 67110-79.
 
 GLOBAL PERIOD REFERENCE:
 - 90-day global: PPV, scleral buckle, pneumatic retinopexy, IOL exchange, focal/grid laser (67210), choroidal photocoag (67220)

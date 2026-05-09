@@ -31,6 +31,7 @@ const DRUG_DB = [
   { trade: "Moxifloxacin", generic: "moxifloxacin", cap: "#D2B48C", capName: "tan", cls: "antibiotic" },
   { trade: "Besivance", generic: "besifloxacin", cap: "#D2B48C", capName: "tan", cls: "antibiotic" },
   { trade: "Ofloxacin", generic: "ofloxacin", cap: "#D2B48C", capName: "tan", cls: "antibiotic" },
+  { trade: "Ocuflox", generic: "ofloxacin", cap: "#D2B48C", capName: "tan", cls: "antibiotic" },
   { trade: "Polytrim", generic: "polymyxin-trimethoprim", cap: "#D2B48C", capName: "tan", cls: "antibiotic" },
   { trade: "Tobramycin", generic: "tobramycin", cap: "#D2B48C", capName: "tan", cls: "antibiotic" },
   { trade: "Ciloxan", generic: "ciprofloxacin", cap: "#D2B48C", capName: "tan", cls: "antibiotic" },
@@ -112,9 +113,16 @@ function parseSchedule(str) {
       }
     }
 
-    // Check for weeks
+    // Check for weeks or days
     const weekMatch = part.match(/(\d+)\s*w/);
-    if (weekMatch) weeks = parseInt(weekMatch[1]);
+    const dayMatch = part.match(/(\d+)\s*d(?:ay)?/);
+    if (weekMatch) {
+      weeks = parseInt(weekMatch[1]);
+    } else if (dayMatch) {
+      // Convert days to fractional weeks (round up: 4 days ≈ 1 week for display)
+      const days = parseInt(dayMatch[1]);
+      weeks = Math.ceil(days / 7) || 1;
+    }
 
     if (freq !== null) {
       schedule.push({ freq, weeks, isQhs });
