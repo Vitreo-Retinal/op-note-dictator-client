@@ -145,7 +145,7 @@ export function detectDropsFromPlan(noteText) {
     // { regex, name }
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
     { regex: /(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
-    { regex: /pf\s+taper\s*(?:[\d\/\-]+\s*(?:every|per|each)?\s*(?:week|wk)?\s*(?:in\s*(?:the\s*)?)?)?\s*(od|os|ou)?/gi, name: "Prednisolone", isTaperShorthand: true },
+    { regex: /(?:pf|pred\s*forte|pred(?:nisolone)?)\s+taper\s*(?:[\d\/\-]+\s*(?:every|per|each)?\s*(?:week|wk)?\s*(?:in\s*(?:the\s*)?)?)?\s*(?:and\s+\w+.*?)?\s*(?:as\s+prescribed)?\s*(od|os|ou)?/gi, name: "Prednisolone", isTaperShorthand: true },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(latanoprost|xalatan)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Latanoprost" },
@@ -200,8 +200,14 @@ export function detectDropsFromPlan(noteText) {
       if (found.has(name)) continue;
 
       if (isTaperShorthand) {
-        // "pf taper OD" → default QID x1wk taper
-        const eye = (match[1] || "OU").toUpperCase();
+        // "pf taper OD" or "pred forte taper" → default QID x1wk taper
+        let eye = (match[1] || "").toUpperCase();
+        // If no laterality captured from plan, scan full note for "PF taper OD" or "Pred Forte... OD"
+        if (!eye) {
+          const fullLower = (noteText || "").toLowerCase();
+          const pfLateralMatch = fullLower.match(/(?:pf|pred\s*forte|prednisolone)\s+(?:\(pf\)\s+)?taper\s+(?:[\w\s:]*?)(od|os|ou)/i);
+          eye = pfLateralMatch ? pfLateralMatch[1].toUpperCase() : "OU";
+        }
         found.add(name);
         drops.push({ name, eye, schedule: "QID x1wk, TID x1wk, BID x1wk, QD x1wk" });
         continue;
