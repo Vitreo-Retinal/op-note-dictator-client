@@ -69,7 +69,7 @@ function PasswordGate({ onSuccess }) {
     <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
       <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: "40px 36px", width: "100%", maxWidth: 380, textAlign: "center" }}>
         <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, margin: "0 auto 16px" }}>&#9877;</div>
-        <div style={{ fontSize: "1.2rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>Retina Practice Hub</div>
+        <div style={{ fontSize: "1.2rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>VRA Practice Hub</div>
         <div style={{ fontSize: "0.78rem", color: S.muted, marginBottom: 24 }}>Clinical Workflow Tools</div>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" autoFocus
           style={{ display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px", color: S.text, fontFamily: S.mono, fontSize: "0.9rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center" }} />
@@ -117,7 +117,7 @@ function Homepage({ onSelectTool, onSelectDoctor }) {
       {/* Header */}
       <div style={{ textAlign: "center", padding: "40px 24px 28px" }}>
         <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, margin: "0 auto 14px" }}>&#9877;</div>
-        <div style={{ fontSize: "1.5rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>Retina Practice Hub</div>
+        <div style={{ fontSize: "1.5rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>VRA Practice Hub</div>
         <div style={{ fontSize: "0.82rem", color: S.muted, fontFamily: S.mono }}>Clinical Workflow Tools</div>
       </div>
 
