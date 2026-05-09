@@ -618,7 +618,7 @@ h2 { font-size: 22px; margin: 24px 0 10px; border-bottom: 2px solid #333; paddin
 .legend { margin-top: 20px; padding-top: 12px; border-top: 1px solid #ccc; font-size: 14px; color: #555; }
 .legend-item { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; margin-bottom: 4px; }
 .legend-dot { width: 14px; height: 14px; border-radius: 50%; }
-@media print { body { padding: 12px; } }
+@media print { body { padding: 12px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; } }
 </style></head><body>
 <h1>${t.title}</h1>
 <p style="text-align:center;font-size:14px;color:#666;margin-bottom:20px;">${t.subtitle}</p>`;
