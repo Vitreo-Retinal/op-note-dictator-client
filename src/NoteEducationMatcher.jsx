@@ -121,9 +121,11 @@ export function matchHandouts(noteText, icd10Codes = []) {
 export function detectDropsFromPlan(noteText) {
   const lower = (noteText || "").toLowerCase();
 
-  // Find the plan section
-  const planMatch = lower.match(/plan[:\s]*\n?([\s\S]*?)$/i);
-  let planText = planMatch ? planMatch[1] : lower;
+  // Search the ENTIRE note text for drop mentions — drops can appear in
+  // the assessment (e.g., "On PF taper OD") or the plan section.
+  // Previously we only searched the Plan section, but "planned" or "planning"
+  // in the assessment would trick the regex and cut off drops above it.
+  let planText = lower;
 
   // Normalize spelled-out laterality to abbreviations BEFORE regex matching
   planText = planText
