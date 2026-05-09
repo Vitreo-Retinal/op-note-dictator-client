@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import DropSchedule from "./DropSchedule.jsx";
 
 // ── Styles (matches App.jsx theme) ─────────────────────────────────
 const S = {
@@ -2622,6 +2623,7 @@ function printHandout(handout, lang) {
 
 // ── Component ──────────────────────────────────────────────────────
 export default function PatientEducation({ onBack }) {
+  const [view, setView] = useState("handouts"); // "handouts" or "drops"
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [lang, setLang] = useState("en");
@@ -2642,12 +2644,24 @@ export default function PatientEducation({ onBack }) {
     });
   }, [search, category, lang]);
 
+  // If viewing Drop Schedule, render that component
+  if (view === "drops") {
+    return <DropSchedule onBack={() => setView("handouts")} />;
+  }
+
   return (
     <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
       {/* Header */}
       <div style={{ padding: "12px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0, flexWrap: "wrap" }}>
         <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Home</button>
         <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>Patient Education Library</span>
+        {/* Drop Schedule button */}
+        <button
+          onClick={() => setView("drops")}
+          style={{ background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", borderRadius: 8, padding: "6px 16px", fontFamily: S.font, fontSize: "0.78rem", fontWeight: 600, cursor: "pointer" }}
+        >
+          Drop Schedule Builder
+        </button>
         {/* Language toggle */}
         <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
           {LANGUAGES.map((l) => (
