@@ -201,7 +201,19 @@ export function detectDropsFromPlan(noteText) {
     let match;
     regex.lastIndex = 0;
     while ((match = regex.exec(planText)) !== null) {
-      if (found.has(name)) continue;
+      // If already found, only continue processing if this match has explicit laterality
+      // (so it can override a previous default-OU match)
+      if (found.has(name)) {
+        if (!isTaperShorthand && match[3]) {
+          // This match has explicit eye — check if we should override a default OU
+          const idx = drops.findIndex(d => d.name === name && d._defaultEye);
+          if (idx !== -1) {
+            drops[idx].eye = match[3].toUpperCase();
+            drops[idx]._defaultEye = false;
+          }
+        }
+        continue;
+      }
 
       if (isTaperShorthand) {
         // Handles: "PF taper OS: TID x1 week, then BID x1 week, then QD x1 week, then stop"
@@ -269,17 +281,6 @@ export function detectDropsFromPlan(noteText) {
       let schedule = freq;
       if (taperText.trim()) {
         schedule = freq + " " + taperText.trim();
-      }
-
-      // If this drug was already found with a default OU (no explicit laterality),
-      // and this match HAS explicit laterality, override with the specific eye
-      if (found.has(name) && hasExplicitEye) {
-        const idx = drops.findIndex(d => d.name === name && d._defaultEye);
-        if (idx !== -1) {
-          drops[idx].eye = eye;
-          drops[idx]._defaultEye = false;
-        }
-        continue;
       }
 
       found.add(name);
