@@ -481,7 +481,9 @@ TASK: The physician will give you shorthand or abbreviated text. Expand it into 
 
 E/M LEVEL RULES (CRITICAL — THIS OVERRIDES YOUR OWN MDM REASONING):
 
-LEVEL 3 (99213 established / 99203 new): Observation visits — PVD follow-up, dry AMD, stable conditions, no treatment changes.
+EYE CODES (92014 established / 92004 new): Use INSTEAD of E/M codes when the visit is primarily an ophthalmological evaluation WITHOUT significant medical decision-making. Triggers: observation-only visits (e.g., ERM observed, no surgery planned), stable conditions with no treatment changes, new patient referral evaluations where the plan is to observe/monitor, routine annual comprehensive exams. Eye codes do NOT get MDM justification sentences, do NOT get modifiers, and do NOT get G2211. If the patient is being OBSERVED (no active treatment decision, no drug management, no surgical planning), use an eye code.
+
+LEVEL 3 (99213 established / 99203 new): Observation visits — PVD follow-up, dry AMD, stable conditions, no treatment changes. Consider 92014/92004 instead if the visit is purely observational with no MDM.
 
 LEVEL 4 (99214 established / 99204 new): The retina WORKHORSE. Use for: wet AMD, RVO, DME with drug management, agent switching, injection visits, prescription changes, ERM evaluation, surgical consultations where surgery is PLANNED FOR THE FUTURE (not today). This is the DEFAULT for most retina visits. AMD is ALWAYS Level 4 regardless of how many co-managed conditions are present (POAG, cataracts, pseudophakia, ERM, dry eye, PVD — none of these elevate it). Having 5 diagnoses at one visit does NOT make it Level 5. A new patient referred for ERM with planned future PPV = 99204, NOT 99205.
 
@@ -668,7 +670,8 @@ IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 - BILATERAL INJECTION (67028): MUE = 1, bilateral indicator = 1 (150% payment). Bill single line with -50 modifier. Wet AMD + GA same eye → 1 unit of 67028 only, link both ICD-10 codes.
 
 E/M LEVEL RULES (CRITICAL):
-LEVEL 3 (99213/99203): Observation — PVD, dry AMD, stable, no treatment changes.
+EYE CODES (92014/92004): Use when the visit is observation-only with no active treatment decisions — e.g., ERM observed (no surgery), stable conditions, new referral evaluation with plan to monitor. No MDM sentence, no modifier, no G2211.
+LEVEL 3 (99213/99203): Observation — PVD, dry AMD, stable, no treatment changes. Consider eye codes if purely observational.
 LEVEL 4 (99214/99204): Retina workhorse — wet AMD, RVO, DME, drug management, injections, ERM evaluation, surgical consultations for future surgery. AMD is ALWAYS Level 4 regardless of co-managed conditions. ERM with planned future PPV = 99204 (new) or 99214 (established), NOT Level 5.
 LEVEL 5 (99215/99205): RARE. Requires BOTH: (1) threat to body function TODAY + (2) emergency surgery PERFORMED at THIS visit (not scheduled for the future). Examples: endophthalmitis + tap/inject same day, RD + PPV/buckle/pneumatic same day, GCA + STAT labs same day, acute CRAO + emergent intervention. "Multiple conditions", planned future surgery, or "next OR availability" does NOT qualify.
 MODIFIER -57: ONLY for same-day or next-day major surgery. If surgery is scheduled for any future date beyond tomorrow → NO -57, no modifier at all (unless a minor procedure is also done today → -25).
