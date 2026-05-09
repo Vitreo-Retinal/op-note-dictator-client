@@ -147,7 +147,7 @@ export function detectDropsFromPlan(noteText) {
     // { regex, name }
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
     { regex: /(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
-    { regex: /(?:pf|pred\s*forte|pred(?:nisolone)?)\s+taper\s*(?:[\d\/\-]+\s*(?:every|per|each)?\s*(?:week|wk)?\s*(?:in\s*(?:the\s*)?)?)?\s*(?:and\s+\w+.*?)?\s*(?:as\s+prescribed)?\s*(od|os|ou)?/gi, name: "Prednisolone", isTaperShorthand: true },
+    { regex: /(?:pf|pred\s*forte|pred(?:nisolone)?)\s+taper\s*(od|os|ou)?[:\s]*(.*?)(?:\n|$)/gi, name: "Prednisolone", isTaperShorthand: true },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(latanoprost|xalatan)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Latanoprost" },
@@ -160,8 +160,8 @@ export function detectDropsFromPlan(noteText) {
     { regex: /(dorzolamide|trusopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Dorzolamide" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(moxifloxacin|vigamox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Moxifloxacin" },
     { regex: /(moxifloxacin|vigamox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Moxifloxacin" },
-    { regex: /(?:ctn|start|begin|continue|resume|add)\s+(ofloxacin|ocuflox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Ofloxacin" },
-    { regex: /(ofloxacin|ocuflox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Ofloxacin" },
+    { regex: /(?:ctn|start|begin|continue|resume|add)\s+(ofloxacin|ocuflox|oflox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Ofloxacin" },
+    { regex: /(ofloxacin|ocuflox|oflox)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Ofloxacin" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(bromfenac|prolensa)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Bromfenac" },
     { regex: /(bromfenac|prolensa)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Bromfenac" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(durezol)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Durezol" },
@@ -204,31 +204,58 @@ export function detectDropsFromPlan(noteText) {
       if (found.has(name)) continue;
 
       if (isTaperShorthand) {
-        // "pf taper OD" or "pred forte taper 3/2/1/stop" or "PF taper 4/3/2/1"
+        // Handles: "PF taper OS: TID x1 week, then BID x1 week, then QD x1 week, then stop"
+        //          "pf taper OD 3/2/1/stop"
+        //          "pred forte taper 4/3/2/1"
+        //          "PF taper OD" (no schedule → default)
         let eye = (match[1] || "").toUpperCase();
-        // If no laterality captured from plan, scan full note for "PF taper OD" or "Pred Forte... OD"
+        const taperText = (match[2] || "").trim();
+        // If no laterality captured, scan full note
         if (!eye) {
           const fullLower = (noteText || "").toLowerCase();
           const pfLateralMatch = fullLower.match(/(?:pf|pred\s*forte|prednisolone)\s+(?:\(pf\)\s+)?taper\s+(?:[\w\s:]*?)(od|os|ou)/i);
           eye = pfLateralMatch ? pfLateralMatch[1].toUpperCase() : "OU";
         }
-        // Try to parse numeric taper from the matched text (e.g., "3/2/1/stop" or "4/3/2/1")
+
+        const freqMap = { qid: 4, tid: 3, bid: 2, qd: 1 };
         const freqNames = { 4: "QID", 3: "TID", 2: "BID", 1: "QD" };
-        const fullMatch = match[0] || "";
-        const taperNums = fullMatch.match(/(\d[\d\/\-\s]*(?:stop|discontinue)?)/i);
         let schedule = "QID x1wk, TID x1wk, BID x1wk, QD x1wk"; // default
-        if (taperNums) {
-          const nums = taperNums[1].split(/[\/\-\s]+/).map(s => s.trim()).filter(Boolean);
+
+        if (taperText) {
+          // Try parsing expanded format: "TID x1 week, then BID x1 week, then QD x1 week, then stop"
+          const expandedParts = taperText.split(/,\s*(?:then\s*)?|;\s*(?:then\s*)?/).map(s => s.trim()).filter(Boolean);
           const steps = [];
-          for (const n of nums) {
-            if (n === "stop" || n === "discontinue") break;
-            const val = parseInt(n);
-            if (!isNaN(val) && val >= 1 && val <= 4) {
-              steps.push((freqNames[val] || "QD") + " x1wk");
+          for (const part of expandedParts) {
+            const lower = part.toLowerCase();
+            if (lower === "stop" || lower === "discontinue" || lower.startsWith("then stop")) break;
+            // Match freq + duration: "TID x1 week" or "BID x1wk" or "QD x 1 week"
+            let freq = null;
+            for (const [key, val] of Object.entries(freqMap)) {
+              if (lower.includes(key)) { freq = val; break; }
+            }
+            if (freq !== null) {
+              const wkMatch = lower.match(/x?\s*(\d+)\s*w/);
+              const weeks = wkMatch ? wkMatch[1] : "1";
+              steps.push(freqNames[freq] + " x" + weeks + "wk");
             }
           }
-          if (steps.length > 0) schedule = steps.join(", ");
+          if (steps.length > 0) {
+            schedule = steps.join(", ");
+          } else {
+            // Try numeric shorthand: "3/2/1/stop" or "4/3/2/1"
+            const nums = taperText.split(/[\/\-\s]+/).map(s => s.trim()).filter(Boolean);
+            const numSteps = [];
+            for (const n of nums) {
+              if (n.toLowerCase() === "stop" || n.toLowerCase() === "discontinue") break;
+              const val = parseInt(n);
+              if (!isNaN(val) && val >= 1 && val <= 4) {
+                numSteps.push(freqNames[val] + " x1wk");
+              }
+            }
+            if (numSteps.length > 0) schedule = numSteps.join(", ");
+          }
         }
+
         found.add(name);
         drops.push({ name, eye, schedule });
         continue;
