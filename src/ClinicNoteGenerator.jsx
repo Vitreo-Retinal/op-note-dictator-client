@@ -475,10 +475,12 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
 TASK: The physician will give you shorthand or abbreviated text. Expand it into a properly formatted A/P section in their exact style (matching the reference notes above). Insert billing-compliant language marked with [+]. Then recommend a billing code.
 
 AMD BILLING CAP (CRITICAL):
-- AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is a 99214 (moderate complexity), NOT 99215.
-- AMD + cataracts, dry eye, or other routine co-managed conditions = still 99214.
-- 99215 for an AMD patient ONLY if there is ALSO a separate serious/vision-threatening condition on top: new retinal detachment, new macular hole, systemic disease requiring urgent workup (e.g., GCA), endophthalmitis, or similar. The second condition must independently warrant high-complexity decision-making.
-- When in doubt for AMD patients, bill 99214.
+- AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is MODERATE complexity, NOT high.
+- ESTABLISHED patients: AMD alone = 99214, NOT 99215.
+- NEW patients: AMD alone = 99204, NOT 99205.
+- AMD + cataracts, dry eye, POAG (co-managed), or other routine co-managed conditions = still moderate (99214 established / 99204 new).
+- 99215/99205 for an AMD patient ONLY if there is ALSO a separate serious/vision-threatening condition on top: new retinal detachment, new macular hole, systemic disease requiring urgent workup (e.g., GCA), endophthalmitis, or similar. The second condition must independently warrant high-complexity decision-making.
+- When in doubt for AMD patients, bill moderate (99214 established / 99204 new).
 
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and 99215):
 - For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
@@ -641,10 +643,12 @@ IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 - BILATERAL INJECTION (67028): MUE = 1, bilateral indicator = 1 (150% payment). Bill single line with -50 modifier. Wet AMD + GA same eye → 1 unit of 67028 only, link both ICD-10 codes.
 
 AMD BILLING CAP (CRITICAL):
-- AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is a 99214 (moderate complexity), NOT 99215.
-- AMD + cataracts, dry eye, or other routine co-managed conditions = still 99214.
-- 99215 for an AMD patient ONLY if there is ALSO a separate serious/vision-threatening condition on top: new retinal detachment, new macular hole, systemic disease requiring urgent workup (e.g., GCA), endophthalmitis, or similar.
-- When in doubt for AMD patients, bill 99214.
+- AMD alone — even with agent switching, worsening SRF/IRF, or interval changes — is MODERATE complexity, NOT high.
+- ESTABLISHED patients: AMD alone = 99214, NOT 99215.
+- NEW patients: AMD alone = 99204, NOT 99205.
+- AMD + cataracts, dry eye, POAG (co-managed), or other routine co-managed conditions = still moderate (99214 established / 99204 new).
+- 99215/99205 for an AMD patient ONLY if there is ALSO a separate serious/vision-threatening condition on top: new retinal detachment, new macular hole, systemic disease requiring urgent workup (e.g., GCA), endophthalmitis, or similar.
+- When in doubt for AMD patients, bill moderate (99214 established / 99204 new).
 
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99214 and 99215):
 - For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
