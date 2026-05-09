@@ -263,6 +263,7 @@ export function detectDropsFromPlan(noteText) {
 
       const freq = match[2].toUpperCase();
       const eye = (match[3] || "OU").toUpperCase();
+      const hasExplicitEye = !!match[3];
       const taperText = match[4] || "";
 
       let schedule = freq;
@@ -270,12 +271,24 @@ export function detectDropsFromPlan(noteText) {
         schedule = freq + " " + taperText.trim();
       }
 
+      // If this drug was already found with a default OU (no explicit laterality),
+      // and this match HAS explicit laterality, override with the specific eye
+      if (found.has(name) && hasExplicitEye) {
+        const idx = drops.findIndex(d => d.name === name && d._defaultEye);
+        if (idx !== -1) {
+          drops[idx].eye = eye;
+          drops[idx]._defaultEye = false;
+        }
+        continue;
+      }
+
       found.add(name);
-      drops.push({ name, eye, schedule });
+      drops.push({ name, eye, schedule, _defaultEye: !hasExplicitEye });
     }
   }
 
-  return drops;
+  // Clean up internal flags before returning
+  return drops.map(({ _defaultEye, ...rest }) => rest);
 }
 
 // ── Generate print HTML for matched handouts ───────────────────────

@@ -482,17 +482,19 @@ E/M LEVEL RULES (CRITICAL — THIS OVERRIDES YOUR OWN MDM REASONING):
 
 LEVEL 3 (99213 established / 99203 new): Observation visits — PVD follow-up, dry AMD, stable conditions, no treatment changes.
 
-LEVEL 4 (99214 established / 99204 new): The retina WORKHORSE. Use for: wet AMD, RVO, DME with drug management, agent switching, injection visits, prescription changes. This is the DEFAULT for most retina visits. AMD is ALWAYS Level 4 regardless of how many co-managed conditions are present (POAG, cataracts, pseudophakia, ERM, dry eye, PVD — none of these elevate it). Having 5 diagnoses at one visit does NOT make it Level 5.
+LEVEL 4 (99214 established / 99204 new): The retina WORKHORSE. Use for: wet AMD, RVO, DME with drug management, agent switching, injection visits, prescription changes, ERM evaluation, surgical consultations where surgery is PLANNED FOR THE FUTURE (not today). This is the DEFAULT for most retina visits. AMD is ALWAYS Level 4 regardless of how many co-managed conditions are present (POAG, cataracts, pseudophakia, ERM, dry eye, PVD — none of these elevate it). Having 5 diagnoses at one visit does NOT make it Level 5. A new patient referred for ERM with planned future PPV = 99204, NOT 99205.
 
 LEVEL 5 (99215 established / 99205 new): RARE. Requires BOTH of these criteria simultaneously:
   1. Threat to body function TODAY (not "will go blind eventually" or "severe disease")
-  2. Decision for emergency major surgery/hospitalization made AND acted on at THIS visit
+  2. Decision for emergency major surgery/hospitalization made AND acted on at THIS visit — meaning surgery is PERFORMED TODAY, not scheduled for the future
   Level 5 examples (the ONLY scenarios that qualify):
   - Endophthalmitis → tap/inject performed same day
   - Retinal detachment (mac-on or mac-off) → PPV, scleral buckle, or pneumatic performed same day
   - GCA suspected → STAT ESR/CRP ordered, temporal artery biopsy decision same day
   - Acute CRAO within treatment window → emergent intervention same day
-  What does NOT qualify for Level 5: "multiple conditions at one visit", AMD with subretinal hemorrhage, agent switching, planned future surgery, "complex management", any number of routine co-managed conditions.
+  What does NOT qualify for Level 5: "multiple conditions at one visit", AMD with subretinal hemorrhage, agent switching, planned future surgery (e.g., "plan for next OR availability"), "complex management", surgical consultation for ERM/FTMH/VH, any number of routine co-managed conditions. If surgery is NOT performed or initiated at THIS visit, it is NOT Level 5.
+
+MODIFIER -57 REMINDER: -57 is ONLY for same-day or next-day major surgery. If surgery is scheduled for "next OR availability", "next week", "2 weeks", or any future date beyond tomorrow → NO -57. The E/M stands alone with no modifier (unless a minor procedure like injection is also done today → then -25).
 
 When in doubt: Level 4 (99204 new / 99214 established). ALWAYS.
 
@@ -666,8 +668,9 @@ IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 
 E/M LEVEL RULES (CRITICAL):
 LEVEL 3 (99213/99203): Observation — PVD, dry AMD, stable, no treatment changes.
-LEVEL 4 (99214/99204): Retina workhorse — wet AMD, RVO, DME, drug management, injections. AMD is ALWAYS Level 4 regardless of co-managed conditions.
-LEVEL 5 (99215/99205): RARE. Requires BOTH: (1) threat to body function TODAY + (2) emergency surgery/hospitalization acted on THIS visit. Examples: endophthalmitis + tap/inject same day, RD + PPV/buckle/pneumatic same day, GCA + STAT labs same day, acute CRAO + emergent intervention. "Multiple conditions" or planned future surgery does NOT qualify.
+LEVEL 4 (99214/99204): Retina workhorse — wet AMD, RVO, DME, drug management, injections, ERM evaluation, surgical consultations for future surgery. AMD is ALWAYS Level 4 regardless of co-managed conditions. ERM with planned future PPV = 99204 (new) or 99214 (established), NOT Level 5.
+LEVEL 5 (99215/99205): RARE. Requires BOTH: (1) threat to body function TODAY + (2) emergency surgery PERFORMED at THIS visit (not scheduled for the future). Examples: endophthalmitis + tap/inject same day, RD + PPV/buckle/pneumatic same day, GCA + STAT labs same day, acute CRAO + emergent intervention. "Multiple conditions", planned future surgery, or "next OR availability" does NOT qualify.
+MODIFIER -57: ONLY for same-day or next-day major surgery. If surgery is scheduled for any future date beyond tomorrow → NO -57, no modifier at all (unless a minor procedure is also done today → -25).
 When in doubt: Level 4. ALWAYS.
 
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99204/99214 and 99205/99215):
