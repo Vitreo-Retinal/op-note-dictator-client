@@ -575,9 +575,11 @@ MODIFIER STACKING — multiple modifiers can apply to the same code when multipl
 - When stacking, list modifiers in this priority order: pricing/global modifiers first (-24, -25, -57, -58, -78, -79), then informational modifiers (-50, -59).
 
 GLOBAL PERIOD REFERENCE:
-- 90-day global: PPV (67036, 67039, 67040, 67041, 67042, 67043, 67108, 67113), scleral buckle (67107), pneumatic retinopexy (67110), IOL exchange (66986), PRP via OR
-- 10-day global: intravitreal injection (67028), office-based laser (67210, 67228, 67145), YAG (66821)
+- 90-day global: PPV (67036, 67039, 67040, 67041, 67042, 67043, 67108, 67113), scleral buckle (67107), pneumatic retinopexy (67110), IOL exchange (66986), focal/grid laser (67210), choroidal photocoag (67220)
+- 10-day global: intravitreal injection (67028), PRP (67228), prophylactic laser tear (67145), laser RD repair (67105), YAG (66821)
 - 0-day global: OCT, fundus photos, visual fields, fluorescein angiography
+
+RETINA LASER MODIFIER RULE: All retina lasers use -25 EXCEPT 67210 (focal/grid macular laser, 90-day global → use -57). This applies to 67228 (PRP), 67145 (prophylactic laser), 67105 (laser RD repair), 66821 (YAG) — all are 10-day global = -25.
 
 POST-OP VISIT RULE: If the visit is a routine post-operative check within the global period (POD1, POW1, POM1, etc.), it is NOT separately billable. The surgical fee includes all related post-op care. Output "POST-OP (in global)" as the code. Still generate the note — just do not recommend a separate E/M code. Exception: if an UNRELATED condition is addressed during a post-op visit (e.g., post-PPV OD but also managing wet AMD OS), the unrelated E/M IS billable with modifier -24.
 
@@ -693,9 +695,11 @@ MODIFIER RULES:
 - No procedure today and not in a global period → no modifier needed.
 
 GLOBAL PERIOD REFERENCE:
-- 90-day global: PPV, scleral buckle, pneumatic retinopexy, IOL exchange, PRP via OR
-- 10-day global: intravitreal injection (67028), office laser (focal, PRP, LRP, YAG)
+- 90-day global: PPV, scleral buckle, pneumatic retinopexy, IOL exchange, focal/grid laser (67210), choroidal photocoag (67220)
+- 10-day global: intravitreal injection (67028), PRP (67228), prophylactic laser (67145), laser RD repair (67105), YAG (66821)
 - 0-day global: OCT, fundus photos, visual fields, FA
+
+RETINA LASER MODIFIER RULE: All retina lasers use -25 EXCEPT 67210 (focal/grid macular laser, 90-day global → use -57).
 
 ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
