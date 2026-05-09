@@ -444,6 +444,7 @@ COUNSELING AUTO-FILLS (include in Plan when diagnosis is present):
 - VH (any cause: PDR, HST, hemorrhagic PVD, etc.) → HOBE, avoid blood thinners, avoid strenuous activity
 - Acute endophthalmitis → Guarded vision prognosis discussed, potential need for surgical intervention (PPV) if no improvement
 - Late-onset/atypical endophthalmitis (P. acnes) → Guarded prognosis, cultures held 2+ weeks, may need PPV/capsulectomy/IOL exchange
+- SMOKER (any patient documented as current smoker, "smokes", "smoking hx", "active smoker", "+smoking", etc.) → ALWAYS include in Plan: "[+] Smoking cessation counseling provided; discussed increased risk of AMD progression, poor surgical outcomes, and accelerated retinal vascular disease. Patient advised to quit and offered referral to smoking cessation resources." This applies universally regardless of diagnosis or physician.
 
 IMPORTANT BILLING REMINDER: ALL conditions above — not just AMD and injection visits — must include the standard billing components: [+] imaging review, [+] management decision, and [+] MDM justification (for 99214/99215). Every note needs billing language regardless of condition type.`;
 
@@ -750,6 +751,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   // ICD-10 auto-suggest
   const [icd10Codes, setIcd10Codes] = useState([]);
   const [icd10Loading, setIcd10Loading] = useState(false);
+
+  // Auto-detected drops from note output
+  const [autoDrops, setAutoDrops] = useState([]);
+  const [autoLang, setAutoLang] = useState("en");
 
   // Injection calculator
   const [lastInjDate, setLastInjDate] = useState("");
@@ -1433,10 +1438,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         )}
                         {detectedDrops.length > 0 && (
                           <button
-                            onClick={() => setTab("education")}
+                            onClick={() => { setAutoDrops(detectedDrops); setAutoLang(detectedLang); setTab("drops"); }}
                             style={{ background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
                           >
-                            Open Drop Schedule
+                            Print Drop Schedule ({(detectedLang || "en").toUpperCase()})
                           </button>
                         )}
                       </div>
@@ -1670,6 +1675,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         {tab === "education" && (
           <div style={{ margin: "-20px", minHeight: "80vh" }}>
             <PatientEducation onBack={() => setTab("input")} />
+          </div>
+        )}
+
+        {/* ── AUTO DROP SCHEDULE (pre-populated from note) ────── */}
+        {tab === "drops" && (
+          <div style={{ margin: "-20px", minHeight: "80vh" }}>
+            <DropSchedule onBack={() => setTab("output")} initialDrops={autoDrops} initialLang={autoLang} />
           </div>
         )}
 

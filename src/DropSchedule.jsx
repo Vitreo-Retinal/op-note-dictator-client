@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 // ── Styles (matches App.jsx theme) ─────────────────────────────────
 const S = {
@@ -237,7 +237,7 @@ function lookupDrug(name) {
 }
 
 // ── Component ──────────────────────────────────────────────────────
-export default function DropSchedule({ onBack, initialLang = "en" }) {
+export default function DropSchedule({ onBack, initialLang = "en", initialDrops = [] }) {
   const [meds, setMeds] = useState([]);
   const [medName, setMedName] = useState("");
   const [medType, setMedType] = useState("drop"); // drop or ointment
@@ -245,6 +245,29 @@ export default function DropSchedule({ onBack, initialLang = "en" }) {
   const [medSchedule, setMedSchedule] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [printLang, setPrintLang] = useState(initialLang); // language for printed output
+
+  // Auto-populate meds from initialDrops (from auto-education matcher)
+  useEffect(() => {
+    if (initialDrops && initialDrops.length > 0 && meds.length === 0) {
+      const populated = initialDrops.map((d, i) => {
+        const drug = lookupDrug(d.name);
+        const schedule = parseSchedule(d.schedule || "QD");
+        return {
+          id: Date.now() + i,
+          name: d.name,
+          trade: drug ? drug.trade : d.name,
+          generic: drug ? drug.generic : "",
+          cap: drug ? drug.cap : "#CCCCCC",
+          capName: drug ? drug.capName : "unknown",
+          type: drug?.isOintment ? "ointment" : "drop",
+          eye: (d.eye || "OU").toUpperCase(),
+          schedule,
+        };
+      });
+      setMeds(populated);
+      setShowPreview(true);
+    }
+  }, [initialDrops]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const detectedDrug = medName.trim() ? lookupDrug(medName) : null;
 

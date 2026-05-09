@@ -136,8 +136,9 @@ export function detectDropsFromPlan(noteText) {
 
   const drugPatterns = [
     // { regex, name }
-    { regex: /(?:ctn|start|begin|continue|resume|add)\s+(pred(?:nisolone)?|pred\s*forte)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
-    { regex: /(pred(?:nisolone)?|pred\s*forte)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
+    { regex: /(?:ctn|start|begin|continue|resume|add)\s+(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
+    { regex: /(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
+    { regex: /pf\s+taper\s*(od|os|ou)?/gi, name: "Prednisolone", isTaperShorthand: true },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(latanoprost|xalatan)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Latanoprost" },
@@ -185,11 +186,20 @@ export function detectDropsFromPlan(noteText) {
 
   const found = new Set();
 
-  for (const { regex, name } of drugPatterns) {
+  for (const { regex, name, isTaperShorthand } of drugPatterns) {
     let match;
     regex.lastIndex = 0;
     while ((match = regex.exec(planText)) !== null) {
       if (found.has(name)) continue;
+
+      if (isTaperShorthand) {
+        // "pf taper OD" → default QID x1wk taper
+        const eye = (match[1] || "OU").toUpperCase();
+        found.add(name);
+        drops.push({ name, eye, schedule: "QID x1wk, TID x1wk, BID x1wk, QD x1wk" });
+        continue;
+      }
+
       const freq = match[2].toUpperCase();
       const eye = (match[3] || "OU").toUpperCase();
       const taperText = match[4] || "";
