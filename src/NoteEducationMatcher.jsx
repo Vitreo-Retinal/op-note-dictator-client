@@ -123,7 +123,14 @@ export function detectDropsFromPlan(noteText) {
 
   // Find the plan section
   const planMatch = lower.match(/plan[:\s]*\n?([\s\S]*?)$/i);
-  const planText = planMatch ? planMatch[1] : lower;
+  let planText = planMatch ? planMatch[1] : lower;
+
+  // Normalize spelled-out laterality to abbreviations BEFORE regex matching
+  planText = planText
+    .replace(/\bright\s*eye\b/g, "OD")
+    .replace(/\bleft\s*eye\b/g, "OS")
+    .replace(/\bboth\s*eyes\b/g, "OU")
+    .replace(/\beach\s*eye\b/g, "OU");
 
   const drops = [];
 
@@ -136,9 +143,9 @@ export function detectDropsFromPlan(noteText) {
 
   const drugPatterns = [
     // { regex, name }
-    { regex: /(?:ctn|start|begin|continue|resume|add)\s+(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
-    { regex: /(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
-    { regex: /pf\s+taper\s*(od|os|ou)?/gi, name: "Prednisolone", isTaperShorthand: true },
+    { regex: /(?:ctn|start|begin|continue|resume|add)\s+(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
+    { regex: /(pred(?:nisolone)?|pred\s*forte|pf)\s+(qid|tid|bid|qd|qhs)\s*(?:in\s*(?:the\s*)?)?(od|os|ou)?\s*(.*?)(?:\n|$)/gi, name: "Prednisolone" },
+    { regex: /pf\s+taper\s*(?:[\d\/\-]+\s*(?:every|per|each)?\s*(?:week|wk)?\s*(?:in\s*(?:the\s*)?)?)?\s*(od|os|ou)?/gi, name: "Prednisolone", isTaperShorthand: true },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(cosopt)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Cosopt" },
     { regex: /(?:ctn|start|begin|continue|resume|add)\s+(latanoprost|xalatan)\s+(qid|tid|bid|qd|qhs)\s*(od|os|ou)?/gi, name: "Latanoprost" },

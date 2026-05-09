@@ -100,7 +100,7 @@ function parseSchedule(str) {
     if (part === "stop" || part === "discontinue") break;
 
     let freq = null;
-    let weeks = 1;
+    let weeks = null; // null = ongoing (no time limit specified)
     let isQhs = false;
 
     // Check for frequency
@@ -121,16 +121,16 @@ function parseSchedule(str) {
     }
   }
 
-  // If nothing parsed, try simpler: just a single frequency
+  // If nothing parsed, try simpler: just a single frequency (ongoing)
   if (schedule.length === 0) {
     const s = str.toLowerCase().trim();
     for (const [key, val] of Object.entries(freqMap)) {
       if (s.includes(key)) {
-        return [{ freq: val, weeks: 4, isQhs: key === "qhs" }];
+        return [{ freq: val, weeks: null, isQhs: key === "qhs" }];
       }
     }
     // Default
-    return [{ freq: 1, weeks: 4, isQhs: false }];
+    return [{ freq: 1, weeks: null, isQhs: false }];
   }
 
   return schedule;
@@ -300,11 +300,14 @@ export default function DropSchedule({ onBack, initialLang = "en", initialDrops 
 
   // Build the weekly schedule for OD and OS
   const buildWeeklySchedule = useCallback(() => {
-    // Find max weeks
+    // Find max weeks from meds that have explicit durations (tapers)
+    // Ongoing meds (weeks: null) don't define the max — they persist across all weeks
     const maxWeeks = meds.reduce((max, m) => {
-      const totalWks = m.schedule.reduce((s, p) => s + p.weeks, 0);
-      return Math.max(max, totalWks);
-    }, 0);
+      const totalWks = m.schedule.reduce((s, p) => s + (p.weeks || 0), 0);
+      // If a med has ALL null weeks (ongoing), it doesn't set the timeline
+      const hasExplicitDuration = m.schedule.some(p => p.weeks !== null);
+      return hasExplicitDuration ? Math.max(max, totalWks) : max;
+    }, 1); // minimum 1 week
 
     const weeks = [];
     for (let w = 0; w < maxWeeks; w++) {
@@ -316,7 +319,14 @@ export default function DropSchedule({ onBack, initialLang = "en", initialDrops 
         let weekCounter = 0;
         let activeFreq = null;
         let activeIsQhs = false;
+
         for (const seg of med.schedule) {
+          if (seg.weeks === null) {
+            // Ongoing — active for ALL weeks
+            activeFreq = seg.freq;
+            activeIsQhs = seg.isQhs;
+            break;
+          }
           if (w < weekCounter + seg.weeks) {
             activeFreq = seg.freq;
             activeIsQhs = seg.isQhs;
@@ -324,7 +334,7 @@ export default function DropSchedule({ onBack, initialLang = "en", initialDrops 
           }
           weekCounter += seg.weeks;
         }
-        if (activeFreq === null) continue; // med stopped
+        if (activeFreq === null) continue; // med stopped (taper ended)
 
         const slots = freqToSlots(activeFreq, activeIsQhs);
         const entry = { trade: med.trade, generic: med.generic, cap: med.cap, capName: med.capName, type: med.type };
