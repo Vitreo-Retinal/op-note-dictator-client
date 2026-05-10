@@ -243,7 +243,7 @@ FORMATTING RULES:
   The diagnosis header line must be ONLY the disease name: "AMD", "Wet AMD", "T2DM with DR", etc. Laterality goes on the OD:/OS: lines below it, ALWAYS.
 - INJECTION/anti-VEGF history: list in CHRONOLOGICAL order (oldest first, most recent/current treatment at the BOTTOM). This shows the progression of treatment changes over time.
 - SURGICAL history: list in REVERSE chronological order (most recent surgery on top, oldest at bottom).
-- Place the Plan section at the bottom
+- Place the Plan section at the bottom. There is ONLY ONE Plan section — do NOT split the plan into multiple sections (e.g., one plan per diagnosis). List ALL numbered diagnoses/assessments first, then ONE combined Plan section at the end covering all management.
 - Preserve the physician's exact abbreviations and shorthand (wet AMD, SRF, IRF, nAMD, s/p, f/u, q8, NPDR, etc.)
 - Do NOT add exam findings, HPI, or review of systems — only A/P
 
