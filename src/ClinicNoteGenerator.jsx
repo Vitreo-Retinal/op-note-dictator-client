@@ -633,7 +633,8 @@ MODIFIER RULES:
 - Modifier -79: Use for an UNRELATED PROCEDURE during the global period. Example: PPV OD → 4 weeks later needs injection OS for wet AMD → -79 on the injection. Starts a new global period for the new procedure.
 - Modifier -50 (Bilateral procedure): Use when the same procedure is performed on both eyes same day. Example: bilateral intravitreal injections → 67028-50. MUE = 1 for 67028, bilateral indicator = 1 (150% payment). Bill single line, 1 unit, modifier -50, doubled fee. Wet AMD + GA same eye: only 1 unit of 67028 reimbursed — link both ICD-10 codes to 67028, separate drug J-codes to respective diagnoses.
 - Modifier -59 (Distinct procedural service): Use when two normally-bundled procedures are performed same eye same day and are truly separate services. Example: intravitreal injection + focal laser same eye same day → -59 on the second (lesser) procedure to indicate it is distinct.
-- If NO procedure is performed today and no same-day/next-day surgical decision is made → no modifier needed, just the bare E/M code.
+- If NO procedure is performed today and no same-day/next-day surgical decision is made → no procedure modifier needed. The E/M code stands alone (or with -24 if in a global period for a prior surgery).
+- CRITICAL -25 RULE: Modifier -25 means a procedure was PERFORMED TODAY alongside the E/M. If NO procedure is performed today (no injection, no laser, no surgery), then -25 does NOT apply. NEVER add -25 when the procedure line is "None". Example: CRAO workup only, no injection → 99215-24 (NOT 99215-24-25). Post-op check + wet AMD injection → 99214-24-25 (injection was performed → -25 applies).
 - IMPORTANT: Modifiers -24, -58, -78, -79 are relevant when the patient is WITHIN a prior surgery's global period. If not in a global period, these do not apply.
 
 CONTRALATERAL EYE GLOBAL PERIOD CHECK: When the patient has a recent surgery on one eye (e.g., s/p PPV OS), check if today's visit falls within that surgery's 90-day global period. If so:
@@ -778,7 +779,8 @@ MODIFIER RULES:
 - Modifier -79: Unrelated procedure during global period. Example: injection OS during PPV OD global → -79.
 - Modifier -50: Bilateral procedure same day. Example: bilateral injections → 67028-50.
 - Modifier -59: Distinct procedural service. Use when two normally-bundled procedures are performed same eye same day and are truly separate (e.g., injection + focal laser same eye same day → -59 on the second procedure).
-- No procedure today and not in a global period → no modifier needed.
+- No procedure today and not in a global period → no modifier needed, bare E/M code.
+- CRITICAL -25 RULE: Modifier -25 means a procedure was PERFORMED TODAY alongside the E/M. If NO procedure is performed today (no injection, no laser, no surgery), then -25 does NOT apply — NEVER add -25 when the procedure line is "None". Example: CRAO workup only, no injection → 99215-24 (NOT 99215-24-25). Post-op check + injection → 99214-24-25 (-25 applies because injection was performed).
 
 CONTRALATERAL EYE GLOBAL PERIOD CHECK: When patient has recent surgery on one eye, check if today falls within 90-day global. If so: add -24 to E/M (unrelated), -79 to unrelated procedure on other eye. Example: s/p PPV OS 4wks ago + RD OD today → 99215-24-57, 67110-79.
 
