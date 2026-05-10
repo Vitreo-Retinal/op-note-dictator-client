@@ -241,6 +241,19 @@ FORMATTING RULES:
   WRONG: "1. DR OS" ← NEVER do this
 
   The diagnosis header line must be ONLY the disease name: "AMD", "Wet AMD", "T2DM with DR", etc. Laterality goes on the OD:/OS: lines below it, ALWAYS.
+- POST-OP HEADER FORMAT: For post-operative visits, the diagnosis header combines the post-op timeframe + surgery in ONE line. Do NOT list the diagnosis name separately then repeat the surgery. Format:
+  CORRECT:
+  1. POW2 s/p PPV/EL/FAX for RD OS (MR, 4/10/2026)
+  IOP stable
+  VA 20/200 OS
+  Retina attached, gas 40%
+
+  WRONG:
+  1. RD OS — s/p PPV/EL/FAX OS
+  POW2 s/p PPV/EL/FAX OS for RD
+  ← redundant, lists surgery twice
+
+  Use POD (day), POW (week), POM (month) as appropriate. Include surgeon initials and date if provided.
 - INJECTION/anti-VEGF history: list in CHRONOLOGICAL order (oldest first, most recent/current treatment at the BOTTOM). This shows the progression of treatment changes over time.
 - SURGICAL history: list in REVERSE chronological order (most recent surgery on top, oldest at bottom).
 - Place the Plan section at the bottom. There is ONLY ONE Plan section — do NOT split the plan into multiple sections (e.g., one plan per diagnosis). List ALL numbered diagnoses/assessments first, then ONE combined Plan section at the end covering all management.
