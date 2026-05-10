@@ -214,10 +214,20 @@ export function detectDropsFromPlan(noteText) {
       if (found.has(name)) {
         if (!isTaperShorthand && match[3]) {
           const idx = drops.findIndex(d => d.name === name);
-          // Override if: (a) previous was default-OU, OR (b) this match is from a Plan directive
-          if (idx !== -1 && (drops[idx]._defaultEye || isFromPlanDirective)) {
-            drops[idx].eye = match[3].toUpperCase();
-            drops[idx]._defaultEye = false;
+          if (idx !== -1) {
+            const newEye = match[3].toUpperCase();
+            const currentEye = drops[idx].eye;
+            if (drops[idx]._defaultEye || isFromPlanDirective) {
+              // If BOTH are from Plan directives with DIFFERENT explicit eyes → merge to OU
+              // e.g., "Continue Rocklatan qhs OD" on one line + "Continue Rocklatan qhs OS" on another = OU
+              if (isFromPlanDirective && drops[idx]._fromPlanDirective && currentEye !== newEye && currentEye !== "OU") {
+                drops[idx].eye = "OU";
+              } else {
+                drops[idx].eye = newEye;
+              }
+              drops[idx]._defaultEye = false;
+              drops[idx]._fromPlanDirective = drops[idx]._fromPlanDirective || isFromPlanDirective;
+            }
           }
         }
         continue;
@@ -292,12 +302,12 @@ export function detectDropsFromPlan(noteText) {
       }
 
       found.add(name);
-      drops.push({ name, eye, schedule, _defaultEye: !hasExplicitEye });
+      drops.push({ name, eye, schedule, _defaultEye: !hasExplicitEye, _fromPlanDirective: isFromPlanDirective });
     }
   }
 
   // Clean up internal flags before returning
-  return drops.map(({ _defaultEye, ...rest }) => rest);
+  return drops.map(({ _defaultEye, _fromPlanDirective, ...rest }) => rest);
 }
 
 // ── Generate print HTML for matched handouts ───────────────────────
