@@ -1064,6 +1064,62 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     setEditingRule(null);
   };
 
+  // ── Global period calculator ──────────────────────────────────────
+  function calcGlobalPeriodContext(inputText) {
+    const lines = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Try to find explicit surgery dates: (MR, 4/10/2026) or (MR, 04/10/2026) or (MR 4/10/26)
+    const datePatterns = [
+      /s\/p\s+[\w\/]+\s+(?:for\s+\w+\s+)?(?:\w+\s*)?\(([A-Z]{2,4}),?\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\)/gi,
+      /\(([A-Z]{2,4}),?\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\)/gi,
+    ];
+
+    const surgeries = [];
+    for (const pat of datePatterns) {
+      let m;
+      pat.lastIndex = 0;
+      while ((m = pat.exec(inputText)) !== null) {
+        const dateStr = m[2];
+        const parts = dateStr.split("/");
+        if (parts.length === 3) {
+          let [mo, da, yr] = parts.map(Number);
+          if (yr < 100) yr += 2000;
+          const surgDate = new Date(yr, mo - 1, da);
+          const diffDays = Math.round((today - surgDate) / (1000 * 60 * 60 * 24));
+          if (diffDays >= 0 && diffDays <= 365) {
+            surgeries.push({ surgeon: m[1], date: surgDate, days: diffDays });
+          }
+        }
+      }
+      if (surgeries.length > 0) break; // use first matching pattern
+    }
+
+    // Also detect POD/POW/POM for approximate calculation when no date given
+    if (surgeries.length === 0) {
+      const powMatch = inputText.match(/POD\s*(\d+)/i);
+      const powWeek = inputText.match(/POW\s*(\d+)/i);
+      const pomMatch = inputText.match(/POM\s*(\d+)/i);
+      let approxDays = null;
+      if (powMatch) approxDays = parseInt(powMatch[1]);
+      else if (powWeek) approxDays = parseInt(powWeek[1]) * 7;
+      else if (pomMatch) approxDays = parseInt(pomMatch[1]) * 30;
+
+      if (approxDays !== null) {
+        const inGlobal = approxDays <= 90;
+        lines.push(`[SYSTEM — POST-OP TIMING: Approximately ${approxDays} days since surgery (${inGlobal ? "WITHIN 90-day global period" : "OUTSIDE 90-day global period"}). ${inGlobal ? "Routine post-op care is included in the surgical fee. Only UNRELATED conditions get separate E/M with -24." : "Global period has ended. This visit is independently billable."}]`);
+      }
+    }
+
+    for (const s of surgeries) {
+      const inGlobal = s.days <= 90;
+      lines.push(`[SYSTEM — POST-OP TIMING: Surgery by ${s.surgeon} was ${s.days} days ago (${s.date.toLocaleDateString()}). ${inGlobal ? "WITHIN 90-day global period — routine post-op care is NOT separately billable. Only UNRELATED conditions get separate E/M with -24, procedures with -79." : "OUTSIDE 90-day global period — this visit is independently billable."}]`);
+    }
+
+    return lines.join("\n");
+  }
+
   // ── Run ───────────────────────────────────────────────────────────
   async function run() {
     if (!note.trim()) return;
@@ -1071,9 +1127,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     try {
       const systemPrompt = buildSystemPrompt(mode, examples, customInstructions);
       const timeNote = timeSpent.trim() ? `\n\nTIME SPENT WITH PATIENT: ${timeSpent.trim()} minutes (use for time-based coding if it supports a higher E/M level than MDM alone)` : "";
+      const globalContext = calcGlobalPeriodContext(note);
+      const globalNote = globalContext ? `\n\n${globalContext}` : "";
       const userMessage = mode === "generate"
-        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}`
-        : `Optimize this existing A/P note with minimum billing language:\n\n${note}${timeNote}`;
+        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}${globalNote}`
+        : `Optimize this existing A/P note with minimum billing language:\n\n${note}${timeNote}${globalNote}`;
 
       const res = await fetch(`${API_BASE}/api/generate-note`, {
         method: "POST",
