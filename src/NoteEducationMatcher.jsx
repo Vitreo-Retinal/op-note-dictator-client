@@ -202,13 +202,20 @@ export function detectDropsFromPlan(noteText) {
     let match;
     regex.lastIndex = 0;
     while ((match = regex.exec(planText)) !== null) {
-      // If already found, only continue processing if this match has explicit laterality
-      // (so it can override a previous default-OU match)
+      // Check if this match comes from a "Continue/Ctn/Start" directive (Plan section)
+      // These are authoritative and should ALWAYS override assessment mentions.
+      // Look back to the start of the CURRENT LINE (not just 12 chars) to handle
+      // comma-separated drugs: "Continue Cosopt BID OD, Brimonidine BID OU, Latanoprost qhs OU"
+      const lineStart = planText.lastIndexOf('\n', match.index - 1) + 1;
+      const linePrefix = planText.slice(lineStart, match.index).toLowerCase();
+      const isFromPlanDirective = /^[ \t]*[-•*]?[ \t]*(?:ctn|continue|start|begin|resume|add)\b/.test(linePrefix);
+
+      // If already found, check if we should override
       if (found.has(name)) {
         if (!isTaperShorthand && match[3]) {
-          // This match has explicit eye — check if we should override a default OU
-          const idx = drops.findIndex(d => d.name === name && d._defaultEye);
-          if (idx !== -1) {
+          const idx = drops.findIndex(d => d.name === name);
+          // Override if: (a) previous was default-OU, OR (b) this match is from a Plan directive
+          if (idx !== -1 && (drops[idx]._defaultEye || isFromPlanDirective)) {
             drops[idx].eye = match[3].toUpperCase();
             drops[idx]._defaultEye = false;
           }
