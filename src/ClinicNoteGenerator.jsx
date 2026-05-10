@@ -276,7 +276,14 @@ FORMATTING RULES:
   PF taper OS...
   Eylea 2mg OD...
   Continue drops...
-- DROP LATERALITY RULE: When DIFFERENT eyes have DIFFERENT drop regimens, you MUST list them per eye — NEVER combine as "OU" when one eye's regimen differs from the other. Example input: "Cosopt BID and Brimonidine BID and Latanoprost qhs OD; Brimonidine BID and Latanoprost qhs OS." CORRECT output: "Continue Cosopt BID OD, Brimonidine BID OU, Latanoprost qhs OU" (Cosopt is OD-only, Brimonidine and Latanoprost are both eyes). WRONG: "Continue Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU" — making Cosopt bilateral when it was only prescribed for one eye is a medication error.
+- DROP LATERALITY RULE (CRITICAL — medication safety):
+  EVERY drop in the Plan MUST have an explicit eye designation (OD, OS, or OU) immediately after the frequency. NEVER write a drop without the eye — the downstream drop schedule parser defaults unspecified drops to OU, which can cause medication errors.
+  When different eyes have different regimens, identify which drops are shared (OU) and which are eye-specific (OD or OS only), then write each one correctly.
+  Example input: "Cosopt BID and Brimonidine BID and Latanoprost qhs OD; Brimonidine BID and Latanoprost qhs OS."
+  CORRECT: "Continue Cosopt BID OD, Brimonidine BID OU, Latanoprost qhs OU"
+  WRONG: "Continue Cosopt BID, Brimonidine BID OU, Latanoprost qhs OU" ← Cosopt has NO eye = will default to OU = medication error
+  WRONG: "Continue Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU" ← Cosopt is only OD, not OU
+  FORMAT: Always write "DrugName FREQUENCY EYE" — e.g., "Cosopt BID OD", "Latanoprost qhs OU", "Brimonidine BID OS"
 - Preserve the physician's exact abbreviations and shorthand (wet AMD, SRF, IRF, nAMD, s/p, f/u, q8, NPDR, etc.)
 - Do NOT add exam findings, HPI, or review of systems — only A/P
 
@@ -562,17 +569,27 @@ LEVEL 3 (99213 established / 99203 new): Low-complexity visits with minor treatm
 
 LEVEL 4 (99214 established / 99204 new): The retina WORKHORSE. Use for: wet AMD, RVO, DME with active drug management, agent switching, injection visits, prescription changes, surgical consultations where surgery is PLANNED FOR THE FUTURE (not today). This is the DEFAULT for most retina visits where YOU are making active treatment decisions. AMD is ALWAYS Level 4 regardless of how many co-managed conditions are present (POAG, cataracts, pseudophakia, ERM, dry eye, PVD — none of these elevate it). Having 5 diagnoses at one visit does NOT make it Level 5. A new patient referred for ERM with planned future PPV = 99204. But ERM with plan to OBSERVE = 92004 (eye code, NOT 99204).
 
-LEVEL 5 (99215 established / 99205 new): RARE. Requires BOTH of these criteria simultaneously:
+LEVEL 5 (99215 established / 99205 new): EXTREMELY RARE — most retina physicians use this code less than once a month. Requires BOTH of these criteria simultaneously:
   1. Threat to body function TODAY (not "will go blind eventually" or "severe disease")
-  2. Decision for emergency major surgery/hospitalization made AND acted on at THIS visit — meaning surgery is PERFORMED TODAY, not scheduled for the future
-  Level 5 examples (the ONLY scenarios that qualify):
+  2. Emergency major surgery is PERFORMED at THIS visit — the patient goes to the OR or has the procedure done TODAY, same day, in this encounter
+  Level 5 examples (the ONLY scenarios that qualify — ALL require same-day procedure):
   - Endophthalmitis → tap/inject performed same day
   - Retinal detachment (mac-on or mac-off) → PPV, scleral buckle, or pneumatic performed same day
   - GCA suspected → STAT ESR/CRP ordered, temporal artery biopsy decision same day
   - Acute CRAO within treatment window → emergent intervention same day
-  What does NOT qualify for Level 5: "multiple conditions at one visit", AMD with subretinal hemorrhage, agent switching, planned future surgery (e.g., "plan for next OR availability"), "complex management", surgical consultation for ERM/FTMH/VH, any number of routine co-managed conditions. If surgery is NOT performed or initiated at THIS visit, it is NOT Level 5.
+  LEVEL 5 TRAPS — these are NOT Level 5 even though they sound complex:
+  - Surgery scheduled for TOMORROW → Level 4 (surgery is not performed TODAY)
+  - Surgery scheduled for next week or "next OR availability" → Level 4
+  - Worsening TRD with PPV planned next day → Level 4 (PPV is tomorrow, not today)
+  - Multiple complex conditions at one visit (DR + POAG + cataracts) → Level 4
+  - AMD with subretinal hemorrhage → Level 4
+  - Agent switching, treatment failure → Level 4
+  - "Complex management" or "extensive counseling" → Level 4
+  - Surgical consultation for ERM/FTMH/VH → Level 4
+  - Any number of routine co-managed conditions → Level 4
+  THE TEST: Did the patient have emergency surgery IN THIS ENCOUNTER TODAY? If NO → it is NOT Level 5, period. When in doubt, use Level 4.
 
-MODIFIER -57 REMINDER: -57 is ONLY for same-day or next-day major surgery. If surgery is scheduled for "next OR availability", "next week", "2 weeks", or any future date beyond tomorrow → NO -57. The E/M stands alone with no modifier (unless a minor procedure like injection is also done today → then -25).
+MODIFIER -57 REMINDER: -57 is ONLY for same-day or next-day major surgery. If surgery is scheduled for "next OR availability", "next week", "2 weeks", or any future date beyond tomorrow → NO -57. If only an injection is done today on the SAME eye → -25 only. Exception: if injection is on one eye AND decision for major surgery (same/next day) is on a DIFFERENT eye → both -25 and -57 apply (see MODIFIER RULES).
 
 When in doubt: Level 4 (99204 new / 99214 established). ALWAYS.
 
@@ -632,7 +649,11 @@ ${customInstructions}
 
 MODIFIER RULES:
 - Modifier -25: Append "-25" to the E/M code when a significant, separately identifiable E/M service is performed on the SAME DAY as a minor procedure (0 or 10-day global). Most common scenario: injection day with an exam → 99214-25. The exam must be separately documented and medically necessary beyond the procedure itself.
-- Modifier -57: Append "-57" to the E/M code ONLY when the decision for MAJOR surgery (90-day global period) is made at THIS visit AND surgery is performed the SAME DAY or the NEXT DAY. Examples: emergent RD, decision for PPV made today, surgery today → 99215-57. Pneumatic retinopexy (90-day global) — decision and procedure same day → 99215-57 or 99214-57. If surgery is scheduled for later (e.g., next week, 2 weeks), NO -57 — the E/M stands alone because it is outside the global period. CRITICAL: If an INJECTION is performed today, the correct modifier is ALWAYS -25, even if a future surgery is also discussed or planned. Injection day = -25, always. Never output -57 on an injection visit.
+- Modifier -57: Append "-57" to the E/M code ONLY when the decision for MAJOR surgery (90-day global period) is made at THIS visit AND surgery is performed the SAME DAY or the NEXT DAY. Examples: emergent RD, decision for PPV made today, surgery today → 99215-57. Pneumatic retinopexy (90-day global) — decision and procedure same day → 99215-57 or 99214-57. If surgery is scheduled for later (e.g., next week, 2 weeks), NO -57 — the E/M stands alone because it is outside the global period.
+  INJECTION DAY + SURGERY DECISION RULE:
+  - DEFAULT: If an injection is performed today, the modifier is -25. Do NOT add -57 for surgery discussions or plans on the SAME eye being injected.
+  - RARE EXCEPTION — DIFFERENT EYE SURGERY: If an injection is performed on ONE eye today AND the decision for emergency major surgery on the OTHER eye (same day or next day) is ALSO made at this visit, BOTH -25 and -57 apply to the E/M. Example: Vabysmo injection OD (minor procedure → -25) + decision for TRD repair OS tomorrow (major surgery → -57) = 99214-25-57, Procedure: 67028. This is rare — it requires two different eyes with two different clinical needs at the same visit.
+  - SAME EYE: If the injection and the surgery decision are for the SAME eye, use -25 only. The injection is the procedure being done today.
 - Modifier -24: Use when an UNRELATED E/M service occurs during another surgery's 90-day postoperative global period. Example: patient 3 weeks post-PPV OD (still in global) comes in for wet AMD injection OS → E/M billed with -24. The condition must be truly unrelated to the surgery.
 - Modifier -58: Use on a PLANNED/STAGED procedure performed during the postoperative global period of the original surgery. Examples: PPV for RD → planned silicone oil removal 3 months later (still in 90-day global) → -58. Pneumatic retinopexy → staged laser retinopexy (LRP) at follow-up visit (within 90-day global) → -58 on the laser. Starts a new global period.
 - Modifier -78: Use for an UNPLANNED RETURN TO THE OR for a complication during the global period. Example: PPV → endophthalmitis POW2, needs tap/inject or re-PPV → -78. Does NOT reset the global period. Reimbursed at reduced rate (intraoperative portion only).
@@ -674,10 +695,12 @@ RETINA LASER MODIFIER RULE: All retina lasers use -25 EXCEPT 67210 (focal/grid m
 
 POST-OP VISIT RULE: If the visit is a routine post-operative check within the global period (POD1, POW1, POM1, etc.), it is NOT separately billable. The surgical fee includes all related post-op care. Output "POST-OP (in global)" as the code. Still generate the note — just do not recommend a separate E/M code. Exception: if an UNRELATED condition is addressed during a post-op visit (e.g., post-PPV OD but also managing wet AMD OS), the unrelated E/M IS billable with modifier -24.
 
+DROP LATERALITY RULE: EVERY drop in the note MUST have an explicit eye (OD, OS, or OU) after the frequency. NEVER write a drop without the eye designation — the downstream parser defaults unspecified drops to OU, causing medication errors. Format: "DrugName FREQUENCY EYE" (e.g., "Cosopt BID OD", "Latanoprost qhs OU").
+
 ` : "" }OUTPUT FORMAT — use ONLY these exact delimiters:
 
 ---CODE---
-E/M code with modifiers (e.g., 99214-25, 99215-57, 99214-24-25, or "POST-OP (in global)" if routine post-op within global period).
+E/M code with modifiers (e.g., 99214-25, 99215-57, 99214-25-57, 99214-24-25, or "POST-OP (in global)" if routine post-op within global period).
 NEW patients: 99203-99205 or 92004. ESTABLISHED: 99213-99215, 92014, or 92012.
 Use 92012 for simple interim visits with minimal MDM (e.g., pressure recheck, quick interim look). For YEARLY/ANNUAL follow-ups, use 92014 even if stable — a yearly comprehensive exam justifies 92014. Use 99213+ for active management decisions.
 POST-OP visits within global period are NOT separately billable — output "POST-OP (in global)".
@@ -750,7 +773,7 @@ E/M LEVEL RULES (CRITICAL):
 EYE CODES (92014/92004): Use when plan is OBSERVE/MONITOR — no active treatment decision by you today. Examples: ERM observed, stable nevus, dry AMD, PVD f/u, lattice observed, floaters, VMA, small macular hole observed, annual retina exam. Continuing another doctor's drops = still eye code. No MDM sentence, no modifier, no G2211.
 LEVEL 3 (99213/99203): Low-complexity visits with minor treatment decisions.
 LEVEL 4 (99214/99204): Retina workhorse — active drug management, injections, surgical planning, starting/changing meds. Only use when YOU are making a treatment decision today. — wet AMD, RVO, DME, drug management, injections, ERM evaluation, surgical consultations for future surgery. AMD is ALWAYS Level 4 regardless of co-managed conditions. ERM with planned future PPV = 99204 (new) or 99214 (established), NOT Level 5.
-LEVEL 5 (99215/99205): RARE. Requires BOTH: (1) threat to body function TODAY + (2) emergency surgery PERFORMED at THIS visit (not scheduled for the future). Examples: endophthalmitis + tap/inject same day, RD + PPV/buckle/pneumatic same day, GCA + STAT labs same day, acute CRAO + emergent intervention. "Multiple conditions", planned future surgery, or "next OR availability" does NOT qualify.
+LEVEL 5 (99215/99205): EXTREMELY RARE — most retina physicians use this less than once a month. Requires BOTH: (1) threat to body function TODAY + (2) emergency surgery PERFORMED at THIS visit TODAY (not tomorrow, not next week, not "next OR availability"). Examples: endophthalmitis + tap/inject same day, RD + PPV/buckle/pneumatic same day, GCA + STAT labs same day, acute CRAO + emergent intervention. TRAPS — these are NOT Level 5: surgery scheduled for tomorrow (even if urgent), worsening TRD with PPV planned next day, multiple complex conditions, planned future surgery. THE TEST: Did the patient have emergency surgery IN THIS ENCOUNTER TODAY? If NO → NOT Level 5.
 MODIFIER -57: ONLY for same-day or next-day major surgery. If surgery is scheduled for any future date beyond tomorrow → NO -57, no modifier at all (unless a minor procedure is also done today → -25).
 When in doubt: Level 4. ALWAYS.
 
@@ -779,7 +802,11 @@ G2211 RULES (CRITICAL):
 
 MODIFIER RULES:
 - Modifier -25: Append "-25" to the E/M code when exam is performed on the SAME DAY as a minor procedure (injection). Example: injection day with exam → 99214-25.
-- Modifier -57: Append "-57" ONLY when decision for MAJOR surgery (90-day global) is made at THIS visit AND surgery is same day or next day. Examples: emergent PPV same day, pneumatic retinopexy same day. CRITICAL: If surgery is scheduled for LATER (next week, 2 weeks, etc.), do NOT use -57. Also: if an INJECTION is performed today, the modifier is ALWAYS -25, even if a future surgery is also discussed/planned at this visit. -57 and -25 are mutually exclusive on the same code — injection day = -25, period. Never use -57 on an injection visit.
+- Modifier -57: Append "-57" ONLY when decision for MAJOR surgery (90-day global) is made at THIS visit AND surgery is same day or next day. Examples: emergent PPV same day, pneumatic retinopexy same day. If surgery is scheduled for LATER (next week, 2 weeks, etc.), do NOT use -57.
+  INJECTION DAY + SURGERY DECISION RULE:
+  - DEFAULT: Injection day = -25. Do NOT add -57 for surgery discussions or plans on the SAME eye being injected.
+  - RARE EXCEPTION — DIFFERENT EYE SURGERY: If injection is performed on ONE eye AND decision for emergency major surgery on the OTHER eye (same day or next day) is also made at this visit, BOTH -25 and -57 apply. Example: injection OD (-25) + TRD repair OS decision for tomorrow (-57) = 99214-25-57, Procedure: 67028. This requires two different eyes with two different clinical needs.
+  - SAME EYE: Injection and surgery decision for the SAME eye = -25 only.
 - Modifier -24: Unrelated E/M during another surgery's 90-day global period. Example: post-PPV OD, seen for AMD OS → -24.
 - Modifier -58: Planned/staged procedure during global period. Examples: oil removal after PPV → -58. Laser retinopexy after pneumatic → -58.
 - Modifier -78: Unplanned return to OR for complication during global period. Example: endophthalmitis after PPV → -78.
