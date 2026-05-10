@@ -569,33 +569,37 @@ LEVEL 3 (99213 established / 99203 new): Low-complexity visits with minor treatm
 
 LEVEL 4 (99214 established / 99204 new): The retina WORKHORSE. Use for: wet AMD, RVO, DME with active drug management, agent switching, injection visits, prescription changes, surgical consultations where surgery is PLANNED FOR THE FUTURE (not today). This is the DEFAULT for most retina visits where YOU are making active treatment decisions. AMD is ALWAYS Level 4 regardless of how many co-managed conditions are present (POAG, cataracts, pseudophakia, ERM, dry eye, PVD — none of these elevate it). Having 5 diagnoses at one visit does NOT make it Level 5. A new patient referred for ERM with planned future PPV = 99204. But ERM with plan to OBSERVE = 92004 (eye code, NOT 99204).
 
-LEVEL 5 (99215 established / 99205 new): EXTREMELY RARE — most retina physicians use this code less than once a month. Requires BOTH of these criteria simultaneously:
-  1. Threat to body function TODAY (not "will go blind eventually" or "severe disease")
-  2. Emergency major surgery is PERFORMED at THIS visit — the patient goes to the OR or has the procedure done TODAY, same day, in this encounter
-  Level 5 examples (the ONLY scenarios that qualify — ALL require same-day procedure):
+LEVEL 5 (99215 established / 99205 new): ALMOST NEVER USED — most retina physicians use this less than once a month.
+  *** CRITICAL: High-complexity MDM ALONE does NOT justify Level 5. ***
+  *** A visit can have genuinely high MDM (multiple serious conditions, complex surgical planning, uncontrolled systemic disease) and STILL be Level 4. ***
+  *** The ONLY thing that makes a visit Level 5 is: emergency surgery PERFORMED TODAY at THIS visit. ***
+  Requires BOTH simultaneously:
+  1. Threat to body function RIGHT NOW (not "will go blind eventually" or "worsening")
+  2. Emergency major surgery PERFORMED at THIS visit — patient has the procedure done TODAY, same day, same encounter. NOT tomorrow. NOT next day. TODAY.
+  Level 5 examples (the ONLY scenarios — ALL involve same-day procedure):
   - Endophthalmitis → tap/inject performed same day
-  - Retinal detachment (mac-on or mac-off) → PPV, scleral buckle, or pneumatic performed same day
-  - GCA suspected → STAT ESR/CRP ordered, temporal artery biopsy decision same day
-  - Acute CRAO within treatment window → emergent intervention same day
-  LEVEL 5 TRAPS — these are NOT Level 5 even though they sound complex:
-  - Surgery scheduled for TOMORROW → Level 4 (surgery is not performed TODAY)
-  - Surgery scheduled for next week or "next OR availability" → Level 4
-  - Worsening TRD with PPV planned next day → Level 4 (PPV is tomorrow, not today)
-  - Multiple complex conditions at one visit (DR + POAG + cataracts) → Level 4
-  - AMD with subretinal hemorrhage → Level 4
-  - Agent switching, treatment failure → Level 4
-  - "Complex management" or "extensive counseling" → Level 4
-  - Surgical consultation for ERM/FTMH/VH → Level 4
-  - Any number of routine co-managed conditions → Level 4
-  THE TEST: Did the patient have emergency surgery IN THIS ENCOUNTER TODAY? If NO → it is NOT Level 5, period. When in doubt, use Level 4.
+  - Retinal detachment → PPV, scleral buckle, or pneumatic performed same day
+  - GCA suspected → STAT ESR/CRP ordered same day
+  - Acute CRAO → emergent intervention same day
+  LEVEL 5 TRAPS — these are ALL Level 4 no matter how complex:
+  - TRD with PPV scheduled TOMORROW → 99214 (surgery is not today!)
+  - Worsening TRD + DME + uncontrolled DM + POAG + surgical planning for next day → 99214
+  - Surgery scheduled for TOMORROW → 99214 (even if urgent)
+  - Surgery "next week" or "next OR" → 99214
+  - Multiple complex conditions (DR + POAG + cataracts + stroke history) → 99214
+  - AMD with subretinal hemorrhage → 99214
+  - "Extensive counseling" or "complex management" → 99214
+  - Genuinely high-complexity MDM without same-day surgery → 99214
+  THE ONLY QUESTION THAT MATTERS: Was emergency surgery PERFORMED at THIS visit TODAY?
+  If YES → 99215. If NO (even if surgery is tomorrow) → 99214. No exceptions.
 
 MODIFIER -57 REMINDER: -57 is ONLY for same-day or next-day major surgery. If surgery is scheduled for "next OR availability", "next week", "2 weeks", or any future date beyond tomorrow → NO -57. If only an injection is done today on the SAME eye → -25 only. Exception: if injection is on one eye AND decision for major surgery (same/next day) is on a DIFFERENT eye → both -25 and -57 apply (see MODIFIER RULES).
 
 When in doubt: Level 4 (99204 new / 99214 established). ALWAYS.
 
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99204/99214 and 99205/99215):
-- For 99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: management of DME with worsening edema on current therapy; OCT imaging reviewed and treatment interval adjusted."
-- For 99215: add a sentence summarizing high MDM — reference multiple chronic conditions or progression requiring complex decisions. Only use 99215 when warranted per the AMD BILLING CAP rule above.
+- For 99214: add a sentence beginning with "Moderate-to-high complexity medical decision-making:" — reference the specific conditions, management decisions, data reviewed. Even visits with genuinely high MDM (multiple serious conditions, surgical planning, complex drug decisions) get 99214 unless same-day emergency surgery was performed. Example: "[+] Moderate-to-high complexity medical decision-making: simultaneous management of worsening DME and TRD with surgical planning, anti-VEGF selection considering stroke history; OCT and OCT-A data reviewed bilaterally."
+- For 99215: ONLY when emergency surgery was PERFORMED today (see Level 5 rules above). If surgery is tomorrow, use 99214 with "Moderate-to-high complexity" language.
 - For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
 
 ANTI-REPETITION RULE (CRITICAL):
@@ -773,13 +777,13 @@ E/M LEVEL RULES (CRITICAL):
 EYE CODES (92014/92004): Use when plan is OBSERVE/MONITOR — no active treatment decision by you today. Examples: ERM observed, stable nevus, dry AMD, PVD f/u, lattice observed, floaters, VMA, small macular hole observed, annual retina exam. Continuing another doctor's drops = still eye code. No MDM sentence, no modifier, no G2211.
 LEVEL 3 (99213/99203): Low-complexity visits with minor treatment decisions.
 LEVEL 4 (99214/99204): Retina workhorse — active drug management, injections, surgical planning, starting/changing meds. Only use when YOU are making a treatment decision today. — wet AMD, RVO, DME, drug management, injections, ERM evaluation, surgical consultations for future surgery. AMD is ALWAYS Level 4 regardless of co-managed conditions. ERM with planned future PPV = 99204 (new) or 99214 (established), NOT Level 5.
-LEVEL 5 (99215/99205): EXTREMELY RARE — most retina physicians use this less than once a month. Requires BOTH: (1) threat to body function TODAY + (2) emergency surgery PERFORMED at THIS visit TODAY (not tomorrow, not next week, not "next OR availability"). Examples: endophthalmitis + tap/inject same day, RD + PPV/buckle/pneumatic same day, GCA + STAT labs same day, acute CRAO + emergent intervention. TRAPS — these are NOT Level 5: surgery scheduled for tomorrow (even if urgent), worsening TRD with PPV planned next day, multiple complex conditions, planned future surgery. THE TEST: Did the patient have emergency surgery IN THIS ENCOUNTER TODAY? If NO → NOT Level 5.
+LEVEL 5 (99215/99205): ALMOST NEVER USED. *** High-complexity MDM ALONE does NOT justify Level 5. *** A visit can have genuinely high MDM (TRD + stroke + uncontrolled DM + POAG + surgical planning) and STILL be Level 4. The ONLY thing that makes a visit Level 5 is emergency surgery PERFORMED TODAY at THIS visit. Requires BOTH: (1) threat to body function RIGHT NOW + (2) emergency surgery PERFORMED TODAY same encounter. Examples: endophthalmitis + tap/inject same day, RD + PPV same day, GCA + STAT labs same day. TRAPS (ALL are Level 4): TRD with PPV tomorrow, surgery scheduled tomorrow even if urgent, multiple complex conditions, high-complexity MDM without same-day surgery. THE ONLY QUESTION: Was emergency surgery performed TODAY? If NO → 99214.
 MODIFIER -57: ONLY for same-day or next-day major surgery. If surgery is scheduled for any future date beyond tomorrow → NO -57, no modifier at all (unless a minor procedure is also done today → -25).
 When in doubt: Level 4. ALWAYS.
 
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99204/99214 and 99205/99215):
-- For 99204/99214: add a sentence summarizing moderate MDM — reference the specific chronic condition, the management decision made, and the data reviewed. Example: "[+] Moderate complexity medical decision-making: new patient with active wet AMD OD requiring initiation of anti-VEGF therapy, concurrent POAG and post-operative management; OCT-A reviewed guiding treatment decision."
-- For 99205/99215: add a sentence summarizing high MDM — only use when Level 5 criteria are met per the E/M LEVEL RULES above. This is RARE.
+- For 99204/99214: add a sentence beginning with "Moderate-to-high complexity medical decision-making:" — reference conditions, decisions, data. Even genuinely high MDM gets 99214 unless same-day emergency surgery was performed. Example: "[+] Moderate-to-high complexity medical decision-making: simultaneous management of worsening bilateral DR with TRD OS requiring urgent surgical planning, anti-VEGF selection considering stroke history; OCT and OCT-A reviewed bilaterally."
+- For 99205/99215: ONLY when emergency surgery was PERFORMED today. If surgery is tomorrow → 99214 with "Moderate-to-high complexity" language.
 - For 99213 or eye codes (92014/92004): do NOT add an MDM justification sentence.
 
 ANTI-REPETITION RULE (CRITICAL):
