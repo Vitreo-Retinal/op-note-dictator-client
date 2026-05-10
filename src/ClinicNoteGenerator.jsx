@@ -276,11 +276,17 @@ FORMATTING RULES:
   PF taper OS...
   Eylea 2mg OD...
   Continue drops...
+- DROP LATERALITY RULE: When DIFFERENT eyes have DIFFERENT drop regimens, you MUST list them per eye — NEVER combine as "OU" when one eye's regimen differs from the other. Example input: "Cosopt BID and Brimonidine BID and Latanoprost qhs OD; Brimonidine BID and Latanoprost qhs OS." CORRECT output: "Continue Cosopt BID OD, Brimonidine BID OU, Latanoprost qhs OU" (Cosopt is OD-only, Brimonidine and Latanoprost are both eyes). WRONG: "Continue Cosopt BID OU, Brimonidine BID OU, Latanoprost qhs OU" — making Cosopt bilateral when it was only prescribed for one eye is a medication error.
 - Preserve the physician's exact abbreviations and shorthand (wet AMD, SRF, IRF, nAMD, s/p, f/u, q8, NPDR, etc.)
 - Do NOT add exam findings, HPI, or review of systems — only A/P
 
 ABBREVIATION DICTIONARY:
 - A = Avastin (bevacizumab), E = Eylea (aflibercept), V = Vabysmo (faricimab), L = Lucentis (ranibizumab)
+- DOSE ABBREVIATIONS: A number immediately after the drug letter = DOSE in mg, NOT quantity of injections.
+  L3 = Lucentis 0.3mg (one injection, 0.3mg dose). L5 = Lucentis 0.5mg.
+  E2 = Eylea 2mg. E8 = Eylea HD 8mg.
+  "s/p L3 last week" = had ONE Lucentis 0.3mg injection last week (NOT "3 Lucentis injections").
+  "s/p E2 x 6" = had 6 Eylea 2mg injections total (x6 = quantity, 2 = dose).
 - "failed A" or "sub-optimal on A" = s/p Avastin with sub-optimal response
 - "unable to extend on E" = s/p Eylea, unable to extend
 - "on V q8" = on Vabysmo, requires q8 weeks
