@@ -675,6 +675,7 @@ E/M code with modifiers (e.g., 99214-25, 99215-57, 99214-24-25, or "POST-OP (in 
 NEW patients: 99203-99205 or 92004. ESTABLISHED: 99213-99215, 92014, or 92012.
 Use 92012 for simple interim visits with minimal MDM (e.g., pressure recheck, quick interim look). For YEARLY/ANNUAL follow-ups, use 92014 even if stable — a yearly comprehensive exam justifies 92014. Use 99213+ for active management decisions.
 POST-OP visits within global period are NOT separately billable — output "POST-OP (in global)".
+MANDATORY CHECK BEFORE OUTPUTTING -25: Look at your ---PROCEDURE--- line. Is it "None"? If YES → do NOT add -25 to the E/M code. -25 ONLY appears when a procedure is ACTUALLY PERFORMED today. No procedure = no -25, period.
 ---PROCEDURE---
 Procedure code(s) with modifiers if a procedure is performed today. Examples: "67028" (injection), "67028-79" (injection unrelated to prior surgery global), "67028-50" (bilateral injection), "67210-58" (staged laser in global). If no procedure today, output "None".
 ---G2211---
@@ -801,6 +802,7 @@ E/M code with modifiers (e.g., 99214-25, 99215-57, 99214-24-25, or "POST-OP (in 
 NEW patients: 99203-99205 or 92004. ESTABLISHED: 99213-99215, 92014, or 92012.
 Use 92012 for simple interim visits with minimal MDM (e.g., pressure recheck, quick interim look). For YEARLY/ANNUAL follow-ups, use 92014 even if stable — a yearly comprehensive exam justifies 92014.
 POST-OP visits within global period are NOT separately billable — output "POST-OP (in global)".
+MANDATORY CHECK BEFORE OUTPUTTING -25: Look at your ---PROCEDURE--- line. Is it "None"? If YES → do NOT add -25 to the E/M code. -25 ONLY appears when a procedure is ACTUALLY PERFORMED today. No procedure = no -25, period.
 ---PROCEDURE---
 Procedure code(s) with modifiers if performed today. Examples: "67028" (injection), "67028-79" (unrelated to prior surgery global), "67028-50" (bilateral), "67210-58" (staged laser in global). If no procedure today, output "None".
 ---G2211---
