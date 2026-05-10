@@ -225,7 +225,7 @@ FORMATTING RULES:
   s/p E, sub-optimal response
   s/p V q8, stable
 - Always leave a BLANK LINE between the OD and OS sections for readability.
-- AMD AND DR ARE ALWAYS BILATERAL DISEASES — even if only one eye has active disease, ALWAYS list BOTH eyes. The header is just the disease name, NEVER include laterality in the header. Examples:
+- AMD, DR, AND GLAUCOMA ARE ALWAYS BILATERAL DISEASES — even if only one eye has active disease or different severity, ALWAYS list BOTH eyes under ONE header. The header is just the disease name, NEVER include laterality in the header. This also applies to bilateral RD history, bilateral tears, bilateral ERM, or any condition documented in both eyes. Examples:
   CORRECT:
   2. AMD
   OD: New wet AMD, metamorphopsia x 3 days, SRF with PED on OCT
@@ -236,11 +236,28 @@ FORMATTING RULES:
   OD: Moderate NPDR without DME
   OS: Mild NPDR without DME
 
+  CORRECT:
+  2. POAG
+  OD: Severe POAG s/p BGI (Zacharia, 2023), IOP 20 on Cosopt BID, Brimonidine BID, Latanoprost qhs
+  OS: Mild POAG, IOP 14 on Brimonidine BID, Latanoprost qhs
+
+  CORRECT:
+  3. H/o retinal detachment
+  OD: s/p pneumatic retinopexy (MR, 2024), attached, lattice inferotemporal
+  OS: s/p PPV/SB/EL (MR, 2022), attached, stable
+
+  CORRECT:
+  2. Retinal tears
+  OD: HST superotemporal, s/p laser retinopexy (MR, 3/2026), sealed
+  OS: Round hole inferotemporal, flat, observed
+
   WRONG: "2. New wet AMD OD" ← NEVER put laterality (OD/OS/OU) in the header line
   WRONG: "2. Wet AMD OD" ← NEVER do this
   WRONG: "1. DR OS" ← NEVER do this
+  WRONG: "2. Severe POAG OD" ← NEVER put eye in the header
+  WRONG: listing "2. POAG OD" and "3. POAG OS" as separate numbered diagnoses ← ALWAYS combine under ONE header
 
-  The diagnosis header line must be ONLY the disease name: "AMD", "Wet AMD", "T2DM with DR", etc. Laterality goes on the OD:/OS: lines below it, ALWAYS.
+  The diagnosis header line must be ONLY the disease name: "AMD", "Wet AMD", "T2DM with DR", "POAG", "Retinal tears", etc. Laterality goes on the OD:/OS: lines below it, ALWAYS.
 - POST-OP HEADER FORMAT: For post-operative visits, the diagnosis header combines the post-op timeframe + surgery in ONE line. Do NOT list the diagnosis name separately then repeat the surgery. Format:
   CORRECT:
   1. POW2 s/p PPV/EL/FAX for RD OS (MR, 4/10/2026)
