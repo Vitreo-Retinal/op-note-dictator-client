@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { AICodingAssistant } from "./CptReference.jsx";
 import PatientEducation from "./PatientEducation.jsx";
 import DropSchedule from "./DropSchedule.jsx";
+import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
@@ -970,7 +971,26 @@ const S = {
   font: "Georgia, serif", mono: "monospace",
 };
 
-const isEyeCode = (code) => code === "92014" || code === "92004";
+const isEyeCode = (code) => { const base = (code || "").replace(/[-+\s].*/g, "").trim(); return base === "92014" || base === "92004"; };
+
+// ── E/M code description labels ─────────────────────────────────────
+const EM_LABELS = {
+  "99205": "E/M5 New",
+  "99215": "E/M5 Established",
+  "99204": "E/M4 New",
+  "99214": "E/M4 Established",
+  "99203": "E/M3 New",
+  "99213": "E/M3 Established",
+  "92004": "Eye Comp New",
+  "92014": "Eye Comp Established",
+};
+
+function getEmLabel(codeStr) {
+  if (!codeStr) return "";
+  // Extract the base 5-digit code from strings like "99214-25-57" or "99214"
+  const base = codeStr.replace(/[-+\s].*/g, "").trim();
+  return EM_LABELS[base] || "";
+}
 
 // ── Component ───────────────────────────────────────────────────────
 export default function ClinicNoteGenerator({ onBack, surgeon }) {
@@ -1337,10 +1357,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   }
 
   const getCodeStyle = (code) => {
-    if (code === "99215") return { bg: "#d1fae5", color: "#059669", border: "#059669" };
-    if (code === "99214") return { bg: "#dbeafe", color: "#1d4ed8", border: "#1d4ed8" };
-    if (code === "99213") return { bg: "#f1f5f9", color: "#475569", border: "#94a3b8" };
-    if (isEyeCode(code)) return { bg: "#fdf4ff", color: "#7e22ce", border: "#a855f7" };
+    const base = (code || "").replace(/[-+\s].*/g, "").trim();
+    if (base === "99215" || base === "99205") return { bg: "#d1fae5", color: "#059669", border: "#059669" };
+    if (base === "99214" || base === "99204") return { bg: "#dbeafe", color: "#1d4ed8", border: "#1d4ed8" };
+    if (base === "99213" || base === "99203") return { bg: "#f1f5f9", color: "#475569", border: "#94a3b8" };
+    if (base === "92014" || base === "92004") return { bg: "#fdf4ff", color: "#7e22ce", border: "#a855f7" };
     return { bg: "#f1f5f9", color: "#475569", border: "#94a3b8" };
   };
 
@@ -1578,6 +1599,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   <span style={{ background: cc.bg, color: cc.color, border: `1.5px solid ${cc.border}`, borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>
                     {result.code}
                   </span>
+                  {getEmLabel(result.code) && (
+                    <span style={{ fontSize: "0.82rem", color: cc.color, fontWeight: 600, fontFamily: S.font }}>{getEmLabel(result.code)}</span>
+                  )}
                   {result.procedure && result.procedure !== "None" && (
                     <span style={{ background: "#dbeafe", color: "#1e40af", border: "1.5px solid #3b82f6", borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>+ {result.procedure}</span>
                   )}
@@ -1585,7 +1609,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     <span style={{ background: "#fef3c7", color: "#92400e", border: "1.5px solid #f59e0b", borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>+ G2211</span>
                   )}
                   {isEyeCode(result.code) && (
-                    <span style={{ fontSize: "0.76rem", color: "#a855f7", fontStyle: "italic" }}>Eye exam code — no MDM documentation needed</span>
+                    <span style={{ fontSize: "0.76rem", color: "#a855f7", fontStyle: "italic" }}>— no MDM documentation needed</span>
                   )}
                 </div>
 
@@ -1968,13 +1992,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
         {/* ── ROBOCALL TAB (MR only) ─────────────────────────── */}
         {tab === "robocall" && surgeon && surgeon.hasRobocall && (
-          <div style={{ padding: 20, textAlign: "center", color: S.muted, maxWidth: 800, margin: "0 auto" }}>
-            <div style={{ fontSize: "2rem", marginBottom: 12 }}>📞</div>
-            <div style={{ fontSize: "0.9rem", marginBottom: 16 }}>Robocall dictation system</div>
-            <button onClick={() => { if (onBack) onBack(); setTimeout(() => window.__openDictator && window.__openDictator(), 100); }}
-              style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", color: "#fff", border: "none", borderRadius: 8, padding: "12px 24px", fontSize: "0.9rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}>
-              Open Robocall
-            </button>
+          <div style={{ margin: "-20px", minHeight: "80vh" }}>
+            <OpNoteDictator onBack={() => setTab("output")} />
           </div>
         )}
 
