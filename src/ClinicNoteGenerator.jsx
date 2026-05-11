@@ -616,6 +616,22 @@ MODIFIER -57 REMINDER: -57 is ONLY for same-day or next-day major surgery. If su
 
 When in doubt: Level 4 (99204 new / 99214 established). ALWAYS.
 
+MDM COMPONENT DEFINITIONS (for accurate E/M level selection):
+MDM has 3 components. 2 of 3 must reach the SAME level to justify that E/M code. If only 1 reaches the level, drop 1 level.
+COMPONENT 1 — NUMBER/COMPLEXITY OF PROBLEMS:
+  Straightforward: 1 self-limited or minor problem (e.g., subconjunctival hemorrhage, mild dry eye).
+  Low: 2+ self-limited problems, OR 1 stable chronic illness, OR 1 acute uncomplicated illness/injury.
+  Moderate: 1+ chronic illness with exacerbation/progression/side effects of treatment, OR 2+ stable chronic illnesses, OR 1 undiagnosed new problem with uncertain prognosis, OR 1 acute illness with systemic symptoms, OR 1 acute complicated injury.
+  High: 1+ chronic illness with SEVERE exacerbation/progression/side effects, OR 1 acute or chronic illness/injury posing threat to life/body function.
+  KEY: "Stable" = at treatment goal. A patient NOT at treatment goal is NOT stable, even if condition is unchanged and asymptomatic.
+COMPONENT 2 — DATA REVIEWED/ANALYZED:
+  Moderate (supports 99214): At least 1 of 3 data categories met — Category 1 (tests/documents/independent historian: any combination of 3 from: review external notes, review test results, order tests, assess with historian), OR Category 2 (independent interpretation of tests), OR Category 3 (discussion of management with external physician — must be direct two-way communication).
+  Extensive (supports 99215): 2 of 3 categories met.
+  CRITICAL: Tests that are SEPARATELY BILLABLE (have their own CPT — OCT 92134, FA 92235, photos 92250) do NOT count toward the data component. Only non-separately-billed data counts. Most retina visits = Data "Minimal or none" because tests are billed independently.
+COMPONENT 3 — RISK:
+  Moderate (supports 99214): Prescription drug management, minor surgery with identified risk factors, elective major surgery WITHOUT identified risk factors, diagnosis/treatment significantly limited by SDOH.
+  High (supports 99215): Drug therapy requiring intensive toxicity monitoring, elective major surgery WITH identified risk factors, emergency major surgery, decision regarding hospitalization, decision to de-escalate care/DNR, parenteral controlled substances.
+
 MDM JUSTIFICATION (CRITICAL — add at the end of the Plan section for 99204/99214 and 99205/99215):
 - For 99214: add a sentence beginning with "Moderate-to-high complexity medical decision-making:" — reference the specific conditions, management decisions, data reviewed. Even visits with genuinely high MDM (multiple serious conditions, surgical planning, complex drug decisions) get 99214 unless same-day emergency surgery was performed. Example: "[+] Moderate-to-high complexity medical decision-making: simultaneous management of worsening DME and TRD with surgical planning, anti-VEGF selection considering stroke history; OCT and OCT-A data reviewed bilaterally."
 - For 99215: ONLY when emergency surgery was PERFORMED today (see Level 5 rules above). If surgery is tomorrow, use 99214 with "Moderate-to-high complexity" language.
@@ -685,6 +701,9 @@ MODIFIER RULES:
 - Modifier -59 (Distinct procedural service): Use when two normally-bundled procedures are performed same eye same day and are truly separate services. Example: intravitreal injection + focal laser same eye same day → -59 on the second (lesser) procedure to indicate it is distinct.
 - If NO procedure is performed today and no same-day/next-day surgical decision is made → no procedure modifier needed. The E/M code stands alone (or with -24 if in a global period for a prior surgery).
 - CRITICAL -25 RULE: Modifier -25 means a procedure was PERFORMED TODAY alongside the E/M. If NO procedure is performed today (no injection, no laser, no surgery), then -25 does NOT apply. NEVER add -25 when the procedure line is "None". Example: CRAO workup only, no injection → 99215-24 (NOT 99215-24-25). Post-op check + wet AMD injection → 99214-24-25 (injection was performed → -25 applies).
+- -25 NOT NEEDED ON NEW PATIENT CODES: NEVER append -25 to 99203/99204/99205 or 92002/92004. New patient visits inherently include the decision-making component — -25 is redundant and incorrect on new patient codes.
+- NEVER append -RT or -LT to E/M codes (99213-99215) or Eye visit codes (92012/92014/92002/92004). Laterality modifiers are ONLY for procedures and diagnostics, never on visit codes.
+- 99211 RESTRICTION: Never output 99211 on injection days. 99211 bundles with all testing and cannot coexist with procedures. The minimum E/M for an injection day is 99213-25.
 - IMPORTANT: Modifiers -24, -58, -78, -79 are relevant when the patient is WITHIN a prior surgery's global period. If not in a global period, these do not apply.
 
 CONTRALATERAL EYE GLOBAL PERIOD CHECK: When the patient has a recent surgery on one eye (e.g., s/p PPV OS), check if today's visit falls within that surgery's 90-day global period. If so:

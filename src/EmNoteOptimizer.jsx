@@ -86,6 +86,7 @@ GLOBAL PERIODS — flag when relevant to modifier selection:
 - 90-day global: ALL vitrectomy (67036-67043), ALL RD codes (67107-67113), IOL codes, 0810T, focal laser 67210, choroidal photocoag 67220.
 - 10-day global: Injection 67028, tap 67015, prophylactic laser 67145, tear laser 67105, PRP 67228, YAG 66821.
 - Same-day exam modifier by global: 10-day procedures → use -25 on E/M. 90-day procedures → use -57 on E/M.
+- RETINA LASER MODIFIER RULE: 67105 (laser RD), 67145 (prophylactic laser), 67228 (PRP), 66821 (YAG) → all 10-day global → use -25. Only 67210 (focal/grid macular laser) and 67220 (choroidal photocoag) are 90-day global → use -57.
 
 TRANSFER OF CARE — flag when postop care is split:
 - -54 = Surgical care only (surgeon operates, doesn't do postop). CMS now requires for ALL 90-day globals when providing surgery only, even informal transfers.
@@ -93,12 +94,19 @@ TRANSFER OF CARE — flag when postop care is split:
 - G0559 = Add-on for postop follow-up by non-surgeon physician, different specialty, within 90-day global, NO formal transfer. E/M add-on only. Medicare Part B only.
 
 MODIFIER RULES — flag when applicable:
-- -25: Significant, separately identifiable E/M on same day as a minor procedure (injection, laser, YAG). Example: wet AMD injection (linked to AMD) + new PVD symptoms evaluated (exam linked to PVD with -25). ONLY flag when there are TWO distinct clinical reasons for the visit.
-- -57: Decision for major surgery made at this visit (e.g., scheduling RD repair, PPV, scleral buckle). The E/M note supports the surgical decision.
-- -24: Unrelated E/M during a postop global period. Example: patient is 3 weeks post-PPV but presents with new fellow-eye wet AMD.
-- -58: Planned/staged procedure during postop period (e.g., planned second-eye surgery, planned laser after initial PPV).
-- -78: Unplanned return to OR for complication of original procedure during postop (e.g., re-PPV for recurrent RD within global period).
-- -79: Unrelated procedure during postop period (e.g., cataract surgery on fellow eye during PPV global period).
+- -25: Significant, separately identifiable E/M on same day as a minor procedure (injection, laser, YAG). Example: wet AMD injection (linked to AMD) + new PVD symptoms evaluated (exam linked to PVD with -25). ONLY flag when there are TWO distinct clinical reasons for the visit. NEVER append -25 to new patient codes (99203/99204/99205, 92002/92004) — new patient visits inherently include decision-making, so -25 is redundant and incorrect.
+- -57: Decision for major surgery made at this visit (e.g., scheduling RD repair, PPV, scleral buckle). The E/M note supports the surgical decision. ONLY for 90-day global procedures performed SAME DAY or NEXT DAY. Never use -57 on injection days — injections are 0-day global = always -25.
+- -24: Unrelated E/M during a postop global period. Example: patient is 3 weeks post-PPV but presents with new fellow-eye wet AMD. Must document new symptoms or different diagnosis.
+- -58: Planned/staged procedure during postop period (e.g., planned second-eye surgery, planned laser after initial PPV). New postop period starts. 100% allowable.
+- -78: Unplanned return to OR for complication of original procedure during postop (e.g., re-PPV for recurrent RD within global period). NO new postop period. 70% allowable.
+- -79: Unrelated procedure during postop period (e.g., cataract surgery on fellow eye during PPV global period). New postop period starts. 100% allowable.
+
+CRITICAL MODIFIER CONSTRAINTS:
+- NEVER append -RT or -LT to E/M codes (99213-99215) or Eye visit codes (92012/92014/92002/92004). Laterality modifiers are ONLY for procedures and diagnostics.
+- 99211 is NEVER billable on injection days — 99211 bundles with all testing and cannot coexist with procedures. If an injection is given, the minimum E/M is 99213 (with -25).
+- -25 screening rule: If the exam is SOLELY to confirm need for a previously planned injection (no independent E/M decision-making beyond the injection), the E/M is NOT separately billable. -25 requires a separately identifiable evaluation.
+- -52 (reduced services): NEVER append to inherently bilateral tests (92133, 92134, 92137, 92250, 92235, 92240, 92242, 92273, 92274, 92083). These are billed once regardless of one or both eyes.
+- Modifier order on claims: payment modifiers FIRST (-58, -79, -78, -51), then informational modifiers (-RT, -LT). Example: 67015-78-LT, not 67015-LT-78.
 
 IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 - 92250 covers ALL fundus photography modes: color photos, FAF (fundus autofluorescence), NIR, red-free. FAF is NOT a separate code — it is billed as 92250.
