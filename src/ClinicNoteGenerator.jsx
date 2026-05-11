@@ -736,6 +736,14 @@ GLOBAL PERIOD REFERENCE:
 RETINA LASER MODIFIER RULE: All retina lasers use -25 EXCEPT 67210 (focal/grid macular laser), 67220 (choroidal photocoag), and 66821 (YAG capsulotomy) — these are 90-day global → use -57. The 10-day lasers that use -25 are: 67228 (PRP), 67145 (prophylactic laser), 67105 (laser RD repair).
 YAG POSTOP AWARENESS: If patient is within 90 days of 66821 YAG by another surgeon and you inject → 67028-79 (unrelated procedure in postop), E/M with -24 (unrelated E/M in postop).
 
+ENDOPHTHALMITIS CODING RULES (CCI bundling):
+67028 (intravitreal injection) is CCI-bundled with BOTH 67015 (vitreous tap) AND 65800 (AC paracentesis). Never bill 67028 alongside either one.
+- Vitreous tap + intravitreal antibiotic (V+C): Bill 67015 only + J-code. Do NOT add 67028.
+- AC tap + intravitreal antibiotic (no vitreous tap): 65800 and 67028 are also bundled. Bill 67028 (higher allowable, ~4.08 RVU vs ~2.71) + J-code. Do NOT add 65800.
+- Vitreous tap + AC tap + intravitreal antibiotic: Bill 67015 + 65800 + J-code. These two are NOT bundled with each other. 67028 is eliminated (absorbed by 67015).
+- Always include J-code(s) for the antibiotic drug(s) administered (e.g., vancomycin, ceftazidime).
+- If during another surgery's global period (e.g., cataract postop): append -78 to procedure codes (related complication, unplanned return to OR).
+
 POST-OP VISIT RULE: If the visit is a routine post-operative check within the global period (POD1, POW1, POM1, etc.), it is NOT separately billable. The surgical fee includes all related post-op care. Output "POST-OP (in global)" as the code. Still generate the note — just do not recommend a separate E/M code. Exception: if an UNRELATED condition is addressed during a post-op visit (e.g., post-PPV OD but also managing wet AMD OS), the unrelated E/M IS billable with modifier -24.
 
 DROP LATERALITY RULE: EVERY drop in the note MUST have an explicit eye (OD, OS, or OU) after the frequency. NEVER write a drop without the eye designation — the downstream parser defaults unspecified drops to OU, causing medication errors. Format: "DrugName FREQUENCY EYE" (e.g., "Cosopt BID OD", "Latanoprost qhs OU").
