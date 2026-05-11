@@ -736,6 +736,12 @@ GLOBAL PERIOD REFERENCE:
 RETINA LASER MODIFIER RULE: All retina lasers use -25 EXCEPT 67210 (focal/grid macular laser), 67220 (choroidal photocoag), and 66821 (YAG capsulotomy) — these are 90-day global → use -57. The 10-day lasers that use -25 are: 67228 (PRP), 67145 (prophylactic laser), 67105 (laser RD repair).
 YAG POSTOP AWARENESS: If patient is within 90 days of 66821 YAG by another surgeon and you inject → 67028-79 (unrelated procedure in postop), E/M with -24 (unrelated E/M in postop).
 
+PNEUMATIC RETINOPEXY CODING (RD):
+67110 (pneumatic retinopexy) + 65800 (AC paracentesis) — NOT bundled, ALWAYS bill both. AC tap is standard with every pneumatic.
+E/M: 99215-57 (vision-threatening RD, same-day major surgery decision).
+Next-day staged laser: 67105-58 (staged/planned procedure in 90-day global period).
+Full pneumatic day output: E/M 99215-57, Procedures: 67110 + 65800.
+
 ENDOPHTHALMITIS CODING RULES (CCI bundling):
 67028 (intravitreal injection) is CCI-bundled with BOTH 67015 (vitreous tap) AND 65800 (AC paracentesis). Never bill 67028 alongside either one.
 - Vitreous tap + intravitreal antibiotic (V+C): Bill 67015 only + J-code. Do NOT add 67028.

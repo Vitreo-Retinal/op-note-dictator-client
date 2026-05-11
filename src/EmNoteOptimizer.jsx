@@ -88,6 +88,7 @@ GLOBAL PERIODS — flag when relevant to modifier selection:
 - Same-day exam modifier by global: 10-day procedures → use -25 on E/M. 90-day procedures → use -57 on E/M.
 - RETINA LASER MODIFIER RULE: 67105 (laser RD), 67145 (prophylactic laser), 67228 (PRP) → all 10-day global → use -25. 67210 (focal/grid macular laser), 67220 (choroidal photocoag), and 66821 (YAG capsulotomy) are 90-day global → use -57.
 - YAG POSTOP AWARENESS: If patient is within 90 days of 66821 YAG by another surgeon, injection → 67028-79, E/M → add -24.
+- PNEUMATIC RETINOPEXY (RD): 67110 + 65800 (AC tap) — NOT bundled, ALWAYS bill both. E/M: 99215-57. Next-day staged laser: 67105-58.
 
 TRANSFER OF CARE — flag when postop care is split:
 - -54 = Surgical care only (surgeon operates, doesn't do postop). CMS now requires for ALL 90-day globals when providing surgery only, even informal transfers.
