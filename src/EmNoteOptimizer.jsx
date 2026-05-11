@@ -64,11 +64,28 @@ const SYSTEM_PROMPT = `You are a retina billing and coding expert. A physician g
 
 DECISION RULES:
 
-SUGGEST EYE CODE (92014/92004) when:
+NEW vs ESTABLISHED PATIENT:
+- If the note indicates "new patient", "referral", "initial visit", "consult", or first-time evaluation → use NEW patient codes (99205/99204/99203 or 92004)
+- If established → use established codes (99215/99214/99213 or 92014/92012)
+- New patient E/M levels map to the SAME MDM complexity as established (99205=high, 99204=moderate, 99203=low)
+- G2211 is NEVER reported with new patient codes — it is for established patients only
+
+INTERMEDIATE vs COMPREHENSIVE EYE CODE:
+- 92014/92004 (comprehensive) = all 12 exam elements documented + dilation
+- 92012/92002 (intermediate) = 3-11 exam elements, used when full comprehensive exam not warranted
+- If the note documents fewer than 12 exam elements and no treatment decisions → consider 92012 (established) or 92002 (new)
+
+SUGGEST EYE CODE (92014/92004/92012/92002) when:
 - Visit is primarily driven by examination findings (stable post-op, routine monitoring, no new drugs, no complex MDM)
 - Plan is observation only or simple follow-up
 - No new prescriptions, no treatment changes, no complex management decisions
 - Note lacks MDM complexity elements
+
+FORCE E/M (never use Eye code) when:
+- Systemic disease drives the visit (lupus, RA, sickle cell, MS — not covered by Eye visit codes)
+- High-risk medication monitoring without ocular pathology (Plaquenil screening with Z79.899 as primary — many payers deny Eye codes with Z-code primary)
+- Diagnosis doesn't warrant comprehensive eye exam (blepharitis, corneal abrasion, subconjunctival hemorrhage)
+- Prolonged services needed (Eye codes cannot report prolonged add-ons 99417/G2212)
 
 E/M LEVEL SHORTCUTS (use as baseline, then adjust per MDM complexity):
 - Level 3 (99213): No treatment — observation only (PVD, dry AMD, stable ERM, stable post-op, no Rx changes)
@@ -148,7 +165,7 @@ MINIMUM ADDITIONS FOR 99214 (if applicable):
 OUTPUT — use ONLY these exact delimiters, absolutely no text outside them:
 
 ---CODE---
-one of: 99215 / 99214 / 99213 / 92014 / 92004
+one of: 99215 / 99214 / 99213 / 99205 / 99204 / 99203 / 92014 / 92012 / 92004 / 92002
 ---G2211---
 YES or NO
 ---EYE_CODE_NOTE---
@@ -186,7 +203,7 @@ function parse(text) {
   };
 }
 
-const isEyeCode = (code) => code === "92014" || code === "92004";
+const isEyeCode = (code) => ["92014", "92004", "92012", "92002"].includes(code);
 
 // ── Styles ──────────────────────────────────────────────────────────
 const S = {
