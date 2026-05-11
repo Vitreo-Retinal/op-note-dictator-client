@@ -320,11 +320,11 @@ ABBREVIATION DICTIONARY:
 - T1DM = type 1 diabetes mellitus, T2DM = type 2 diabetes mellitus
 - IDDM = insulin-dependent diabetes mellitus, NIDDM = non-insulin-dependent diabetes mellitus
 
-Z79 MEDICATION STATUS CODES — when the physician mentions a diabetic medication by name, add the appropriate Z79 code to your ICD-10 suggestions:
-- Z79.4 (Long-term insulin use) — add ONLY for T2DM patients on insulin. Insulin names: Lantus, Basaglar, Tresiba, Levemir, Humalog, Novolog, Humulin, Toujeo, Fiasp, Admelog, Semglee, Afrezza, NPH, glargine, lispro, aspart, detemir, degludec. Do NOT add Z79.4 for T1DM — insulin is inherent to T1DM.
-- Z79.84 (Long-term oral hypoglycemic use) — add when patient takes oral diabetes meds. Drug names: metformin/Glucophage, glipizide/Glucotrol, glyburide/Micronase/DiaBeta, glimepiride/Amaryl, pioglitazone/Actos, sitagliptin/Januvia, empagliflozin/Jardiance, dapagliflozin/Farxiga, canagliflozin/Invokana, linagliptin/Tradjenta, saxagliptin/Onglyza, rosiglitazone/Avandia, acarbose/Precose, repaglinide/Prandin.
-- Z79.85 (Long-term injectable non-insulin antidiabetic use) — add when patient takes injectable non-insulin diabetes meds. Drug names: semaglutide/Ozempic/Wegovy/Rybelsus, dulaglutide/Trulicity, tirzepatide/Mounjaro/Zepbound, liraglutide/Victoza/Saxenda, exenatide/Byetta/Bydureon.
-- If the physician says "on insulin" or "IDDM" for a T2DM patient → Z79.4. If they say "on metformin" → Z79.84. If they say "on Ozempic" or "on Mounjaro" → Z79.85. A patient may have multiple Z79 codes (e.g., on metformin AND insulin → both Z79.84 and Z79.4).
+DIABETIC MEDICATION RECOGNITION — when the physician mentions a diabetic medication by name, include it in your ---DIAGNOSES--- section so the ICD-10 engine can generate the correct Z79 code. Include the medication name exactly as dictated:
+- Insulin names: Lantus, Basaglar, Tresiba, Levemir, Humalog, Novolog, Humulin, Toujeo, Fiasp, Admelog, Semglee, Afrezza, NPH, glargine, lispro, aspart, detemir, degludec → output "On insulin" in DIAGNOSES
+- Oral DM meds: metformin/Glucophage, glipizide/Glucotrol, glyburide, glimepiride/Amaryl, pioglitazone/Actos, sitagliptin/Januvia, empagliflozin/Jardiance, dapagliflozin/Farxiga, canagliflozin/Invokana, linagliptin/Tradjenta → output "On metformin" (or the specific drug name) in DIAGNOSES
+- Injectable non-insulin: semaglutide/Ozempic/Wegovy/Rybelsus, dulaglutide/Trulicity, tirzepatide/Mounjaro/Zepbound, liraglutide/Victoza/Saxenda, exenatide/Byetta/Bydureon → output "On Ozempic" (or the specific drug name) in DIAGNOSES
+- A patient may be on multiple — output a separate line for each category.
 
 DIABETES NOTE FORMATTING — when diabetes is a diagnosis, structure the section in this order:
 1. Diagnosis header line: T2DM (or T1DM, IDDM, NIDDM as appropriate)
@@ -732,6 +732,39 @@ Procedure code(s) with modifiers if a procedure is performed today. Examples: "6
 YES or NO (always NO on injection days, post-op visits within global period, and primarily surgical patients)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
+---DIAGNOSES---
+One diagnosis per line, pipe-delimited: "Diagnosis | Eye | Qualifier"
+Eye = OD, OS, or OU. Qualifier = staging/status (optional).
+Use ONLY these standardized terms (the ICD-10 engine matches on these exact phrases):
+DIABETIC: "T2DM PDR with DME | eye", "T2DM PDR stable | eye", "T2DM PDR with TRD macula | eye", "T2DM PDR with TRD | eye", "T2DM PDR with VH | eye", "T2DM PDR | eye", "T2DM Severe NPDR with DME | eye", "T2DM Severe NPDR without DME | eye", "T2DM Moderate NPDR with DME | eye", "T2DM Moderate NPDR without DME | eye", "T2DM Mild NPDR with DME | eye", "T2DM Mild NPDR without DME | eye", "T2DM DME | eye", "T2DM DME resolved | eye". Use T1DM prefix if type 1 or IDDM specified.
+AMD: "Wet AMD | eye | active", "Wet AMD | eye | inactive", "Dry AMD | eye | early", "Dry AMD | eye | intermediate", "Dry AMD | eye | advanced" (foveal-sparing GA), "Dry AMD | eye | advanced subfoveal" (subfoveal GA)
+RVO: "CRVO | eye" (default=with ME), "CRVO | eye | stable", "CRVO | eye | with NV", "BRVO | eye", "BRVO | eye | stable", "BRVO | eye | with NV", "HRVO | eye"
+ARTERY: "CRAO | eye", "BRAO | eye"
+RD & BREAKS: "RRD | eye" (rhegmatogenous), "RRD | eye | giant tear", "RRD | eye | multiple breaks", "TRD | eye" (tractional), "Serous RD | eye", "Horseshoe tear | eye", "Round hole | eye", "Retinal tear | eye", "Lattice | eye"
+VITREOUS: "Vitreous hemorrhage | eye", "PVD | eye", "VMT | eye", "VMA | eye", "Floaters | eye", "Asteroid hyalosis | eye"
+MACULAR: "ERM | eye", "FTMH | eye", "CME | eye", "CME post-cataract | eye" (Irvine-Gass), "CSCR | eye", "MacTel | eye", "PED | eye", "Drusen | eye", "Plaquenil toxic maculopathy | eye", "Solar retinopathy | eye", "Coats disease | eye", "Retinoschisis | eye", "PEHCR | eye"
+GLAUCOMA: "POAG | eye | mild", "POAG | eye | moderate", "POAG | eye | severe", "POAG | eye" (unspecified stage), "Glaucoma suspect | eye", "NTG | eye | stage", "NVG | eye", "Acute angle closure | eye", "Chronic angle closure | eye | stage", "OHT | eye", "PXF glaucoma | eye | stage", "Pigmentary glaucoma | eye | stage"
+CATARACTS: "Nuclear cataract | eye", "Cortical cataract | eye", "PSC | eye", "Cataract | eye" (unspecified → nuclear default)
+LENS: "Pseudophakia | eye"
+CHOROIDAL: "Choroidal nevus | eye", "Choroidal melanoma | eye", "Choroidal hemangioma | eye", "Choroidal osteoma | eye", "Choroidal metastasis | eye", "CHRPE | eye", "Vitreoretinal lymphoma | eye"
+OPTIC NERVE: "NAION | eye", "Optic atrophy | eye", "Optic neuritis | eye", "Papilledema", "IIH", "Amaurosis fugax", "Optic disc drusen | eye", "GCA"
+CRANIAL NERVES: "CN III palsy | eye", "CN IV palsy | eye", "CN VI palsy | eye"
+INFLAMMATORY: "Anterior uveitis | eye", "Intermediate uveitis | eye", "Posterior uveitis | eye", "Panuveitis | eye", "VKH", "Scleritis | eye"
+INFECTIOUS: "Endophthalmitis | eye", "Toxoplasmosis", "CMV retinitis", "ARN | eye" (add "VZV" or "HSV" in qualifier), "Syphilitic retinitis"
+HEREDITARY: "Retinitis pigmentosa", "Stargardt", "Cone-rod dystrophy", "Pattern dystrophy", "Best disease", "Choroideremia | eye", "LCA", "FEVR"
+ROP: "ROP | eye | stage 0–5"
+VASCULAR: "Hypertensive retinopathy | eye", "Retinal hemorrhage | eye", "Degenerative myopia with CNV | eye"
+SYMPTOMS: "Dry eye | eye"
+Z-CODES: "On insulin", "On metformin" (or any oral DM med name), "On Ozempic" (or any GLP-1 name), "On Plaquenil", "Smoking history"
+If BOTH eyes have the same diagnosis at different stages, output TWO lines (one per eye).
+Example:
+Wet AMD | OS | active
+Dry AMD | OD | intermediate
+POAG | OD | severe
+POAG | OS | mild
+Nuclear cataract | OD
+Pseudophakia | OS
+On Ozempic
 ---NOTE---
 the full formatted A/P note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that. If G2211 = NO, do NOT mention G2211 anywhere in the note.
 ---END---`;
@@ -863,6 +896,31 @@ Procedure code(s) with modifiers if performed today. Examples: "67028" (injectio
 YES or NO (always NO on injection days, post-op visits within global period, and primarily surgical patients)
 ---CHANGES---
 - each billing addition in plain language (max 5 bullets), or "None needed"
+---DIAGNOSES---
+One diagnosis per line, pipe-delimited: "Diagnosis | Eye | Qualifier"
+Eye = OD, OS, or OU. Qualifier = staging/status (optional).
+Use ONLY these standardized terms (the ICD-10 engine matches on these exact phrases):
+DIABETIC: "T2DM PDR with DME | eye", "T2DM PDR stable | eye", "T2DM PDR with TRD macula | eye", "T2DM PDR with TRD | eye", "T2DM PDR with VH | eye", "T2DM PDR | eye", "T2DM Severe NPDR with DME | eye", "T2DM Severe NPDR without DME | eye", "T2DM Moderate NPDR with DME | eye", "T2DM Moderate NPDR without DME | eye", "T2DM Mild NPDR with DME | eye", "T2DM Mild NPDR without DME | eye", "T2DM DME | eye", "T2DM DME resolved | eye". Use T1DM prefix if type 1 or IDDM specified.
+AMD: "Wet AMD | eye | active", "Wet AMD | eye | inactive", "Dry AMD | eye | early", "Dry AMD | eye | intermediate", "Dry AMD | eye | advanced" (foveal-sparing GA), "Dry AMD | eye | advanced subfoveal" (subfoveal GA)
+RVO: "CRVO | eye" (default=with ME), "CRVO | eye | stable", "CRVO | eye | with NV", "BRVO | eye", "BRVO | eye | stable", "BRVO | eye | with NV", "HRVO | eye"
+ARTERY: "CRAO | eye", "BRAO | eye"
+RD & BREAKS: "RRD | eye" (rhegmatogenous), "RRD | eye | giant tear", "RRD | eye | multiple breaks", "TRD | eye" (tractional), "Serous RD | eye", "Horseshoe tear | eye", "Round hole | eye", "Retinal tear | eye", "Lattice | eye"
+VITREOUS: "Vitreous hemorrhage | eye", "PVD | eye", "VMT | eye", "VMA | eye", "Floaters | eye", "Asteroid hyalosis | eye"
+MACULAR: "ERM | eye", "FTMH | eye", "CME | eye", "CME post-cataract | eye" (Irvine-Gass), "CSCR | eye", "MacTel | eye", "PED | eye", "Drusen | eye", "Plaquenil toxic maculopathy | eye", "Solar retinopathy | eye", "Coats disease | eye", "Retinoschisis | eye", "PEHCR | eye"
+GLAUCOMA: "POAG | eye | mild", "POAG | eye | moderate", "POAG | eye | severe", "POAG | eye" (unspecified stage), "Glaucoma suspect | eye", "NTG | eye | stage", "NVG | eye", "Acute angle closure | eye", "Chronic angle closure | eye | stage", "OHT | eye", "PXF glaucoma | eye | stage", "Pigmentary glaucoma | eye | stage"
+CATARACTS: "Nuclear cataract | eye", "Cortical cataract | eye", "PSC | eye", "Cataract | eye" (unspecified → nuclear default)
+LENS: "Pseudophakia | eye"
+CHOROIDAL: "Choroidal nevus | eye", "Choroidal melanoma | eye", "Choroidal hemangioma | eye", "Choroidal osteoma | eye", "Choroidal metastasis | eye", "CHRPE | eye", "Vitreoretinal lymphoma | eye"
+OPTIC NERVE: "NAION | eye", "Optic atrophy | eye", "Optic neuritis | eye", "Papilledema", "IIH", "Amaurosis fugax", "Optic disc drusen | eye", "GCA"
+CRANIAL NERVES: "CN III palsy | eye", "CN IV palsy | eye", "CN VI palsy | eye"
+INFLAMMATORY: "Anterior uveitis | eye", "Intermediate uveitis | eye", "Posterior uveitis | eye", "Panuveitis | eye", "VKH", "Scleritis | eye"
+INFECTIOUS: "Endophthalmitis | eye", "Toxoplasmosis", "CMV retinitis", "ARN | eye" (add "VZV" or "HSV" in qualifier), "Syphilitic retinitis"
+HEREDITARY: "Retinitis pigmentosa", "Stargardt", "Cone-rod dystrophy", "Pattern dystrophy", "Best disease", "Choroideremia | eye", "LCA", "FEVR"
+ROP: "ROP | eye | stage 0–5"
+VASCULAR: "Hypertensive retinopathy | eye", "Retinal hemorrhage | eye", "Degenerative myopia with CNV | eye"
+SYMPTOMS: "Dry eye | eye"
+Z-CODES: "On insulin", "On metformin" (or any oral DM med name), "On Ozempic" (or any GLP-1 name), "On Plaquenil", "Smoking history"
+If BOTH eyes have the same diagnosis at different stages, output TWO lines (one per eye).
 ---NOTE---
 the full note with [+] before each inserted billing phrase. For 99214/99215, the plan ends with the MDM justification sentence. If G2211 = YES, the G2211 sentence follows after that. If G2211 = NO, do NOT mention G2211 anywhere in the note.
 ---END---`;
@@ -878,11 +936,13 @@ function parseResponse(text) {
       .replace("---" + a + "---", "").trim();
   };
   const hasProcedure = text.includes("---PROCEDURE---");
+  const hasDiagnoses = text.includes("---DIAGNOSES---");
   return {
     code: sec("CODE", hasProcedure ? "PROCEDURE" : "G2211"),
     procedure: hasProcedure ? sec("PROCEDURE", "G2211") : "",
     g2211: sec("G2211", "CHANGES").trim() === "YES",
-    changes: sec("CHANGES", "NOTE").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
+    changes: sec("CHANGES", hasDiagnoses ? "DIAGNOSES" : "NOTE").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
+    diagnoses: hasDiagnoses ? sec("DIAGNOSES", "NOTE") : "",
     note: sec("NOTE", "END"),
   };
 }
@@ -913,7 +973,6 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
   // ICD-10 auto-suggest
   const [icd10Codes, setIcd10Codes] = useState([]);
-  const [icd10Loading, setIcd10Loading] = useState(false);
 
   // Auto-detected drops from note output
   const [autoDrops, setAutoDrops] = useState([]);
@@ -1228,19 +1287,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       setResult(parsed);
       setTab("output");
 
-      // Fire ICD-10 suggestion in background (non-blocking)
-      if (parsed.note) {
-        setIcd10Loading(true);
+      // Use deterministic ICD-10 codes from server (dictionary lookup, no Haiku)
+      if (data.icd10Codes && data.icd10Codes.length > 0) {
+        setIcd10Codes(data.icd10Codes);
+      } else {
         setIcd10Codes([]);
-        fetch(`${API_BASE}/api/suggest-icd10`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ note: parsed.note }),
-        })
-          .then(r => r.json())
-          .then(d => { if (d.success && d.codes?.length) setIcd10Codes(d.codes); })
-          .catch(() => {})
-          .finally(() => setIcd10Loading(false));
       }
     } catch (e) {
       setError(e.message || String(e));
@@ -1536,47 +1587,41 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 )}
 
                 {/* ICD-10 Codes */}
-                {(icd10Loading || icd10Codes.length > 0) && (
+                {icd10Codes.length > 0 && (
                   <div style={{ background: "#0c0f1a", border: "1px solid #4f46e5", borderRadius: 8, padding: "10px 14px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
                       <div style={{ fontSize: "0.66rem", color: "#818cf8", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                         ICD-10 Codes
                       </div>
-                      {icd10Codes.length > 0 && (
-                        <button onClick={async () => {
-                          const text = icd10Codes.map(c => `${c.code} — ${c.description}`).join("\n");
-                          try { await navigator.clipboard.writeText(text); setCopiedCodes(true); setTimeout(() => setCopiedCodes(false), 2000); }
-                          catch { setCopiedCodes(false); }
-                        }} style={{
-                          background: copiedCodes ? "#059669" : S.bg, color: copiedCodes ? "#fff" : "#94a3b8",
-                          border: `1px solid ${copiedCodes ? "#059669" : S.border}`, borderRadius: 6,
-                          padding: "3px 10px", fontSize: "0.68rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
-                        }}>
-                          {copiedCodes ? "Copied!" : "Copy codes"}
-                        </button>
-                      )}
+                      <button onClick={async () => {
+                        const text = icd10Codes.map(c => `${c.code} — ${c.description}`).join("\n");
+                        try { await navigator.clipboard.writeText(text); setCopiedCodes(true); setTimeout(() => setCopiedCodes(false), 2000); }
+                        catch { setCopiedCodes(false); }
+                      }} style={{
+                        background: copiedCodes ? "#059669" : S.bg, color: copiedCodes ? "#fff" : "#94a3b8",
+                        border: `1px solid ${copiedCodes ? "#059669" : S.border}`, borderRadius: 6,
+                        padding: "3px 10px", fontSize: "0.68rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+                      }}>
+                        {copiedCodes ? "Copied!" : "Copy codes"}
+                      </button>
                     </div>
-                    {icd10Loading ? (
-                      <div style={{ fontSize: "0.78rem", color: "#6366f1", fontStyle: "italic" }}>Analyzing diagnoses...</div>
-                    ) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        {icd10Codes.map((c, i) => (
-                          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                            <span style={{
-                              background: c.primary ? "#312e81" : S.bg, color: c.primary ? "#a5b4fc" : "#94a3b8",
-                              border: `1px solid ${c.primary ? "#4f46e5" : S.border}`, borderRadius: 4,
-                              padding: "2px 8px", fontSize: "0.76rem", fontFamily: S.mono, fontWeight: 700, flexShrink: 0,
-                            }}>
-                              {c.code}
-                            </span>
-                            <span style={{ fontSize: "0.78rem", color: c.primary ? "#c7d2fe" : "#94a3b8", lineHeight: 1.4 }}>
-                              {c.description}
-                            </span>
-                            {c.primary && <span style={{ fontSize: "0.58rem", color: "#6366f1", fontWeight: 700, flexShrink: 0 }}>PRIMARY</span>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {icd10Codes.map((c, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                          <span style={{
+                            background: c.primary ? "#312e81" : S.bg, color: c.primary ? "#a5b4fc" : "#94a3b8",
+                            border: `1px solid ${c.primary ? "#4f46e5" : S.border}`, borderRadius: 4,
+                            padding: "2px 8px", fontSize: "0.76rem", fontFamily: S.mono, fontWeight: 700, flexShrink: 0,
+                          }}>
+                            {c.code}
+                          </span>
+                          <span style={{ fontSize: "0.78rem", color: c.primary ? "#c7d2fe" : "#94a3b8", lineHeight: 1.4 }}>
+                            {c.description}
+                          </span>
+                          {c.primary && <span style={{ fontSize: "0.58rem", color: "#6366f1", fontWeight: 700, flexShrink: 0 }}>PRIMARY</span>}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
