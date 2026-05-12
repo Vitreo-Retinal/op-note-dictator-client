@@ -1727,8 +1727,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   try {
                   const fullText = (note || "") + "\n" + (result.note || "");
                   const detectedLang = detectLanguage(fullText);
-                  const matched = matchHandouts(fullText, icd10Codes || []);
-                  const detectedDrops = detectDropsFromPlan(fullText);
+                  // Match handouts against ONLY the generated note (assessment/plan) + ICD codes
+                  // — NOT the raw dictation input, which may mention conditions from history
+                  // that aren't the focus of today's visit
+                  const matched = matchHandouts(result.note || "", icd10Codes || []);
+                  const detectedDrops = detectDropsFromPlan(result.note || "");
                   if (matched.length === 0 && detectedDrops.length === 0) return null;
                   return (
                     <div style={{ background: "#0f1f2e", border: "1px solid #1d4ed8", borderRadius: 10, padding: "14px 18px", marginTop: 8 }}>
@@ -1763,16 +1766,41 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         {matched.length > 0 && (
                           <button
-                            onClick={() => {
-                              const html = generateEducationPrintHTML(matched, detectedLang);
-                              const win = window.open("", "_blank");
-                              win.document.write(html);
-                              win.document.close();
-                              setTimeout(() => win.print(), 400);
+                            onClick={async () => {
+                              try {
+                                const payload = {
+                                  handouts: matched.map(h => ({
+                                    title: h.title[detectedLang] || h.title.en,
+                                    content: h.content[detectedLang] || h.content.en,
+                                  })),
+                                  lang: detectedLang,
+                                };
+                                const res = await fetch(`${API_BASE}/api/education-pdf`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify(payload),
+                                });
+                                if (!res.ok) throw new Error("PDF generation failed");
+                                const blob = await res.blob();
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = "Patient_Education.pdf";
+                                a.click();
+                                URL.revokeObjectURL(url);
+                              } catch (e) {
+                                console.error("PDF download error:", e);
+                                // Fallback to HTML print
+                                const html = generateEducationPrintHTML(matched, detectedLang);
+                                const win = window.open("", "_blank");
+                                win.document.write(html);
+                                win.document.close();
+                                setTimeout(() => win.print(), 400);
+                              }
                             }}
                             style={{ background: "linear-gradient(135deg,#2563eb,#3b82f6)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
                           >
-                            Print Handouts ({(detectedLang || "en").toUpperCase()})
+                            Download Handouts PDF ({(detectedLang || "en").toUpperCase()})
                           </button>
                         )}
                         {detectedDrops.length > 0 && (

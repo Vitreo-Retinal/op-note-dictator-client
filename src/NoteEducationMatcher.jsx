@@ -1,4 +1,5 @@
 import { HANDOUTS } from "./PatientEducation.jsx";
+import { VRA_LOGO_DATA_URI } from "./vra-logo-data.js";
 
 // ── Language detection from note text ──────────────────────────────
 export function detectLanguage(noteText) {
@@ -310,38 +311,108 @@ export function detectDropsFromPlan(noteText) {
   return drops.map(({ _defaultEye, _fromPlanDirective, ...rest }) => rest);
 }
 
+// ── Practice info constant ─────────────────────────────────────────
+const PRACTICE_INFO = {
+  name: "Vitreo-Retinal Associates, PC",
+  locations: [
+    { city: "Worcester", address: "67 Belmont Street Suite 302, Worcester, MA 01605", phone: "508-752-1155", fax: "508-752-4862" },
+    { city: "Leominster", address: "975 Merriam Ave Suite 117, Leominster, MA 01453", phone: "978-786-9600", fax: "978-534-3210" },
+  ],
+};
+
 // ── Generate print HTML for matched handouts ───────────────────────
 export function generateEducationPrintHTML(handouts, lang = "en", drops = []) {
   const langLabels = {
-    en: { title: "Patient Education Materials", subtitle: "Please review the following information about your eye condition(s) and treatment.", footer: "If you have questions, please contact our office." },
-    es: { title: "Materiales de Educación al Paciente", subtitle: "Por favor revise la siguiente información sobre su condición ocular y tratamiento.", footer: "Si tiene preguntas, por favor contacte nuestra oficina." },
-    vi: { title: "Tài Liệu Giáo Dục Bệnh Nhân", subtitle: "Vui lòng xem lại thông tin sau về tình trạng mắt và điều trị của bạn.", footer: "Nếu bạn có câu hỏi, vui lòng liên hệ phòng khám." },
-    pt: { title: "Materiais de Educação ao Paciente", subtitle: "Por favor, revise as seguintes informações sobre sua condição ocular e tratamento.", footer: "Se tiver dúvidas, entre em contato com nosso consultório." },
+    en: { subtitle: "Patient Education Materials", footer: "This information is for educational purposes and does not replace medical advice from your doctor." },
+    es: { subtitle: "Materiales de Educación al Paciente", footer: "Esta información es con fines educativos y no reemplaza el consejo médico de su doctor." },
+    vi: { subtitle: "Tài Liệu Giáo Dục Bệnh Nhân", footer: "Thông tin này chỉ mang tính giáo dục và không thay thế lời khuyên y tế từ bác sĩ." },
+    pt: { subtitle: "Materiais de Educação ao Paciente", footer: "Esta informação é para fins educacionais e não substitui o aconselhamento médico do seu médico." },
   };
 
   const labels = langLabels[lang] || langLabels.en;
+  const logoSrc = VRA_LOGO_DATA_URI;
 
-  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${labels.title}</title>
+  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${PRACTICE_INFO.name} — ${labels.subtitle}</title>
 <style>
+@page { margin: 0.5in 0.6in; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Georgia, serif; font-size: 16px; color: #111; padding: 30px; max-width: 800px; margin: 0 auto; }
-h1 { font-size: 24px; text-align: center; margin-bottom: 4px; }
-.subtitle { text-align: center; font-size: 14px; color: #555; margin-bottom: 30px; }
-.handout { page-break-inside: avoid; margin-bottom: 28px; border: 1px solid #ddd; border-radius: 10px; padding: 20px; }
-.handout-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #1e3a5f; }
-.handout-content { font-size: 15px; line-height: 1.7; white-space: pre-wrap; }
-.footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid #ccc; text-align: center; font-size: 13px; color: #666; }
-@media print { .handout { break-inside: avoid; } body { padding: 12px; } }
-</style></head><body>
-<h1>${labels.title}</h1>
-<p class="subtitle">${labels.subtitle}</p>`;
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px; color: #1a1a2e; line-height: 1.6;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
 
-  for (const h of handouts) {
+/* Header */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 3px solid #1e3a5f; padding-bottom: 10px; margin-bottom: 20px;
+}
+.page-header img { height: 48px; }
+.page-header .practice-contact {
+  text-align: right; font-size: 11px; color: #4b5563; line-height: 1.5;
+}
+.page-header .practice-contact strong { color: #1e3a5f; }
+
+/* Subtitle bar */
+.subtitle-bar {
+  background: #f0f4f8; border-radius: 6px; padding: 8px 14px;
+  font-size: 13px; color: #374151; margin-bottom: 22px; text-align: center;
+}
+
+/* Handout card */
+.handout {
+  page-break-inside: avoid; break-inside: avoid;
+  margin-bottom: 26px; border: 1px solid #d1d5db; border-radius: 8px;
+  padding: 18px 20px;
+}
+.handout-title {
+  font-size: 17px; font-weight: 700; color: #1e3a5f;
+  margin-bottom: 12px; padding-bottom: 6px;
+  border-bottom: 2px solid #e2e8f0;
+}
+.handout-content {
+  font-size: 13.5px; line-height: 1.7; white-space: pre-wrap; color: #374151;
+}
+
+/* Divider */
+.handout-divider { border: none; border-top: 1.5px solid #e5e7eb; margin: 24px 0; }
+
+/* Footer */
+.page-footer {
+  margin-top: 28px; padding-top: 10px; border-top: 2px solid #1e3a5f;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 10px; color: #9ca3af;
+}
+.page-footer img { height: 24px; opacity: 0.5; }
+
+@media print {
+  .handout { break-inside: avoid; }
+  body { padding: 0; }
+}
+</style></head><body>
+
+<div class="page-header">
+  <img src="${logoSrc}" alt="${PRACTICE_INFO.name}">
+  <div class="practice-contact">
+    ${PRACTICE_INFO.locations.map(l => `<div><strong>${l.city}:</strong> ${l.phone}</div>`).join("")}
+  </div>
+</div>
+
+<div class="subtitle-bar">${labels.subtitle}</div>`;
+
+  for (let i = 0; i < handouts.length; i++) {
+    const h = handouts[i];
     const title = h.title[lang] || h.title.en;
     const content = h.content[lang] || h.content.en;
     html += `<div class="handout"><div class="handout-title">${title}</div><div class="handout-content">${content}</div></div>`;
+    if (i < handouts.length - 1) html += `<hr class="handout-divider">`;
   }
 
-  html += `<div class="footer">${labels.footer}</div></body></html>`;
+  html += `
+<div class="page-footer">
+  <span>${labels.footer}</span>
+  <span>${PRACTICE_INFO.name}</span>
+</div>
+</body></html>`;
   return html;
 }

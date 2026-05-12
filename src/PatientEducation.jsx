@@ -171,133 +171,101 @@ Ligue para seu Médico Se Tiver
     title: { en: "After Your Eye Injection — Post-Injection Care", es: "Después de su Inyección — Cuidados Post-Inyección", vi: "Sau Tiêm Mắt — Chăm Sóc Sau Tiêm", pt: "Após a Injeção — Cuidados Pós-Injeção" },
     tags: ["injection", "post-op", "care"],
     content: {
-      en: `AFTER YOUR EYE INJECTION — POST-INJECTION CARE
+      en: `INSTRUCTIONS AFTER INTRAVITREAL INJECTIONS
 
-Immediately After
-• You may resume normal activities right away, including reading, watching TV, and using your phone.
-• Mild discomfort, scratchiness, or tearing is normal for 1–2 days.
-• You can use artificial tears (preservative-free) for comfort.
+1. Soon after the intravitreal injection, the eye may feel very uncomfortable. As the day goes on, it is normal to feel irritation, burning, a scratchy feeling, and tearing. Over-the-counter artificial tears may be applied hourly for the first day to restore moisture to the eye's surface.
 
-The First 48 Hours
-• Avoid rubbing your eye.
-• Avoid swimming, hot tubs, or submerging your face in water for 48 hours.
-• You may shower and wash your face gently — just avoid direct water pressure to the eye.
-• It is okay to sleep on either side.
+2. Make sure hands are clean prior to touching your eye. No swimming (in pools, hot tubs, and/or lakes) for 3 days. Make sure no water gets into the eye while showering. Refrain from rubbing the eye for 72 hours.
 
-Your Medications
-• Continue all your regular eye drops and medications unless told otherwise.
-• If you were given antibiotic drops, use them as directed (typically 4 times a day for 3–4 days).
+3. Do not wear contact lenses for 3 days after the injection.
 
-What's Normal
-• A small red spot (blood) on the white of your eye — harmless and clears in 1–2 weeks.
-• Floaters or tiny bubbles — usually resolve within a day or two.
-• Mild scratchy sensation — improves within 24 hours.
+4. Usually after a night's sleep, by the next morning, the eye feels 60–70% better. As the day continues, the eye should continue to feel better. On the second day after the injection, the eye should feel almost back to normal.
 
-Warning Signs — Call Us Immediately If You Have
-• PAIN that is severe or worsening after the first day.
-• VISION LOSS — significant decrease from your baseline.
-• INCREASING REDNESS after the first 2 days.
-• DISCHARGE — any yellow or green pus.
-• FLASHES or a CURTAIN/SHADOW in your vision.
+5. A hemorrhage on the white of the eye is possible but uncommon. Although you may find it cosmetically displeasing, it will resolve on its own and is benign.
 
-Contact Information
-If you have concerns, call your retina doctor's office. After hours, the answering service can reach the on-call physician.`,
+6. It is normal to have floaters after the injection. Perfectly circular floaters are air bubbles which resolve after 24–48 hours.
 
-      es: `DESPUÉS DE SU INYECCIÓN OCULAR — CUIDADOS POST-INYECCIÓN
+7. You should continue any other eye drops you are using regularly unless otherwise instructed by the doctor.
 
-Inmediatamente Después
-• Puede reanudar sus actividades normales de inmediato, incluyendo leer, ver televisión y usar su teléfono.
-• Molestia leve, sensación de rasquiña o lagrimeo es normal por 1–2 días.
-• Puede usar lágrimas artificiales (sin conservantes) para mayor comodidad.
+Instill Lubricant Eye Ointment as needed for pain and irritation after injection.
 
-Las Primeras 48 Horas
-• Evite frotarse el ojo.
-• Evite nadar, jacuzzis o sumergir su cara en agua durante 48 horas.
-• Puede ducharse y lavarse la cara suavemente — solo evite presión directa de agua en el ojo.
-• Está bien dormir de cualquier lado.
+If you experience DECREASED VISION, SEVERE PAIN, WHITE/YELLOW PUS OR DISCHARGE FROM EYE(S), SWOLLEN OR PUFFY EYELID(S), please call us immediately.
 
-Sus Medicamentos
-• Continúe todas sus gotas y medicamentos regulares a menos que se indique lo contrario.
-• Si le dieron gotas antibióticas, úselas según las indicaciones (típicamente 4 veces al día durante 3–4 días).
+Vitreo-Retinal Associates, PC
+Worcester: 67 Belmont Street Suite 302, Worcester, MA 01605 — P: 508-752-1155
+Leominster: 975 Merriam Ave Suite 117, Leominster, MA 01453 — P: 978-786-9600`,
 
-Qué es Normal
-• Una pequeña mancha roja (sangre) en la parte blanca del ojo — inofensiva y desaparece en 1–2 semanas.
-• Moscas volantes o pequeñas burbujas — generalmente se resuelven en uno o dos días.
-• Sensación leve de rasquiña — mejora en 24 horas.
+      es: `INSTRUCCIONES DESPUÉS DE INYECCIONES INTRAVÍTREAS
 
-Señales de Alarma — Llámenos Inmediatamente Si Tiene
-• DOLOR severo o que empeora después del primer día.
-• PÉRDIDA DE VISIÓN — disminución significativa de su nivel basal.
-• ENROJECIMIENTO CRECIENTE después de los primeros 2 días.
-• SECRECIÓN — cualquier pus amarillo o verde.
-• DESTELLOS o una CORTINA/SOMBRA en su visión.
+1. Poco después de la inyección intravítrea, el ojo puede sentirse muy incómodo. A medida que avanza el día, es normal sentir irritación, ardor, sensación de rasguño y lagrimeo. Se pueden aplicar lágrimas artificiales de venta libre cada hora durante el primer día para restaurar la humedad en la superficie del ojo.
 
-Información de Contacto
-Si tiene preocupaciones, llame al consultorio de su médico retinólogo. Fuera de horario, el servicio de contestador puede contactar al médico de guardia.`,
+2. Asegúrese de que sus manos estén limpias antes de tocar el ojo. No nadar (en piscinas, jacuzzis ni lagos) durante 3 días. Asegúrese de que no entre agua en el ojo mientras se ducha. No se frote el ojo durante 72 horas.
 
-      vi: `SAU TIÊM MẮT — CHĂM SÓC SAU TIÊM
+3. No use lentes de contacto durante 3 días después de la inyección.
 
-Ngay Sau Tiêm
-• Bạn có thể tiếp tục hoạt động bình thường ngay lập tức, bao gồm đọc sách, xem TV và sử dụng điện thoại.
-• Khó chịu nhẹ, cảm giác cộm hoặc chảy nước mắt là bình thường trong 1–2 ngày.
-• Bạn có thể dùng nước mắt nhân tạo (không chất bảo quản) cho thoải mái.
+4. Generalmente después de una noche de sueño, a la mañana siguiente el ojo se siente un 60–70% mejor. A medida que el día continúa, el ojo debe seguir mejorando. Al segundo día después de la inyección, el ojo debería sentirse casi normal.
 
-48 Giờ Đầu Tiên
-• Tránh dụi mắt.
-• Tránh bơi, ngâm bồn nước nóng hoặc ngâm mặt trong nước trong 48 giờ.
-• Bạn có thể tắm và rửa mặt nhẹ nhàng — chỉ tránh áp lực nước trực tiếp vào mắt.
-• Có thể ngủ nghiêng bên nào cũng được.
+5. Una hemorragia en la parte blanca del ojo es posible pero poco común. Aunque pueda encontrarla estéticamente desagradable, se resolverá por sí sola y es benigna.
 
-Thuốc Của Bạn
-• Tiếp tục tất cả thuốc nhỏ mắt và thuốc thường ngày trừ khi được chỉ dẫn khác.
-• Nếu được cho thuốc nhỏ kháng sinh, dùng theo chỉ dẫn (thường 4 lần/ngày trong 3–4 ngày).
+6. Es normal tener moscas volantes después de la inyección. Las moscas volantes perfectamente circulares son burbujas de aire que se resuelven en 24–48 horas.
 
-Điều Bình Thường
-• Đốm đỏ nhỏ (máu) trên phần trắng mắt — vô hại và hết trong 1–2 tuần.
-• Đốm đen hoặc bong bóng nhỏ — thường hết trong một hoặc hai ngày.
-• Cảm giác cộm nhẹ — cải thiện trong 24 giờ.
+7. Debe continuar con cualquier otra gota oftálmica que use regularmente, a menos que el médico indique lo contrario.
 
-Dấu Hiệu Cảnh Báo — Gọi Ngay Nếu Bạn Có
-• ĐAU nặng hoặc tăng sau ngày đầu tiên.
-• MẤT THỊ LỰC — giảm đáng kể so với mức bình thường.
-• ĐỎ MẮT TĂNG sau 2 ngày đầu.
-• DỊCH TIẾT — bất kỳ mủ vàng hoặc xanh nào.
-• ÁNH SÁNG LÓE hoặc MÀN CHE/BÓNG trong tầm nhìn.
+Aplique Ungüento Lubricante Ocular según sea necesario para el dolor e irritación después de la inyección.
 
-Thông Tin Liên Hệ
-Nếu bạn có lo ngại, gọi phòng khám bác sĩ võng mạc. Ngoài giờ làm việc, dịch vụ trực tổng đài có thể liên lạc bác sĩ trực.`,
+Si experimenta DISMINUCIÓN DE LA VISIÓN, DOLOR SEVERO, PUS BLANCO/AMARILLO O SECRECIÓN DEL OJO(S), PÁRPADO(S) HINCHADO(S), llámenos inmediatamente.
 
-      pt: `APÓS A INJEÇÃO OCULAR — CUIDADOS PÓS-INJEÇÃO
+Vitreo-Retinal Associates, PC
+Worcester: 67 Belmont Street Suite 302, Worcester, MA 01605 — P: 508-752-1155
+Leominster: 975 Merriam Ave Suite 117, Leominster, MA 01453 — P: 978-786-9600`,
 
-Imediatamente Após
-• Você pode retomar atividades normais imediatamente, incluindo ler, assistir TV e usar o celular.
-• Desconforto leve, sensação de arranhão ou lacrimejamento é normal por 1–2 dias.
-• Você pode usar lágrimas artificiais (sem conservantes) para conforto.
+      vi: `HƯỚNG DẪN SAU TIÊM NỘI NHÃN
 
-As Primeiras 48 Horas
-• Evite esfregar o olho.
-• Evite nadar, banheiras de hidromassagem ou submergir o rosto na água por 48 horas.
-• Você pode tomar banho e lavar o rosto suavemente — apenas evite pressão direta de água no olho.
-• Pode dormir de qualquer lado.
+1. Ngay sau khi tiêm nội nhãn, mắt có thể cảm thấy rất khó chịu. Trong ngày, cảm giác kích ứng, nóng rát, cộm và chảy nước mắt là bình thường. Nước mắt nhân tạo không kê đơn có thể nhỏ mỗi giờ trong ngày đầu tiên để phục hồi độ ẩm cho bề mặt mắt.
 
-Seus Medicamentos
-• Continue todos os colírios e medicamentos regulares, a menos que orientado de outra forma.
-• Se recebeu colírio antibiótico, use conforme orientado (tipicamente 4 vezes ao dia por 3–4 dias).
+2. Đảm bảo tay sạch trước khi chạm vào mắt. Không bơi (ở hồ bơi, bồn nước nóng, và/hoặc hồ) trong 3 ngày. Đảm bảo không để nước vào mắt khi tắm. Không dụi mắt trong 72 giờ.
 
-O Que é Normal
-• Uma pequena mancha vermelha (sangue) na parte branca do olho — inofensiva e desaparece em 1–2 semanas.
-• Moscas volantes ou pequenas bolhas — geralmente desaparecem em um ou dois dias.
-• Sensação leve de arranhão — melhora em 24 horas.
+3. Không đeo kính áp tròng trong 3 ngày sau tiêm.
 
-Sinais de Alerta — Ligue Imediatamente Se Tiver
-• DOR severa ou que piora após o primeiro dia.
-• PERDA DE VISÃO — diminuição significativa do seu nível basal.
-• VERMELHIDÃO CRESCENTE após os primeiros 2 dias.
-• SECREÇÃO — qualquer pus amarelo ou verde.
-• FLASHES ou CORTINA/SOMBRA na visão.
+4. Thường sau một đêm ngủ, đến sáng hôm sau, mắt cảm thấy tốt hơn 60–70%. Khi ngày tiếp tục, mắt sẽ tiếp tục cải thiện. Vào ngày thứ hai sau tiêm, mắt sẽ gần như trở lại bình thường.
 
-Informações de Contato
-Se tiver preocupações, ligue para o consultório do seu retinólogo. Fora do horário, o serviço de atendimento pode contatar o médico de plantão.`
+5. Xuất huyết trên phần trắng của mắt có thể xảy ra nhưng không phổ biến. Dù có thể không đẹp mắt, nó sẽ tự hết và là lành tính.
+
+6. Có đốm đen sau tiêm là bình thường. Đốm đen tròn hoàn hảo là bong bóng khí sẽ hết sau 24–48 giờ.
+
+7. Bạn nên tiếp tục bất kỳ thuốc nhỏ mắt nào đang dùng thường xuyên trừ khi bác sĩ chỉ dẫn khác.
+
+Bôi Thuốc Mỡ Bôi Trơn Mắt khi cần cho đau và kích ứng sau tiêm.
+
+Nếu bạn bị GIẢM THỊ LỰC, ĐAU NẶNG, MỦ TRẮNG/VÀNG HOẶC DỊCH TIẾT TỪ MẮT, MÍ MẮT SƯNG PHỒNG, vui lòng gọi cho chúng tôi ngay lập tức.
+
+Vitreo-Retinal Associates, PC
+Worcester: 67 Belmont Street Suite 302, Worcester, MA 01605 — P: 508-752-1155
+Leominster: 975 Merriam Ave Suite 117, Leominster, MA 01453 — P: 978-786-9600`,
+
+      pt: `INSTRUÇÕES APÓS INJEÇÕES INTRAVÍTREAS
+
+1. Logo após a injeção intravítrea, o olho pode ficar muito desconfortável. Ao longo do dia, é normal sentir irritação, ardor, sensação de arranhão e lacrimejamento. Lágrimas artificiais de venda livre podem ser aplicadas a cada hora no primeiro dia para restaurar a umidade na superfície do olho.
+
+2. Certifique-se de que as mãos estejam limpas antes de tocar o olho. Não nadar (em piscinas, banheiras de hidromassagem e/ou lagos) por 3 dias. Certifique-se de que a água não entre no olho durante o banho. Não esfregue o olho por 72 horas.
+
+3. Não use lentes de contato por 3 dias após a injeção.
+
+4. Geralmente após uma noite de sono, na manhã seguinte o olho se sente 60–70% melhor. À medida que o dia continua, o olho deve continuar melhorando. No segundo dia após a injeção, o olho deve se sentir quase normal.
+
+5. Uma hemorragia na parte branca do olho é possível, mas incomum. Embora possa ser esteticamente desagradável, ela se resolverá sozinha e é benigna.
+
+6. É normal ter moscas volantes após a injeção. Moscas volantes perfeitamente circulares são bolhas de ar que se resolvem em 24–48 horas.
+
+7. Você deve continuar qualquer outro colírio que esteja usando regularmente, a menos que o médico instrua o contrário.
+
+Aplique Pomada Lubrificante Ocular conforme necessário para dor e irritação após a injeção.
+
+Se você apresentar DIMINUIÇÃO DA VISÃO, DOR SEVERA, PUS BRANCO/AMARELO OU SECREÇÃO DO(S) OLHO(S), PÁLPEBRA(S) INCHADA(S), ligue imediatamente.
+
+Vitreo-Retinal Associates, PC
+Worcester: 67 Belmont Street Suite 302, Worcester, MA 01605 — P: 508-752-1155
+Leominster: 975 Merriam Ave Suite 117, Leominster, MA 01453 — P: 978-786-9600`
     }
   },
   {
