@@ -1569,6 +1569,214 @@ Taxa de Sucesso
   // CONDITIONS
   // ═══════════════════════════════════════════════════════════════════
   {
+    id: "cond-amd-overview",
+    category: "condition",
+    title: { en: "Age-Related Macular Degeneration (AMD) — Overview", es: "Degeneración Macular (DMAE) — General", vi: "Thoái Hóa Hoàng Điểm (AMD) — Tổng Quan", pt: "Degeneração Macular (DMRI) — Visão Geral" },
+    tags: ["AMD", "macular degeneration", "overview", "drusen", "AREDS"],
+    content: {
+      en: `AGE-RELATED MACULAR DEGENERATION (AMD)
+
+[IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
+
+Eye Words to Know
+• Retina — the layer at the back of the eye that senses light and sends signals to the brain so you can see.
+• Macula — a small but important area in the middle of the retina. It gives us our sharp, central vision.
+• Drusen — tiny white or yellow deposits that build up under the retina. They seldom cause vision loss. But many (or very large) drusen can be a sign of AMD.
+• Anti-VEGF — a class of medications injected into the eye to reduce leaking from abnormal blood vessels.
+• OCT — Optical Coherence Tomography, a painless scan that provides very detailed images of the retina and macula.
+
+What Is AMD?
+Age-related macular degeneration (AMD) is a disease of the retina. It happens when a part of the retina called the macula is damaged. AMD causes loss of central vision, but your peripheral (side) vision will still be normal.
+
+For instance, imagine you are looking at a clock with hands. With AMD, you might see the clock's numbers but not the hands — dark areas may appear in your central vision.
+
+AMD is very common. It is a leading cause of vision loss in people 50 years or older. Many people don't realize they have AMD until their vision is very blurry. This is why it is important to have regular visits to your ophthalmologist. They can look for early signs of AMD before you have any vision problems.
+
+[IMAGE_PAIR:amd-oct-before|Before Treatment (Wet AMD)|amd-oct-after|After Treatment (Resolved)|OCT cross-section showing fluid under the retina before treatment and resolution after anti-VEGF injections.]
+
+Two Types of AMD
+• Dry AMD: This form is quite common. About 80% (8 out of 10) of people who have AMD have the dry form. Dry AMD is when parts of the macula get thinner with age and tiny deposits (drusen) build up. People with dry AMD may have drusen, pigment changes, or geographic atrophy (an area of cell loss in the retina). Geographic atrophy can cause loss of central vision. Currently, only dry AMD with geographic atrophy can be treated with medication to slow progression.
+• Wet AMD: This form is less common but much more serious. Wet AMD is when new, abnormal blood vessels grow under the retina. These vessels may leak blood or other fluids, causing scarring of the macula. Vision loss is faster with wet AMD than dry AMD. Wet AMD is treated with anti-VEGF injections.
+
+Risk Factors
+You are more likely to develop AMD if you:
+• Are over 50 years old.
+• Have a family history of AMD.
+• Smoke cigarettes.
+• Eat a diet high in saturated fat (meat, butter, cheese).
+• Are overweight.
+• Have high blood pressure or high cholesterol.
+• Have heart disease.
+
+How Is AMD Diagnosed?
+• Dilated eye exam — your ophthalmologist will put drops in your eye to dilate your pupil, then look through a special lens to check the retina and macula.
+• Amsler grid — a grid with a dot in the center that helps you notice blurry, distorted, or blank spots in your vision.
+• OCT (Optical Coherence Tomography) — a painless scan that provides very detailed images of the retina and macula.
+• OCTA (OCT Angiography) — looks closely at blood vessels in and under the retina without needing a dye.
+• Fluorescein angiography — a yellow dye is injected into a vein in your arm and a camera photographs the retina, showing if abnormal new blood vessels are growing.
+
+Treatment
+• Dry AMD: There is no treatment for drusen. However, people with lots of drusen or serious vision loss might benefit from AREDS2 vitamins: Vitamin C (500 mg), Vitamin E (400 IU), Lutein (10 mg), Zeaxanthin (2 mg), Zinc (80 mg), Copper (2 mg). Your ophthalmologist can tell you if these are recommended for you. Beta carotene should not be used by smokers as it raised the risk of lung cancer. For geographic atrophy, newer medications (such as Izervay or Syfovre) injected into the eye may slow progression.
+• Wet AMD: Anti-VEGF medications (such as Eylea, Avastin, Lucentis, Vabysmo) are injected into the eye to reduce leaking from abnormal blood vessels. Treatment starts with monthly injections, then may be extended based on your response. Early and consistent treatment gives the best chance of preserving vision.
+
+What You Can Do
+• Keep all scheduled appointments — even if vision feels stable. Skipping treatment can lead to permanent vision loss.
+• Use the Amsler grid daily to monitor for changes. Keep it in a place where you see it every day (like the refrigerator or bathroom mirror).
+• Take AREDS2 vitamins as recommended by your doctor.
+• Do not smoke.
+• Eat leafy greens (spinach, kale), yellow fruits, fish, and a balanced, nutrient-rich diet.
+• Exercise regularly, manage blood pressure and cholesterol.
+• Wear UV-protective sunglasses outdoors.
+
+Making the Most of Your Vision
+If you have AMD, you can learn to make the most of your vision. Often you can still do many of your favorite things with special low vision tools — magnifying glasses, handheld computers, electronic items, and more. A vision rehabilitation specialist can teach you how to use your side vision and help you find support services and tools. Ask your ophthalmologist for a referral.
+
+Test Your Vision with the Amsler Grid
+Keep the Amsler grid in a place where you see it every day. In good light, look at the grid from about 12 to 15 inches away. Be sure to wear your reading glasses if you normally use them. Cover one eye. Look directly at the dot in the center of the grid. Notice if any of the lines look bent or wavy. See if any part of the grid looks blurry, dim, or out of shape. Now cover your other eye and test your vision the same way again. Call your ophthalmologist right away if you notice that any lines or parts of the grid look wavy, blurry, or dim.
+
+When to Call Right Away
+Contact your eye doctor immediately if you experience:
+• New or worsening blurry or distorted central vision.
+• Straight lines that look wavy or bent (metamorphopsia).
+• A new dark or empty spot in the center of your vision.
+• Any sudden change in your Amsler grid test.
+• Difficulty reading, recognizing faces, or driving.
+These may indicate wet AMD development or progression and need prompt evaluation.`,
+
+      es: `DEGENERACIÓN MACULAR RELACIONADA CON LA EDAD (DMAE)
+
+[IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
+
+Palabras Importantes
+• Retina — capa en la parte posterior del ojo que detecta luz y envía señales al cerebro.
+• Mácula — área pequeña pero importante en el centro de la retina para visión central nítida.
+• Drusen — depósitos pequeños blancos o amarillos bajo la retina. Muchos o muy grandes pueden ser signo de DMAE.
+• Anti-VEGF — medicamentos inyectados en el ojo para reducir fugas de vasos sanguíneos anormales.
+• OCT — Tomografía de Coherencia Óptica, escaneo indoloro que produce imágenes detalladas de la retina.
+
+¿Qué Es la DMAE?
+Enfermedad de la retina que daña la mácula, causando pérdida de visión central. Su visión periférica (lateral) permanece normal. Imagine un reloj: puede ver los números pero no las manecillas — áreas oscuras en la visión central. Es la principal causa de pérdida visual en personas mayores de 50 años. Muchos no se dan cuenta hasta que la visión está muy borrosa.
+
+[IMAGE_PAIR:amd-oct-before|Antes del Tratamiento (DMAE Húmeda)|amd-oct-after|Después del Tratamiento (Resuelto)|OCT mostrando líquido bajo la retina antes y resolución después de inyecciones anti-VEGF.]
+
+Dos Tipos
+• DMAE Seca: Más común (~80%). La mácula se adelgaza y se acumulan drusen. Puede incluir atrofia geográfica (pérdida de células en la retina), que puede tratarse con medicamentos más nuevos para retardar la progresión.
+• DMAE Húmeda: Menos común pero más seria. Vasos sanguíneos anormales crecen bajo la retina y filtran sangre o líquido. La pérdida visual es más rápida. Se trata con inyecciones anti-VEGF.
+
+Factores de Riesgo
+• Mayor de 50 años, historia familiar, tabaquismo, dieta alta en grasas saturadas, sobrepeso, presión alta, colesterol alto, enfermedades cardíacas.
+
+¿Cómo Se Diagnostica?
+• Examen con dilatación, cuadrícula de Amsler, OCT, OCTA, angiografía con fluoresceína.
+
+Tratamiento
+• DMAE Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinc 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos más nuevos (Izervay, Syfovre). Beta caroteno NO para fumadores.
+• DMAE Húmeda: Inyecciones anti-VEGF (Eylea, Avastin, Lucentis, Vabysmo) para reducir fugas. Tratamiento comienza mensual, luego se extiende según respuesta.
+
+Lo Que Puede Hacer
+• Asista a todas las citas programadas.
+• Use la cuadrícula de Amsler diariamente.
+• Tome vitaminas AREDS2 según recomendación.
+• No fume. Coma vegetales de hoja verde, frutas amarillas, pescado.
+• Ejercicio regular, controle presión arterial y colesterol.
+• Use lentes de sol con protección UV.
+
+Cuándo Llamar de Inmediato
+• Visión central borrosa o distorsionada nueva o que empeora.
+• Líneas rectas que se ven onduladas.
+• Punto oscuro o vacío nuevo en la visión central.
+• Cualquier cambio súbito en la cuadrícula de Amsler.`,
+
+      vi: `THOÁI HÓA HOÀNG ĐIỂM TUỔI GIÀ (AMD)
+
+[IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
+
+Từ Vựng Cần Biết
+• Võng mạc — lớp ở phía sau mắt cảm nhận ánh sáng và gửi tín hiệu đến não.
+• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc cho thị lực trung tâm sắc nét.
+• Drusen — cặn lắng nhỏ trắng hoặc vàng dưới võng mạc. Nhiều hoặc lớn có thể là dấu hiệu AMD.
+• Anti-VEGF — thuốc tiêm vào mắt giảm rò rỉ từ mạch máu bất thường.
+• OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
+
+AMD Là Gì?
+Bệnh võng mạc gây tổn thương hoàng điểm, mất thị lực trung tâm nhưng thị lực ngoại vi (bên) vẫn bình thường. Hãy tưởng tượng nhìn đồng hồ: có thể thấy số nhưng không thấy kim. Nguyên nhân hàng đầu mất thị lực ở người trên 50 tuổi. Nhiều người không biết cho đến khi rất mờ.
+
+[IMAGE_PAIR:amd-oct-before|Trước Điều Trị (AMD Ướt)|amd-oct-after|Sau Điều Trị (Hết)|OCT cho thấy dịch dưới võng mạc trước và hết sau tiêm anti-VEGF.]
+
+Hai Loại
+• AMD Khô: Phổ biến hơn (~80%). Hoàng điểm mỏng đi và tích tụ drusen. Có thể bao gồm teo địa lý (mất tế bào), có thể điều trị bằng thuốc mới để làm chậm tiến triển.
+• AMD Ướt: Ít phổ biến nhưng nghiêm trọng hơn. Mạch máu bất thường mọc dưới võng mạc và rò rỉ. Mất thị lực nhanh hơn. Điều trị bằng tiêm anti-VEGF.
+
+Yếu Tố Nguy Cơ
+• Trên 50 tuổi, tiền sử gia đình, hút thuốc, chế độ ăn nhiều chất béo bão hòa, thừa cân, tăng huyết áp, cholesterol cao, bệnh tim.
+
+Chẩn Đoán
+• Khám mắt có giãn đồng tử, lưới Amsler, OCT, OCTA, chụp mạch huỳnh quang.
+
+Điều Trị
+• AMD Khô: Vitamin AREDS2 (Vitamin C 500mg, Vitamin E 400IU, Lutein 10mg, Zeaxanthin 2mg, Kẽm 80mg, Đồng 2mg). Cho teo địa lý: thuốc mới (Izervay, Syfovre). Beta carotene KHÔNG cho người hút thuốc.
+• AMD Ướt: Tiêm anti-VEGF (Eylea, Avastin, Lucentis, Vabysmo) giảm rò rỉ. Bắt đầu hàng tháng, sau kéo dài theo đáp ứng.
+
+Bạn Có Thể Làm Gì
+• Giữ tất cả lịch hẹn.
+• Dùng lưới Amsler hàng ngày.
+• Uống vitamin AREDS2 theo khuyến nghị.
+• Không hút thuốc. Ăn rau xanh lá, trái cây vàng, cá.
+• Tập thể dục, kiểm soát huyết áp và cholesterol.
+• Đeo kính râm chống tia UV.
+
+Khi Nào Cần Gọi Ngay
+• Mờ hoặc méo thị lực trung tâm mới hoặc nặng hơn.
+• Đường thẳng trông lượn sóng.
+• Đốm tối hoặc trống mới ở trung tâm.
+• Thay đổi đột ngột trên lưới Amsler.`,
+
+      pt: `DEGENERAÇÃO MACULAR RELACIONADA À IDADE (DMRI)
+
+[IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
+
+Palavras Importantes
+• Retina — camada no fundo do olho que detecta luz e envia sinais ao cérebro.
+• Mácula — área pequena mas importante no centro da retina para visão central nítida.
+• Drusen — depósitos pequenos brancos ou amarelos sob a retina. Muitos ou grandes podem ser sinal de DMRI.
+• Anti-VEGF — medicamentos injetados no olho para reduzir vazamento de vasos anormais.
+• OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
+
+O Que É DMRI?
+Doença da retina que danifica a mácula, causando perda de visão central. A visão periférica (lateral) permanece normal. Imagine um relógio: pode ver os números mas não os ponteiros — áreas escuras na visão central. Principal causa de perda visual em pessoas acima de 50 anos. Muitos não percebem até a visão estar muito embaçada.
+
+[IMAGE_PAIR:amd-oct-before|Antes do Tratamento (DMRI Úmida)|amd-oct-after|Após Tratamento (Resolvido)|OCT mostrando fluido sob a retina antes e resolução após injeções anti-VEGF.]
+
+Dois Tipos
+• DMRI Seca: Mais comum (~80%). A mácula afina e se acumulam drusen. Pode incluir atrofia geográfica (perda de células), que pode ser tratada com medicamentos mais novos para retardar progressão.
+• DMRI Úmida: Menos comum mas mais séria. Vasos anormais crescem sob a retina e vazam sangue ou fluido. Perda visual mais rápida. Tratada com injeções anti-VEGF.
+
+Fatores de Risco
+• Acima de 50 anos, história familiar, tabagismo, dieta rica em gordura saturada, sobrepeso, pressão alta, colesterol alto, doença cardíaca.
+
+Como É Diagnosticada?
+• Exame com dilatação, grade de Amsler, OCT, OCTA, angiografia com fluoresceína.
+
+Tratamento
+• DMRI Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinco 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos mais novos (Izervay, Syfovre). Beta caroteno NÃO para fumantes.
+• DMRI Úmida: Injeções anti-VEGF (Eylea, Avastin, Lucentis, Vabysmo) para reduzir vazamento. Tratamento começa mensal, depois estendido conforme resposta.
+
+O Que Você Pode Fazer
+• Compareça a todas as consultas.
+• Use a grade de Amsler diariamente.
+• Tome vitaminas AREDS2 conforme recomendado.
+• Não fume. Coma vegetais verde-escuros, frutas amarelas, peixe.
+• Exercício regular, controle pressão arterial e colesterol.
+• Use óculos de sol com proteção UV.
+
+Quando Ligar Imediatamente
+• Visão central embaçada ou distorcida nova ou piorando.
+• Linhas retas que parecem onduladas.
+• Ponto escuro ou vazio novo no centro da visão.
+• Qualquer mudança súbita na grade de Amsler.`
+    }
+  },
+  {
     id: "cond-wet-amd",
     category: "condition",
     title: { en: "Wet Age-Related Macular Degeneration (Wet AMD)", es: "Degeneración Macular Húmeda (DMAE Húmeda)", vi: "Thoái Hóa Hoàng Điểm Ướt (AMD Ướt)", pt: "Degeneração Macular Úmida (DMRI Úmida)" },
@@ -1576,31 +1784,60 @@ Taxa de Sucesso
     content: {
       en: `WET AGE-RELATED MACULAR DEGENERATION (WET AMD)
 
+Eye Words to Know
+• Retina: The layer at the back of the eye that senses light and sends signals to the brain so you can see.
+• Macula: A small but important area in the middle of the retina that gives us sharp, central vision.
+• Drusen: Tiny white or yellow deposits that build up under the retina. Many or very large drusen can be a sign of AMD.
+
 What Is Wet AMD?
-In wet AMD, abnormal blood vessels grow under the retina and leak fluid or blood, causing rapid vision loss if untreated. It affects the macula — the central part of the retina responsible for sharp, detailed vision.
+Age-related macular degeneration (AMD) is a disease of the retina. In wet AMD, new abnormal blood vessels grow under the retina and may leak blood or other fluids, causing scarring of the macula. Vision loss is faster with wet AMD than dry AMD. About 10–20% of AMD cases are the wet form, but it is much more serious.
+
+Imagine looking at a clock with hands. With AMD, you might see the clock's numbers but not the hands — dark areas may appear in your central vision, while your side (peripheral) vision stays normal.
+
+Many people don't realize they have AMD until their vision is very blurry. This is why regular visits to your ophthalmologist are so important.
 
 Symptoms
 • Blurry or distorted central vision.
 • Straight lines appear wavy (metamorphopsia).
 • A dark or empty spot in the center of your vision.
 • Difficulty reading, recognizing faces, or driving.
-• Symptoms can develop suddenly.
+• Symptoms can develop suddenly — call us right away if you notice changes.
+
+Risk Factors
+• Over age 50.
+• Family history of AMD.
+• Smoking.
+• Diet high in saturated fat (meat, butter, cheese).
+• Overweight.
+• High blood pressure or high cholesterol.
+• Heart disease.
+
+How Is It Diagnosed?
+Your ophthalmologist will put drops in your eye to dilate your pupil, then look through a special lens to check the retina and macula.
+• OCT (Optical Coherence Tomography) — a machine that scans the retina and provides very detailed images, like an ultrasound but using light.
+• OCTA (OCT Angiography) — looks closely at blood vessels in and under the retina without needing a dye.
+• Fluorescein Angiography — a yellow dye is injected into a vein in your arm, and a special camera photographs the retina as the dye travels through, showing if abnormal vessels are leaking.
 
 Treatment
 • Anti-VEGF injections — medications injected into the eye that block abnormal blood vessel growth and reduce leakage.
 • Common medications: Eylea, Avastin, Lucentis, Vabysmo.
-• Treatment starts with monthly injections, then may be extended.
+• Treatment starts with monthly injections, then may be extended based on your response.
 • Early and consistent treatment gives the best chance of preserving vision.
 
 What You Can Do
-• Keep all scheduled appointments — even if vision feels stable.
-• Use the Amsler grid daily to monitor for changes.
-• Take AREDS2 vitamins as recommended.
+• Keep all scheduled appointments — even if vision feels stable. Skipping treatment can lead to permanent vision loss.
+• Use the Amsler grid daily to monitor for changes (ask us for one if you don't have it).
+• Take AREDS2 vitamins as recommended by your doctor.
 • Do not smoke.
-• Eat leafy greens (spinach, kale) and fish.
+• Eat leafy greens (spinach, kale), fish, and nuts.
+• Exercise regularly, manage blood pressure and cholesterol.
+• Wear UV-protective sunglasses outdoors.
+
+Making the Most of Your Vision
+If you have AMD, you can learn to make the most of your vision. A vision rehabilitation specialist can help you find magnifying tools, special low vision devices, and new ways to be as independent as possible. Ask your ophthalmologist for a referral.
 
 Prognosis
-With consistent treatment, most patients can stabilize or improve their vision. The key is early detection and adherence to treatment.`,
+With consistent treatment, most patients can stabilize or improve their vision. The key is early detection and not missing appointments.`,
 
       es: `DEGENERACIÓN MACULAR HÚMEDA (DMAE HÚMEDA)
 
@@ -1683,28 +1920,65 @@ O Que Você Pode Fazer
     content: {
       en: `DRY AGE-RELATED MACULAR DEGENERATION (DRY AMD)
 
+Eye Words to Know
+• Retina: The layer at the back of the eye that senses light and sends signals to the brain so you can see.
+• Macula: A small but important area in the middle of the retina that gives us sharp, central vision.
+• Drusen: Tiny white or yellow deposits that build up under the retina. Many or very large drusen can be a sign of AMD.
+
 What Is Dry AMD?
-The most common form of AMD (~80–90% of cases). The macula thins and small yellow deposits called drusen accumulate. Vision loss is usually gradual.
+Dry AMD is the most common form of age-related macular degeneration (~80–90% of cases). Parts of the macula get thinner with age and tiny deposits called drusen build up. Vision loss is usually gradual.
+
+Imagine looking at a clock with hands. With AMD, you might see the clock's numbers but not the hands — dark areas may appear in your central vision, while your side (peripheral) vision stays normal.
+
+AMD is very common. It is a leading cause of vision loss in people 50 years or older.
 
 Stages
 • Early: Small drusen, usually no vision loss.
 • Intermediate: Larger drusen and/or pigment changes. Mild vision changes may begin.
-• Advanced (Geographic Atrophy): Areas of retina waste away, causing blind spots.
+• Advanced (Geographic Atrophy): Areas of retinal cells permanently die, causing blind spots. See our separate handout on Geographic Atrophy.
+
+Risk Factors
+• Over age 50.
+• Family history of AMD.
+• Smoking.
+• Diet high in saturated fat (meat, butter, cheese).
+• Overweight.
+• High blood pressure or high cholesterol.
+• Heart disease.
+
+How Is It Diagnosed?
+Your ophthalmologist will dilate your eyes and look through a special lens to check for drusen and retinal changes.
+• OCT (Optical Coherence Tomography) — a machine that scans the retina and provides very detailed images.
+• You may be asked to look at an Amsler grid — a grid of straight lines that helps detect blurry, distorted, or blank spots in your vision.
 
 Monitoring
-• Regular exams with OCT imaging.
-• Amsler grid daily — report new distortion immediately (could signal conversion to wet AMD).
+• Regular exams with OCT imaging to track any changes.
+• Amsler grid daily at home — report new distortion or wavy lines immediately. This could signal conversion to wet AMD, which needs urgent treatment.
 
 Treatment
-• AREDS2 vitamins (Vitamin C, E, Lutein, Zeaxanthin, Zinc, Copper) — shown to reduce progression risk in intermediate AMD.
+• AREDS2 vitamins can reduce the risk of progression in intermediate dry AMD. The recommended daily amounts are:
+  - Vitamin C (500 mg)
+  - Vitamin E (400 IU)
+  - Lutein (10 mg)
+  - Zeaxanthin (2 mg)
+  - Zinc (80 mg)
+  - Copper (2 mg)
+• Important: Beta carotene should NOT be used by smokers or recent former smokers, as it raises the risk of lung cancer. The AREDS2 formula uses lutein and zeaxanthin instead.
+• Your ophthalmologist can tell you if vitamins are recommended for your stage of AMD — not all forms will benefit.
 • For Geographic Atrophy: Newer treatments (Syfovre, Izervay) can slow progression. Ask your doctor if you are a candidate.
 • Valeda photobiomodulation may also help — ask your doctor.
 
+Eye-Healthy Foods
+Dark leafy greens (spinach, kale), yellow fruits and vegetables, fish, and a balanced nutrient-rich diet have been shown to be beneficial for people with AMD.
+
 Lifestyle
 • Do not smoke.
-• Eat leafy greens, fish, and nuts.
 • Exercise regularly, manage blood pressure and cholesterol.
-• Wear UV-protective sunglasses outdoors.`,
+• Wear UV-protective sunglasses outdoors.
+• Use the Amsler grid every day to monitor your vision.
+
+Making the Most of Your Vision
+If you have AMD, a vision rehabilitation specialist can help you find magnifying tools, high-contrast aids, and new ways to stay independent. Ask your ophthalmologist for a referral.`,
 
       es: `DEGENERACIÓN MACULAR SECA (DMAE SECA)
 
@@ -1896,89 +2170,259 @@ O Que Você Pode Fazer
     content: {
       en: `DIABETIC RETINOPATHY
 
+[IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
+
+Eye Words to Know
+• Retina — the thin layer of tissue lining the back of the eye that senses light and sends images to your brain.
+• Macula — the small center part of the retina responsible for sharp, detailed central vision.
+• Vitreous — the clear gel that fills the inside of the eye.
+• Floaters — small dark spots, specks, or cobweb-like shapes that drift across your vision. They are shadows cast on the retina by tiny clumps in the vitreous gel.
+• Anti-VEGF — a medication injected into the eye that blocks the growth of abnormal blood vessels and reduces fluid leakage.
+• OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
+
 What Is It?
-A complication of diabetes that damages retinal blood vessels. Leading cause of blindness in working-age adults, but manageable with early detection and treatment.
+A complication of diabetes that damages the tiny blood vessels in your retina. Over time, high blood sugar causes these vessels to swell, leak fluid, or close off entirely. When blood flow is cut off, the retina may try to grow new blood vessels — but these new vessels are fragile and bleed easily. Diabetic retinopathy is the leading cause of blindness in working-age adults, but it is manageable with early detection and treatment.
 
 Stages
-• Mild/Moderate Nonproliferative: Small hemorrhages and blocked vessels.
-• Severe Nonproliferative: Many vessels blocked, retina signals for new vessel growth.
-• Proliferative (PDR): Abnormal new vessels grow — can bleed or cause retinal detachment.
+• Mild/Moderate Nonproliferative: Small hemorrhages and weakened vessel walls (microaneurysms). Some vessels may leak fluid or blood into the retina.
+• Severe Nonproliferative: Many vessels are blocked, cutting off blood supply to parts of the retina. The retina sends signals for new vessel growth.
+• Proliferative (PDR): Abnormal new vessels grow on the surface of the retina or optic nerve. These fragile vessels can bleed into the vitreous (vitreous hemorrhage) or pull on the retina, causing retinal detachment.
 
 Diabetic Macular Edema (DME)
-Fluid leaks into the macula at any stage, causing blurred central vision. Most common cause of vision loss from diabetic retinopathy.
+At any stage, damaged vessels can leak fluid into the macula, causing it to swell. This is called macular edema. It blurs your central vision — the vision you use for reading, driving, and recognizing faces. DME is the most common cause of vision loss from diabetic retinopathy. In severe cases, blood flow to the macula itself may be cut off (macular ischemia), which can cause permanent vision loss.
+
+[IMAGE_PAIR:dr-oct-before|Before Treatment (DME)|dr-oct-after|After Treatment (Resolved)|OCT cross-section showing fluid resolution after anti-VEGF injection therapy.]
 
 Symptoms
-• Often NO symptoms early — regular dilated exams are critical.
-• Blurry or fluctuating vision, floaters, difficulty with colors, vision loss.
+• Often NO symptoms early — this is why regular dilated exams are critical, even if your vision feels fine.
+• Blurry or fluctuating vision (vision that changes from day to day).
+• Floaters — dark spots or strings drifting across your vision.
+• Blank or dark areas in your field of vision.
+• Difficulty seeing at night or in low light.
+• Colors appear faded or washed out.
+• Sudden vision loss (if bleeding occurs inside the eye).
+
+How Is It Diagnosed?
+• Dilated eye exam — drops are placed to widen your pupils so the doctor can see the retina clearly.
+• OCT (Optical Coherence Tomography) — a painless scan that shows fluid, swelling, or thinning in the retina in fine detail.
+• Fluorescein angiography — a special dye is injected into your arm, and a camera photographs the dye as it flows through the retinal blood vessels. This reveals leaking, blocked, or abnormal vessels.
+• OCT Angiography (OCTA) — a newer, dye-free scan that maps blood flow in the retina.
 
 Treatment
-• DME: Anti-VEGF injections (Eylea, Avastin, Vabysmo) and/or focal laser.
-• PDR: PRP laser and/or anti-VEGF injections. Vitrectomy if bleeding or detachment.
-• Most important: good blood sugar, blood pressure, and cholesterol control.
+Treatment depends on the stage and whether DME is present.
+• DME: Anti-VEGF injections (such as Eylea, Avastin, or Vabysmo) are injected into the eye to reduce swelling and leakage. These are typically given as a series of injections over several months. Focal laser may also be used to seal leaking vessels near the macula. In some cases, steroid injections or implants (such as Ozurdex) may be recommended.
+• Proliferative DR (PDR): PRP (panretinal photocoagulation) laser treats the peripheral retina to stop abnormal vessel growth. Anti-VEGF injections may also be used. If there is significant bleeding into the vitreous or retinal detachment, vitrectomy surgery may be needed to remove blood and repair the retina.
+• Blood sugar control is the single most important thing you can do. Studies show that keeping your A1c well controlled significantly slows progression. Note: if your blood sugar has been very high and is brought down quickly, your vision may temporarily fluctuate. Wait at least one week after stabilizing blood sugar before getting a new glasses prescription.
 
 What You Can Do
-• Keep A1c below 7% (or as directed).
-• Control blood pressure and cholesterol.
-• Do not smoke.
-• Keep all scheduled eye appointments.
-• Report new symptoms promptly.`,
+• Keep A1c below 7% (or as directed by your doctor).
+• Control blood pressure and cholesterol — these also damage retinal vessels.
+• Do not smoke. Smoking worsens blood vessel damage.
+• Keep all scheduled eye appointments — even if your vision seems fine.
+• Report new symptoms promptly to your eye doctor.
+• Coordinate with your primary care doctor and kidney specialist if applicable — diabetes affects eyes, kidneys, and nerves together.
+• If you have diabetes, get a dilated eye exam at least once a year.
+
+When to Call Right Away
+Contact your eye doctor immediately or seek urgent care if you experience:
+• Sudden increase in floaters or dark spots.
+• Flashes of light.
+• A dark shadow or curtain covering part of your vision.
+• Sudden, severe vision loss.
+• Severe eye pain with redness (may indicate neovascular glaucoma).
+These may be signs of bleeding inside the eye, retinal detachment, or dangerously high eye pressure — all are treatable but need prompt attention.`,
 
       es: `RETINOPATÍA DIABÉTICA
 
+[IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
+
+Palabras Importantes
+• Retina — la capa delgada de tejido en la parte posterior del ojo que detecta la luz y envía imágenes al cerebro.
+• Mácula — la pequeña zona central de la retina responsable de la visión central nítida y detallada.
+• Vítreo — el gel transparente que llena el interior del ojo.
+• Moscas volantes (floaters) — pequeñas manchas oscuras, puntos o formas de telaraña que flotan en su visión. Son sombras proyectadas en la retina por pequeños grumos en el gel vítreo.
+• Anti-VEGF — un medicamento inyectado en el ojo que bloquea el crecimiento de vasos sanguíneos anormales y reduce la fuga de líquido.
+• OCT — Tomografía de Coherencia Óptica, un escaneo indoloro que toma imágenes detalladas de su retina.
+
 ¿Qué Es?
-Una complicación de la diabetes que daña los vasos sanguíneos retinianos. Principal causa de ceguera en adultos en edad laboral, pero manejable con detección y tratamiento tempranos.
+Una complicación de la diabetes que daña los pequeños vasos sanguíneos de la retina. Con el tiempo, el azúcar elevada hace que estos vasos se hinchen, filtren líquido o se cierren por completo. Cuando se corta el flujo sanguíneo, la retina puede intentar crear nuevos vasos — pero estos son frágiles y sangran fácilmente. Es la principal causa de ceguera en adultos en edad laboral, pero es manejable con detección y tratamiento tempranos.
+
+Etapas
+• No proliferativa leve/moderada: pequeñas hemorragias y paredes debilitadas de los vasos (microaneurismas). Algunos vasos pueden filtrar líquido o sangre.
+• No proliferativa severa: muchos vasos están bloqueados, cortando el suministro de sangre a partes de la retina. La retina envía señales para que crezcan nuevos vasos.
+• Proliferativa (RDP): crecen vasos anormales en la superficie de la retina o el nervio óptico. Estos vasos frágiles pueden sangrar dentro del vítreo (hemorragia vítrea) o tirar de la retina, causando desprendimiento de retina.
 
 Edema Macular Diabético (EMD)
-El líquido se filtra en la mácula, causando visión central borrosa. La causa más común de pérdida visual por retinopatía diabética.
+En cualquier etapa, los vasos dañados pueden filtrar líquido en la mácula, causando hinchazón. Esto nubla su visión central — la visión que usa para leer, conducir y reconocer caras. El EMD es la causa más común de pérdida visual por retinopatía diabética. En casos severos, se puede cortar el flujo sanguíneo a la mácula (isquemia macular), lo que puede causar pérdida permanente de visión.
+
+[IMAGE_PAIR:dr-oct-before|Antes del Tratamiento (EMD)|dr-oct-after|Después del Tratamiento (Resuelto)|OCT mostrando resolución del líquido después de terapia con inyecciones anti-VEGF.]
+
+Síntomas
+• A menudo NO hay síntomas al principio — por eso los exámenes con dilatación son esenciales, aunque su visión parezca normal.
+• Visión borrosa o fluctuante (que cambia de un día a otro).
+• Moscas volantes — puntos oscuros o hilos que flotan en su visión.
+• Áreas oscuras o en blanco en su campo visual.
+• Dificultad para ver de noche o con poca luz.
+• Los colores se ven desvanecidos o apagados.
+• Pérdida súbita de visión (si hay sangrado dentro del ojo).
+
+¿Cómo Se Diagnostica?
+• Examen con dilatación — se colocan gotas para agrandar las pupilas y ver la retina claramente.
+• OCT — un escaneo indoloro que muestra líquido, hinchazón o adelgazamiento de la retina en detalle.
+• Angiografía con fluoresceína — se inyecta un tinte especial en el brazo y una cámara fotografía el tinte mientras fluye por los vasos retinianos, revelando fugas o vasos anormales.
+• Angiografía por OCT (OCTA) — un escaneo más nuevo, sin tinte, que mapea el flujo sanguíneo en la retina.
 
 Tratamiento
-• EMD: Inyecciones anti-VEGF y/o láser focal.
-• Proliferativa: Láser PRP y/o anti-VEGF. Vitrectomía si hay sangrado o desprendimiento.
-• Lo más importante: buen control de azúcar, presión arterial y colesterol.
+El tratamiento depende de la etapa y si hay EMD.
+• EMD: Inyecciones anti-VEGF (como Eylea, Avastin o Vabysmo) se inyectan en el ojo para reducir la hinchazón y la fuga. Se administran como una serie de inyecciones durante varios meses. También se puede usar láser focal. En algunos casos se recomiendan inyecciones o implantes de esteroides (como Ozurdex).
+• RDP: Láser PRP trata la retina periférica para detener el crecimiento de vasos anormales. También se pueden usar inyecciones anti-VEGF. Si hay sangrado significativo o desprendimiento de retina, puede ser necesaria una vitrectomía.
+• El control del azúcar en sangre es lo más importante que puede hacer. Si su azúcar ha estado muy alta y baja rápidamente, su visión puede fluctuar temporalmente. Espere al menos una semana después de estabilizar el azúcar antes de obtener una nueva receta de lentes.
 
 Lo Que Puede Hacer
-• Mantenga A1c por debajo de 7%.
-• Controle presión arterial y colesterol.
-• No fume.
-• Asista a todas las citas oftalmológicas.`,
+• Mantenga A1c por debajo de 7% (o según indique su médico).
+• Controle presión arterial y colesterol — también dañan los vasos retinianos.
+• No fume. Fumar empeora el daño vascular.
+• Asista a todas las citas oftalmológicas — aunque su visión parezca bien.
+• Reporte síntomas nuevos a su oftalmólogo.
+• Coordine con su médico primario y nefrólogo si aplica — la diabetes afecta ojos, riñones y nervios juntos.
+• Si tiene diabetes, hágase un examen con dilatación al menos una vez al año.
+
+Cuándo Llamar de Inmediato
+Contacte a su oftalmólogo o busque atención urgente si experimenta:
+• Aumento súbito de moscas volantes o manchas oscuras.
+• Destellos de luz.
+• Una sombra oscura o cortina cubriendo parte de su visión.
+• Pérdida severa y súbita de visión.
+• Dolor ocular severo con enrojecimiento (puede indicar glaucoma neovascular).
+Estos pueden ser signos de sangrado dentro del ojo, desprendimiento de retina o presión ocular peligrosamente alta — todos son tratables pero necesitan atención inmediata.`,
 
       vi: `BỆNH VÕNG MẠC ĐÁI THÁO ĐƯỜNG
 
+[IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
+
+Từ Vựng Cần Biết
+• Võng mạc — lớp mô mỏng lót phía sau mắt, cảm nhận ánh sáng và gửi hình ảnh đến não.
+• Hoàng điểm — vùng trung tâm nhỏ của võng mạc chịu trách nhiệm cho thị lực trung tâm sắc nét.
+• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
+• Ruồi bay (floaters) — các đốm tối nhỏ, chấm hoặc hình mạng nhện trôi nổi trong tầm nhìn. Đó là bóng do các cục nhỏ trong gel dịch kính tạo ra trên võng mạc.
+• Anti-VEGF — thuốc tiêm vào mắt ngăn chặn sự phát triển của mạch máu bất thường và giảm rò rỉ dịch.
+• OCT — Chụp cắt lớp quang học, một phương pháp quét không đau tạo hình ảnh chi tiết của võng mạc.
+
 Là Gì?
-Biến chứng đái tháo đường gây tổn thương mạch máu võng mạc. Nguyên nhân hàng đầu gây mù ở người trưởng thành trong độ tuổi lao động, nhưng kiểm soát được nếu phát hiện sớm.
+Biến chứng của đái tháo đường gây tổn thương các mạch máu nhỏ trong võng mạc. Theo thời gian, đường huyết cao khiến các mạch máu này sưng lên, rò rỉ dịch hoặc tắc nghẽn hoàn toàn. Khi dòng máu bị cắt, võng mạc có thể cố tạo ra mạch máu mới — nhưng các mạch mới này mỏng manh và dễ chảy máu. Đây là nguyên nhân hàng đầu gây mù ở người trưởng thành trong độ tuổi lao động, nhưng kiểm soát được nếu phát hiện và điều trị sớm.
+
+Các Giai Đoạn
+• Không tăng sinh nhẹ/trung bình: xuất huyết nhỏ và thành mạch yếu (vi phình mạch). Một số mạch có thể rò rỉ dịch hoặc máu.
+• Không tăng sinh nặng: nhiều mạch bị tắc, cắt nguồn máu đến các phần võng mạc. Võng mạc gửi tín hiệu để mọc mạch mới.
+• Tăng sinh (PDR): mạch máu bất thường mọc trên bề mặt võng mạc hoặc thần kinh thị. Các mạch mỏng manh này có thể chảy máu vào dịch kính (xuất huyết dịch kính) hoặc kéo võng mạc, gây bong võng mạc.
 
 Phù Hoàng Điểm Đái Tháo Đường (DME)
-Dịch rò vào hoàng điểm, gây mờ thị lực trung tâm. Nguyên nhân mất thị lực phổ biến nhất từ bệnh võng mạc đái tháo đường.
+Ở bất kỳ giai đoạn nào, mạch máu bị tổn thương có thể rò rỉ dịch vào hoàng điểm, gây sưng. Điều này làm mờ thị lực trung tâm — thị lực bạn dùng để đọc, lái xe và nhận diện khuôn mặt. DME là nguyên nhân mất thị lực phổ biến nhất từ bệnh võng mạc đái tháo đường. Trong trường hợp nặng, dòng máu đến hoàng điểm có thể bị cắt (thiếu máu hoàng điểm), gây mất thị lực vĩnh viễn.
+
+[IMAGE_PAIR:dr-oct-before|Trước Điều Trị (DME)|dr-oct-after|Sau Điều Trị (Hết Phù)|OCT cho thấy dịch giảm sau tiêm anti-VEGF.]
+
+Triệu Chứng
+• Thường KHÔNG có triệu chứng sớm — đó là lý do khám mắt có giãn đồng tử định kỳ rất quan trọng.
+• Thị lực mờ hoặc dao động (thay đổi từ ngày này sang ngày khác).
+• Ruồi bay — đốm tối hoặc sợi trôi nổi trong tầm nhìn.
+• Vùng tối hoặc trống trong trường nhìn.
+• Khó nhìn ban đêm hoặc trong ánh sáng yếu.
+• Màu sắc nhạt hoặc bạc màu.
+• Mất thị lực đột ngột (nếu chảy máu trong mắt).
+
+Chẩn Đoán Như Thế Nào?
+• Khám mắt có giãn đồng tử — nhỏ thuốc giãn đồng tử để bác sĩ nhìn rõ võng mạc.
+• OCT — quét không đau cho thấy dịch, sưng hoặc mỏng võng mạc chi tiết.
+• Chụp mạch huỳnh quang — tiêm thuốc nhuộm đặc biệt vào cánh tay, camera chụp thuốc nhuộm chạy qua mạch máu võng mạc, phát hiện rò rỉ hoặc mạch bất thường.
+• Chụp mạch OCT (OCTA) — phương pháp quét mới, không cần thuốc nhuộm, lập bản đồ dòng máu trong võng mạc.
 
 Điều Trị
-• DME: Tiêm anti-VEGF và/hoặc laser.
-• Tăng sinh: Laser PRP và/hoặc anti-VEGF. Cắt dịch kính nếu chảy máu hoặc bong.
-• Quan trọng nhất: kiểm soát đường huyết, huyết áp và cholesterol.
+Điều trị phụ thuộc vào giai đoạn và có DME hay không.
+• DME: Tiêm anti-VEGF (như Eylea, Avastin hoặc Vabysmo) vào mắt để giảm sưng và rò rỉ. Thường tiêm nhiều lần trong vài tháng. Có thể dùng laser tiêu điểm. Trong một số trường hợp, có thể dùng tiêm hoặc cấy steroid (như Ozurdex).
+• Tăng sinh: Laser PRP điều trị võng mạc ngoại vi để ngăn mạch bất thường phát triển. Có thể dùng thêm tiêm anti-VEGF. Nếu chảy máu nhiều hoặc bong võng mạc, có thể cần phẫu thuật cắt dịch kính.
+• Kiểm soát đường huyết là điều quan trọng nhất. Nếu đường huyết rất cao rồi giảm nhanh, thị lực có thể dao động tạm thời. Hãy đợi ít nhất một tuần sau khi ổn định đường huyết trước khi đo kính mới.
 
 Bạn Có Thể Làm Gì
-• Giữ A1c dưới 7%.
-• Kiểm soát huyết áp và cholesterol.
-• Không hút thuốc.
-• Giữ tất cả lịch khám mắt.`,
+• Giữ A1c dưới 7% (hoặc theo chỉ dẫn bác sĩ).
+• Kiểm soát huyết áp và cholesterol — cũng gây hại mạch máu võng mạc.
+• Không hút thuốc. Hút thuốc làm tổn thương mạch máu nặng hơn.
+• Giữ tất cả lịch khám mắt — dù thị lực có vẻ bình thường.
+• Báo triệu chứng mới cho bác sĩ mắt.
+• Phối hợp với bác sĩ đa khoa và bác sĩ thận nếu cần — đái tháo đường ảnh hưởng mắt, thận và thần kinh cùng lúc.
+• Nếu bạn bị đái tháo đường, hãy khám mắt có giãn đồng tử ít nhất mỗi năm một lần.
+
+Khi Nào Cần Gọi Ngay
+Liên hệ bác sĩ mắt ngay hoặc đi cấp cứu nếu bạn gặp:
+• Tăng đột ngột ruồi bay hoặc đốm tối.
+• Chớp sáng.
+• Bóng tối hoặc màn che một phần tầm nhìn.
+• Mất thị lực nặng và đột ngột.
+• Đau mắt dữ dội kèm đỏ mắt (có thể là glaucoma tân mạch).
+Đây có thể là dấu hiệu chảy máu trong mắt, bong võng mạc hoặc áp lực mắt cao nguy hiểm — tất cả đều điều trị được nhưng cần chú ý kịp thời.`,
 
       pt: `RETINOPATIA DIABÉTICA
 
+[IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
+
+Palavras Importantes
+• Retina — a fina camada de tecido no fundo do olho que detecta luz e envia imagens ao cérebro.
+• Mácula — a pequena área central da retina responsável pela visão central nítida e detalhada.
+• Vítreo — o gel transparente que preenche o interior do olho.
+• Moscas volantes (floaters) — pequenas manchas escuras, pontos ou formas de teia que flutuam na sua visão. São sombras projetadas na retina por pequenos grumos no gel vítreo.
+• Anti-VEGF — medicamento injetado no olho que bloqueia o crescimento de vasos sanguíneos anormais e reduz o vazamento de líquido.
+• OCT — Tomografia de Coerência Óptica, um exame indolor que produz imagens detalhadas da retina.
+
 O Que É?
-Complicação do diabetes que danifica vasos sanguíneos retinianos. Principal causa de cegueira em adultos em idade laboral, mas controlável com detecção e tratamento precoces.
+Uma complicação do diabetes que danifica os pequenos vasos sanguíneos da retina. Com o tempo, a glicemia alta faz com que esses vasos inchem, vazem líquido ou se fechem completamente. Quando o fluxo sanguíneo é interrompido, a retina pode tentar criar novos vasos — mas estes são frágeis e sangram facilmente. É a principal causa de cegueira em adultos em idade laboral, mas é controlável com detecção e tratamento precoces.
+
+Estágios
+• Não proliferativa leve/moderada: pequenas hemorragias e paredes vasculares enfraquecidas (microaneurismas). Alguns vasos podem vazar líquido ou sangue.
+• Não proliferativa grave: muitos vasos estão bloqueados, cortando o suprimento sanguíneo para partes da retina. A retina envia sinais para crescer novos vasos.
+• Proliferativa (RDP): vasos anormais crescem na superfície da retina ou nervo óptico. Esses vasos frágeis podem sangrar no vítreo (hemorragia vítrea) ou puxar a retina, causando descolamento de retina.
 
 Edema Macular Diabético (EMD)
-Fluido vaza para a mácula, causando visão central embaçada. Causa mais comum de perda visual por retinopatia diabética.
+Em qualquer estágio, vasos danificados podem vazar líquido na mácula, causando inchaço. Isso embaça a visão central — a visão usada para ler, dirigir e reconhecer rostos. O EMD é a causa mais comum de perda visual por retinopatia diabética. Em casos graves, o fluxo sanguíneo para a mácula pode ser interrompido (isquemia macular), causando perda permanente de visão.
+
+[IMAGE_PAIR:dr-oct-before|Antes do Tratamento (EMD)|dr-oct-after|Após Tratamento (Resolvido)|OCT mostrando resolução do líquido após terapia com injeções anti-VEGF.]
+
+Sintomas
+• Frequentemente SEM sintomas no início — por isso exames com dilatação regulares são essenciais, mesmo que sua visão pareça normal.
+• Visão embaçada ou flutuante (que muda de um dia para o outro).
+• Moscas volantes — pontos escuros ou fios flutuando na visão.
+• Áreas escuras ou em branco no campo visual.
+• Dificuldade para enxergar à noite ou com pouca luz.
+• Cores parecem desbotadas ou apagadas.
+• Perda súbita de visão (se houver sangramento dentro do olho).
+
+Como É Diagnosticada?
+• Exame com dilatação — colírios são aplicados para dilatar as pupilas e o médico poder ver a retina claramente.
+• OCT — exame indolor que mostra líquido, inchaço ou afinamento da retina em detalhes.
+• Angiografia com fluoresceína — um corante especial é injetado no braço e uma câmera fotografa o corante fluindo pelos vasos retinianos, revelando vazamentos ou vasos anormais.
+• Angiografia por OCT (OCTA) — exame mais novo, sem corante, que mapeia o fluxo sanguíneo na retina.
 
 Tratamento
-• EMD: Injeções anti-VEGF e/ou laser focal.
-• Proliferativa: Laser PRP e/ou anti-VEGF. Vitrectomia se sangramento ou descolamento.
-• Mais importante: bom controle de glicemia, pressão arterial e colesterol.
+O tratamento depende do estágio e se há EMD.
+• EMD: Injeções anti-VEGF (como Eylea, Avastin ou Vabysmo) são aplicadas no olho para reduzir inchaço e vazamento. São administradas como uma série de injeções ao longo de vários meses. Laser focal também pode ser usado. Em alguns casos, injeções ou implantes de esteroides (como Ozurdex) podem ser recomendados.
+• RDP: Laser PRP trata a retina periférica para interromper o crescimento de vasos anormais. Injeções anti-VEGF também podem ser usadas. Se houver sangramento significativo ou descolamento de retina, vitrectomia pode ser necessária.
+• O controle da glicemia é a coisa mais importante que você pode fazer. Se sua glicemia estiver muito alta e cair rapidamente, sua visão pode flutuar temporariamente. Aguarde pelo menos uma semana após estabilizar a glicemia antes de fazer nova receita de óculos.
 
 O Que Você Pode Fazer
-• Mantenha A1c abaixo de 7%.
-• Controle pressão arterial e colesterol.
-• Não fume.
-• Compareça a todas as consultas oftalmológicas.`
+• Mantenha A1c abaixo de 7% (ou conforme orientação médica).
+• Controle pressão arterial e colesterol — também danificam os vasos retinianos.
+• Não fume. Fumar piora o dano vascular.
+• Compareça a todas as consultas oftalmológicas — mesmo que sua visão pareça boa.
+• Reporte sintomas novos ao seu oftalmologista.
+• Coordene com seu médico clínico e nefrologista se aplicável — o diabetes afeta olhos, rins e nervos juntos.
+• Se você tem diabetes, faça exame com dilatação pelo menos uma vez ao ano.
+
+Quando Ligar Imediatamente
+Entre em contato com seu oftalmologista ou procure atendimento urgente se você tiver:
+• Aumento súbito de moscas volantes ou manchas escuras.
+• Flashes de luz.
+• Uma sombra escura ou cortina cobrindo parte da sua visão.
+• Perda severa e súbita de visão.
+• Dor ocular severa com vermelhidão (pode indicar glaucoma neovascular).
+Esses podem ser sinais de sangramento dentro do olho, descolamento de retina ou pressão ocular perigosamente alta — todos são tratáveis mas precisam de atenção imediata.`
     }
   },
   {
@@ -1989,81 +2433,217 @@ O Que Você Pode Fazer
     content: {
       en: `RETINAL VEIN OCCLUSION (RVO)
 
+[IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
+
+Eye Words to Know
+• Retina — the layer of cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
+• Macula — a small but important area in the center of the retina for sharp, central vision.
+• Vitreous — the clear, gel-like substance that fills the inside of your eye.
+• Floaters — tiny clumps of cells or other material inside the vitreous. They look like small specks, strings, or clouds moving in your field of vision.
+• Anti-VEGF — a medication injected into the eye that reduces swelling and abnormal blood vessel growth.
+• OCT — Optical Coherence Tomography, a painless scan that shows detailed images of your retina.
+
 What Is It?
-A retinal vein becomes blocked, causing blood and fluid to leak into the retina, resulting in swelling and vision loss.
+Your retina has veins and other blood vessels that carry blood. When a vein in your retina is blocked (occluded), it is called a retinal vein occlusion. This can be caused by a blood clot, or it can happen when a larger blood vessel presses down on the vein. With retinal vein occlusion, weaker blood vessels may end up carrying more blood. They might start to leak, causing the macula to swell or thicken. This is called macular edema, and it leads to blurry vision or vision loss. When blood flow is severely blocked, the retina may try to grow new blood vessels. These new vessels are fragile and abnormal. They can grow on the surface of the retina, where they may bleed into the vitreous gel (vitreous hemorrhage), causing sudden floaters or vision loss. They can also grow in the iris (colored part of your eye) or in other areas at the front of your eye, where they block the drainage of fluid and cause painful high pressure (neovascular glaucoma).
 
 Types
-• Branch RVO (BRVO): A smaller branch vein is blocked. Usually affects part of vision.
-• Central RVO (CRVO): The main vein is blocked. Can cause more significant vision loss.
+• Central RVO (CRVO): The main vein of the eye is blocked, causing bleeding and swelling throughout the retina. Can cause more significant vision loss.
+• Branch RVO (BRVO): A smaller branch vein attached to the main vein is blocked, causing bleeding in parts of the retina. Usually affects part of your vision.
 
 Risk Factors
-• High blood pressure (most common), diabetes, glaucoma, blood clotting disorders, age over 50.
+• High blood pressure (most common).
+• Diabetes.
+• Glaucoma (increased pressure inside the eye).
+• Diseases related to blood vessels (vascular disease) or obesity.
+• High cholesterol.
+• Blood clotting disorders.
+• Age over 50.
+• Smoking.
 
 Symptoms
-• Sudden painless blurring or loss of vision in one eye, floaters, dark areas.
+• Sudden painless blurry or decreased vision in one eye.
+• A lot of floaters in your field of vision.
+• Dark areas or missing spots in your vision.
+• Pain inside your eye if new blood vessels grow and cause high pressure (neovascular glaucoma).
+
+[PAGE_BREAK]
+
+How Is It Diagnosed?
+• Dilated eye exam — drops are placed to widen your pupils so the doctor can look through a special lens at the inside of your eye and see the bleeding.
+• Fluorescein angiography — a dye is injected into a vein in your arm and a camera photographs the retinal blood vessels, showing if any are blocked or leaking.
+• OCT (Optical Coherence Tomography) — a painless scan that measures the thickness of the retina and shows swelling of the macula.
+
+[IMAGE_PAIR:rvo-oct-before|Before Treatment|rvo-oct-after|After Treatment|OCT scan showing macular edema before and after anti-VEGF treatment]
 
 Treatment
-• Anti-VEGF injections to reduce macular edema and improve vision.
-• Steroid injections or implants in some cases.
-• Laser if abnormal new vessels develop.
-• Treat underlying conditions (blood pressure, diabetes).
+Your doctor will treat you based on what he or she sees in your eye. Treatment may include:
+• Anti-VEGF injections (most common treatment) — medication injected into the eye to reduce swelling of the macula. This helps slow vision loss and may improve vision. Treatment is typically given as a series of injections over several months.
+• Steroid injections or implants — in some cases, used to reduce inflammation and swelling.
+• Laser surgery — may be used to shrink blood vessels that are bleeding or to prevent abnormal new vessels from growing.
+• Managing your health — diabetes, glaucoma, high blood pressure, and other health problems can lead to retinal vein occlusion. Taking care of your health can keep you from getting this serious eye problem.
 
-Prognosis
-• With treatment, many patients improve significantly. BRVO generally has better outcomes than CRVO. Regular follow-up may be needed for months to years.`,
+It is very important to call your ophthalmologist right away if you have any symptoms. Without treatment, retinal vein occlusion may lead to permanent vision loss.
+
+When to Call Right Away
+Contact your eye doctor immediately or seek urgent care if you experience:
+• Sudden blurry vision or vision loss in one eye.
+• Sudden increase in floaters.
+• Pain in your eye with redness (may indicate neovascular glaucoma).
+• A dark shadow or curtain covering part of your vision.
+These may be signs of a serious complication that needs prompt treatment.`,
 
       es: `OCLUSIÓN VENOSA RETINIANA
 
+[IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
+
+Palabras Importantes
+• Retina — capa de células en la parte posterior del ojo que detecta luz y envía señales al cerebro.
+• Mácula — área pequeña pero importante en el centro de la retina para visión central nítida.
+• Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
+• Moscas volantes (floaters) — pequeños grumos dentro del vítreo que parecen manchas, hilos o nubes moviéndose en la visión.
+• Anti-VEGF — medicamento inyectado en el ojo que reduce hinchazón y crecimiento de vasos anormales.
+• OCT — Tomografía de Coherencia Óptica, escaneo indoloro que muestra imágenes detalladas de la retina.
+
 ¿Qué Es?
-Una vena retiniana se bloquea, causando filtración de sangre y líquido en la retina, resultando en hinchazón y pérdida de visión.
+Cuando una vena en la retina se bloquea (ocluye), la sangre y el líquido se filtran causando hinchazón y pérdida de visión. Puede ser causada por un coágulo o cuando un vaso más grande presiona la vena. Los vasos debilitados pueden filtrar, causando edema macular (hinchazón de la mácula). Cuando el flujo sanguíneo está severamente bloqueado, la retina puede intentar crecer vasos nuevos. Estos vasos son frágiles y anormales. Pueden crecer en la superficie de la retina, donde pueden sangrar hacia el gel vítreo (hemorragia vítrea), causando moscas volantes súbitas o pérdida de visión. También pueden crecer en el iris (la parte coloreada del ojo) o en otras áreas al frente del ojo, bloqueando el drenaje de líquido y causando presión alta dolorosa (glaucoma neovascular).
 
 Tipos
-• ORVR (rama): Una vena menor se bloquea. Usualmente afecta parte de la visión.
-• OVCR (central): La vena principal se bloquea. Puede causar pérdida más significativa.
+• OVCR (central): La vena principal del ojo se bloquea, causando sangrado e hinchazón en toda la retina.
+• ORVR (rama): Una vena menor se bloquea, causando sangrado en partes de la retina.
 
 Factores de Riesgo
-• Presión arterial alta (más común), diabetes, glaucoma, trastornos de coagulación, edad >50.
+• Presión arterial alta (más común), diabetes, glaucoma, enfermedades vasculares u obesidad, colesterol alto, trastornos de coagulación, edad >50, tabaquismo.
+
+Síntomas
+• Visión borrosa o disminuida súbitamente en un ojo.
+• Muchas moscas volantes.
+• Áreas oscuras o puntos faltantes en la visión.
+• Dolor ocular si crecen vasos nuevos y causan presión alta (glaucoma neovascular).
+
+[PAGE_BREAK]
+
+¿Cómo Se Diagnostica?
+• Examen con dilatación para ver el sangrado.
+• Angiografía con fluoresceína — tinte para ver vasos bloqueados o con fugas.
+• OCT — escaneo indoloro que mide grosor de la retina y muestra hinchazón.
+
+[IMAGE_PAIR:rvo-oct-before|Antes del Tratamiento|rvo-oct-after|Después del Tratamiento|Escaneo OCT mostrando edema macular antes y después del tratamiento con anti-VEGF]
 
 Tratamiento
-• Inyecciones anti-VEGF para reducir edema y mejorar visión.
-• Esteroides en algunos casos.
-• Láser si se desarrollan nuevos vasos.
-• Tratar condiciones subyacentes.`,
+• Inyecciones anti-VEGF (tratamiento más común) — medicamento inyectado en el ojo para reducir la hinchazón de la mácula y mejorar la visión.
+• Esteroides inyectados o implantados en algunos casos.
+• Láser para vasos que sangran o para prevenir crecimiento de vasos anormales.
+• Controlar su salud — presión arterial, diabetes, colesterol y glaucoma.
+
+Es muy importante llamar a su oftalmólogo inmediatamente si tiene síntomas. Sin tratamiento, la oclusión venosa retiniana puede causar pérdida permanente de visión.
+
+Cuándo Llamar de Inmediato
+• Visión borrosa o pérdida súbita en un ojo.
+• Aumento súbito de moscas volantes.
+• Dolor ocular con enrojecimiento (puede indicar glaucoma neovascular).
+• Sombra oscura o cortina cubriendo parte de su visión.`,
 
       vi: `TẮC TĨNH MẠCH VÕNG MẠC
 
+[IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
+
+Từ Vựng Cần Biết
+• Võng mạc — lớp tế bào ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
+• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc cho thị lực trung tâm sắc nét.
+• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
+• Ruồi bay (floaters) — các cục nhỏ trong dịch kính trông như đốm, sợi hoặc mây trôi trong tầm nhìn.
+• Anti-VEGF — thuốc tiêm vào mắt giảm sưng và ngăn mạch bất thường phát triển.
+• OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
+
 Là Gì?
-Tĩnh mạch võng mạc bị tắc, gây rò máu và dịch vào võng mạc, dẫn đến phù và mất thị lực.
+Khi tĩnh mạch ở võng mạc bị tắc, máu và dịch rò rỉ gây sưng và mất thị lực. Có thể do cục máu đông hoặc mạch máu lớn hơn đè lên tĩnh mạch. Các mạch yếu có thể rò rỉ gây phù hoàng điểm (sưng hoàng điểm). Khi lưu lượng máu bị tắc nghẽn nghiêm trọng, võng mạc có thể cố gắng mọc mạch máu mới. Những mạch mới này yếu và bất thường. Chúng có thể mọc trên bề mặt võng mạc, nơi chúng có thể chảy máu vào gel dịch kính (xuất huyết dịch kính), gây ra hiện tượng đốm bay đột ngột hoặc mất thị lực. Chúng cũng có thể mọc ở mống mắt (phần có màu của mắt) hoặc các vùng phía trước mắt, chặn thoát dịch và gây áp lực cao đau đớn (glaucoma tân mạch).
 
 Loại
-• Tắc nhánh (BRVO): Tĩnh mạch nhỏ bị tắc. Thường ảnh hưởng một phần thị lực.
-• Tắc trung tâm (CRVO): Tĩnh mạch chính bị tắc. Có thể gây mất thị lực đáng kể hơn.
+• Tắc trung tâm (CRVO): Tĩnh mạch chính bị tắc, gây xuất huyết và sưng toàn bộ võng mạc.
+• Tắc nhánh (BRVO): Tĩnh mạch nhánh bị tắc, gây xuất huyết ở một phần võng mạc.
 
 Yếu Tố Nguy Cơ
-• Tăng huyết áp (phổ biến nhất), đái tháo đường, glaucoma, rối loạn đông máu, trên 50 tuổi.
+• Tăng huyết áp (phổ biến nhất), đái tháo đường, glaucoma, bệnh mạch máu hoặc béo phì, cholesterol cao, rối loạn đông máu, trên 50 tuổi, hút thuốc.
+
+Triệu Chứng
+• Mờ hoặc giảm thị lực đột ngột ở một mắt.
+• Nhiều ruồi bay.
+• Vùng tối hoặc điểm thiếu trong tầm nhìn.
+• Đau mắt nếu mạch mới mọc gây áp lực cao (glaucoma tân mạch).
+
+[PAGE_BREAK]
+
+Chẩn Đoán
+• Khám mắt có giãn đồng tử để thấy xuất huyết.
+• Chụp mạch huỳnh quang — thuốc nhuộm để thấy mạch tắc hoặc rò rỉ.
+• OCT — quét không đau đo độ dày võng mạc và cho thấy phù.
+
+[IMAGE_PAIR:rvo-oct-before|Trước Điều Trị|rvo-oct-after|Sau Điều Trị|Ảnh OCT cho thấy phù hoàng điểm trước và sau điều trị anti-VEGF]
 
 Điều Trị
-• Tiêm anti-VEGF để giảm phù và cải thiện thị lực.
-• Steroid trong một số trường hợp.
-• Laser nếu mọc mạch bất thường.
-• Điều trị bệnh nền.`,
+• Tiêm anti-VEGF (phương pháp điều trị phổ biến nhất) — thuốc tiêm vào mắt giảm phù hoàng điểm và cải thiện thị lực, thường tiêm nhiều lần trong vài tháng.
+• Tiêm hoặc cấy steroid trong một số trường hợp.
+• Laser để thu nhỏ mạch chảy máu hoặc ngăn mạch bất thường phát triển.
+• Kiểm soát sức khỏe — huyết áp, đái tháo đường, cholesterol, glaucoma.
+
+Rất quan trọng gọi bác sĩ ngay nếu có triệu chứng. Không điều trị, tắc tĩnh mạch võng mạc có thể gây mất thị lực vĩnh viễn.
+
+Khi Nào Cần Gọi Ngay
+• Mờ hoặc mất thị lực đột ngột ở một mắt.
+• Tăng đột ngột ruồi bay.
+• Đau mắt kèm đỏ (có thể là glaucoma tân mạch).
+• Bóng tối hoặc màn che một phần tầm nhìn.`,
 
       pt: `OCLUSÃO VENOSA RETINIANA
 
+[IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
+
+Palavras Importantes
+• Retina — camada de células no fundo do olho que detecta luz e envia sinais ao cérebro.
+• Mácula — área pequena mas importante no centro da retina para visão central nítida.
+• Vítreo — substância gelatinosa transparente que preenche o interior do olho.
+• Moscas volantes (floaters) — pequenos grumos no vítreo que parecem manchas, fios ou nuvens na visão.
+• Anti-VEGF — medicamento injetado no olho que reduz inchaço e crescimento de vasos anormais.
+• OCT — Tomografia de Coerência Óptica, exame indolor que mostra imagens detalhadas da retina.
+
 O Que É?
-Uma veia retiniana fica bloqueada, causando vazamento de sangue e fluido na retina, resultando em inchaço e perda de visão.
+Quando uma veia na retina fica bloqueada (ocluída), sangue e fluido vazam causando inchaço e perda de visão. Pode ser causada por coágulo ou quando um vaso maior pressiona a veia. Os vasos enfraquecidos podem vazar, causando edema macular (inchaço da mácula). Quando o fluxo sanguíneo está severamente bloqueado, a retina pode tentar crescer vasos novos. Esses vasos são frágeis e anormais. Podem crescer na superfície da retina, onde podem sangrar para dentro do gel vítreo (hemorragia vítrea), causando moscas volantes súbitas ou perda de visão. Também podem crescer na íris (a parte colorida do olho) ou em outras áreas na frente do olho, bloqueando a drenagem de fluido e causando pressão alta dolorosa (glaucoma neovascular).
 
 Tipos
-• ORVR (ramo): Veia menor bloqueada. Geralmente afeta parte da visão.
-• OVCR (central): Veia principal bloqueada. Pode causar perda mais significativa.
+• OVCR (central): A veia principal do olho fica bloqueada, causando sangramento e inchaço em toda a retina.
+• ORVR (ramo): Uma veia menor fica bloqueada, causando sangramento em partes da retina.
 
 Fatores de Risco
-• Pressão alta (mais comum), diabetes, glaucoma, distúrbios de coagulação, idade >50.
+• Pressão alta (mais comum), diabetes, glaucoma, doenças vasculares ou obesidade, colesterol alto, distúrbios de coagulação, idade >50, tabagismo.
+
+Sintomas
+• Visão embaçada ou diminuída subitamente em um olho.
+• Muitas moscas volantes.
+• Áreas escuras ou pontos faltando na visão.
+• Dor no olho se vasos novos crescerem e causarem pressão alta (glaucoma neovascular).
+
+[PAGE_BREAK]
+
+Como É Diagnosticada?
+• Exame com dilatação para ver o sangramento.
+• Angiografia com fluoresceína — corante para ver vasos bloqueados ou com vazamento.
+• OCT — exame indolor que mede espessura da retina e mostra inchaço.
+
+[IMAGE_PAIR:rvo-oct-before|Antes do Tratamento|rvo-oct-after|Após o Tratamento|Exame OCT mostrando edema macular antes e após tratamento com anti-VEGF]
 
 Tratamento
-• Injeções anti-VEGF para reduzir edema e melhorar visão.
-• Esteroides em alguns casos.
-• Laser se novos vasos se desenvolverem.
-• Tratar condições subjacentes.`
+• Injeções anti-VEGF (tratamento mais comum) — medicamento injetado no olho para reduzir inchaço da mácula e melhorar visão, geralmente em série por vários meses.
+• Esteroides injetados ou implantados em alguns casos.
+• Laser para vasos que sangram ou para prevenir crescimento de vasos anormais.
+• Cuidar da saúde — pressão arterial, diabetes, colesterol, glaucoma.
+
+É muito importante ligar para seu oftalmologista imediatamente se tiver sintomas. Sem tratamento, a oclusão venosa retiniana pode causar perda permanente de visão.
+
+Quando Ligar Imediatamente
+• Visão embaçada ou perda súbita em um olho.
+• Aumento súbito de moscas volantes.
+• Dor no olho com vermelhidão (pode indicar glaucoma neovascular).
+• Sombra escura ou cortina cobrindo parte da visão.`
     }
   },
   {
@@ -2072,32 +2652,46 @@ Tratamento
     title: { en: "Posterior Vitreous Detachment (PVD)", es: "Desprendimiento Vítreo Posterior (DVP)", vi: "Bong Dịch Kính Sau (PVD)", pt: "Descolamento Vítreo Posterior (DVP)" },
     tags: ["PVD", "floaters", "flashes", "vitreous"],
     content: {
-      en: `POSTERIOR VITREOUS DETACHMENT (PVD)
+      en: `POSTERIOR VITREOUS DETACHMENT (PVD) — FLASHES & FLOATERS
+
+Eye Words to Know
+• Retina — the layer of nerve cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
+• Vitreous — the clear, gel-like substance that fills the inside of your eye. It helps the eye maintain its shape and also transmits light to the retina.
+• Floaters — tiny clumps of gel or cells inside the vitreous. What you see are the shadows these clumps cast on your retina. They look like small specks, dots, circles, lines, or cobwebs in your field of vision.
+
+What Are Floaters?
+Floaters look like small specks, dots, circles, lines, or cobwebs in your field of vision. While they seem to be in front of your eye, they are actually floating inside the vitreous. You usually notice floaters most when looking at something plain, like a blank wall or a blue sky.
+
+As we age, our vitreous starts to thicken or shrink. Sometimes clumps or strands form in the vitreous. If the vitreous pulls away from the back of the eye, it is called posterior vitreous detachment. Floaters usually happen with posterior vitreous detachment. They are not serious, and they tend to fade or go away over time.
+
+You are more likely to get floaters if you are nearsighted (you need glasses to see far away), have had surgery for cataracts, or have had inflammation (swelling) inside the eye.
+
+What Are Flashes?
+Flashes can look like flashing lights or lightning streaks in your field of vision. Some people compare them to seeing "stars" after being hit on the head. You might see flashes on and off for weeks or even months. Flashes happen when the vitreous rubs or pulls on your retina. As people age, it is common to see flashes occasionally.
+
+Flashes vs. Migraines
+Sometimes people have light flashes that look like jagged lines or heat waves. These can appear in one or both eyes and may last up to 20 minutes. This type of flash may be caused by a migraine — a spasm of blood vessels in the brain. When you get a headache after these flashes, it is called a "migraine headache." But sometimes you only see the light flash without having a headache. This is called an "ophthalmic migraine" or "migraine without headache." These are generally not dangerous.
 
 What Is a PVD?
 The vitreous is a clear gel that fills the inside of the eye. As we age, this gel naturally shrinks and eventually separates from the retina — this is called a posterior vitreous detachment (PVD). It is extremely common (most people over age 60 will develop one) and is usually harmless.
 
-Symptoms
-• New floaters — spots, cobwebs, rings, or strings in your vision.
-• Flashes of light — brief sparkles or lightning streaks, especially in peripheral vision.
-• These symptoms are usually most noticeable in the first few weeks and gradually improve.
-
 Is It Dangerous?
 • In most cases, a PVD is completely harmless and requires no treatment.
-• HOWEVER, in about 10–15% of cases, the vitreous can pull hard enough on the retina to cause a retinal tear. A tear, if not treated, can lead to a retinal detachment.
+• HOWEVER, in about 10–15% of cases, the vitreous can pull hard enough on the retina to cause a retinal tear. A tear, if not treated, can lead to a retinal detachment — a serious condition where the retina lifts away from the back of the eye.
 • This is why NEW flashes and floaters always need a prompt dilated eye exam.
 
 When to Call Immediately
+Contact your eye doctor right away if you notice:
 • A sudden shower of many new floaters.
-• Persistent flashes of light.
-• A shadow, curtain, or dark area in your peripheral or central vision.
+• Persistent or new flashes of light.
+• A shadow appears in your peripheral (side) vision.
+• A gray curtain covers part of your vision.
 • Any sudden loss of vision.
-
-These could indicate a retinal tear or detachment and need same-day evaluation.
+These could be symptoms of a retinal tear or detachment and need same-day evaluation.
 
 What to Expect
 • If your exam shows a PVD WITHOUT a retinal tear: No treatment is needed. The floaters and flashes usually become less noticeable over weeks to months as your brain adapts.
-• If a retinal tear IS found: It can usually be treated in the office with laser — a quick, effective procedure that prevents detachment.
+• If a retinal tear IS found: It can usually be treated in the office with laser (photocoagulation) or freezing treatment (cryopexy) — both are quick, effective procedures that seal the retina and prevent detachment.
 • Your doctor may schedule a follow-up exam in 4–6 weeks to ensure no delayed tear has developed.
 
 Living with Floaters
@@ -2106,83 +2700,346 @@ Living with Floaters
 • No vitamins or drops can make floaters go away.
 • In rare cases of severely debilitating floaters, surgical options exist (discuss with your doctor).`,
 
-      es: `DESPRENDIMIENTO VÍTREO POSTERIOR (DVP)
+      es: `DESPRENDIMIENTO VÍTREO POSTERIOR (DVP) — DESTELLOS Y MOSCAS VOLANTES
+
+Palabras Importantes
+• Retina — capa de células nerviosas en la parte posterior del ojo que detecta luz y envía señales al cerebro.
+• Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
+• Moscas volantes (floaters) — pequeños grumos de gel o células dentro del vítreo. Lo que ve son sombras proyectadas en la retina.
+
+¿Qué Son las Moscas Volantes?
+Parecen pequeñas manchas, puntos, líneas o telarañas en su campo visual. Están flotando dentro del vítreo. Se notan más al mirar algo uniforme como una pared blanca o el cielo azul. Con la edad, el vítreo se espesa o encoge, formando grumos. Si se separa de la retina, es un DVP. Son comunes y tienden a desvanecerse. Es más probable tenerlas si es miope, tuvo cirugía de catarata, o tuvo inflamación ocular.
+
+¿Qué Son los Destellos?
+Parecen luces parpadeantes o relámpagos. Ocurren cuando el vítreo frota o tira de la retina. Pueden durar semanas o meses.
+
+Destellos vs. Migrañas
+A veces las personas ven líneas dentadas u ondas de calor en uno o ambos ojos por hasta 20 minutos. Esto puede ser una migraña — espasmo de vasos del cerebro. Si hay dolor de cabeza después, es "migraña." Sin dolor de cabeza se llama "migraña oftálmica." Generalmente no son peligrosas.
 
 ¿Qué Es un DVP?
-El vítreo es un gel transparente que llena el interior del ojo. Con la edad, este gel se encoge naturalmente y eventualmente se separa de la retina. Es extremadamente común (la mayoría de personas mayores de 60 años lo desarrollarán) y usualmente es inofensivo.
-
-Síntomas
-• Nuevas moscas volantes — puntos, telarañas, anillos en su visión.
-• Destellos de luz — chispas breves, especialmente en visión periférica.
-• Estos síntomas son más notorios las primeras semanas y mejoran gradualmente.
+El vítreo se encoge y se separa de la retina. Es extremadamente común (mayoría después de los 60) y usualmente inofensivo.
 
 ¿Es Peligroso?
-• En la mayoría de casos, es completamente inofensivo.
-• PERO en ~10–15% de casos, el vítreo puede tirar lo suficiente para causar un desgarro retiniano. Un desgarro sin tratar puede llevar a desprendimiento.
-• Por eso, nuevos destellos y moscas volantes siempre necesitan examen inmediato.
+• Generalmente, completamente inofensivo.
+• PERO en ~10–15% de casos puede causar un desgarro retiniano, que sin tratar puede llevar a desprendimiento de retina.
+• Por eso, destellos y moscas volantes NUEVOS siempre necesitan examen inmediato.
 
-Cuándo Llamar Inmediatamente
+Cuándo Llamar de Inmediato
 • Aparición súbita de muchas moscas volantes nuevas.
-• Destellos persistentes.
-• Una sombra, cortina o área oscura en su visión.
+• Destellos de luz nuevos o persistentes.
+• Sombra en su visión periférica (lateral).
+• Cortina gris cubriendo parte de su visión.
 • Cualquier pérdida súbita de visión.
+Estos podrían indicar desgarro o desprendimiento de retina — necesitan evaluación el mismo día.
 
 Qué Esperar
 • Sin desgarro: No necesita tratamiento. Los síntomas mejoran con el tiempo.
-• Con desgarro: Se puede tratar con láser en el consultorio.
-• Su doctor puede programar seguimiento en 4–6 semanas.`,
+• Con desgarro: Se puede tratar con láser (fotocoagulación) o congelamiento (criopexia) en el consultorio.
+• Su doctor puede programar seguimiento en 4–6 semanas.
 
-      vi: `BONG DỊCH KÍNH SAU (PVD)
+Vivir con Moscas Volantes
+• Son molestas pero inofensivas. La mayoría las nota menos con el tiempo.
+• Son más visibles contra fondos claros.
+• No hay vitaminas ni gotas que las eliminen.
+• En casos raros muy debilitantes, existen opciones quirúrgicas.`,
+
+      vi: `BONG DỊCH KÍNH SAU (PVD) — CHỚP SÁNG VÀ RUỒI BAY
+
+Từ Vựng Cần Biết
+• Võng mạc — lớp tế bào thần kinh ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
+• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
+• Ruồi bay (floaters) — các cục gel hoặc tế bào nhỏ trong dịch kính. Bạn nhìn thấy bóng của chúng trên võng mạc.
+
+Ruồi Bay Là Gì?
+Trông như đốm nhỏ, chấm, đường hoặc mạng nhện trong tầm nhìn. Chúng thực sự trôi nổi bên trong dịch kính. Dễ thấy nhất khi nhìn nền trơn như tường trắng hoặc bầu trời. Với tuổi tác, dịch kính đặc lại hoặc co lại, tạo cục. Khi tách khỏi võng mạc gọi là PVD. Thường vô hại và giảm dần. Dễ gặp hơn nếu cận thị, đã phẫu thuật đục thủy tinh thể, hoặc bị viêm trong mắt.
+
+Chớp Sáng Là Gì?
+Trông như ánh sáng nhấp nháy hoặc tia chớp. Xảy ra khi dịch kính cọ hoặc kéo võng mạc. Có thể kéo dài vài tuần đến tháng.
+
+Chớp Sáng và Đau Nửa Đầu
+Đôi khi người ta thấy đường răng cưa hoặc sóng nhiệt ở một hoặc hai mắt, kéo dài đến 20 phút. Đây có thể là đau nửa đầu — co thắt mạch máu não. Có đau đầu sau gọi là "đau nửa đầu." Không đau đầu gọi là "đau nửa đầu nhãn khoa." Thường không nguy hiểm.
 
 PVD Là Gì?
-Dịch kính là gel trong suốt bên trong mắt. Khi già đi, gel này co lại tự nhiên và cuối cùng tách khỏi võng mạc. Rất phổ biến (hầu hết người trên 60 tuổi sẽ gặp) và thường vô hại.
-
-Triệu Chứng
-• Đốm đen mới — chấm, mạng nhện, vòng trong tầm nhìn.
-• Ánh sáng lóe — tia sáng ngắn, đặc biệt ở ngoại vi.
-• Triệu chứng rõ nhất vài tuần đầu và cải thiện dần.
+Dịch kính co lại tự nhiên và tách khỏi võng mạc. Rất phổ biến (hầu hết người trên 60 tuổi) và thường vô hại.
 
 Có Nguy Hiểm Không?
 • Hầu hết trường hợp hoàn toàn vô hại.
-• NHƯNG khoảng 10–15% trường hợp, dịch kính có thể kéo gây rách võng mạc. Rách không điều trị có thể gây bong.
-• Đó là lý do ánh sáng lóe và đốm đen MỚI luôn cần khám giãn đồng tử ngay.
+• NHƯNG khoảng 10–15% trường hợp có thể gây rách võng mạc, dẫn đến bong nếu không điều trị.
+• Chớp sáng và ruồi bay MỚI luôn cần khám giãn đồng tử ngay.
 
-Khi Nào Gọi Ngay
+Khi Nào Cần Gọi Ngay
 • Đốm đen mới xuất hiện đột ngột nhiều.
-• Ánh sáng lóe liên tục.
-• Bóng, màn hoặc vùng tối trong tầm nhìn.
+• Chớp sáng mới hoặc liên tục.
+• Bóng xuất hiện ở tầm nhìn ngoại vi.
+• Màn xám che một phần tầm nhìn.
 • Mất thị lực đột ngột.
+Đây có thể là triệu chứng rách hoặc bong võng mạc — cần khám cùng ngày.
 
 Điều Cần Biết
 • Không có rách: Không cần điều trị. Triệu chứng giảm theo thời gian.
-• Có rách: Thường điều trị bằng laser tại phòng khám.
-• Bác sĩ có thể hẹn tái khám sau 4–6 tuần.`,
+• Có rách: Điều trị bằng laser (quang đông) hoặc đông lạnh (cryopexy) tại phòng khám.
+• Bác sĩ có thể hẹn tái khám sau 4–6 tuần.
 
-      pt: `DESCOLAMENTO VÍTREO POSTERIOR (DVP)
+Sống Với Ruồi Bay
+• Phiền nhưng vô hại. Hầu hết người ta ít chú ý theo thời gian.
+• Dễ thấy hơn trên nền sáng.
+• Không có vitamin hay thuốc nhỏ nào loại bỏ được.
+• Trường hợp hiếm rất nặng, có thể phẫu thuật.`,
+
+      pt: `DESCOLAMENTO VÍTREO POSTERIOR (DVP) — FLASHES E MOSCAS VOLANTES
+
+Palavras Importantes
+• Retina — camada de células nervosas no fundo do olho que detecta luz e envia sinais ao cérebro.
+• Vítreo — substância gelatinosa transparente que preenche o interior do olho.
+• Moscas volantes (floaters) — pequenos grumos de gel ou células no vítreo. O que você vê são sombras projetadas na retina.
+
+O Que São Moscas Volantes?
+Parecem pequenas manchas, pontos, linhas ou teias na visão. Estão flutuando dentro do vítreo. São mais perceptíveis ao olhar para algo uniforme como parede branca ou céu azul. Com a idade, o vítreo engrossa ou encolhe, formando grumos. Se se separa da retina, é DVP. São comuns e tendem a diminuir. Mais prováveis se é míope, fez cirurgia de catarata, ou teve inflamação ocular.
+
+O Que São Flashes?
+Parecem luzes piscando ou relâmpagos na visão. Acontecem quando o vítreo esfrega ou puxa a retina. Podem durar semanas ou meses.
+
+Flashes vs. Enxaquecas
+Às vezes as pessoas veem linhas dentadas ou ondas de calor em um ou ambos os olhos por até 20 minutos. Pode ser enxaqueca — espasmo de vasos cerebrais. Com dor de cabeça depois = "enxaqueca." Sem dor de cabeça = "enxaqueca oftálmica." Geralmente não são perigosas.
 
 O Que É DVP?
-O vítreo é um gel transparente dentro do olho. Com a idade, encolhe naturalmente e eventualmente se separa da retina. Extremamente comum (maioria das pessoas acima de 60 anos terá) e geralmente inofensivo.
-
-Sintomas
-• Moscas volantes novas — pontos, teias, anéis na visão.
-• Flashes de luz — faíscas breves, especialmente na visão periférica.
-• Sintomas mais perceptíveis nas primeiras semanas e melhoram gradualmente.
+O vítreo encolhe naturalmente e se separa da retina. Extremamente comum (maioria após 60 anos) e geralmente inofensivo.
 
 É Perigoso?
 • Na maioria dos casos, completamente inofensivo.
-• PORÉM em ~10–15% dos casos, o vítreo pode puxar o suficiente para causar rasgo retiniano. Rasgo não tratado pode levar a descolamento.
-• Por isso, flashes e moscas volantes NOVOS sempre precisam exame imediato.
+• PORÉM em ~10–15% dos casos pode causar rasgo retiniano, que sem tratamento pode levar a descolamento de retina.
+• Flashes e moscas volantes NOVOS sempre precisam exame imediato.
 
 Quando Ligar Imediatamente
 • Surgimento súbito de muitas moscas volantes novas.
-• Flashes persistentes.
-• Sombra, cortina ou área escura na visão.
+• Flashes de luz novos ou persistentes.
+• Sombra na visão periférica (lateral).
+• Cortina cinza cobrindo parte da visão.
 • Qualquer perda súbita de visão.
+Podem ser sintomas de rasgo ou descolamento de retina — precisam avaliação no mesmo dia.
 
 O Que Esperar
 • Sem rasgo: Não precisa tratamento. Sintomas melhoram com o tempo.
-• Com rasgo: Geralmente tratado com laser no consultório.
-• Médico pode agendar retorno em 4–6 semanas.`
+• Com rasgo: Tratado com laser (fotocoagulação) ou congelamento (criopexia) no consultório.
+• Médico pode agendar retorno em 4–6 semanas.
+
+Convivendo com Moscas Volantes
+• São incômodas mas inofensivas. A maioria percebe menos com o tempo.
+• Mais visíveis contra fundos claros.
+• Não há vitaminas ou colírios que as eliminem.
+• Em casos raros muito debilitantes, existem opções cirúrgicas.`
+    }
+  },
+  {
+    id: "cond-retinal-tear",
+    category: "condition",
+    title: { en: "Retinal Tear", es: "Desgarro Retiniano", vi: "Rách Võng Mạc", pt: "Rasgo Retiniano" },
+    tags: ["retinal tear", "torn retina", "laser", "cryopexy"],
+    content: {
+      en: `RETINAL TEAR
+
+[IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
+
+Eye Words to Know
+• Retina — the layer of cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
+• Vitreous — the clear, jelly-like substance that fills the middle of the eye.
+• Floaters — tiny clumps of cells or other material inside the vitreous. They look like small specks, strings, or clouds moving in your field of vision.
+
+What Is a Retinal Tear?
+A torn retina is a serious problem that makes your vision blurry. It is when the retina has a tear or hole, like a rip in a piece of cloth. A torn retina often leads to a more serious condition called a retinal detachment — this is where the retina is lifted away from the back of the eye. A torn retina must be treated right away to avoid further vision loss.
+
+How Does a Retinal Tear Happen?
+As we get older, the vitreous in our eyes starts to shrink and get thinner. Usually the vitreous moves around on the retina without causing problems. But sometimes the vitreous may stick to the retina and pull hard enough to tear it. When that happens, fluid can pass through the tear and lift (detach) the retina. When the retina tears, you may suddenly see flashes of light or floaters. Sometimes blood can leak into the vitreous, causing a large number of floaters. This is a serious problem that must be treated right away, or you could lose vision.
+
+Who Is at Risk?
+You are more likely to have a retinal tear if you:
+• Are nearsighted (need glasses to see far away).
+• Have had previous cataract, glaucoma, or other eye surgery.
+• Take glaucoma medications that make the pupil small (like pilocarpine).
+• Have had a serious eye injury.
+• Have a retinal tear or detachment in the other eye.
+• Have family members with retinal detachment.
+• Have weak areas in the retina (which your ophthalmologist may see during an exam).
+
+Early Signs of a Retinal Tear
+A torn retina has to be checked by an ophthalmologist right away. Otherwise, your retina could detach and you could lose vision. Call your eye doctor immediately if you have any of these signs:
+• You see flashing lights — some people say this is like seeing stars after being hit in the eye.
+• You notice many new floaters.
+• A shadow appears in your peripheral (side) vision.
+• A gray curtain covers part of your field of vision.
+
+How Is It Diagnosed?
+Your ophthalmologist will put drops in your eye to dilate (widen) the pupil, then will look through a special lens to see any changes inside the eye. This is the best way to see if you have a retinal tear or early retinal detachment.
+
+How Is It Treated?
+There are two ways your eye surgeon may fix your retinal tear:
+• Photocoagulation (laser): A laser is used to seal the retina to the wall of the eye. The goal is to keep fluid from going through the tear and detaching the retina. The treatment usually takes less than 15 minutes and may be done right in your doctor's office. The laser makes tiny burns that form scars to seal the retina to the eye wall.
+• Cryopexy (freezing): Extreme cold is used to seal the retina to the wall of the eye. The goal is the same — to keep fluid from going through the tear. This treatment usually takes less than 30 minutes. The surgeon uses a special probe that delivers intense cold energy to the retina, freezing the retina around the tear and creating scar tissue that seals the retina.
+
+Treatment Risks
+Like any surgery, retinal tear treatment has some risks, including eye infection, bleeding in your eye, glaucoma (increased pressure inside the eye), cataract (the lens becoming cloudy), the need for a second surgery, and the possibility that the retinal tear does not close.
+
+What to Expect After Treatment
+• You might have some pain for a few hours after surgery. Over-the-counter pain medication can help.
+• You will need to rest and be less active for a few weeks. Your doctor will tell you when you can exercise, drive, or do other things again.
+• You may need to wear an eye patch after surgery.
+• You might see floaters and flashing lights for a few weeks after treatment.
+
+When to Call Right Away
+Contact your eye doctor immediately if you experience:
+• Sudden flashing lights.
+• A sudden shower of many new floaters.
+• A shadow in your peripheral (side) vision.
+• A gray curtain covering part of your vision.
+• Sudden vision loss.
+These are signs of a retinal tear or detachment — a serious problem that needs same-day treatment.`,
+
+      es: `DESGARRO RETINIANO
+
+[IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
+
+Palabras Importantes
+• Retina — capa de células en la parte posterior del ojo que detecta luz y envía señales al cerebro.
+• Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
+• Moscas volantes (floaters) — pequeños grumos dentro del vítreo que parecen manchas o hilos en la visión.
+
+¿Qué Es?
+Un desgarro retiniano es un problema serio — un agujero o ruptura en la retina, como un rasgón en una tela. Puede llevar a desprendimiento de retina, donde la retina se separa de la parte posterior del ojo. Debe tratarse de inmediato para evitar pérdida de visión.
+
+¿Cómo Ocurre?
+Con la edad, el vítreo se encoge y adelgaza. A veces se adhiere a la retina y tira lo suficiente para rasgarla. El líquido puede pasar por el desgarro y levantar (desprender) la retina. Cuando la retina se desgarra, puede ver destellos de luz o moscas volantes súbitamente.
+
+¿Quién Está en Riesgo?
+• Miopes, cirugía previa de catarata/glaucoma/otra, medicamentos de glaucoma (pilocarpina), lesión ocular seria, desgarro en el otro ojo, historia familiar, áreas débiles en la retina.
+
+Señales de Alerta
+Llame a su oftalmólogo inmediatamente si nota:
+• Luces destellantes.
+• Muchas moscas volantes nuevas.
+• Sombra en la visión periférica (lateral).
+• Cortina gris cubriendo parte de la visión.
+
+¿Cómo Se Diagnostica?
+Examen con dilatación — gotas para agrandar la pupila y ver cambios dentro del ojo con lente especial.
+
+Tratamiento
+• Fotocoagulación (láser): Sella la retina a la pared del ojo con quemaduras diminutas que forman cicatrices. Toma menos de 15 minutos en el consultorio.
+• Criopexia (congelamiento): Frío intenso sella la retina a la pared del ojo. Toma menos de 30 minutos.
+
+Riesgos
+Infección, sangrado, glaucoma, catarata, necesidad de segunda cirugía, posibilidad de que el desgarro no cierre.
+
+Después del Tratamiento
+• Puede tener dolor por unas horas — medicamentos de venta libre ayudan.
+• Descanso y menos actividad por unas semanas.
+• Puede necesitar parche ocular.
+• Puede ver moscas volantes y destellos por unas semanas.
+
+Cuándo Llamar de Inmediato
+• Destellos de luz súbitos.
+• Aparición súbita de muchas moscas volantes nuevas.
+• Sombra en la visión periférica.
+• Cortina gris en la visión.
+• Pérdida súbita de visión.
+Son signos de desgarro o desprendimiento — necesitan tratamiento el mismo día.`,
+
+      vi: `RÁCH VÕNG MẠC
+
+[IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
+
+Từ Vựng Cần Biết
+• Võng mạc — lớp tế bào ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
+• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
+• Ruồi bay (floaters) — các cục nhỏ trong dịch kính trông như đốm, sợi hoặc mây trong tầm nhìn.
+
+Là Gì?
+Rách võng mạc là vấn đề nghiêm trọng — lỗ hoặc vết rách trên võng mạc, như rách vải. Có thể dẫn đến bong võng mạc, nơi võng mạc tách khỏi thành sau mắt. Cần điều trị ngay để tránh mất thị lực.
+
+Xảy Ra Như Thế Nào?
+Khi già đi, dịch kính co lại và mỏng đi. Đôi khi dính vào võng mạc và kéo đủ mạnh để rách. Dịch có thể chui qua vết rách và nâng (bong) võng mạc. Khi rách, bạn có thể thấy chớp sáng hoặc ruồi bay đột ngột.
+
+Ai Có Nguy Cơ?
+• Cận thị, phẫu thuật đục thủy tinh thể/glaucoma trước đó, thuốc glaucoma (pilocarpine), chấn thương mắt nặng, rách ở mắt kia, tiền sử gia đình, vùng yếu trên võng mạc.
+
+Dấu Hiệu Sớm
+Gọi bác sĩ mắt ngay nếu:
+• Thấy ánh sáng nhấp nháy.
+• Nhiều ruồi bay mới.
+• Bóng xuất hiện ở tầm nhìn ngoại vi.
+• Màn xám che một phần tầm nhìn.
+
+Chẩn Đoán
+Khám mắt có giãn đồng tử — nhỏ thuốc giãn đồng tử và dùng kính đặc biệt để thấy thay đổi bên trong mắt.
+
+Điều Trị
+• Quang đông (laser): Laser gắn võng mạc vào thành mắt bằng vết bỏng nhỏ tạo sẹo. Mất dưới 15 phút tại phòng khám.
+• Đông lạnh (cryopexy): Lạnh cực độ gắn võng mạc vào thành mắt. Mất dưới 30 phút.
+
+Rủi Ro
+Nhiễm trùng, chảy máu, tăng nhãn áp, đục thủy tinh thể, cần phẫu thuật lần hai, vết rách có thể không đóng.
+
+Sau Điều Trị
+• Có thể đau vài giờ — thuốc giảm đau không kê đơn giúp ích.
+• Nghỉ ngơi và ít hoạt động vài tuần.
+• Có thể cần đeo miếng che mắt.
+• Có thể thấy ruồi bay và chớp sáng vài tuần.
+
+Khi Nào Cần Gọi Ngay
+• Chớp sáng đột ngột.
+• Nhiều ruồi bay mới đột ngột.
+• Bóng ở tầm nhìn ngoại vi.
+• Màn xám che tầm nhìn.
+• Mất thị lực đột ngột.
+Đây là dấu hiệu rách hoặc bong võng mạc — cần điều trị cùng ngày.`,
+
+      pt: `RASGO RETINIANO
+
+[IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
+
+Palavras Importantes
+• Retina — camada de células no fundo do olho que detecta luz e envia sinais ao cérebro.
+• Vítreo — substância gelatinosa transparente que preenche o interior do olho.
+• Moscas volantes (floaters) — pequenos grumos no vítreo que parecem manchas ou fios na visão.
+
+O Que É?
+Um rasgo retiniano é um problema sério — um buraco ou rasgo na retina, como um rasgo em um pano. Pode levar a descolamento de retina, onde a retina se separa do fundo do olho. Deve ser tratado imediatamente para evitar perda de visão.
+
+Como Acontece?
+Com a idade, o vítreo encolhe e afina. Às vezes adere à retina e puxa o suficiente para rasgá-la. O fluido pode passar pelo rasgo e levantar (descolar) a retina. Quando rasga, pode ver flashes de luz ou moscas volantes subitamente.
+
+Quem Tem Risco?
+• Míopes, cirurgia prévia de catarata/glaucoma/outra, medicamentos de glaucoma (pilocarpina), lesão ocular grave, rasgo no outro olho, história familiar, áreas fracas na retina.
+
+Sinais de Alerta
+Ligue para seu oftalmologista imediatamente se notar:
+• Luzes piscando.
+• Muitas moscas volantes novas.
+• Sombra na visão periférica (lateral).
+• Cortina cinza cobrindo parte da visão.
+
+Como É Diagnosticado?
+Exame com dilatação — colírios para dilatar a pupila e ver mudanças dentro do olho com lente especial.
+
+Tratamento
+• Fotocoagulação (laser): Laser sela a retina à parede do olho com queimaduras diminutas que formam cicatrizes. Leva menos de 15 minutos no consultório.
+• Criopexia (congelamento): Frio intenso sela a retina à parede do olho. Leva menos de 30 minutos.
+
+Riscos
+Infecção, sangramento, glaucoma, catarata, necessidade de segunda cirurgia, possibilidade de o rasgo não fechar.
+
+Após o Tratamento
+• Pode ter dor por algumas horas — analgésicos de venda livre ajudam.
+• Descanso e menos atividade por algumas semanas.
+• Pode precisar de tampão ocular.
+• Pode ver moscas volantes e flashes por algumas semanas.
+
+Quando Ligar Imediatamente
+• Flashes de luz súbitos.
+• Surgimento súbito de muitas moscas volantes novas.
+• Sombra na visão periférica.
+• Cortina cinza na visão.
+• Perda súbita de visão.
+São sinais de rasgo ou descolamento — precisam de tratamento no mesmo dia.`
     }
   },
   {
@@ -2302,57 +3159,177 @@ Importante: Esteroides e CSC
     content: {
       en: `EPIRETINAL MEMBRANE (MACULAR PUCKER)
 
-What Is It?
-A thin layer of scar-like tissue on the surface of the macula. As it contracts, it wrinkles the retina, causing distorted or blurry vision.
+[IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
-Causes
-• Most commonly: normal aging. Also: after eye surgery, retinal tears, inflammation, or trauma.
+Eye Words to Know
+• Retina — the layer of nerve cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
+• Macula — a small but important area in the center of the retina. You need the macula to clearly see details and colors of objects in front of you.
+• Vitreous — the clear, gel-like substance that fills the inside of your eye. It helps the eye maintain its shape and also helps send light to the retina.
+• OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
+
+What Is It?
+A macular pucker happens when wrinkles, creases, or bulges form on your macula. The macula must lie flat against the back of your eye to work properly. When the macula wrinkles or bulges, your central vision is affected. Things can look wavy, or you may have trouble seeing details. You might notice a gray, cloudy, or blank area in your central vision. A macular pucker does not affect your peripheral (side) vision.
+
+[IMAGE_PAIR:erm-oct-before|Before Surgery (ERM)|erm-oct-after|After Surgery (Membrane Peeled)|OCT cross-section showing wrinkled macula before and flat macula after membrane peel surgery.]
+
+What Causes It?
+Age is the most common cause. As you get older, the vitreous begins to shrink and pull away from the retina. Usually this happens with no problems. But sometimes the vitreous can stick to the retina and scar tissue forms, causing the retina and macula to wrinkle or bulge. Other causes include previous eye surgery, retinal tears or detachment, swelling inside the eye (inflammation), previous injury, or problems with blood vessels in the retina.
 
 Symptoms
-• Mild: No symptoms (found incidentally). Moderate/Severe: Blurry or distorted central vision, wavy lines, difficulty reading.
+• Blurry or distorted central vision.
+• Straight lines look wavy or crooked (metamorphopsia).
+• A gray, cloudy, or blank area in the center of your vision.
+• Difficulty reading small print or seeing fine details.
+• Mild cases may have no symptoms at all (found during a routine eye exam).
+
+How Is It Diagnosed?
+• Dilated eye exam — drops are placed to widen your pupils so the doctor can see the retina clearly through a special lens.
+• OCT (Optical Coherence Tomography) — a painless scan that produces very detailed cross-section pictures of the retina and macula, showing whether the surface is wrinkled or thickened.
 
 Treatment
-• Observation: Mild ERMs with good vision are monitored.
-• Surgery (vitrectomy with membrane peel): When vision is significantly affected. The surgeon peels the membrane off the retina.
+Treatment depends on your symptoms.
+• Mild cases: If your symptoms are mild, you might not need any treatment. Your doctor may update your glasses or contact lens prescription to improve your vision. Eye drops, medicine, and laser surgery do not help macular pucker.
+• Surgery (vitrectomy with membrane peel): If your symptoms are more serious, your doctor may recommend a surgery called vitrectomy. The surgeon removes some of the vitreous and carefully peels the scar tissue off the macula. This flattens the macula, returning it to its proper position. Vision usually improves slowly over weeks to months. However, your sight may not be as good as it was before the macular pucker.
 
-Outcomes
-• Most patients improve in vision and distortion after surgery. Recovery takes weeks to months. Risks include cataract progression and (rarely) retinal tear.`,
+Surgery Risks
+Like all surgery, vitrectomy has some risks, including eye infection, bleeding in the eye, retinal detachment, the macular pucker coming back (recurrence), and cataract (the lens in your eye becoming cloudy, which may need surgery later).
 
-      es: `MEMBRANA EPIRRETINIANA
+When to Call Right Away
+Contact your eye doctor immediately if you experience:
+• Sudden increase in blurry or distorted vision.
+• New wavy or crooked lines in your vision.
+• A dark shadow or curtain covering part of your vision.
+• Severe eye pain with redness.
+• Sudden, severe vision loss.`,
+
+      es: `MEMBRANA EPIRRETINIANA (ARRUGA MACULAR)
+
+[IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
+
+Palabras Importantes
+• Retina — la capa de células nerviosas en la parte posterior del ojo que detecta la luz y envía señales al cerebro.
+• Mácula — área pequeña pero importante en el centro de la retina, responsable de la visión central nítida.
+• Vítreo — sustancia gelatinosa y transparente que llena el interior del ojo.
+• OCT — Tomografía de Coherencia Óptica, un escaneo indoloro que produce imágenes detalladas de la retina.
 
 ¿Qué Es?
-Una capa delgada de tejido cicatricial en la superficie de la mácula. Al contraerse, arruga la retina, causando visión distorsionada o borrosa.
+Ocurre cuando arrugas o pliegues se forman en la mácula. La mácula debe estar plana contra la parte posterior del ojo para funcionar correctamente. Cuando se arruga, la visión central se ve afectada. Las cosas pueden verse onduladas, o puede tener dificultad para ver detalles. Puede notar un área gris, nublada o en blanco en su visión central. No afecta la visión periférica (lateral).
+
+[IMAGE_PAIR:erm-oct-before|Antes de Cirugía (MER)|erm-oct-after|Después de Cirugía (Membrana Pelada)|OCT mostrando mácula arrugada antes y plana después de cirugía de pelado de membrana.]
+
+¿Qué la Causa?
+El envejecimiento es la causa más común. Con la edad, el vítreo se encoge y se separa de la retina. A veces puede adherirse y formar tejido cicatricial, causando arrugas en la mácula. Otras causas incluyen cirugía ocular previa, desgarros retinianos, inflamación o lesiones.
+
+Síntomas
+• Visión central borrosa o distorsionada.
+• Las líneas rectas se ven onduladas o torcidas.
+• Área gris, nublada o en blanco en el centro de su visión.
+• Dificultad para leer letra pequeña o ver detalles finos.
+• Casos leves pueden no tener síntomas.
+
+¿Cómo Se Diagnostica?
+• Examen con dilatación — gotas para agrandar las pupilas y ver la retina.
+• OCT — escaneo indoloro que muestra si la superficie de la mácula está arrugada o engrosada.
 
 Tratamiento
-• Observación: Membranas leves con buena visión se monitorean.
-• Cirugía (vitrectomía con pelado de membrana): Cuando la visión está significativamente afectada.
+• Casos leves: Puede no necesitar tratamiento. Su médico puede actualizar su receta de lentes. Gotas, medicinas y láser no ayudan.
+• Cirugía (vitrectomía con pelado de membrana): Si los síntomas son serios, el cirujano remueve el vítreo y pela el tejido cicatricial. La visión mejora lentamente en semanas a meses, pero puede no ser tan buena como antes.
 
-Resultados
-• La mayoría de pacientes mejoran después de cirugía. Recuperación toma semanas a meses.`,
+Riesgos de la Cirugía
+Infección ocular, sangrado, desprendimiento de retina, recurrencia de la membrana y catarata.
 
-      vi: `MÀNG TRƯỚC VÕNG MẠC
+Cuándo Llamar de Inmediato
+• Aumento súbito de visión borrosa o distorsionada.
+• Líneas onduladas o torcidas nuevas.
+• Sombra oscura o cortina cubriendo parte de su visión.
+• Dolor ocular severo con enrojecimiento.
+• Pérdida severa y súbita de visión.`,
+
+      vi: `MÀNG TRƯỚC VÕNG MẠC (NHĂN HOÀNG ĐIỂM)
+
+[IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
+
+Từ Vựng Cần Biết
+• Võng mạc — lớp tế bào thần kinh ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
+• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc, chịu trách nhiệm cho thị lực trung tâm sắc nét.
+• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
+• OCT — Chụp cắt lớp quang học, quét không đau tạo hình ảnh chi tiết của võng mạc.
 
 Là Gì?
-Lớp mô mỏng giống sẹo trên bề mặt hoàng điểm. Khi co lại, nó làm nhăn võng mạc, gây méo hoặc mờ thị lực.
+Nhăn hoàng điểm xảy ra khi nếp nhăn hoặc nếp gấp hình thành trên hoàng điểm. Hoàng điểm cần nằm phẳng để hoạt động đúng. Khi bị nhăn, thị lực trung tâm bị ảnh hưởng. Bạn có thể thấy mọi thứ lượn sóng hoặc khó nhìn chi tiết. Không ảnh hưởng thị lực ngoại vi.
+
+[IMAGE_PAIR:erm-oct-before|Trước Phẫu Thuật (ERM)|erm-oct-after|Sau Phẫu Thuật (Bóc Màng)|OCT cho thấy hoàng điểm nhăn trước và phẳng sau phẫu thuật bóc màng.]
+
+Nguyên Nhân
+Tuổi tác là nguyên nhân phổ biến nhất. Dịch kính co lại và tách khỏi võng mạc, đôi khi dính và tạo mô sẹo gây nhăn. Các nguyên nhân khác: phẫu thuật mắt trước đó, rách võng mạc, viêm, chấn thương.
+
+Triệu Chứng
+• Mờ hoặc méo thị lực trung tâm.
+• Đường thẳng trông lượn sóng hoặc cong.
+• Vùng xám, mờ đục trong trung tâm tầm nhìn.
+• Khó đọc chữ nhỏ hoặc nhìn chi tiết.
+• Trường hợp nhẹ có thể không có triệu chứng.
+
+Chẩn Đoán
+• Khám mắt có giãn đồng tử — nhỏ thuốc giãn đồng tử để bác sĩ nhìn rõ võng mạc.
+• OCT — quét không đau cho thấy bề mặt hoàng điểm có nhăn hay dày không.
 
 Điều Trị
-• Theo dõi: Màng nhẹ với thị lực tốt được theo dõi.
-• Phẫu thuật (cắt dịch kính và bóc màng): Khi thị lực bị ảnh hưởng đáng kể.
+• Nhẹ: Có thể không cần điều trị. Bác sĩ có thể cập nhật kính. Thuốc nhỏ mắt và laser không hiệu quả.
+• Phẫu thuật (cắt dịch kính và bóc màng): Bác sĩ loại bỏ dịch kính và bóc mô sẹo. Thị lực cải thiện chậm trong vài tuần đến tháng.
 
-Kết Quả
-• Hầu hết bệnh nhân cải thiện sau phẫu thuật. Hồi phục mất vài tuần đến tháng.`,
+Rủi Ro Phẫu Thuật
+Nhiễm trùng, chảy máu, bong võng mạc, tái phát màng, đục thủy tinh thể.
 
-      pt: `MEMBRANA EPIRRETINIANA
+Khi Nào Cần Gọi Ngay
+• Mờ hoặc méo thị lực tăng đột ngột.
+• Đường lượn sóng hoặc cong mới.
+• Bóng tối hoặc màn che một phần tầm nhìn.
+• Đau mắt dữ dội kèm đỏ.
+• Mất thị lực nặng và đột ngột.`,
+
+      pt: `MEMBRANA EPIRRETINIANA (ENRUGAMENTO MACULAR)
+
+[IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
+
+Palavras Importantes
+• Retina — camada de células nervosas no fundo do olho que detecta luz e envia sinais ao cérebro.
+• Mácula — área pequena mas importante no centro da retina, responsável pela visão central nítida.
+• Vítreo — substância gelatinosa e transparente que preenche o interior do olho.
+• OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
 
 O Que É?
-Camada fina de tecido cicatricial na superfície da mácula. Ao contrair, enruga a retina, causando visão distorcida ou embaçada.
+Ocorre quando rugas ou pregas se formam na mácula. A mácula precisa estar plana para funcionar corretamente. Quando enruga, a visão central é afetada. As coisas podem parecer onduladas, ou pode ter dificuldade em ver detalhes. Pode notar uma área cinza, turva ou em branco na visão central. Não afeta a visão periférica (lateral).
+
+[IMAGE_PAIR:erm-oct-before|Antes da Cirurgia (MER)|erm-oct-after|Após Cirurgia (Membrana Removida)|OCT mostrando mácula enrugada antes e plana após cirurgia de remoção de membrana.]
+
+O Que Causa?
+O envelhecimento é a causa mais comum. Com a idade, o vítreo encolhe e se separa da retina. Às vezes pode aderir e formar tecido cicatricial, causando rugas na mácula. Outras causas incluem cirurgia ocular prévia, rasgos retinianos, inflamação ou lesões.
+
+Sintomas
+• Visão central embaçada ou distorcida.
+• Linhas retas parecem onduladas ou tortas.
+• Área cinza, turva ou em branco no centro da visão.
+• Dificuldade para ler letras pequenas ou ver detalhes finos.
+• Casos leves podem não ter sintomas.
+
+Como É Diagnosticada?
+• Exame com dilatação — colírios para dilatar as pupilas e ver a retina.
+• OCT — exame indolor que mostra se a superfície da mácula está enrugada ou espessada.
 
 Tratamento
-• Observação: Membranas leves com boa visão são monitoradas.
-• Cirurgia (vitrectomia com remoção de membrana): Quando visão está significativamente afetada.
+• Casos leves: Pode não precisar de tratamento. O médico pode atualizar a receita de óculos. Colírios, medicamentos e laser não ajudam.
+• Cirurgia (vitrectomia com remoção de membrana): O cirurgião remove o vítreo e retira o tecido cicatricial. A visão melhora lentamente em semanas a meses, mas pode não ser tão boa quanto antes.
 
-Resultados
-• Maioria dos pacientes melhora após cirurgia. Recuperação leva semanas a meses.`
+Riscos da Cirurgia
+Infecção ocular, sangramento, descolamento de retina, recorrência da membrana e catarata.
+
+Quando Ligar Imediatamente
+• Aumento súbito de visão embaçada ou distorcida.
+• Linhas onduladas ou tortas novas.
+• Sombra escura ou cortina cobrindo parte da visão.
+• Dor ocular severa com vermelhidão.
+• Perda severa e súbita de visão.`
     }
   },
   {
@@ -2363,56 +3340,206 @@ Resultados
     content: {
       en: `MACULAR HOLE
 
+[IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
+
+Eye Words to Know
+• Retina — the layer of cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
+• Macula — a small but important area in the center of the retina. You need the macula to clearly see details and colors of objects in front of you.
+• Vitreous — the clear, gel-like substance that fills the inside of your eye. It helps the eye maintain its shape and also helps send light to the retina.
+• OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
+
 What Is It?
-A small break in the macula causing a blind spot or distortion in central vision. Usually caused by age-related vitreous changes pulling on the macula.
+A macular hole is when a tear or opening forms in your macula. As the hole forms, things in your central vision will look blurry, wavy, or distorted. As the hole grows, a dark or blind spot appears in your central vision. A macular hole does not affect your peripheral (side) vision.
+
+[IMAGE_PAIR:mh-oct-before|Before Surgery (Macular Hole)|mh-oct-after|After Surgery (Hole Closed)|OCT cross-section showing open macular hole before surgery and closed hole after vitrectomy with gas bubble.]
+
+What Causes It?
+Age is the most common cause. As you get older, the vitreous begins to shrink and pull away from the retina. Usually this happens with no problems. But sometimes the vitreous can stick to the macula and stretch it, causing a hole to form. A macular hole can also form when the macula swells from other eye disease, or it can be caused by an eye injury.
+
+Symptoms
+• Blurry, wavy, or distorted central vision.
+• A dark or blind spot in the center of your vision that grows over time.
+• Difficulty reading, recognizing faces, or seeing fine details.
+• Straight lines look bent or wavy.
+
+How Is It Diagnosed?
+• Dilated eye exam — drops are placed to widen your pupils so the doctor can look through a special lens at the inside of your eye.
+• OCT (Optical Coherence Tomography) — a painless scan that produces very detailed pictures of the retina and macula, clearly showing the hole.
 
 Treatment
-• Vitrectomy surgery with gas bubble. The bubble acts as a bandage while the hole heals.
-• Face-down positioning required for several days to a week after surgery.
-• You CANNOT fly until the gas bubble dissolves (2–8 weeks).
-• Inform any anesthesiologist about the gas bubble if you need other surgery.
+Surgery called vitrectomy is the best way to treat a macular hole. Your surgeon removes the vitreous that is pulling on your macula, then places a gas bubble inside the eye. This bubble helps flatten the macular hole and hold it in place while your eye heals. The gas bubble slowly goes away on its own and is replaced by fluid your eye naturally produces.
+
+Things to Know About Surgery
+• Your eye may hurt after surgery. Your surgeon will have you take medicine to help with pain.
+• You will need to wear an eye patch for a short time. You will also need to put drops in your eye.
+• You may be asked to keep your face down in a specific position for a period of time, depending on your surgeon's preference. This keeps the gas bubble in place to heal properly.
+• You CANNOT fly in an airplane, go to mountains/high altitudes, or scuba dive until the gas bubble is gone. A rapid altitude change can make eye pressure rise dangerously.
+• If you need to have any other type of surgery, be sure to tell your doctor before surgery that you have a gas bubble in your eye.
+• Your vision will improve as the macular hole closes. It may take several months for the hole to finish healing. How much vision you get back depends on the size of your macular hole and how long it was there before surgery.
+
+Surgery Risks
+Like any surgery, vitrectomy has some risks, including eye infection, bleeding in the eye, retinal detachment, glaucoma (increased pressure inside the eye), and cataract (the lens in your eye becoming cloudy).
 
 Success Rate
-• ~90–95% closure rate. Vision improvement varies — earlier treatment generally gives better results.`,
+• About 90–95% of macular holes close successfully with one surgery. Earlier treatment generally gives better visual results.
+
+When to Call Right Away
+Contact your eye doctor immediately if you experience:
+• Sudden increase in blurry or distorted vision.
+• A new or growing dark spot in your central vision.
+• Flashes of light or a sudden increase in floaters.
+• A dark shadow or curtain covering part of your vision.
+• Severe eye pain with redness.`,
 
       es: `AGUJERO MACULAR
 
+[IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
+
+Palabras Importantes
+• Retina — capa de células en la parte posterior del ojo que detecta la luz y envía señales al cerebro.
+• Mácula — área pequeña pero importante en el centro de la retina para la visión central nítida.
+• Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
+• OCT — Tomografía de Coherencia Óptica, escaneo indoloro que produce imágenes detalladas de la retina.
+
 ¿Qué Es?
-Una pequeña ruptura en la mácula que causa un punto ciego o distorsión en la visión central.
+Un agujero macular es cuando se forma una abertura en la mácula. La visión central se vuelve borrosa, ondulada o distorsionada. A medida que el agujero crece, aparece un punto oscuro o ciego en la visión central. No afecta la visión periférica (lateral).
+
+[IMAGE_PAIR:mh-oct-before|Antes de Cirugía (Agujero)|mh-oct-after|Después de Cirugía (Cerrado)|OCT mostrando agujero macular abierto antes y cerrado después de vitrectomía.]
+
+¿Qué lo Causa?
+El envejecimiento es la causa más común. El vítreo se encoge y puede adherirse a la mácula y estirarla, formando un agujero. También puede formarse por hinchazón de otras enfermedades oculares o lesiones.
+
+Síntomas
+• Visión central borrosa, ondulada o distorsionada.
+• Punto oscuro o ciego en el centro de la visión que crece con el tiempo.
+• Dificultad para leer o reconocer caras.
+• Líneas rectas se ven dobladas u onduladas.
+
+¿Cómo Se Diagnostica?
+• Examen con dilatación — gotas para ver el interior del ojo con lente especial.
+• OCT — escaneo indoloro que muestra el agujero con claridad.
 
 Tratamiento
-• Cirugía de vitrectomía con burbuja de gas. La burbuja actúa como vendaje mientras el agujero sana.
-• Se requiere posición boca abajo por varios días a una semana.
-• NO puede volar hasta que la burbuja se disuelva (2–8 semanas).
+Cirugía de vitrectomía: el cirujano remueve el vítreo y coloca una burbuja de gas que aplana el agujero mientras sana. La burbuja se disuelve sola.
+• Puede tener dolor — se recetarán medicamentos.
+• Necesitará parche y gotas oculares.
+• Puede necesitar posición boca abajo por un período de tiempo.
+• NO puede volar, ir a altitudes altas, ni bucear hasta que la burbuja desaparezca (2–8 semanas).
+• Informe a cualquier anestesiólogo sobre la burbuja de gas antes de otra cirugía.
+• La visión mejora a medida que el agujero cierra, pero puede tomar varios meses.
+
+Riesgos de Cirugía
+Infección, sangrado, desprendimiento de retina, glaucoma y catarata.
 
 Tasa de Éxito
-• ~90–95% de cierre. La mejoría visual varía — tratamiento temprano da mejores resultados.`,
+• ~90–95% de cierre exitoso. Tratamiento temprano da mejores resultados visuales.
+
+Cuándo Llamar de Inmediato
+• Aumento súbito de visión borrosa o distorsionada.
+• Punto oscuro nuevo o creciente en la visión central.
+• Destellos de luz o aumento súbito de moscas volantes.
+• Sombra oscura o cortina en su visión.
+• Dolor ocular severo con enrojecimiento.`,
 
       vi: `LỖ HOÀNG ĐIỂM
 
+[IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
+
+Từ Vựng Cần Biết
+• Võng mạc — lớp tế bào ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
+• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc cho thị lực trung tâm sắc nét.
+• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
+• OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
+
 Là Gì?
-Vết nứt nhỏ ở hoàng điểm gây điểm mù hoặc méo thị lực trung tâm.
+Lỗ hoàng điểm là khi hình thành vết rách hoặc lỗ mở ở hoàng điểm. Thị lực trung tâm trở nên mờ, lượn sóng hoặc méo. Khi lỗ lớn hơn, xuất hiện đốm tối hoặc điểm mù. Không ảnh hưởng thị lực ngoại vi.
+
+[IMAGE_PAIR:mh-oct-before|Trước Phẫu Thuật (Lỗ Hoàng Điểm)|mh-oct-after|Sau Phẫu Thuật (Lỗ Đóng)|OCT cho thấy lỗ hoàng điểm mở trước và đóng sau phẫu thuật cắt dịch kính.]
+
+Nguyên Nhân
+Tuổi tác phổ biến nhất. Dịch kính co lại và có thể dính vào hoàng điểm, kéo căng tạo lỗ. Cũng có thể do phù từ bệnh mắt khác hoặc chấn thương.
+
+Triệu Chứng
+• Mờ, lượn sóng hoặc méo thị lực trung tâm.
+• Đốm tối hoặc điểm mù ở trung tâm tầm nhìn, lớn dần theo thời gian.
+• Khó đọc hoặc nhận diện khuôn mặt.
+• Đường thẳng trông cong hoặc lượn sóng.
+
+Chẩn Đoán
+• Khám mắt có giãn đồng tử — nhỏ thuốc để nhìn rõ bên trong mắt.
+• OCT — quét không đau cho thấy lỗ rõ ràng.
 
 Điều Trị
-• Phẫu thuật cắt dịch kính với bong bóng khí. Bong bóng như băng gạc khi lỗ lành.
-• Cần tư thế úp mặt vài ngày đến một tuần.
-• KHÔNG được bay cho đến khi bong bóng tan (2–8 tuần).
+Phẫu thuật cắt dịch kính: bác sĩ loại bỏ dịch kính và đặt bong bóng khí làm phẳng lỗ khi lành. Bong bóng tự tan.
+• Có thể đau — sẽ có thuốc giảm đau.
+• Cần đeo miếng che mắt và nhỏ thuốc.
+• Có thể cần tư thế úp mặt trong một thời gian.
+• KHÔNG được bay, lên độ cao, hay lặn cho đến khi bong bóng tan (2–8 tuần).
+• Báo cho bác sĩ gây mê về bong bóng khí nếu cần phẫu thuật khác.
+• Thị lực cải thiện khi lỗ đóng, có thể mất vài tháng.
+
+Rủi Ro Phẫu Thuật
+Nhiễm trùng, chảy máu, bong võng mạc, tăng nhãn áp, đục thủy tinh thể.
 
 Tỷ Lệ Thành Công
-• ~90–95% đóng lỗ. Cải thiện thị lực khác nhau — điều trị sớm cho kết quả tốt hơn.`,
+• ~90–95% đóng lỗ thành công. Điều trị sớm cho kết quả tốt hơn.
+
+Khi Nào Cần Gọi Ngay
+• Mờ hoặc méo thị lực tăng đột ngột.
+• Đốm tối mới hoặc đang lớn ở trung tâm tầm nhìn.
+• Chớp sáng hoặc tăng đột ngột ruồi bay.
+• Bóng tối hoặc màn che một phần tầm nhìn.
+• Đau mắt dữ dội kèm đỏ.`,
 
       pt: `BURACO MACULAR
 
+[IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
+
+Palavras Importantes
+• Retina — camada de células no fundo do olho que detecta luz e envia sinais ao cérebro.
+• Mácula — área pequena mas importante no centro da retina para visão central nítida.
+• Vítreo — substância gelatinosa transparente que preenche o interior do olho.
+• OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
+
 O Que É?
-Pequena ruptura na mácula causando ponto cego ou distorção na visão central.
+Um buraco macular é quando uma abertura se forma na mácula. A visão central fica embaçada, ondulada ou distorcida. À medida que o buraco cresce, aparece um ponto escuro ou cego na visão central. Não afeta a visão periférica (lateral).
+
+[IMAGE_PAIR:mh-oct-before|Antes da Cirurgia (Buraco)|mh-oct-after|Após Cirurgia (Fechado)|OCT mostrando buraco macular aberto antes e fechado após vitrectomia.]
+
+O Que Causa?
+O envelhecimento é a causa mais comum. O vítreo encolhe e pode aderir à mácula e esticá-la, formando um buraco. Também pode se formar por inchaço de outras doenças oculares ou lesões.
+
+Sintomas
+• Visão central embaçada, ondulada ou distorcida.
+• Ponto escuro ou cego no centro da visão que cresce com o tempo.
+• Dificuldade para ler ou reconhecer rostos.
+• Linhas retas parecem tortas ou onduladas.
+
+Como É Diagnosticado?
+• Exame com dilatação — colírios para ver o interior do olho com lente especial.
+• OCT — exame indolor que mostra o buraco com clareza.
 
 Tratamento
-• Cirurgia de vitrectomia com bolha de gás. A bolha age como curativo enquanto o buraco cicatriza.
-• Posicionamento face para baixo necessário por vários dias a uma semana.
-• NÃO pode voar até a bolha dissolver (2–8 semanas).
+Cirurgia de vitrectomia: o cirurgião remove o vítreo e coloca uma bolha de gás que achata o buraco enquanto cicatriza. A bolha dissolve sozinha.
+• Pode ter dor — medicamentos serão prescritos.
+• Precisará de tampão ocular e colírios.
+• Pode precisar ficar com a face para baixo por um período.
+• NÃO pode voar, ir a altitudes elevadas, nem mergulhar até a bolha desaparecer (2–8 semanas).
+• Informe qualquer anestesista sobre a bolha de gás antes de outra cirurgia.
+• A visão melhora à medida que o buraco fecha, mas pode levar vários meses.
+
+Riscos da Cirurgia
+Infecção, sangramento, descolamento de retina, glaucoma e catarata.
 
 Taxa de Sucesso
-• ~90–95% de fechamento. Melhora visual varia — tratamento mais cedo geralmente dá melhores resultados.`
+• ~90–95% de fechamento bem-sucedido. Tratamento precoce dá melhores resultados visuais.
+
+Quando Ligar Imediatamente
+• Aumento súbito de visão embaçada ou distorcida.
+• Ponto escuro novo ou crescente na visão central.
+• Flashes de luz ou aumento súbito de moscas volantes.
+• Sombra escura ou cortina na visão.
+• Dor ocular severa com vermelhidão.`
     }
   },
   {
@@ -2572,7 +3699,7 @@ Se Notar Mudança
 
 // ── Print helper ───────────────────────────────────────────────────
 function printHandout(handout, lang) {
-  const content = handout.content[lang] || handout.content.en;
+  const content = (handout.content[lang] || handout.content.en).replace(/\[PAGE_BREAK\]\n?/g, "").replace(/\[IMAGE[^\]]*\]\n?/g, "");
   const title = handout.title[lang] || handout.title.en;
   const win = window.open("", "_blank");
   if (!win) return;
@@ -2721,7 +3848,7 @@ export default function PatientEducation({ onBack }) {
                     ))}
                   </div>
                   <pre style={{ whiteSpace: "pre-wrap", fontFamily: S.font, fontSize: "0.82rem", color: S.text, lineHeight: 1.65, margin: 0, maxHeight: 500, overflowY: "auto", paddingRight: 8 }}>
-                    {content}
+                    {content.replace(/\[PAGE_BREAK\]\n?/g, "").replace(/\[IMAGE[^\]]*\]\n?/g, "")}
                   </pre>
                   <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
                     <button
