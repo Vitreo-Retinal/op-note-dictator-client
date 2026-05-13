@@ -1588,14 +1588,14 @@ Eye Words to Know
 What Is AMD?
 Age-related macular degeneration (AMD) is a disease of the retina. It happens when a part of the retina called the macula is damaged. AMD causes loss of central vision, but your peripheral (side) vision will still be normal.
 
-For instance, imagine you are looking at a clock with hands. With AMD, you might see the clock's numbers but not the hands — dark areas may appear in your central vision.
+For instance, imagine looking at someone's face. With AMD, you might see their hair and clothing clearly, but have trouble making out their eyes, nose, or expression — the center of your vision may look blurry, dark, or missing.
 
 AMD is very common. It is a leading cause of vision loss in people 50 years or older. Many people don't realize they have AMD until their vision is very blurry. This is why it is important to have regular visits to your ophthalmologist. They can look for early signs of AMD before you have any vision problems.
 
 [IMAGE_PAIR:amd-oct-before|Before Treatment (Wet AMD)|amd-oct-after|After Treatment (Resolved)|OCT cross-section showing fluid under the retina before treatment and resolution after anti-VEGF injections.]
 
 Two Types of AMD
-• Dry AMD: This form is quite common. About 80% (8 out of 10) of people who have AMD have the dry form. Dry AMD is when parts of the macula get thinner with age and tiny deposits (drusen) build up. People with dry AMD may have drusen, pigment changes, or geographic atrophy (an area of cell loss in the retina). Geographic atrophy can cause loss of central vision. Currently, only dry AMD with geographic atrophy can be treated with medication to slow progression.
+• Dry AMD: This form is quite common. About 80% (8 out of 10) of people who have AMD have the dry form. Dry AMD is when parts of the macula get thinner with age and tiny deposits (drusen) build up. People with dry AMD may have drusen, pigment changes, or geographic atrophy (an area of cell loss in the retina). Geographic atrophy can cause loss of central vision. Treatment options for dry AMD are growing. Photobiomodulation (PBM) therapy uses low-level light to support retinal cells, and newer medications can slow geographic atrophy. Your doctor will discuss which treatments may be right for you.
 • Wet AMD: This form is less common but much more serious. Wet AMD is when new, abnormal blood vessels grow under the retina. These vessels may leak blood or other fluids, causing scarring of the macula. Vision loss is faster with wet AMD than dry AMD. Wet AMD is treated with anti-VEGF injections.
 
 Risk Factors
@@ -1610,18 +1610,17 @@ You are more likely to develop AMD if you:
 
 How Is AMD Diagnosed?
 • Dilated eye exam — your ophthalmologist will put drops in your eye to dilate your pupil, then look through a special lens to check the retina and macula.
-• Amsler grid — a grid with a dot in the center that helps you notice blurry, distorted, or blank spots in your vision.
 • OCT (Optical Coherence Tomography) — a painless scan that provides very detailed images of the retina and macula.
 • OCTA (OCT Angiography) — looks closely at blood vessels in and under the retina without needing a dye.
 • Fluorescein angiography — a yellow dye is injected into a vein in your arm and a camera photographs the retina, showing if abnormal new blood vessels are growing.
 
 Treatment
-• Dry AMD: There is no treatment for drusen. However, people with lots of drusen or serious vision loss might benefit from AREDS2 vitamins: Vitamin C (500 mg), Vitamin E (400 IU), Lutein (10 mg), Zeaxanthin (2 mg), Zinc (80 mg), Copper (2 mg). Your ophthalmologist can tell you if these are recommended for you. Beta carotene should not be used by smokers as it raised the risk of lung cancer. For geographic atrophy, newer medications (such as Izervay or Syfovre) injected into the eye may slow progression.
-• Wet AMD: Anti-VEGF medications (such as Eylea, Avastin, Lucentis, Vabysmo) are injected into the eye to reduce leaking from abnormal blood vessels. Treatment starts with monthly injections, then may be extended based on your response. Early and consistent treatment gives the best chance of preserving vision.
+• Dry AMD: People with lots of drusen or serious vision loss might benefit from AREDS2 vitamins: Vitamin C (500 mg), Vitamin E (400 IU), Lutein (10 mg), Zeaxanthin (2 mg), Zinc (80 mg), Copper (2 mg). Your ophthalmologist can tell you if these are recommended for you. Beta carotene should not be used by smokers as it raised the risk of lung cancer. For geographic atrophy, newer medications (such as Izervay or Syfovre) injected into the eye may slow progression. Photobiomodulation (PBM) therapy uses low-level light to support retinal health and may help reduce drusen burden.
+• Wet AMD: Anti-VEGF medications (such as Avastin, Lucentis, Eylea, Eylea HD, Beovu, and Vabysmo) are injected into the eye to reduce leaking from abnormal blood vessels. Treatment starts with monthly injections, then may be extended based on your response. Early and consistent treatment gives the best chance of preserving vision. That is why it is critical to contact your doctor right away if you notice any sudden change on your Amsler grid.
 
 What You Can Do
 • Keep all scheduled appointments — even if vision feels stable. Skipping treatment can lead to permanent vision loss.
-• Use the Amsler grid daily to monitor for changes. Keep it in a place where you see it every day (like the refrigerator or bathroom mirror).
+• Use the Amsler grid daily to monitor for changes. Check one eye at a time with your reading glasses on. Keep it in a place where you see it every day (like the refrigerator or bathroom mirror).
 • Take AREDS2 vitamins as recommended by your doctor.
 • Do not smoke.
 • Eat leafy greens (spinach, kale), yellow fruits, fish, and a balanced, nutrient-rich diet.
@@ -1629,7 +1628,7 @@ What You Can Do
 • Wear UV-protective sunglasses outdoors.
 
 Making the Most of Your Vision
-If you have AMD, you can learn to make the most of your vision. Often you can still do many of your favorite things with special low vision tools — magnifying glasses, handheld computers, electronic items, and more. A vision rehabilitation specialist can teach you how to use your side vision and help you find support services and tools. Ask your ophthalmologist for a referral.
+If you have AMD, you can often still do many of your favorite things with special low vision tools — magnifying glasses, handheld computers, electronic items, and more. Good lighting and high-contrast materials (such as large-print books or bold-lined writing paper) can also make everyday tasks easier. A vision rehabilitation specialist can teach you how to use your side vision and help you find support services and tools. Ask your ophthalmologist for a referral.
 
 Test Your Vision with the Amsler Grid
 Keep the Amsler grid in a place where you see it every day. In good light, look at the grid from about 12 to 15 inches away. Be sure to wear your reading glasses if you normally use them. Cover one eye. Look directly at the dot in the center of the grid. Notice if any of the lines look bent or wavy. See if any part of the grid looks blurry, dim, or out of shape. Now cover your other eye and test your vision the same way again. Call your ophthalmologist right away if you notice that any lines or parts of the grid look wavy, blurry, or dim.
@@ -1655,31 +1654,34 @@ Palabras Importantes
 • OCT — Tomografía de Coherencia Óptica, escaneo indoloro que produce imágenes detalladas de la retina.
 
 ¿Qué Es la DMAE?
-Enfermedad de la retina que daña la mácula, causando pérdida de visión central. Su visión periférica (lateral) permanece normal. Imagine un reloj: puede ver los números pero no las manecillas — áreas oscuras en la visión central. Es la principal causa de pérdida visual en personas mayores de 50 años. Muchos no se dan cuenta hasta que la visión está muy borrosa.
+Enfermedad de la retina que daña la mácula, causando pérdida de visión central. Su visión periférica (lateral) permanece normal. Imagine que mira la cara de alguien: puede ver su cabello y ropa claramente, pero tiene dificultad para distinguir sus ojos, nariz o expresión — el centro de su visión puede verse borroso, oscuro o vacío. Es la principal causa de pérdida visual en personas mayores de 50 años. Muchos no se dan cuenta hasta que la visión está muy borrosa.
 
 [IMAGE_PAIR:amd-oct-before|Antes del Tratamiento (DMAE Húmeda)|amd-oct-after|Después del Tratamiento (Resuelto)|OCT mostrando líquido bajo la retina antes y resolución después de inyecciones anti-VEGF.]
 
 Dos Tipos
-• DMAE Seca: Más común (~80%). La mácula se adelgaza y se acumulan drusen. Puede incluir atrofia geográfica (pérdida de células en la retina), que puede tratarse con medicamentos más nuevos para retardar la progresión.
+• DMAE Seca: Más común (~80%). La mácula se adelgaza y se acumulan drusen. Puede incluir atrofia geográfica (pérdida de células en la retina). Las opciones de tratamiento están creciendo: la terapia de fotobiomodulación (PBM) usa luz de bajo nivel para apoyar las células retinianas, y medicamentos más nuevos pueden retardar la atrofia geográfica. Su médico le indicará qué tratamientos son adecuados para usted.
 • DMAE Húmeda: Menos común pero más seria. Vasos sanguíneos anormales crecen bajo la retina y filtran sangre o líquido. La pérdida visual es más rápida. Se trata con inyecciones anti-VEGF.
 
 Factores de Riesgo
 • Mayor de 50 años, historia familiar, tabaquismo, dieta alta en grasas saturadas, sobrepeso, presión alta, colesterol alto, enfermedades cardíacas.
 
 ¿Cómo Se Diagnostica?
-• Examen con dilatación, cuadrícula de Amsler, OCT, OCTA, angiografía con fluoresceína.
+• Examen con dilatación, OCT, OCTA, angiografía con fluoresceína.
 
 Tratamiento
-• DMAE Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinc 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos más nuevos (Izervay, Syfovre). Beta caroteno NO para fumadores.
-• DMAE Húmeda: Inyecciones anti-VEGF (Eylea, Avastin, Lucentis, Vabysmo) para reducir fugas. Tratamiento comienza mensual, luego se extiende según respuesta.
+• DMAE Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinc 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos más nuevos (Izervay, Syfovre). Beta caroteno NO para fumadores. La terapia de fotobiomodulación (PBM) usa luz de bajo nivel para apoyar la salud retiniana y puede ayudar a reducir la carga de drusen.
+• DMAE Húmeda: Inyecciones anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) para reducir fugas. Tratamiento comienza mensual, luego se extiende según respuesta. El tratamiento temprano y constante da la mejor oportunidad de preservar la visión. Por eso es fundamental que contacte a su médico de inmediato si nota algún cambio repentino en la cuadrícula de Amsler.
 
 Lo Que Puede Hacer
 • Asista a todas las citas programadas.
-• Use la cuadrícula de Amsler diariamente.
+• Use la cuadrícula de Amsler diariamente. Revise un ojo a la vez con sus lentes de lectura puestos.
 • Tome vitaminas AREDS2 según recomendación.
 • No fume. Coma vegetales de hoja verde, frutas amarillas, pescado.
 • Ejercicio regular, controle presión arterial y colesterol.
 • Use lentes de sol con protección UV.
+
+Aprovechando al Máximo Su Visión
+Si tiene DMAE, a menudo puede seguir haciendo muchas de sus actividades favoritas con herramientas especiales de baja visión — lupas, dispositivos electrónicos y más. La buena iluminación y los materiales de alto contraste (como libros con letra grande o papel con líneas gruesas) también facilitan las tareas diarias. Un especialista en rehabilitación visual puede enseñarle a usar su visión lateral y ayudarle a encontrar servicios y herramientas de apoyo. Pida una referencia a su oftalmólogo.
 
 Cuándo Llamar de Inmediato
 • Visión central borrosa o distorsionada nueva o que empeora.
@@ -1699,31 +1701,34 @@ Từ Vựng Cần Biết
 • OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
 
 AMD Là Gì?
-Bệnh võng mạc gây tổn thương hoàng điểm, mất thị lực trung tâm nhưng thị lực ngoại vi (bên) vẫn bình thường. Hãy tưởng tượng nhìn đồng hồ: có thể thấy số nhưng không thấy kim. Nguyên nhân hàng đầu mất thị lực ở người trên 50 tuổi. Nhiều người không biết cho đến khi rất mờ.
+Bệnh võng mạc gây tổn thương hoàng điểm, mất thị lực trung tâm nhưng thị lực ngoại vi (bên) vẫn bình thường. Hãy tưởng tượng nhìn khuôn mặt ai đó: bạn có thể thấy rõ tóc và quần áo, nhưng khó phân biệt mắt, mũi hay biểu cảm — trung tâm tầm nhìn có thể mờ, tối hoặc trống. Nguyên nhân hàng đầu mất thị lực ở người trên 50 tuổi. Nhiều người không biết cho đến khi rất mờ.
 
 [IMAGE_PAIR:amd-oct-before|Trước Điều Trị (AMD Ướt)|amd-oct-after|Sau Điều Trị (Hết)|OCT cho thấy dịch dưới võng mạc trước và hết sau tiêm anti-VEGF.]
 
 Hai Loại
-• AMD Khô: Phổ biến hơn (~80%). Hoàng điểm mỏng đi và tích tụ drusen. Có thể bao gồm teo địa lý (mất tế bào), có thể điều trị bằng thuốc mới để làm chậm tiến triển.
+• AMD Khô: Phổ biến hơn (~80%). Hoàng điểm mỏng đi và tích tụ drusen. Có thể bao gồm teo địa lý (mất tế bào). Các lựa chọn điều trị đang phát triển: liệu pháp quang sinh học (PBM) sử dụng ánh sáng cường độ thấp để hỗ trợ tế bào võng mạc, và thuốc mới có thể làm chậm teo địa lý. Bác sĩ sẽ trao đổi phương pháp điều trị phù hợp với bạn.
 • AMD Ướt: Ít phổ biến nhưng nghiêm trọng hơn. Mạch máu bất thường mọc dưới võng mạc và rò rỉ. Mất thị lực nhanh hơn. Điều trị bằng tiêm anti-VEGF.
 
 Yếu Tố Nguy Cơ
 • Trên 50 tuổi, tiền sử gia đình, hút thuốc, chế độ ăn nhiều chất béo bão hòa, thừa cân, tăng huyết áp, cholesterol cao, bệnh tim.
 
 Chẩn Đoán
-• Khám mắt có giãn đồng tử, lưới Amsler, OCT, OCTA, chụp mạch huỳnh quang.
+• Khám mắt có giãn đồng tử, OCT, OCTA, chụp mạch huỳnh quang.
 
 Điều Trị
-• AMD Khô: Vitamin AREDS2 (Vitamin C 500mg, Vitamin E 400IU, Lutein 10mg, Zeaxanthin 2mg, Kẽm 80mg, Đồng 2mg). Cho teo địa lý: thuốc mới (Izervay, Syfovre). Beta carotene KHÔNG cho người hút thuốc.
-• AMD Ướt: Tiêm anti-VEGF (Eylea, Avastin, Lucentis, Vabysmo) giảm rò rỉ. Bắt đầu hàng tháng, sau kéo dài theo đáp ứng.
+• AMD Khô: Vitamin AREDS2 (Vitamin C 500mg, Vitamin E 400IU, Lutein 10mg, Zeaxanthin 2mg, Kẽm 80mg, Đồng 2mg). Cho teo địa lý: thuốc mới (Izervay, Syfovre). Beta carotene KHÔNG cho người hút thuốc. Liệu pháp quang sinh học (PBM) sử dụng ánh sáng cường độ thấp để hỗ trợ sức khỏe võng mạc và có thể giúp giảm gánh nặng drusen.
+• AMD Ướt: Tiêm anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) giảm rò rỉ. Bắt đầu hàng tháng, sau kéo dài theo đáp ứng. Điều trị sớm và đều đặn mang lại cơ hội tốt nhất để bảo tồn thị lực. Vì vậy, điều quan trọng là liên hệ bác sĩ ngay nếu bạn nhận thấy bất kỳ thay đổi đột ngột nào trên lưới Amsler.
 
 Bạn Có Thể Làm Gì
 • Giữ tất cả lịch hẹn.
-• Dùng lưới Amsler hàng ngày.
+• Dùng lưới Amsler hàng ngày. Kiểm tra từng mắt một với kính đọc sách.
 • Uống vitamin AREDS2 theo khuyến nghị.
 • Không hút thuốc. Ăn rau xanh lá, trái cây vàng, cá.
 • Tập thể dục, kiểm soát huyết áp và cholesterol.
 • Đeo kính râm chống tia UV.
+
+Tận Dụng Tối Đa Thị Lực
+Nếu bạn bị AMD, bạn vẫn có thể làm nhiều hoạt động yêu thích với các công cụ hỗ trợ thị lực kém — kính lúp, thiết bị điện tử và nhiều hơn nữa. Ánh sáng tốt và vật liệu có độ tương phản cao (sách chữ lớn, giấy kẻ đậm) cũng giúp các công việc hàng ngày dễ dàng hơn. Chuyên gia phục hồi thị lực có thể hướng dẫn bạn sử dụng thị lực bên và tìm dịch vụ hỗ trợ. Hãy xin giấy giới thiệu từ bác sĩ nhãn khoa.
 
 Khi Nào Cần Gọi Ngay
 • Mờ hoặc méo thị lực trung tâm mới hoặc nặng hơn.
@@ -1743,31 +1748,34 @@ Palavras Importantes
 • OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
 
 O Que É DMRI?
-Doença da retina que danifica a mácula, causando perda de visão central. A visão periférica (lateral) permanece normal. Imagine um relógio: pode ver os números mas não os ponteiros — áreas escuras na visão central. Principal causa de perda visual em pessoas acima de 50 anos. Muitos não percebem até a visão estar muito embaçada.
+Doença da retina que danifica a mácula, causando perda de visão central. A visão periférica (lateral) permanece normal. Imagine olhar para o rosto de alguém: pode ver claramente o cabelo e a roupa, mas tem dificuldade em distinguir os olhos, nariz ou expressão — o centro da visão pode ficar embaçado, escuro ou vazio. Principal causa de perda visual em pessoas acima de 50 anos. Muitos não percebem até a visão estar muito embaçada.
 
 [IMAGE_PAIR:amd-oct-before|Antes do Tratamento (DMRI Úmida)|amd-oct-after|Após Tratamento (Resolvido)|OCT mostrando fluido sob a retina antes e resolução após injeções anti-VEGF.]
 
 Dois Tipos
-• DMRI Seca: Mais comum (~80%). A mácula afina e se acumulam drusen. Pode incluir atrofia geográfica (perda de células), que pode ser tratada com medicamentos mais novos para retardar progressão.
+• DMRI Seca: Mais comum (~80%). A mácula afina e se acumulam drusen. Pode incluir atrofia geográfica (perda de células). As opções de tratamento estão crescendo: a terapia de fotobiomodulação (PBM) usa luz de baixa intensidade para apoiar as células da retina, e medicamentos mais novos podem retardar a atrofia geográfica. Seu médico discutirá quais tratamentos são adequados para você.
 • DMRI Úmida: Menos comum mas mais séria. Vasos anormais crescem sob a retina e vazam sangue ou fluido. Perda visual mais rápida. Tratada com injeções anti-VEGF.
 
 Fatores de Risco
 • Acima de 50 anos, história familiar, tabagismo, dieta rica em gordura saturada, sobrepeso, pressão alta, colesterol alto, doença cardíaca.
 
 Como É Diagnosticada?
-• Exame com dilatação, grade de Amsler, OCT, OCTA, angiografia com fluoresceína.
+• Exame com dilatação, OCT, OCTA, angiografia com fluoresceína.
 
 Tratamento
-• DMRI Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinco 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos mais novos (Izervay, Syfovre). Beta caroteno NÃO para fumantes.
-• DMRI Úmida: Injeções anti-VEGF (Eylea, Avastin, Lucentis, Vabysmo) para reduzir vazamento. Tratamento começa mensal, depois estendido conforme resposta.
+• DMRI Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinco 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos mais novos (Izervay, Syfovre). Beta caroteno NÃO para fumantes. A terapia de fotobiomodulação (PBM) usa luz de baixa intensidade para apoiar a saúde da retina e pode ajudar a reduzir a carga de drusen.
+• DMRI Úmida: Injeções anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) para reduzir vazamento. Tratamento começa mensal, depois estendido conforme resposta. Tratamento precoce e consistente oferece a melhor chance de preservar a visão. Por isso é fundamental entrar em contato com seu médico imediatamente se notar qualquer mudança súbita na grade de Amsler.
 
 O Que Você Pode Fazer
 • Compareça a todas as consultas.
-• Use a grade de Amsler diariamente.
+• Use a grade de Amsler diariamente. Verifique um olho de cada vez com seus óculos de leitura.
 • Tome vitaminas AREDS2 conforme recomendado.
 • Não fume. Coma vegetais verde-escuros, frutas amarelas, peixe.
 • Exercício regular, controle pressão arterial e colesterol.
 • Use óculos de sol com proteção UV.
+
+Aproveitando ao Máximo Sua Visão
+Se você tem DMRI, muitas vezes ainda pode fazer suas atividades favoritas com ferramentas especiais de baixa visão — lupas, dispositivos eletrônicos e mais. Boa iluminação e materiais de alto contraste (como livros com letras grandes ou papel com linhas grossas) também facilitam as tarefas do dia a dia. Um especialista em reabilitação visual pode ensinar você a usar sua visão lateral e encontrar serviços de apoio. Peça um encaminhamento ao seu oftalmologista.
 
 Quando Ligar Imediatamente
 • Visão central embaçada ou distorcida nova ou piorando.
@@ -2657,20 +2665,15 @@ Quando Ligar Imediatamente
 Eye Words to Know
 • Retina — the layer of nerve cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
 • Vitreous — the clear, gel-like substance that fills the inside of your eye. It helps the eye maintain its shape and also transmits light to the retina.
-• Floaters — tiny clumps of gel or cells inside the vitreous. What you see are the shadows these clumps cast on your retina. They look like small specks, dots, circles, lines, or cobwebs in your field of vision.
 
 What Are Floaters?
-Floaters look like small specks, dots, circles, lines, or cobwebs in your field of vision. While they seem to be in front of your eye, they are actually floating inside the vitreous. You usually notice floaters most when looking at something plain, like a blank wall or a blue sky.
-
-As we age, our vitreous starts to thicken or shrink. Sometimes clumps or strands form in the vitreous. If the vitreous pulls away from the back of the eye, it is called posterior vitreous detachment. Floaters usually happen with posterior vitreous detachment. They are not serious, and they tend to fade or go away over time.
-
-You are more likely to get floaters if you are nearsighted (you need glasses to see far away), have had surgery for cataracts, or have had inflammation (swelling) inside the eye.
+Floaters look like small specks, dots, circles, lines, or cobwebs in your field of vision. They are actually tiny clumps floating inside the vitreous, and you notice them most against plain backgrounds like a blue sky or white wall. They are usually not serious and tend to fade over time. You are more likely to get floaters if you are nearsighted, have had cataract surgery, or have had inflammation inside the eye.
 
 What Are Flashes?
 Flashes can look like flashing lights or lightning streaks in your field of vision. Some people compare them to seeing "stars" after being hit on the head. You might see flashes on and off for weeks or even months. Flashes happen when the vitreous rubs or pulls on your retina. As people age, it is common to see flashes occasionally.
 
 Flashes vs. Migraines
-Sometimes people have light flashes that look like jagged lines or heat waves. These can appear in one or both eyes and may last up to 20 minutes. This type of flash may be caused by a migraine — a spasm of blood vessels in the brain. When you get a headache after these flashes, it is called a "migraine headache." But sometimes you only see the light flash without having a headache. This is called an "ophthalmic migraine" or "migraine without headache." These are generally not dangerous.
+Some flashes look like jagged lines or heat waves lasting up to 20 minutes. These are usually caused by a migraine and may or may not be followed by a headache ("ophthalmic migraine"). They are generally not dangerous and are different from the flashes caused by the vitreous pulling on the retina.
 
 What Is a PVD?
 The vitreous is a clear gel that fills the inside of the eye. As we age, this gel naturally shrinks and eventually separates from the retina — this is called a posterior vitreous detachment (PVD). It is extremely common (most people over age 60 will develop one) and is usually harmless.
@@ -2680,6 +2683,16 @@ Is It Dangerous?
 • HOWEVER, in about 10–15% of cases, the vitreous can pull hard enough on the retina to cause a retinal tear. A tear, if not treated, can lead to a retinal detachment — a serious condition where the retina lifts away from the back of the eye.
 • This is why NEW flashes and floaters always need a prompt dilated eye exam.
 
+What to Expect
+• If your exam shows a PVD WITHOUT a retinal tear: No treatment is needed. The floaters and flashes usually become less noticeable over weeks to months as your brain adapts.
+• If a retinal tear IS found: It can usually be treated in the office with laser (photocoagulation) or freezing treatment (cryopexy) — both are quick, effective procedures that seal the retina and prevent detachment.
+
+Living with Floaters
+• Floaters are annoying but harmless. Most people notice them less over time.
+• They are more visible against light backgrounds (blue sky, white walls, reading).
+• No vitamins or drops can make floaters go away.
+• In rare cases of severely debilitating floaters, surgical options exist (discuss with your doctor).
+
 When to Call Immediately
 Contact your eye doctor right away if you notice:
 • A sudden shower of many new floaters.
@@ -2687,25 +2700,13 @@ Contact your eye doctor right away if you notice:
 • A shadow appears in your peripheral (side) vision.
 • A gray curtain covers part of your vision.
 • Any sudden loss of vision.
-These could be symptoms of a retinal tear or detachment and need same-day evaluation.
-
-What to Expect
-• If your exam shows a PVD WITHOUT a retinal tear: No treatment is needed. The floaters and flashes usually become less noticeable over weeks to months as your brain adapts.
-• If a retinal tear IS found: It can usually be treated in the office with laser (photocoagulation) or freezing treatment (cryopexy) — both are quick, effective procedures that seal the retina and prevent detachment.
-• Your doctor may schedule a follow-up exam in 4–6 weeks to ensure no delayed tear has developed.
-
-Living with Floaters
-• Floaters are annoying but harmless. Most people notice them less over time.
-• They are more visible against light backgrounds (blue sky, white walls, reading).
-• No vitamins or drops can make floaters go away.
-• In rare cases of severely debilitating floaters, surgical options exist (discuss with your doctor).`,
+These could be symptoms of a retinal tear or detachment and may need same-day evaluation.`,
 
       es: `DESPRENDIMIENTO VÍTREO POSTERIOR (DVP) — DESTELLOS Y MOSCAS VOLANTES
 
 Palabras Importantes
 • Retina — capa de células nerviosas en la parte posterior del ojo que detecta luz y envía señales al cerebro.
 • Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
-• Moscas volantes (floaters) — pequeños grumos de gel o células dentro del vítreo. Lo que ve son sombras proyectadas en la retina.
 
 ¿Qué Son las Moscas Volantes?
 Parecen pequeñas manchas, puntos, líneas o telarañas en su campo visual. Están flotando dentro del vítreo. Se notan más al mirar algo uniforme como una pared blanca o el cielo azul. Con la edad, el vítreo se espesa o encoge, formando grumos. Si se separa de la retina, es un DVP. Son comunes y tienden a desvanecerse. Es más probable tenerlas si es miope, tuvo cirugía de catarata, o tuvo inflamación ocular.
@@ -2724,31 +2725,29 @@ El vítreo se encoge y se separa de la retina. Es extremadamente común (mayorí
 • PERO en ~10–15% de casos puede causar un desgarro retiniano, que sin tratar puede llevar a desprendimiento de retina.
 • Por eso, destellos y moscas volantes NUEVOS siempre necesitan examen inmediato.
 
+Qué Esperar
+• Sin desgarro: No necesita tratamiento. Los síntomas mejoran con el tiempo.
+• Con desgarro: Se puede tratar con láser (fotocoagulación) o congelamiento (criopexia) en el consultorio.
+
+Vivir con Moscas Volantes
+• Son molestas pero inofensivas. La mayoría las nota menos con el tiempo.
+• Son más visibles contra fondos claros.
+• No hay vitaminas ni gotas que las eliminen.
+• En casos raros muy debilitantes, existen opciones quirúrgicas.
+
 Cuándo Llamar de Inmediato
 • Aparición súbita de muchas moscas volantes nuevas.
 • Destellos de luz nuevos o persistentes.
 • Sombra en su visión periférica (lateral).
 • Cortina gris cubriendo parte de su visión.
 • Cualquier pérdida súbita de visión.
-Estos podrían indicar desgarro o desprendimiento de retina — necesitan evaluación el mismo día.
-
-Qué Esperar
-• Sin desgarro: No necesita tratamiento. Los síntomas mejoran con el tiempo.
-• Con desgarro: Se puede tratar con láser (fotocoagulación) o congelamiento (criopexia) en el consultorio.
-• Su doctor puede programar seguimiento en 4–6 semanas.
-
-Vivir con Moscas Volantes
-• Son molestas pero inofensivas. La mayoría las nota menos con el tiempo.
-• Son más visibles contra fondos claros.
-• No hay vitaminas ni gotas que las eliminen.
-• En casos raros muy debilitantes, existen opciones quirúrgicas.`,
+Estos podrían indicar desgarro o desprendimiento de retina — necesitan evaluación el mismo día.`,
 
       vi: `BONG DỊCH KÍNH SAU (PVD) — CHỚP SÁNG VÀ RUỒI BAY
 
 Từ Vựng Cần Biết
 • Võng mạc — lớp tế bào thần kinh ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
 • Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
-• Ruồi bay (floaters) — các cục gel hoặc tế bào nhỏ trong dịch kính. Bạn nhìn thấy bóng của chúng trên võng mạc.
 
 Ruồi Bay Là Gì?
 Trông như đốm nhỏ, chấm, đường hoặc mạng nhện trong tầm nhìn. Chúng thực sự trôi nổi bên trong dịch kính. Dễ thấy nhất khi nhìn nền trơn như tường trắng hoặc bầu trời. Với tuổi tác, dịch kính đặc lại hoặc co lại, tạo cục. Khi tách khỏi võng mạc gọi là PVD. Thường vô hại và giảm dần. Dễ gặp hơn nếu cận thị, đã phẫu thuật đục thủy tinh thể, hoặc bị viêm trong mắt.
@@ -2767,31 +2766,29 @@ Có Nguy Hiểm Không?
 • NHƯNG khoảng 10–15% trường hợp có thể gây rách võng mạc, dẫn đến bong nếu không điều trị.
 • Chớp sáng và ruồi bay MỚI luôn cần khám giãn đồng tử ngay.
 
+Điều Cần Biết
+• Không có rách: Không cần điều trị. Triệu chứng giảm theo thời gian.
+• Có rách: Điều trị bằng laser (quang đông) hoặc đông lạnh (cryopexy) tại phòng khám.
+
+Sống Với Ruồi Bay
+• Phiền nhưng vô hại. Hầu hết người ta ít chú ý theo thời gian.
+• Dễ thấy hơn trên nền sáng.
+• Không có vitamin hay thuốc nhỏ nào loại bỏ được.
+• Trường hợp hiếm rất nặng, có thể phẫu thuật.
+
 Khi Nào Cần Gọi Ngay
 • Đốm đen mới xuất hiện đột ngột nhiều.
 • Chớp sáng mới hoặc liên tục.
 • Bóng xuất hiện ở tầm nhìn ngoại vi.
 • Màn xám che một phần tầm nhìn.
 • Mất thị lực đột ngột.
-Đây có thể là triệu chứng rách hoặc bong võng mạc — cần khám cùng ngày.
-
-Điều Cần Biết
-• Không có rách: Không cần điều trị. Triệu chứng giảm theo thời gian.
-• Có rách: Điều trị bằng laser (quang đông) hoặc đông lạnh (cryopexy) tại phòng khám.
-• Bác sĩ có thể hẹn tái khám sau 4–6 tuần.
-
-Sống Với Ruồi Bay
-• Phiền nhưng vô hại. Hầu hết người ta ít chú ý theo thời gian.
-• Dễ thấy hơn trên nền sáng.
-• Không có vitamin hay thuốc nhỏ nào loại bỏ được.
-• Trường hợp hiếm rất nặng, có thể phẫu thuật.`,
+Đây có thể là triệu chứng rách hoặc bong võng mạc — cần khám cùng ngày.`,
 
       pt: `DESCOLAMENTO VÍTREO POSTERIOR (DVP) — FLASHES E MOSCAS VOLANTES
 
 Palavras Importantes
 • Retina — camada de células nervosas no fundo do olho que detecta luz e envia sinais ao cérebro.
 • Vítreo — substância gelatinosa transparente que preenche o interior do olho.
-• Moscas volantes (floaters) — pequenos grumos de gel ou células no vítreo. O que você vê são sombras projetadas na retina.
 
 O Que São Moscas Volantes?
 Parecem pequenas manchas, pontos, linhas ou teias na visão. Estão flutuando dentro do vítreo. São mais perceptíveis ao olhar para algo uniforme como parede branca ou céu azul. Com a idade, o vítreo engrossa ou encolhe, formando grumos. Se se separa da retina, é DVP. São comuns e tendem a diminuir. Mais prováveis se é míope, fez cirurgia de catarata, ou teve inflamação ocular.
@@ -2810,24 +2807,23 @@ O vítreo encolhe naturalmente e se separa da retina. Extremamente comum (maiori
 • PORÉM em ~10–15% dos casos pode causar rasgo retiniano, que sem tratamento pode levar a descolamento de retina.
 • Flashes e moscas volantes NOVOS sempre precisam exame imediato.
 
+O Que Esperar
+• Sem rasgo: Não precisa tratamento. Sintomas melhoram com o tempo.
+• Com rasgo: Tratado com laser (fotocoagulação) ou congelamento (criopexia) no consultório.
+
+Convivendo com Moscas Volantes
+• São incômodas mas inofensivas. A maioria percebe menos com o tempo.
+• Mais visíveis contra fundos claros.
+• Não há vitaminas ou colírios que as eliminem.
+• Em casos raros muito debilitantes, existem opções cirúrgicas.
+
 Quando Ligar Imediatamente
 • Surgimento súbito de muitas moscas volantes novas.
 • Flashes de luz novos ou persistentes.
 • Sombra na visão periférica (lateral).
 • Cortina cinza cobrindo parte da visão.
 • Qualquer perda súbita de visão.
-Podem ser sintomas de rasgo ou descolamento de retina — precisam avaliação no mesmo dia.
-
-O Que Esperar
-• Sem rasgo: Não precisa tratamento. Sintomas melhoram com o tempo.
-• Com rasgo: Tratado com laser (fotocoagulação) ou congelamento (criopexia) no consultório.
-• Médico pode agendar retorno em 4–6 semanas.
-
-Convivendo com Moscas Volantes
-• São incômodas mas inofensivas. A maioria percebe menos com o tempo.
-• Mais visíveis contra fundos claros.
-• Não há vitaminas ou colírios que as eliminem.
-• Em casos raros muito debilitantes, existem opções cirúrgicas.`
+Podem ser sintomas de rasgo ou descolamento de retina — precisam avaliação no mesmo dia.`
     }
   },
   {
@@ -3168,7 +3164,7 @@ Eye Words to Know
 • OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
 
 What Is It?
-A macular pucker happens when wrinkles, creases, or bulges form on your macula. The macula must lie flat against the back of your eye to work properly. When the macula wrinkles or bulges, your central vision is affected. Things can look wavy, or you may have trouble seeing details. You might notice a gray, cloudy, or blank area in your central vision. A macular pucker does not affect your peripheral (side) vision.
+A macular pucker happens when wrinkles, creases, or bulges form on your macula. The macula must lie flat against the back of your eye to work properly. When the macula wrinkles or bulges, your central vision may be affected. Things can look wavy, or you may have trouble seeing details. You might notice a gray, cloudy, or blank area in your central vision, or even double vision in the affected eye. A macular pucker doesn't usually affect your peripheral (side) vision.
 
 [IMAGE_PAIR:erm-oct-before|Before Surgery (ERM)|erm-oct-after|After Surgery (Membrane Peeled)|OCT cross-section showing wrinkled macula before and flat macula after membrane peel surgery.]
 
@@ -3189,10 +3185,10 @@ How Is It Diagnosed?
 Treatment
 Treatment depends on your symptoms.
 • Mild cases: If your symptoms are mild, you might not need any treatment. Your doctor may update your glasses or contact lens prescription to improve your vision. Eye drops, medicine, and laser surgery do not help macular pucker.
-• Surgery (vitrectomy with membrane peel): If your symptoms are more serious, your doctor may recommend a surgery called vitrectomy. The surgeon removes some of the vitreous and carefully peels the scar tissue off the macula. This flattens the macula, returning it to its proper position. Vision usually improves slowly over weeks to months. However, your sight may not be as good as it was before the macular pucker.
+• Surgery (vitrectomy with membrane peel): If your symptoms are more serious, your doctor may recommend a surgery called vitrectomy. The surgeon removes some of the vitreous and carefully peels the scar tissue off the macula. This flattens the macula, returning it to its proper position. Vision usually improves slowly over weeks to months. However, even after surgery, your sight may not be as good as it was before the macular pucker.
 
 Surgery Risks
-Like all surgery, vitrectomy has some risks, including eye infection, bleeding in the eye, retinal detachment, the macular pucker coming back (recurrence), and cataract (the lens in your eye becoming cloudy, which may need surgery later).
+Like all surgery, vitrectomy has some risks, including eye infection, bleeding in the eye, retinal detachment, the macular pucker coming back (recurrence), increased eye pressure, vision loss, and cataract (the lens in your eye becoming cloudy, which may need surgery later).
 
 When to Call Right Away
 Contact your eye doctor immediately if you experience:
@@ -3236,7 +3232,7 @@ Tratamiento
 • Cirugía (vitrectomía con pelado de membrana): Si los síntomas son serios, el cirujano remueve el vítreo y pela el tejido cicatricial. La visión mejora lentamente en semanas a meses, pero puede no ser tan buena como antes.
 
 Riesgos de la Cirugía
-Infección ocular, sangrado, desprendimiento de retina, recurrencia de la membrana y catarata.
+Infección ocular, sangrado, desprendimiento de retina, recurrencia de la membrana, aumento de presión ocular, pérdida de visión y catarata.
 
 Cuándo Llamar de Inmediato
 • Aumento súbito de visión borrosa o distorsionada.
@@ -3279,7 +3275,7 @@ Chẩn Đoán
 • Phẫu thuật (cắt dịch kính và bóc màng): Bác sĩ loại bỏ dịch kính và bóc mô sẹo. Thị lực cải thiện chậm trong vài tuần đến tháng.
 
 Rủi Ro Phẫu Thuật
-Nhiễm trùng, chảy máu, bong võng mạc, tái phát màng, đục thủy tinh thể.
+Nhiễm trùng, chảy máu, bong võng mạc, tái phát màng, tăng nhãn áp, mất thị lực và đục thủy tinh thể.
 
 Khi Nào Cần Gọi Ngay
 • Mờ hoặc méo thị lực tăng đột ngột.
@@ -3322,7 +3318,7 @@ Tratamento
 • Cirurgia (vitrectomia com remoção de membrana): O cirurgião remove o vítreo e retira o tecido cicatricial. A visão melhora lentamente em semanas a meses, mas pode não ser tão boa quanto antes.
 
 Riscos da Cirurgia
-Infecção ocular, sangramento, descolamento de retina, recorrência da membrana e catarata.
+Infecção ocular, sangramento, descolamento de retina, recorrência da membrana, aumento da pressão ocular, perda de visão e catarata.
 
 Quando Ligar Imediatamente
 • Aumento súbito de visão embaçada ou distorcida.
@@ -3349,7 +3345,7 @@ Eye Words to Know
 • OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
 
 What Is It?
-A macular hole is when a tear or opening forms in your macula. As the hole forms, things in your central vision will look blurry, wavy, or distorted. As the hole grows, a dark or blind spot appears in your central vision. A macular hole does not affect your peripheral (side) vision.
+A macular hole is when a tear or opening forms in your macula. As the hole forms, things in your central vision will look blurry, wavy, or distorted. As the hole grows, a dark or blind spot appears in your central vision. A macular hole usually affects only your central vision. Rarely, it may lead to a retinal detachment, which can also affect your peripheral (side) vision.
 
 [IMAGE_PAIR:mh-oct-before|Before Surgery (Macular Hole)|mh-oct-after|After Surgery (Hole Closed)|OCT cross-section showing open macular hole before surgery and closed hole after vitrectomy with gas bubble.]
 
@@ -3367,7 +3363,7 @@ How Is It Diagnosed?
 • OCT (Optical Coherence Tomography) — a painless scan that produces very detailed pictures of the retina and macula, clearly showing the hole.
 
 Treatment
-Surgery called vitrectomy is the best way to treat a macular hole. Your surgeon removes the vitreous that is pulling on your macula, then places a gas bubble inside the eye. This bubble helps flatten the macular hole and hold it in place while your eye heals. The gas bubble slowly goes away on its own and is replaced by fluid your eye naturally produces.
+Surgery called vitrectomy is the best way to treat a macular hole. Your surgeon removes the vitreous that is pulling on your macula, then places a gas bubble inside the eye. This bubble pushes against the back of your eye, helping bring the edges of the hole close together so it can heal. That is why face-down positioning after surgery is so critical for its success. The gas bubble slowly goes away on its own and is replaced by fluid your eye naturally produces.
 
 Things to Know About Surgery
 • Your eye may hurt after surgery. Your surgeon will have you take medicine to help with pain.
@@ -3375,10 +3371,10 @@ Things to Know About Surgery
 • You may be asked to keep your face down in a specific position for a period of time, depending on your surgeon's preference. This keeps the gas bubble in place to heal properly.
 • You CANNOT fly in an airplane, go to mountains/high altitudes, or scuba dive until the gas bubble is gone. A rapid altitude change can make eye pressure rise dangerously.
 • If you need to have any other type of surgery, be sure to tell your doctor before surgery that you have a gas bubble in your eye.
-• Your vision will improve as the macular hole closes. It may take several months for the hole to finish healing. How much vision you get back depends on the size of your macular hole and how long it was there before surgery.
+• Your vision may improve as the macular hole closes. It may take several months for the hole to finish healing. How much vision you get back depends on the size of your macular hole and how long it was there before surgery.
 
 Surgery Risks
-Like any surgery, vitrectomy has some risks, including eye infection, bleeding in the eye, retinal detachment, glaucoma (increased pressure inside the eye), and cataract (the lens in your eye becoming cloudy).
+Like any surgery, vitrectomy has some risks, including eye infection, bleeding in the eye, retinal detachment, glaucoma (increased pressure inside the eye), vision loss, and cataract (the lens in your eye becoming cloudy).
 
 Success Rate
 • About 90–95% of macular holes close successfully with one surgery. Earlier treatment generally gives better visual results.
@@ -3402,7 +3398,7 @@ Palabras Importantes
 • OCT — Tomografía de Coherencia Óptica, escaneo indoloro que produce imágenes detalladas de la retina.
 
 ¿Qué Es?
-Un agujero macular es cuando se forma una abertura en la mácula. La visión central se vuelve borrosa, ondulada o distorsionada. A medida que el agujero crece, aparece un punto oscuro o ciego en la visión central. No afecta la visión periférica (lateral).
+Un agujero macular es cuando se forma una abertura en la mácula. La visión central se vuelve borrosa, ondulada o distorsionada. A medida que el agujero crece, aparece un punto oscuro o ciego en la visión central. Generalmente solo afecta la visión central. En casos raros, puede llevar a un desprendimiento de retina, que también puede afectar la visión periférica (lateral).
 
 [IMAGE_PAIR:mh-oct-before|Antes de Cirugía (Agujero)|mh-oct-after|Después de Cirugía (Cerrado)|OCT mostrando agujero macular abierto antes y cerrado después de vitrectomía.]
 
@@ -3420,7 +3416,7 @@ Síntomas
 • OCT — escaneo indoloro que muestra el agujero con claridad.
 
 Tratamiento
-Cirugía de vitrectomía: el cirujano remueve el vítreo y coloca una burbuja de gas que aplana el agujero mientras sana. La burbuja se disuelve sola.
+Cirugía de vitrectomía: el cirujano remueve el vítreo y coloca una burbuja de gas. Esta burbuja empuja contra la parte posterior del ojo, ayudando a juntar los bordes del agujero para que pueda sanar. Por eso la posición boca abajo después de la cirugía es tan importante para su éxito. La burbuja se disuelve sola.
 • Puede tener dolor — se recetarán medicamentos.
 • Necesitará parche y gotas oculares.
 • Puede necesitar posición boca abajo por un período de tiempo.
@@ -3429,7 +3425,7 @@ Cirugía de vitrectomía: el cirujano remueve el vítreo y coloca una burbuja de
 • La visión mejora a medida que el agujero cierra, pero puede tomar varios meses.
 
 Riesgos de Cirugía
-Infección, sangrado, desprendimiento de retina, glaucoma y catarata.
+Infección, sangrado, desprendimiento de retina, glaucoma, pérdida de visión y catarata.
 
 Tasa de Éxito
 • ~90–95% de cierre exitoso. Tratamiento temprano da mejores resultados visuales.
@@ -3452,7 +3448,7 @@ Từ Vựng Cần Biết
 • OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
 
 Là Gì?
-Lỗ hoàng điểm là khi hình thành vết rách hoặc lỗ mở ở hoàng điểm. Thị lực trung tâm trở nên mờ, lượn sóng hoặc méo. Khi lỗ lớn hơn, xuất hiện đốm tối hoặc điểm mù. Không ảnh hưởng thị lực ngoại vi.
+Lỗ hoàng điểm là khi hình thành vết rách hoặc lỗ mở ở hoàng điểm. Thị lực trung tâm trở nên mờ, lượn sóng hoặc méo. Khi lỗ lớn hơn, xuất hiện đốm tối hoặc điểm mù. Thường chỉ ảnh hưởng thị lực trung tâm. Hiếm khi, có thể dẫn đến bong võng mạc, ảnh hưởng cả thị lực ngoại vi (bên).
 
 [IMAGE_PAIR:mh-oct-before|Trước Phẫu Thuật (Lỗ Hoàng Điểm)|mh-oct-after|Sau Phẫu Thuật (Lỗ Đóng)|OCT cho thấy lỗ hoàng điểm mở trước và đóng sau phẫu thuật cắt dịch kính.]
 
@@ -3470,7 +3466,7 @@ Chẩn Đoán
 • OCT — quét không đau cho thấy lỗ rõ ràng.
 
 Điều Trị
-Phẫu thuật cắt dịch kính: bác sĩ loại bỏ dịch kính và đặt bong bóng khí làm phẳng lỗ khi lành. Bong bóng tự tan.
+Phẫu thuật cắt dịch kính: bác sĩ loại bỏ dịch kính và đặt bong bóng khí. Bong bóng này đẩy vào phía sau mắt, giúp kéo các mép lỗ lại gần nhau để lành. Đó là lý do tư thế úp mặt sau phẫu thuật rất quan trọng cho sự thành công. Bong bóng tự tan.
 • Có thể đau — sẽ có thuốc giảm đau.
 • Cần đeo miếng che mắt và nhỏ thuốc.
 • Có thể cần tư thế úp mặt trong một thời gian.
@@ -3479,7 +3475,7 @@ Phẫu thuật cắt dịch kính: bác sĩ loại bỏ dịch kính và đặt 
 • Thị lực cải thiện khi lỗ đóng, có thể mất vài tháng.
 
 Rủi Ro Phẫu Thuật
-Nhiễm trùng, chảy máu, bong võng mạc, tăng nhãn áp, đục thủy tinh thể.
+Nhiễm trùng, chảy máu, bong võng mạc, tăng nhãn áp, mất thị lực và đục thủy tinh thể.
 
 Tỷ Lệ Thành Công
 • ~90–95% đóng lỗ thành công. Điều trị sớm cho kết quả tốt hơn.
@@ -3502,7 +3498,7 @@ Palavras Importantes
 • OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
 
 O Que É?
-Um buraco macular é quando uma abertura se forma na mácula. A visão central fica embaçada, ondulada ou distorcida. À medida que o buraco cresce, aparece um ponto escuro ou cego na visão central. Não afeta a visão periférica (lateral).
+Um buraco macular é quando uma abertura se forma na mácula. A visão central fica embaçada, ondulada ou distorcida. À medida que o buraco cresce, aparece um ponto escuro ou cego na visão central. Geralmente afeta apenas a visão central. Raramente, pode levar a um descolamento de retina, que também pode afetar a visão periférica (lateral).
 
 [IMAGE_PAIR:mh-oct-before|Antes da Cirurgia (Buraco)|mh-oct-after|Após Cirurgia (Fechado)|OCT mostrando buraco macular aberto antes e fechado após vitrectomia.]
 
@@ -3520,7 +3516,7 @@ Como É Diagnosticado?
 • OCT — exame indolor que mostra o buraco com clareza.
 
 Tratamento
-Cirurgia de vitrectomia: o cirurgião remove o vítreo e coloca uma bolha de gás que achata o buraco enquanto cicatriza. A bolha dissolve sozinha.
+Cirurgia de vitrectomia: o cirurgião remove o vítreo e coloca uma bolha de gás. Essa bolha empurra contra a parte de trás do olho, ajudando a juntar as bordas do buraco para que possa cicatrizar. Por isso o posicionamento de face para baixo após a cirurgia é tão importante para o sucesso. A bolha dissolve sozinha.
 • Pode ter dor — medicamentos serão prescritos.
 • Precisará de tampão ocular e colírios.
 • Pode precisar ficar com a face para baixo por um período.
@@ -3529,7 +3525,7 @@ Cirurgia de vitrectomia: o cirurgião remove o vítreo e coloca uma bolha de gá
 • A visão melhora à medida que o buraco fecha, mas pode levar vários meses.
 
 Riscos da Cirurgia
-Infecção, sangramento, descolamento de retina, glaucoma e catarata.
+Infecção, sangramento, descolamento de retina, glaucoma, perda de visão e catarata.
 
 Taxa de Sucesso
 • ~90–95% de fechamento bem-sucedido. Tratamento precoce dá melhores resultados visuais.
