@@ -395,7 +395,7 @@ body {
 <div class="page-header">
   <img src="${logoSrc}" alt="${PRACTICE_INFO.name}">
   <div class="practice-contact">
-    ${PRACTICE_INFO.locations.map(l => `<div><strong>${l.city}:</strong> ${l.phone}</div>`).join("")}
+    ${PRACTICE_INFO.locations.map(l => `<div><strong>${l.city}:</strong> ${l.address}<br>P. ${l.phone} &nbsp; F. ${l.fax}</div>`).join("")}
   </div>
 </div>
 
