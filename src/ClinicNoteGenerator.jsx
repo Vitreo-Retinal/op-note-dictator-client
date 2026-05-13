@@ -1047,6 +1047,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const [autoDrops, setAutoDrops] = useState([]);
   const [autoLang, setAutoLang] = useState("en");
   const [uncheckedHandouts, setUncheckedHandouts] = useState(new Set());
+  const [eduLangOverride, setEduLangOverride] = useState(null); // null = use auto-detect
 
   // Injection calculator
   const [lastInjDate, setLastInjDate] = useState("");
@@ -1736,14 +1737,24 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   if (matched.length === 0 && detectedDrops.length === 0) return null;
                   return (
                     <div style={{ background: "#0f1f2e", border: "1px solid #1d4ed8", borderRadius: 10, padding: "14px 18px", marginTop: 8 }}>
-                      <div style={{ fontSize: "0.72rem", color: "#60a5fa", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
-                        Patient Education — auto-matched from this note
+                      {(() => { const eduLang = eduLangOverride || detectedLang; return (<>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
+                        <div style={{ fontSize: "0.72rem", color: "#60a5fa", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                          Patient Education — auto-matched from this note
+                        </div>
+                        <div style={{ display: "flex", gap: 3 }}>
+                          {[{id:"en",label:"EN"},{id:"es",label:"ES"},{id:"vi",label:"VI"},{id:"pt",label:"PT"}].map(l => (
+                            <button key={l.id} onClick={() => setEduLangOverride(l.id === detectedLang ? null : l.id)}
+                              style={{ background: (eduLangOverride || detectedLang) === l.id ? "#3b82f6" : "transparent", color: (eduLangOverride || detectedLang) === l.id ? "#fff" : "#64748b", border: `1px solid ${(eduLangOverride || detectedLang) === l.id ? "#3b82f6" : "#334155"}`, borderRadius: 5, padding: "2px 8px", fontSize: "0.65rem", fontFamily: "monospace", fontWeight: 700, cursor: "pointer" }}>
+                              {l.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                       <div style={{ fontSize: "0.78rem", color: S.text, marginBottom: 10 }}>
                         {matched.length > 0 && <span>{matched.length} handout{matched.length !== 1 ? "s" : ""} matched — select which to include:</span>}
                         {matched.length > 0 && detectedDrops.length > 0 && <span> &bull; </span>}
                         {detectedDrops.length > 0 && <span>{detectedDrops.length} drop{detectedDrops.length !== 1 ? "s" : ""} detected</span>}
-                        {detectedLang !== "en" && <span style={{ marginLeft: 8, background: "#1e40af", color: "#bfdbfe", padding: "2px 8px", borderRadius: 4, fontSize: "0.68rem" }}>{detectedLang.toUpperCase()}</span>}
                       </div>
                       {matched.length > 0 && (
                         <div style={{ marginBottom: 10 }}>
@@ -1758,7 +1769,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                                     return next;
                                   });
                                 }} style={{ accentColor: "#3b82f6" }} />
-                                {h.title[detectedLang] || h.title.en}
+                                {h.title[eduLang] || h.title.en}
                               </label>
                             );
                           })}
@@ -1783,10 +1794,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                               try {
                                 const payload = {
                                   handouts: selected.map(h => ({
-                                    title: h.title[detectedLang] || h.title.en,
-                                    content: h.content[detectedLang] || h.content.en,
+                                    title: h.title[eduLang] || h.title.en,
+                                    content: h.content[eduLang] || h.content.en,
                                   })),
-                                  lang: detectedLang,
+                                  lang: eduLang,
                                 };
                                 const res = await fetch(`${API_BASE}/api/education-pdf`, {
                                   method: "POST",
@@ -1804,7 +1815,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                               } catch (e) {
                                 console.error("PDF download error:", e);
                                 // Fallback to HTML print
-                                const html = generateEducationPrintHTML(selected, detectedLang);
+                                const html = generateEducationPrintHTML(selected, eduLang);
                                 const win = window.open("", "_blank");
                                 win.document.write(html);
                                 win.document.close();
@@ -1813,7 +1824,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                             }}
                             style={{ background: "linear-gradient(135deg,#2563eb,#3b82f6)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
                           >
-                            Download {selected.length === 1 ? "1 Handout" : `${selected.length} Handouts`} PDF ({(detectedLang || "en").toUpperCase()})
+                            Download {selected.length === 1 ? "1 Handout" : `${selected.length} Handouts`} PDF ({(eduLang || "en").toUpperCase()})
                           </button>
                           );
                         })()}
@@ -1826,6 +1837,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                           </button>
                         )}
                       </div>
+                      </>); })()}
                     </div>
                   );
                   } catch (e) { console.error("Education matcher error:", e); return null; }
