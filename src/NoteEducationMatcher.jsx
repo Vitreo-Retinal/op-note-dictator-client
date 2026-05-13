@@ -108,8 +108,9 @@ export function matchHandouts(noteText, icd10Codes = []) {
     matched.add("cond-macular-hole");
   }
 
-  // Retinal detachment
-  if (/retinal\s*detach|rd\b|trd|rhegmatogenous/.test(combined)) {
+  // Retinal detachment — require full phrase or specific abbreviations
+  // (avoid bare "rd" which false-matches in RVO/DR/other contexts)
+  if (/retinal\s*detach|rhegmatogenous|tractional\s*retinal|scleral\s*buckle|ppv.*detach|detach.*ppv|\btrd\b/.test(combined)) {
     matched.add("cond-rd");
   }
 

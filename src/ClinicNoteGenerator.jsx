@@ -1046,6 +1046,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   // Auto-detected drops from note output
   const [autoDrops, setAutoDrops] = useState([]);
   const [autoLang, setAutoLang] = useState("en");
+  const [uncheckedHandouts, setUncheckedHandouts] = useState(new Set());
 
   // Injection calculator
   const [lastInjDate, setLastInjDate] = useState("");
@@ -1739,18 +1740,28 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         Patient Education — auto-matched from this note
                       </div>
                       <div style={{ fontSize: "0.78rem", color: S.text, marginBottom: 10 }}>
-                        {matched.length > 0 && <span>{matched.length} handout{matched.length !== 1 ? "s" : ""} matched</span>}
+                        {matched.length > 0 && <span>{matched.length} handout{matched.length !== 1 ? "s" : ""} matched — select which to include:</span>}
                         {matched.length > 0 && detectedDrops.length > 0 && <span> &bull; </span>}
                         {detectedDrops.length > 0 && <span>{detectedDrops.length} drop{detectedDrops.length !== 1 ? "s" : ""} detected</span>}
                         {detectedLang !== "en" && <span style={{ marginLeft: 8, background: "#1e40af", color: "#bfdbfe", padding: "2px 8px", borderRadius: 4, fontSize: "0.68rem" }}>{detectedLang.toUpperCase()}</span>}
                       </div>
                       {matched.length > 0 && (
                         <div style={{ marginBottom: 10 }}>
-                          {matched.map(h => (
-                            <span key={h.id} style={{ display: "inline-block", background: "#1e293b", border: "1px solid #334155", borderRadius: 6, padding: "3px 10px", fontSize: "0.7rem", color: "#94a3b8", marginRight: 6, marginBottom: 4 }}>
-                              {h.title[detectedLang] || h.title.en}
-                            </span>
-                          ))}
+                          {matched.map(h => {
+                            const isChecked = !uncheckedHandouts.has(h.id);
+                            return (
+                              <label key={h.id} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: isChecked ? "#1e293b" : "#0f172a", border: `1px solid ${isChecked ? "#334155" : "#1e293b"}`, borderRadius: 6, padding: "4px 10px", fontSize: "0.7rem", color: isChecked ? "#94a3b8" : "#475569", marginRight: 6, marginBottom: 4, cursor: "pointer", opacity: isChecked ? 1 : 0.6 }}>
+                                <input type="checkbox" checked={isChecked} onChange={() => {
+                                  setUncheckedHandouts(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(h.id)) next.delete(h.id); else next.add(h.id);
+                                    return next;
+                                  });
+                                }} style={{ accentColor: "#3b82f6" }} />
+                                {h.title[detectedLang] || h.title.en}
+                              </label>
+                            );
+                          })}
                         </div>
                       )}
                       {detectedDrops.length > 0 && (
@@ -1764,12 +1775,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         </div>
                       )}
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        {matched.length > 0 && (
+                        {matched.length > 0 && (() => {
+                          const selected = matched.filter(h => !uncheckedHandouts.has(h.id));
+                          return selected.length > 0 && (
                           <button
                             onClick={async () => {
                               try {
                                 const payload = {
-                                  handouts: matched.map(h => ({
+                                  handouts: selected.map(h => ({
                                     title: h.title[detectedLang] || h.title.en,
                                     content: h.content[detectedLang] || h.content.en,
                                   })),
@@ -1791,7 +1804,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                               } catch (e) {
                                 console.error("PDF download error:", e);
                                 // Fallback to HTML print
-                                const html = generateEducationPrintHTML(matched, detectedLang);
+                                const html = generateEducationPrintHTML(selected, detectedLang);
                                 const win = window.open("", "_blank");
                                 win.document.write(html);
                                 win.document.close();
@@ -1800,9 +1813,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                             }}
                             style={{ background: "linear-gradient(135deg,#2563eb,#3b82f6)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
                           >
-                            Download Handouts PDF ({(detectedLang || "en").toUpperCase()})
+                            Download {selected.length === 1 ? "1 Handout" : `${selected.length} Handouts`} PDF ({(detectedLang || "en").toUpperCase()})
                           </button>
-                        )}
+                          );
+                        })()}
                         {detectedDrops.length > 0 && (
                           <button
                             onClick={() => { setAutoDrops(detectedDrops); setAutoLang(detectedLang); setTab("drops"); }}
