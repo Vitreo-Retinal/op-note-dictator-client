@@ -3,6 +3,7 @@ import OpNoteDictator from "./OpNoteDictator.jsx";
 import ClinicNoteGenerator from "./ClinicNoteGenerator.jsx";
 import CptReference from "./CptReference.jsx";
 import PatientEducation from "./PatientEducation.jsx";
+import Documents from "./Documents.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -109,6 +110,14 @@ function Homepage({ onSelectTool, onSelectDoctor }) {
       description: "Searchable handout library for conditions, procedures, and post-injection instructions. Printable.",
       gradient: "linear-gradient(135deg,#f59e0b,#d97706)",
       tags: ["EN", "ES", "VI", "PT"],
+    },
+    {
+      id: "documents",
+      title: "Workflow Documents",
+      icon: "📁",
+      description: "Branded VRA packets and forms for staff: surgical package, post-pneumatic info, registration, consents. Each with language picker.",
+      gradient: "linear-gradient(135deg,#06b6d4,#0891b2)",
+      tags: ["EN", "ES", "VI", "PT", "Fillable"],
     },
   ];
 
@@ -260,7 +269,7 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
 export default function App() {
   const [authed, setAuthed] = useState(false);
   const [page, setPage] = useState("home");
-  // page: home | inject | coding | education | dictator | doctor | pin
+  // page: home | inject | coding | education | documents | dictator | doctor | pin
   const [activeSurgeon, setActiveSurgeon] = useState(null);
 
   if (!authed) {
@@ -292,6 +301,10 @@ export default function App() {
 
   if (page === "education") {
     return <PatientEducation onBack={() => setPage("home")} />;
+  }
+
+  if (page === "documents") {
+    return <Documents onBack={() => setPage("home")} onOpenEducation={() => setPage("education")} />;
   }
 
   // ── Legacy: Op Note Dictator (still accessible from Robocall tab) ──

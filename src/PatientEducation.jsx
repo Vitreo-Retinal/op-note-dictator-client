@@ -2839,13 +2839,12 @@ Podem ser sintomas de rasgo ou descolamento de retina — precisam avaliação n
 Eye Words to Know
 • Retina — the layer of cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
 • Vitreous — the clear, jelly-like substance that fills the middle of the eye.
-• Floaters — tiny clumps of cells or other material inside the vitreous. They look like small specks, strings, or clouds moving in your field of vision.
 
 What Is a Retinal Tear?
-A torn retina is a serious problem that makes your vision blurry. It is when the retina has a tear or hole, like a rip in a piece of cloth. A torn retina often leads to a more serious condition called a retinal detachment — this is where the retina is lifted away from the back of the eye. A torn retina must be treated right away to avoid further vision loss.
+Think of the retina as wallpaper lining the inside of your eye. A retinal tear is a rip in that wallpaper. If fluid passes through the rip and gets underneath, it can pull the wallpaper away from the wall — this is called a retinal detachment, a serious condition that can lead to vision loss. A retinal tear must be treated right away to prevent this from happening.
 
 How Does a Retinal Tear Happen?
-As we get older, the vitreous in our eyes starts to shrink and get thinner. Usually the vitreous moves around on the retina without causing problems. But sometimes the vitreous may stick to the retina and pull hard enough to tear it. When that happens, fluid can pass through the tear and lift (detach) the retina. When the retina tears, you may suddenly see flashes of light or floaters. Sometimes blood can leak into the vitreous, causing a large number of floaters. This is a serious problem that must be treated right away, or you could lose vision.
+As we get older, the vitreous in our eyes starts to shrink and pull away from the back lining of the eye, where the retina is. This is called a posterior vitreous detachment (PVD). A PVD can happen without any other consequences, but sometimes the vitreous may stick to the retina and pull hard enough to cause a tear. When that happens, fluid can pass through the tear and lift the retina away from the wall — a retinal detachment. Flashes of light or floaters may occur during a PVD, a retinal tear, or a retinal detachment, and the only way to tell the difference is by having a thorough eye examination.
 
 Who Is at Risk?
 You are more likely to have a retinal tear if you:
@@ -2855,31 +2854,28 @@ You are more likely to have a retinal tear if you:
 • Have had a serious eye injury.
 • Have a retinal tear or detachment in the other eye.
 • Have family members with retinal detachment.
-• Have weak areas in the retina (which your ophthalmologist may see during an exam).
+• Have weak areas in the retina called lattice degeneration (which your ophthalmologist may see during an exam).
 
 Early Signs of a Retinal Tear
-A torn retina has to be checked by an ophthalmologist right away. Otherwise, your retina could detach and you could lose vision. Call your eye doctor immediately if you have any of these signs:
-• You see flashing lights — some people say this is like seeing stars after being hit in the eye.
-• You notice many new floaters.
-• A shadow appears in your peripheral (side) vision.
-• A gray curtain covers part of your field of vision.
+A retinal tear must be evaluated by an ophthalmologist right away. The most common warning signs are sudden flashes of light, a shower of new floaters, or a shadow or curtain in your vision. See the alert box below for the full list of symptoms that require immediate attention.
 
 How Is It Diagnosed?
-Your ophthalmologist will put drops in your eye to dilate (widen) the pupil, then will look through a special lens to see any changes inside the eye. This is the best way to see if you have a retinal tear or early retinal detachment.
+Your ophthalmologist will put drops in your eye to dilate (widen) the pupil, then will look through a special lens to examine the retina. In many cases, the doctor will also perform scleral depression — gently pressing on the outside of your eyelid with a small instrument to bring the far edges of the retina into view. This can feel uncomfortable, but it is necessary because retinal tears often occur in the periphery where they are difficult to see otherwise. Retinal photos may sometimes capture a tear, but many tears are located outside the camera's field of view, which is why a thorough dilated exam with scleral depression is so important.
+
+[IMAGE:retinal-tear-before|Before Treatment] [IMAGE:retinal-tear-after|After Treatment]
 
 How Is It Treated?
 There are two ways your eye surgeon may fix your retinal tear:
-• Photocoagulation (laser): A laser is used to seal the retina to the wall of the eye. The goal is to keep fluid from going through the tear and detaching the retina. The treatment usually takes less than 15 minutes and may be done right in your doctor's office. The laser makes tiny burns that form scars to seal the retina to the eye wall.
-• Cryopexy (freezing): Extreme cold is used to seal the retina to the wall of the eye. The goal is the same — to keep fluid from going through the tear. This treatment usually takes less than 30 minutes. The surgeon uses a special probe that delivers intense cold energy to the retina, freezing the retina around the tear and creating scar tissue that seals the retina.
+• Photocoagulation (laser): A laser is used to seal the retina to the wall of the eye. The goal is to keep fluid from going through the tear and detaching the retina. The procedure usually takes less than 15 minutes and may be done right in your doctor's office. The laser makes tiny burns that form scars to seal the retina to the eye wall.
+• Cryopexy (freezing): Extreme cold is used to seal the retina to the wall of the eye. The goal is the same — to keep fluid from going through the tear. This procedure usually takes less than 30 minutes. The surgeon uses a special probe that delivers intense cold energy to the retina, freezing the retina around the tear and creating scar tissue that seals the retina.
 
 Treatment Risks
-Like any surgery, retinal tear treatment has some risks, including eye infection, bleeding in your eye, glaucoma (increased pressure inside the eye), cataract (the lens becoming cloudy), the need for a second surgery, and the possibility that the retinal tear does not close.
+Like any procedure, retinal tear intervention has some risks, including bleeding in your eye, vision loss, the possibility that the tear does not fully seal or that the retina detaches even after the procedure, and the chance of developing new tears in the future.
 
-What to Expect After Treatment
-• You might have some pain for a few hours after surgery. Over-the-counter pain medication can help.
-• You will need to rest and be less active for a few weeks. Your doctor will tell you when you can exercise, drive, or do other things again.
-• You may need to wear an eye patch after surgery.
-• You might see floaters and flashing lights for a few weeks after treatment.
+What to Expect Afterward
+• You might have some discomfort for a few hours after the procedure. Over-the-counter pain medication can help.
+• After laser, you may see various colors for a while because of the bright lights, but this should get better within a few hours.
+• The flashes or floaters may persist despite treatment.
 
 When to Call Right Away
 Contact your eye doctor immediately if you experience:
@@ -2888,7 +2884,7 @@ Contact your eye doctor immediately if you experience:
 • A shadow in your peripheral (side) vision.
 • A gray curtain covering part of your vision.
 • Sudden vision loss.
-These are signs of a retinal tear or detachment — a serious problem that needs same-day treatment.`,
+These may be signs of a retinal tear or detachment, a serious problem that needs prompt attention.`,
 
       es: `DESGARRO RETINIANO
 
@@ -2897,39 +2893,42 @@ These are signs of a retinal tear or detachment — a serious problem that needs
 Palabras Importantes
 • Retina — capa de células en la parte posterior del ojo que detecta luz y envía señales al cerebro.
 • Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
-• Moscas volantes (floaters) — pequeños grumos dentro del vítreo que parecen manchas o hilos en la visión.
 
-¿Qué Es?
-Un desgarro retiniano es un problema serio — un agujero o ruptura en la retina, como un rasgón en una tela. Puede llevar a desprendimiento de retina, donde la retina se separa de la parte posterior del ojo. Debe tratarse de inmediato para evitar pérdida de visión.
+¿Qué Es un Desgarro Retiniano?
+Piense en la retina como el papel tapiz que recubre el interior de su ojo. Un desgarro retiniano es una rotura en ese papel tapiz. Si el líquido pasa a través de la rotura y se mete debajo, puede despegar el papel tapiz de la pared — esto se llama desprendimiento de retina, una condición seria que puede causar pérdida de visión. Un desgarro retiniano debe tratarse de inmediato para prevenir que esto ocurra.
 
 ¿Cómo Ocurre?
-Con la edad, el vítreo se encoge y adelgaza. A veces se adhiere a la retina y tira lo suficiente para rasgarla. El líquido puede pasar por el desgarro y levantar (desprender) la retina. Cuando la retina se desgarra, puede ver destellos de luz o moscas volantes súbitamente.
+Con la edad, el vítreo se encoge y se separa de la parte posterior del ojo, donde está la retina. Esto se llama desprendimiento vítreo posterior (DVP). Un DVP puede ocurrir sin otras consecuencias, pero a veces el vítreo puede adherirse a la retina y tirar lo suficiente para causar un desgarro. Cuando eso sucede, el líquido puede pasar por el desgarro y levantar la retina de la pared — un desprendimiento de retina. Los destellos de luz o moscas volantes pueden ocurrir durante un DVP, un desgarro retiniano, o un desprendimiento de retina, y la única manera de distinguir entre ellos es con un examen ocular completo.
 
 ¿Quién Está en Riesgo?
-• Miopes, cirugía previa de catarata/glaucoma/otra, medicamentos de glaucoma (pilocarpina), lesión ocular seria, desgarro en el otro ojo, historia familiar, áreas débiles en la retina.
+• Miopes (necesitan gafas para ver de lejos).
+• Cirugía previa de catarata, glaucoma u otra cirugía ocular.
+• Medicamentos de glaucoma que achican la pupila (como pilocarpina).
+• Lesión ocular seria.
+• Desgarro o desprendimiento de retina en el otro ojo.
+• Familiares con desprendimiento de retina.
+• Áreas débiles en la retina llamadas degeneración lattice (que su oftalmólogo puede ver durante un examen).
 
-Señales de Alerta
-Llame a su oftalmólogo inmediatamente si nota:
-• Luces destellantes.
-• Muchas moscas volantes nuevas.
-• Sombra en la visión periférica (lateral).
-• Cortina gris cubriendo parte de la visión.
+Señales Tempranas de un Desgarro Retiniano
+Un desgarro retiniano debe ser evaluado por un oftalmólogo de inmediato. Las señales de alerta más comunes son destellos súbitos de luz, una lluvia de moscas volantes nuevas, o una sombra o cortina en su visión. Vea el recuadro de alerta abajo para la lista completa de síntomas que requieren atención inmediata.
 
 ¿Cómo Se Diagnostica?
-Examen con dilatación — gotas para agrandar la pupila y ver cambios dentro del ojo con lente especial.
+Su oftalmólogo le pondrá gotas para dilatar (agrandar) la pupila, y luego usará un lente especial para examinar la retina. En muchos casos, el médico también realizará depresión escleral — presionando suavemente en el exterior de su párpado con un instrumento pequeño para ver los bordes lejanos de la retina. Esto puede ser incómodo, pero es necesario porque los desgarros retinianos frecuentemente ocurren en la periferia donde son difíciles de ver. Las fotos de retina a veces pueden capturar un desgarro, pero muchos desgarros están fuera del campo de visión de la cámara, por eso un examen dilatado con depresión escleral es tan importante.
+
+[IMAGE:retinal-tear-before|Antes del Tratamiento] [IMAGE:retinal-tear-after|Después del Tratamiento]
 
 Tratamiento
-• Fotocoagulación (láser): Sella la retina a la pared del ojo con quemaduras diminutas que forman cicatrices. Toma menos de 15 minutos en el consultorio.
-• Criopexia (congelamiento): Frío intenso sella la retina a la pared del ojo. Toma menos de 30 minutos.
+Hay dos maneras en que su cirujano puede reparar su desgarro retiniano:
+• Fotocoagulación (láser): Un láser sella la retina a la pared del ojo. El objetivo es evitar que el líquido pase por el desgarro y desprenda la retina. El procedimiento toma menos de 15 minutos y puede hacerse en el consultorio. El láser hace quemaduras diminutas que forman cicatrices para sellar la retina.
+• Criopexia (congelamiento): Frío extremo sella la retina a la pared del ojo. El objetivo es el mismo — evitar que el líquido pase por el desgarro. Este procedimiento toma menos de 30 minutos.
 
 Riesgos
-Infección, sangrado, glaucoma, catarata, necesidad de segunda cirugía, posibilidad de que el desgarro no cierre.
+Como cualquier procedimiento, la intervención tiene algunos riesgos, incluyendo sangrado en el ojo, pérdida de visión, la posibilidad de que el desgarro no selle completamente o que la retina se desprenda aún después del procedimiento, y la posibilidad de desarrollar nuevos desgarros en el futuro.
 
-Después del Tratamiento
-• Puede tener dolor por unas horas — medicamentos de venta libre ayudan.
-• Descanso y menos actividad por unas semanas.
-• Puede necesitar parche ocular.
-• Puede ver moscas volantes y destellos por unas semanas.
+Qué Esperar Después
+• Puede tener algo de molestia por unas horas después del procedimiento. Medicamentos de venta libre pueden ayudar.
+• Después del láser, puede ver varios colores por un rato debido a las luces brillantes, pero esto debería mejorar en unas horas.
+• Los destellos o moscas volantes pueden persistir a pesar del tratamiento.
 
 Cuándo Llamar de Inmediato
 • Destellos de luz súbitos.
@@ -2937,7 +2936,7 @@ Cuándo Llamar de Inmediato
 • Sombra en la visión periférica.
 • Cortina gris en la visión.
 • Pérdida súbita de visión.
-Son signos de desgarro o desprendimiento — necesitan tratamiento el mismo día.`,
+Estos pueden ser signos de desgarro o desprendimiento de retina, un problema serio que necesita atención inmediata.`,
 
       vi: `RÁCH VÕNG MẠC
 
@@ -2946,39 +2945,42 @@ Son signos de desgarro o desprendimiento — necesitan tratamiento el mismo día
 Từ Vựng Cần Biết
 • Võng mạc — lớp tế bào ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
 • Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
-• Ruồi bay (floaters) — các cục nhỏ trong dịch kính trông như đốm, sợi hoặc mây trong tầm nhìn.
 
-Là Gì?
-Rách võng mạc là vấn đề nghiêm trọng — lỗ hoặc vết rách trên võng mạc, như rách vải. Có thể dẫn đến bong võng mạc, nơi võng mạc tách khỏi thành sau mắt. Cần điều trị ngay để tránh mất thị lực.
+Rách Võng Mạc Là Gì?
+Hãy nghĩ về võng mạc như giấy dán tường lót bên trong mắt. Rách võng mạc là một vết rách trên lớp giấy dán tường đó. Nếu dịch chui qua vết rách và lọt vào bên dưới, nó có thể kéo giấy dán tường ra khỏi tường — đây gọi là bong võng mạc, một tình trạng nghiêm trọng có thể gây mất thị lực. Rách võng mạc phải được điều trị ngay để ngăn điều này xảy ra.
 
-Xảy Ra Như Thế Nào?
-Khi già đi, dịch kính co lại và mỏng đi. Đôi khi dính vào võng mạc và kéo đủ mạnh để rách. Dịch có thể chui qua vết rách và nâng (bong) võng mạc. Khi rách, bạn có thể thấy chớp sáng hoặc ruồi bay đột ngột.
+Rách Võng Mạc Xảy Ra Như Thế Nào?
+Khi già đi, dịch kính co lại và tách khỏi phần sau mắt, nơi có võng mạc. Đây gọi là bong dịch kính sau (PVD). PVD có thể xảy ra mà không có hậu quả gì, nhưng đôi khi dịch kính có thể dính vào võng mạc và kéo đủ mạnh để gây rách. Khi đó, dịch có thể chui qua vết rách và nâng võng mạc khỏi thành mắt — bong võng mạc. Chớp sáng hoặc ruồi bay có thể xảy ra trong PVD, rách võng mạc, hoặc bong võng mạc, và cách duy nhất để phân biệt là khám mắt kỹ lưỡng.
 
 Ai Có Nguy Cơ?
-• Cận thị, phẫu thuật đục thủy tinh thể/glaucoma trước đó, thuốc glaucoma (pilocarpine), chấn thương mắt nặng, rách ở mắt kia, tiền sử gia đình, vùng yếu trên võng mạc.
+• Cận thị (cần kính để nhìn xa).
+• Đã phẫu thuật đục thủy tinh thể, glaucoma, hoặc phẫu thuật mắt khác.
+• Dùng thuốc glaucoma làm co đồng tử (như pilocarpine).
+• Chấn thương mắt nặng.
+• Rách hoặc bong võng mạc ở mắt kia.
+• Gia đình có người bị bong võng mạc.
+• Có vùng yếu trên võng mạc gọi là thoái hóa lattice (bác sĩ có thể thấy khi khám).
 
-Dấu Hiệu Sớm
-Gọi bác sĩ mắt ngay nếu:
-• Thấy ánh sáng nhấp nháy.
-• Nhiều ruồi bay mới.
-• Bóng xuất hiện ở tầm nhìn ngoại vi.
-• Màn xám che một phần tầm nhìn.
+Dấu Hiệu Sớm của Rách Võng Mạc
+Rách võng mạc phải được bác sĩ mắt đánh giá ngay. Các dấu hiệu cảnh báo phổ biến nhất là chớp sáng đột ngột, nhiều ruồi bay mới, hoặc bóng hay màn che trong tầm nhìn. Xem khung cảnh báo bên dưới để biết danh sách đầy đủ các triệu chứng cần chú ý ngay.
 
-Chẩn Đoán
-Khám mắt có giãn đồng tử — nhỏ thuốc giãn đồng tử và dùng kính đặc biệt để thấy thay đổi bên trong mắt.
+Chẩn Đoán Như Thế Nào?
+Bác sĩ sẽ nhỏ thuốc giãn đồng tử, rồi dùng kính đặc biệt để khám võng mạc. Trong nhiều trường hợp, bác sĩ cũng sẽ thực hiện ấn củng mạc — nhẹ nhàng ấn bên ngoài mí mắt bằng dụng cụ nhỏ để thấy rõ các rìa xa của võng mạc. Điều này có thể khó chịu, nhưng cần thiết vì rách võng mạc thường xảy ra ở vùng ngoại vi, nơi khó nhìn thấy. Ảnh chụp võng mạc đôi khi có thể bắt được vết rách, nhưng nhiều vết rách nằm ngoài trường nhìn của máy ảnh, vì vậy khám giãn đồng tử kỹ lưỡng với ấn củng mạc rất quan trọng.
 
-Điều Trị
-• Quang đông (laser): Laser gắn võng mạc vào thành mắt bằng vết bỏng nhỏ tạo sẹo. Mất dưới 15 phút tại phòng khám.
-• Đông lạnh (cryopexy): Lạnh cực độ gắn võng mạc vào thành mắt. Mất dưới 30 phút.
+[IMAGE:retinal-tear-before|Trước Điều Trị] [IMAGE:retinal-tear-after|Sau Điều Trị]
+
+Điều Trị Như Thế Nào?
+Có hai cách bác sĩ có thể sửa vết rách võng mạc:
+• Quang đông (laser): Laser gắn võng mạc vào thành mắt. Mục tiêu là ngăn dịch chui qua vết rách và bong võng mạc. Thủ thuật mất dưới 15 phút và có thể thực hiện tại phòng khám. Laser tạo vết bỏng nhỏ thành sẹo để gắn chặt võng mạc.
+• Đông lạnh (cryopexy): Lạnh cực độ gắn võng mạc vào thành mắt. Mục tiêu giống nhau — ngăn dịch chui qua vết rách. Thủ thuật này mất dưới 30 phút.
 
 Rủi Ro
-Nhiễm trùng, chảy máu, tăng nhãn áp, đục thủy tinh thể, cần phẫu thuật lần hai, vết rách có thể không đóng.
+Như bất kỳ thủ thuật nào, can thiệp rách võng mạc có một số rủi ro, bao gồm chảy máu trong mắt, mất thị lực, khả năng vết rách không kín hoàn toàn hoặc võng mạc bong ngay cả sau thủ thuật, và khả năng phát triển vết rách mới trong tương lai.
 
-Sau Điều Trị
-• Có thể đau vài giờ — thuốc giảm đau không kê đơn giúp ích.
-• Nghỉ ngơi và ít hoạt động vài tuần.
-• Có thể cần đeo miếng che mắt.
-• Có thể thấy ruồi bay và chớp sáng vài tuần.
+Sau Thủ Thuật
+• Có thể khó chịu vài giờ sau thủ thuật. Thuốc giảm đau không kê đơn có thể giúp.
+• Sau laser, bạn có thể thấy nhiều màu sắc do ánh sáng mạnh, nhưng sẽ cải thiện trong vài giờ.
+• Chớp sáng hoặc ruồi bay có thể vẫn còn dù đã điều trị.
 
 Khi Nào Cần Gọi Ngay
 • Chớp sáng đột ngột.
@@ -2986,7 +2988,7 @@ Khi Nào Cần Gọi Ngay
 • Bóng ở tầm nhìn ngoại vi.
 • Màn xám che tầm nhìn.
 • Mất thị lực đột ngột.
-Đây là dấu hiệu rách hoặc bong võng mạc — cần điều trị cùng ngày.`,
+Đây có thể là dấu hiệu rách hoặc bong võng mạc, một vấn đề nghiêm trọng cần được chú ý ngay.`,
 
       pt: `RASGO RETINIANO
 
@@ -2995,39 +2997,42 @@ Khi Nào Cần Gọi Ngay
 Palavras Importantes
 • Retina — camada de células no fundo do olho que detecta luz e envia sinais ao cérebro.
 • Vítreo — substância gelatinosa transparente que preenche o interior do olho.
-• Moscas volantes (floaters) — pequenos grumos no vítreo que parecem manchas ou fios na visão.
 
-O Que É?
-Um rasgo retiniano é um problema sério — um buraco ou rasgo na retina, como um rasgo em um pano. Pode levar a descolamento de retina, onde a retina se separa do fundo do olho. Deve ser tratado imediatamente para evitar perda de visão.
+O Que É um Rasgo Retiniano?
+Pense na retina como o papel de parede que reveste o interior do seu olho. Um rasgo retiniano é uma ruptura nesse papel de parede. Se o fluido passar pela ruptura e entrar por baixo, pode descolar o papel de parede da parede — isso é chamado de descolamento de retina, uma condição séria que pode causar perda de visão. Um rasgo retiniano deve ser tratado imediatamente para prevenir que isso aconteça.
 
 Como Acontece?
-Com a idade, o vítreo encolhe e afina. Às vezes adere à retina e puxa o suficiente para rasgá-la. O fluido pode passar pelo rasgo e levantar (descolar) a retina. Quando rasga, pode ver flashes de luz ou moscas volantes subitamente.
+Com a idade, o vítreo encolhe e se separa da parte posterior do olho, onde está a retina. Isso é chamado de descolamento vítreo posterior (DVP). Um DVP pode acontecer sem outras consequências, mas às vezes o vítreo pode aderir à retina e puxar o suficiente para causar um rasgo. Quando isso acontece, o fluido pode passar pelo rasgo e levantar a retina da parede — um descolamento de retina. Flashes de luz ou moscas volantes podem ocorrer durante um DVP, um rasgo retiniano, ou um descolamento de retina, e a única maneira de distinguir entre eles é com um exame ocular completo.
 
 Quem Tem Risco?
-• Míopes, cirurgia prévia de catarata/glaucoma/outra, medicamentos de glaucoma (pilocarpina), lesão ocular grave, rasgo no outro olho, história familiar, áreas fracas na retina.
+• Míopes (precisam de óculos para ver de longe).
+• Cirurgia prévia de catarata, glaucoma ou outra cirurgia ocular.
+• Medicamentos de glaucoma que diminuem a pupila (como pilocarpina).
+• Lesão ocular grave.
+• Rasgo ou descolamento de retina no outro olho.
+• Familiares com descolamento de retina.
+• Áreas fracas na retina chamadas degeneração lattice (que seu oftalmologista pode ver durante um exame).
 
-Sinais de Alerta
-Ligue para seu oftalmologista imediatamente se notar:
-• Luzes piscando.
-• Muitas moscas volantes novas.
-• Sombra na visão periférica (lateral).
-• Cortina cinza cobrindo parte da visão.
+Sinais Precoces de um Rasgo Retiniano
+Um rasgo retiniano deve ser avaliado por um oftalmologista imediatamente. Os sinais de alerta mais comuns são flashes súbitos de luz, uma chuva de moscas volantes novas, ou uma sombra ou cortina na sua visão. Veja o quadro de alerta abaixo para a lista completa de sintomas que requerem atenção imediata.
 
 Como É Diagnosticado?
-Exame com dilatação — colírios para dilatar a pupila e ver mudanças dentro do olho com lente especial.
+Seu oftalmologista colocará colírios para dilatar (alargar) a pupila, e então usará uma lente especial para examinar a retina. Em muitos casos, o médico também realizará depressão escleral — pressionando suavemente a parte externa da pálpebra com um instrumento pequeno para ver as bordas distantes da retina. Isso pode ser desconfortável, mas é necessário porque rasgos retinianos frequentemente ocorrem na periferia, onde são difíceis de ver. Fotos da retina às vezes podem capturar um rasgo, mas muitos rasgos estão fora do campo de visão da câmera, por isso um exame dilatado completo com depressão escleral é tão importante.
+
+[IMAGE:retinal-tear-before|Antes do Tratamento] [IMAGE:retinal-tear-after|Após o Tratamento]
 
 Tratamento
-• Fotocoagulação (laser): Laser sela a retina à parede do olho com queimaduras diminutas que formam cicatrizes. Leva menos de 15 minutos no consultório.
-• Criopexia (congelamento): Frio intenso sela a retina à parede do olho. Leva menos de 30 minutos.
+Há duas maneiras de seu cirurgião reparar o rasgo retiniano:
+• Fotocoagulação (laser): Um laser sela a retina à parede do olho. O objetivo é evitar que o fluido passe pelo rasgo e descole a retina. O procedimento leva menos de 15 minutos e pode ser feito no consultório. O laser faz queimaduras diminutas que formam cicatrizes para selar a retina.
+• Criopexia (congelamento): Frio extremo sela a retina à parede do olho. O objetivo é o mesmo — evitar que o fluido passe pelo rasgo. Este procedimento leva menos de 30 minutos.
 
 Riscos
-Infecção, sangramento, glaucoma, catarata, necessidade de segunda cirurgia, possibilidade de o rasgo não fechar.
+Como qualquer procedimento, a intervenção tem alguns riscos, incluindo sangramento no olho, perda de visão, a possibilidade de o rasgo não selar completamente ou de a retina descolar mesmo após o procedimento, e a chance de desenvolver novos rasgos no futuro.
 
-Após o Tratamento
-• Pode ter dor por algumas horas — analgésicos de venda livre ajudam.
-• Descanso e menos atividade por algumas semanas.
-• Pode precisar de tampão ocular.
-• Pode ver moscas volantes e flashes por algumas semanas.
+O Que Esperar Depois
+• Pode ter algum desconforto por algumas horas após o procedimento. Analgésicos de venda livre podem ajudar.
+• Após o laser, pode ver várias cores por um tempo devido às luzes brilhantes, mas isso deve melhorar em algumas horas.
+• Os flashes ou moscas volantes podem persistir apesar do tratamento.
 
 Quando Ligar Imediatamente
 • Flashes de luz súbitos.
@@ -3035,7 +3040,7 @@ Quando Ligar Imediatamente
 • Sombra na visão periférica.
 • Cortina cinza na visão.
 • Perda súbita de visão.
-São sinais de rasgo ou descolamento — precisam de tratamento no mesmo dia.`
+Estes podem ser sinais de rasgo ou descolamento de retina, um problema sério que precisa de atenção imediata.`
     }
   },
   {
@@ -3541,72 +3546,196 @@ Quando Ligar Imediatamente
   {
     id: "cond-rd",
     category: "condition",
-    title: { en: "Retinal Detachment — Warning Signs", es: "Desprendimiento de Retina — Señales de Alarma", vi: "Bong Võng Mạc — Dấu Hiệu Cảnh Báo", pt: "Descolamento de Retina — Sinais de Alerta" },
-    tags: ["retinal detachment", "emergency", "flashes", "floaters"],
+    title: { en: "Retinal Detachment", es: "Desprendimiento de Retina", vi: "Bong Võng Mạc", pt: "Descolamento de Retina" },
+    tags: ["retinal detachment", "emergency", "flashes", "floaters", "surgery"],
     content: {
-      en: `RETINAL DETACHMENT — WARNING SIGNS
+      en: `RETINAL DETACHMENT
 
-This Is an Eye Emergency. Contact your retina specialist or go to the ER immediately.
+Eye Words to Know
+• Retina — thin layer of tissue lining the back of the eye that senses light and sends visual signals to the brain.
+• Vitreous — clear gel that fills the inside of the eye. As it ages, it can pull on the retina and cause tears.
+• Macula — central part of the retina responsible for sharp, detailed vision.
+• Vitrectomy — surgery to repair the retina by removing the vitreous gel and replacing it with a gas bubble or silicone oil.
 
-Warning Signs
-• FLASHES of light (like lightning bolts).
-• FLOATERS — sudden increase (shower of dots, cobwebs).
-• A SHADOW or CURTAIN across your vision.
-• Sudden VISION LOSS.
+What Is It?
+A retinal detachment occurs when the retina separates from the back wall of the eye. The retina works like the film in a camera — it captures light and converts it into signals that travel through the optic nerve to the brain. Once separated, the retina can no longer function properly, and the affected area of vision becomes dark or blurred. If the detachment involves the macula, significant central vision loss can occur. Without treatment, retinal detachment almost always leads to permanent blindness in the affected eye. With early detection and modern surgical techniques, the retina can often be successfully reattached.
 
-Do NOT wait. These require same-day evaluation.
+[IMAGE_PAIR:rd-before|Before Surgery (Detachment)|rd-after|After Surgery (Reattached)|Fundus photographs from an actual case at Vitreo-Retinal Associates: large bullous retinal detachment with extensive retinal folds at presentation (left, VA hand motion), and fully reattached retina at post-operative month 2 (right).]
 
 Risk Factors
-• Previous retinal detachment, high myopia, previous eye surgery, family history, eye trauma.
+• High myopia (severe nearsightedness).
+• Previous detachment in either eye, or family history.
+• Prior eye surgery (especially cataract) or eye trauma.
+• Lattice degeneration, advanced diabetic retinopathy.
+• Age over 50.
+
+Symptoms
+Retinal detachment is painless. The key signs are visual changes that develop suddenly:
+• Floaters — sudden shower of new spots, cobwebs, or dark specks.
+• Flashes of light — brief flashes or arcs, especially in peripheral vision.
+• Shadow or curtain — a dark area that starts at the edge of vision and moves toward the center.
+• Decreased vision — blurry or distorted vision, especially if the macula becomes involved.
+
+How Is It Diagnosed?
+A dilated fundus exam allows the doctor to examine the entire retina with specialized lenses. If the retina cannot be clearly seen (e.g., due to bleeding inside the eye), an ultrasound (B-scan) is used. OCT scans help assess whether the macula is attached.
 
 Treatment
-• Surgery is required: pneumatic retinopexy (office), scleral buckle, or vitrectomy.
-• The sooner treated, the better the outcome — especially if the macula has not yet detached.`,
+Retinal detachment almost always requires surgery. The approach depends on the type and severity of the detachment and whether the macula is still attached. Time is critical when the macula is threatened or involved.
+• Laser Retinopexy or Cryopexy — in-office laser or freezing to seal a tear before the retina fully detaches.
+• Pneumatic Retinopexy — gas bubble injected to press the tear back, sealed with laser or cryopexy. In-office for selected cases.
+• Pars Plana Vitrectomy — the most common repair. Vitreous gel is removed, the retina is flattened, and laser is applied around the tear. A gas bubble or silicone oil holds the retina during healing. Face-down positioning may be required.
+• Scleral Buckle — a silicone band sutured around the outside of the eye gently indents the wall to contact the detached retina. May be used alone or with vitrectomy.
 
-      es: `DESPRENDIMIENTO DE RETINA — SEÑALES DE ALARMA
+Visual Recovery
+Outcome depends largely on whether the macula was attached at the time of surgery. When caught early — before the macula detaches — most patients recover good central vision. If the macula was already detached, some permanent vision loss is common. If a gas bubble was placed, you CANNOT fly or scuba dive until the bubble is gone (typically 2 to 8 weeks). Surgical risks include infection, bleeding, re-detachment, glaucoma, and cataract.
 
-Esto Es una Emergencia Ocular. Contacte a su retinólogo o vaya a urgencias inmediatamente.
+When to Call Right Away
+Retinal detachment is a surgical emergency. Contact your eye doctor immediately if you experience:
+• A sudden increase in floaters — especially dark spots or cobweb-like strands.
+• Flashes of light in the affected eye.
+• A shadow or dark curtain moving across your vision.
+• A sudden, significant decrease in vision.`,
 
-Señales de Alarma
-• DESTELLOS de luz (como relámpagos).
-• MOSCAS VOLANTES — aumento súbito (lluvia de puntos, telarañas).
-• Una SOMBRA o CORTINA en su visión.
-• PÉRDIDA SÚBITA de visión.
+      es: `DESPRENDIMIENTO DE RETINA
 
-NO espere. Requiere evaluación el mismo día.
+Palabras Importantes
+• Retina — capa delgada de tejido en la parte posterior del ojo que detecta la luz y envía señales visuales al cerebro.
+• Vítreo — gel transparente que llena el interior del ojo. Al envejecer puede tirar de la retina y causar desgarros.
+• Mácula — parte central de la retina responsable de la visión nítida y detallada.
+• Vitrectomía — cirugía para reparar la retina removiendo el gel vítreo y reemplazándolo con burbuja de gas o aceite de silicón.
+
+¿Qué Es?
+Un desprendimiento de retina ocurre cuando la retina se separa de la pared posterior del ojo. La retina funciona como la película de una cámara — captura la luz y la convierte en señales que viajan por el nervio óptico al cerebro. Una vez separada, la retina no puede funcionar correctamente y el área afectada de la visión se vuelve oscura o borrosa. Si el desprendimiento involucra la mácula, puede ocurrir pérdida significativa de la visión central. Sin tratamiento, casi siempre lleva a ceguera permanente. Con detección temprana y técnicas quirúrgicas modernas, la retina a menudo puede reposicionarse exitosamente.
+
+[IMAGE_PAIR:rd-before|Antes de Cirugía (Desprendimiento)|rd-after|Después de Cirugía (Reposicionada)|Fotografías de fondo de un caso real en Vitreo-Retinal Associates: gran desprendimiento bulloso con pliegues retinianos al presentar (izquierda, visión de movimiento de mano), y retina completamente reposicionada al mes 2 post-operatorio (derecha).]
+
+Factores de Riesgo
+• Miopía alta (corto de vista severo).
+• Desprendimiento previo en cualquier ojo o historia familiar.
+• Cirugía ocular previa (especialmente catarata) o trauma ocular.
+• Degeneración en empalizada, retinopatía diabética avanzada.
+• Edad mayor de 50 años.
+
+Síntomas
+El desprendimiento de retina es indoloro. Las señales clave son cambios visuales súbitos:
+• Moscas volantes — aumento súbito de puntos, telarañas o motas oscuras.
+• Destellos de luz — destellos breves o arcos, especialmente en la visión periférica.
+• Sombra o cortina — área oscura que comienza en el borde de su visión y avanza hacia el centro.
+• Disminución de visión — visión borrosa o distorsionada, especialmente si la mácula se involucra.
+
+¿Cómo Se Diagnostica?
+Un examen de fondo con dilatación permite al médico examinar toda la retina con lentes especializados. Si la retina no se ve claramente (por ejemplo, por sangrado dentro del ojo), se usa un ultrasonido (Eco-B). El OCT ayuda a evaluar si la mácula está adherida.
 
 Tratamiento
-• Se requiere cirugía. Cuanto antes se trate, mejor el resultado.`,
+El desprendimiento casi siempre requiere cirugía. El enfoque depende del tipo y severidad y si la mácula sigue adherida. El tiempo es crítico cuando la mácula está amenazada o involucrada.
+• Retinopexia con Láser o Crioterapia — láser o crioterapia en consultorio para sellar un desgarro antes de que la retina se desprenda totalmente.
+• Retinopexia Neumática — burbuja de gas inyectada para presionar el desgarro, sellado con láser o crioterapia. En consultorio para casos seleccionados.
+• Vitrectomía vía Pars Plana — la reparación más común. Se remueve el gel vítreo, se aplana la retina y se aplica láser alrededor del desgarro. Burbuja de gas o aceite de silicón mantiene la retina durante la cicatrización. Puede requerir posición boca abajo.
+• Cerclaje Escleral — banda de silicón suturada alrededor del exterior del ojo, indentando la pared para contactar la retina desprendida. Puede usarse sola o con vitrectomía.
 
-      vi: `BONG VÕNG MẠC — DẤU HIỆU CẢNH BÁO
+Recuperación Visual
+El resultado depende en gran medida de si la mácula estaba adherida al momento de la cirugía. Si se detecta temprano — antes de que la mácula se desprenda — la mayoría recupera buena visión central. Si la mácula ya estaba desprendida, cierta pérdida visual permanente es común. Si se colocó burbuja de gas, NO PUEDE volar ni bucear hasta que la burbuja se disuelva (típicamente 2 a 8 semanas). Riesgos quirúrgicos incluyen infección, sangrado, re-desprendimiento, glaucoma y catarata.
 
-Đây Là Cấp Cứu Mắt. Liên hệ bác sĩ võng mạc hoặc đến phòng cấp cứu ngay.
+Llame Inmediatamente
+El desprendimiento de retina es una emergencia quirúrgica. Contacte a su oftalmólogo inmediatamente si experimenta:
+• Aumento súbito de moscas volantes — especialmente puntos oscuros o telarañas.
+• Destellos de luz en el ojo afectado.
+• Sombra o cortina oscura que se mueve a través de su visión.
+• Disminución súbita y significativa de la visión.`,
 
-Dấu Hiệu Cảnh Báo
-• ÁNH SÁNG LÓE (như tia chớp).
-• ĐỐM ĐEN — tăng đột ngột (mưa chấm, mạng nhện).
-• BÓNG hoặc MÀN CHE trong tầm nhìn.
-• MẤT THỊ LỰC đột ngột.
+      vi: `BONG VÕNG MẠC
 
-KHÔNG chờ đợi. Cần khám ngay trong ngày.
+Từ Vựng Cần Biết
+• Võng mạc — lớp mô mỏng lót phía sau mắt, cảm nhận ánh sáng và gửi tín hiệu thị giác đến não.
+• Dịch kính — gel trong suốt lấp đầy bên trong mắt. Khi lão hóa, có thể kéo võng mạc và gây rách.
+• Hoàng điểm — phần trung tâm của võng mạc, chịu trách nhiệm về thị lực sắc nét, chi tiết.
+• Cắt dịch kính — phẫu thuật sửa võng mạc bằng cách loại bỏ gel dịch kính và thay bằng bóng khí hoặc dầu silicon.
+
+Đây Là Gì?
+Bong võng mạc xảy ra khi võng mạc tách khỏi thành sau của mắt. Võng mạc hoạt động giống như phim trong máy ảnh — bắt ánh sáng và chuyển thành tín hiệu đi qua dây thần kinh thị giác đến não. Một khi tách ra, võng mạc không thể hoạt động bình thường và vùng thị lực bị ảnh hưởng trở nên tối hoặc mờ. Nếu bong lan đến hoàng điểm, có thể mất thị lực trung tâm đáng kể. Không điều trị, gần như luôn dẫn đến mù vĩnh viễn. Với phát hiện sớm và kỹ thuật phẫu thuật hiện đại, võng mạc thường có thể được gắn lại thành công.
+
+[IMAGE_PAIR:rd-before|Trước Phẫu Thuật (Bong)|rd-after|Sau Phẫu Thuật (Đã Gắn Lại)|Ảnh đáy mắt từ ca thực tế tại Vitreo-Retinal Associates: bong võng mạc lớn với các nếp gấp khi đến khám (trái, thị lực đếm ngón tay), và võng mạc đã gắn lại hoàn toàn ở tháng thứ 2 sau phẫu thuật (phải).]
+
+Yếu Tố Nguy Cơ
+• Cận thị nặng.
+• Đã từng bị bong võng mạc ở mắt nào, hoặc tiền sử gia đình.
+• Phẫu thuật mắt trước đó (đặc biệt đục thủy tinh thể) hoặc chấn thương mắt.
+• Thoái hóa dạng lưới, bệnh võng mạc tiểu đường tiến triển.
+• Tuổi trên 50.
+
+Triệu Chứng
+Bong võng mạc không đau. Các dấu hiệu chính là thay đổi thị giác đột ngột:
+• Đốm đen — đột ngột xuất hiện nhiều đốm đen mới, chấm, mạng nhện.
+• Ánh sáng lóe — lóe sáng ngắn hoặc cung sáng, đặc biệt ở thị lực ngoại biên.
+• Bóng hoặc màn che — vùng tối bắt đầu từ rìa thị lực và tiến vào trung tâm.
+• Giảm thị lực — mờ hoặc méo, đặc biệt nếu hoàng điểm bị ảnh hưởng.
+
+Chẩn Đoán
+Khám đáy mắt giãn đồng tử cho phép bác sĩ khám toàn bộ võng mạc với thấu kính chuyên dụng. Nếu không thể nhìn rõ võng mạc (ví dụ do chảy máu trong mắt), dùng siêu âm (B-scan). OCT giúp đánh giá hoàng điểm còn dính hay không.
 
 Điều Trị
-• Cần phẫu thuật. Điều trị càng sớm, kết quả càng tốt.`,
+Bong võng mạc gần như luôn cần phẫu thuật. Phương pháp phụ thuộc vào loại và mức độ bong và hoàng điểm còn dính hay không. Thời gian rất quan trọng khi hoàng điểm bị đe dọa hoặc liên quan.
+• Laser hoặc đông lạnh — tại phòng khám để niêm phong vết rách trước khi võng mạc bong hoàn toàn.
+• Bơm khí võng mạc — bóng khí được tiêm để ép vết rách, niêm phong bằng laser hoặc đông lạnh. Tại phòng khám cho ca chọn lọc.
+• Cắt dịch kính qua Pars Plana — phẫu thuật phổ biến nhất. Gel dịch kính được loại bỏ, võng mạc được làm phẳng và laser áp dụng quanh vết rách. Bóng khí hoặc dầu silicon giữ võng mạc trong khi lành. Có thể cần tư thế úp mặt.
+• Đai củng mạc — dải silicon khâu quanh bên ngoài mắt, ấn thành mắt vào trong để tiếp xúc với võng mạc bị bong. Có thể dùng riêng hoặc với cắt dịch kính.
 
-      pt: `DESCOLAMENTO DE RETINA — SINAIS DE ALERTA
+Phục Hồi Thị Lực
+Kết quả phụ thuộc lớn vào việc hoàng điểm còn dính tại thời điểm phẫu thuật. Khi phát hiện sớm — trước khi hoàng điểm bong — đa số bệnh nhân phục hồi thị lực trung tâm tốt. Nếu hoàng điểm đã bong, một mức độ mất thị lực vĩnh viễn là phổ biến. Nếu có bóng khí, bạn KHÔNG THỂ đi máy bay hay lặn cho đến khi bóng khí tan (thường 2 đến 8 tuần). Rủi ro phẫu thuật bao gồm nhiễm trùng, chảy máu, bong lại, glôcôm và đục thủy tinh thể.
 
-Isto É uma Emergência Ocular. Contate seu retinólogo ou vá ao pronto-socorro imediatamente.
+Gọi Ngay
+Bong võng mạc là cấp cứu phẫu thuật. Liên hệ bác sĩ mắt ngay nếu bạn gặp:
+• Đột ngột tăng đốm đen — đặc biệt chấm tối hoặc mạng nhện.
+• Lóe sáng ở mắt bị ảnh hưởng.
+• Bóng hoặc màn tối di chuyển ngang qua tầm nhìn.
+• Giảm thị lực đột ngột và đáng kể.`,
 
-Sinais de Alerta
-• FLASHES de luz (como relâmpagos).
-• MOSCAS VOLANTES — aumento súbito (chuva de pontos, teias).
-• SOMBRA ou CORTINA na visão.
-• PERDA SÚBITA de visão.
+      pt: `DESCOLAMENTO DE RETINA
 
-NÃO espere. Requer avaliação no mesmo dia.
+Palavras Importantes
+• Retina — camada fina de tecido que reveste a parte posterior do olho, detecta luz e envia sinais visuais ao cérebro.
+• Vítreo — gel transparente que preenche o interior do olho. Com a idade, pode puxar a retina e causar rasgos.
+• Mácula — parte central da retina responsável pela visão nítida e detalhada.
+• Vitrectomia — cirurgia para reparar a retina removendo o gel vítreo e substituindo por bolha de gás ou óleo de silicone.
+
+O Que É?
+O descolamento de retina ocorre quando a retina se separa da parede posterior do olho. A retina funciona como o filme de uma câmera — captura luz e a converte em sinais que viajam pelo nervo óptico até o cérebro. Uma vez separada, a retina não pode funcionar adequadamente e a área afetada da visão fica escura ou borrada. Se o descolamento envolver a mácula, pode ocorrer perda significativa da visão central. Sem tratamento, quase sempre leva à cegueira permanente. Com detecção precoce e técnicas cirúrgicas modernas, a retina pode frequentemente ser reposicionada com sucesso.
+
+[IMAGE_PAIR:rd-before|Antes da Cirurgia (Descolamento)|rd-after|Após Cirurgia (Reposicionada)|Fotografias de fundo de um caso real em Vitreo-Retinal Associates: grande descolamento bolhoso com pregas retinianas na apresentação (esquerda, visão de movimento de mão), e retina totalmente reposicionada no mês 2 pós-operatório (direita).]
+
+Fatores de Risco
+• Miopia alta (miopia severa).
+• Descolamento prévio em qualquer olho ou história familiar.
+• Cirurgia ocular prévia (especialmente catarata) ou trauma ocular.
+• Degeneração em treliça, retinopatia diabética avançada.
+• Idade acima de 50 anos.
+
+Sintomas
+O descolamento de retina é indolor. Os principais sinais são mudanças visuais súbitas:
+• Moscas volantes — aumento súbito de pontos, teias ou pintas escuras.
+• Flashes de luz — flashes breves ou arcos, especialmente na visão periférica.
+• Sombra ou cortina — área escura que começa na borda da visão e avança para o centro.
+• Diminuição da visão — visão borrada ou distorcida, especialmente se a mácula for envolvida.
+
+Como É Diagnosticado?
+Um exame de fundo com dilatação permite examinar toda a retina com lentes especializadas. Se a retina não puder ser vista claramente (por exemplo, por sangramento no olho), usa-se ultrassom (Eco-B). O OCT ajuda a avaliar se a mácula está aderida.
 
 Tratamento
-• Cirurgia é necessária. Quanto mais cedo tratado, melhor o resultado.`
+O descolamento quase sempre requer cirurgia. A abordagem depende do tipo e gravidade e se a mácula ainda está aderida. O tempo é crítico quando a mácula está ameaçada ou envolvida.
+• Retinopexia a Laser ou Crioterapia — laser ou crioterapia em consultório para selar um rasgo antes do descolamento completo.
+• Retinopexia Pneumática — bolha de gás injetada para pressionar o rasgo, selada com laser ou crioterapia. Em consultório para casos selecionados.
+• Vitrectomia Via Pars Plana — o reparo mais comum. Gel vítreo é removido, retina é aplanada, e laser é aplicado ao redor do rasgo. Bolha de gás ou óleo de silicone mantém a retina durante a cicatrização. Pode requerer posição de cabeça para baixo.
+• Faixa Escleral — faixa de silicone suturada ao redor da parte externa do olho, indentando a parede para contatar a retina descolada. Pode ser usada sozinha ou com vitrectomia.
+
+Recuperação Visual
+O resultado depende em grande parte de se a mácula estava aderida na hora da cirurgia. Quando o descolamento é detectado cedo — antes da mácula descolar — a maioria recupera boa visão central. Se a mácula já estava descolada, alguma perda visual permanente é comum. Se uma bolha de gás foi colocada, você NÃO PODE voar nem mergulhar até a bolha desaparecer (tipicamente 2 a 8 semanas). Riscos cirúrgicos incluem infecção, sangramento, re-descolamento, glaucoma e catarata.
+
+Ligue Imediatamente
+O descolamento de retina é uma emergência cirúrgica. Contate seu oftalmologista imediatamente se experimentar:
+• Aumento súbito de moscas volantes — especialmente pontos escuros ou teias.
+• Flashes de luz no olho afetado.
+• Sombra ou cortina escura movendo-se através da visão.
+• Diminuição súbita e significativa da visão.`
     }
   },
   {
