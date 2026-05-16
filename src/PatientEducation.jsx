@@ -1565,6 +1565,141 @@ Taxa de Sucesso
     }
   },
 
+  {
+    id: "proc-pneumatic-post",
+    category: "procedure",
+    title: { en: "After Your Pneumatic Retinopexy", es: "Después de su Retinopexia Neumática", vi: "Sau Bơm Khí Võng Mạc", pt: "Após sua Retinopexia Pneumática" },
+    tags: ["pneumatic retinopexy", "post-op", "positioning", "gas bubble"],
+    content: {
+      en: `AFTER YOUR PNEUMATIC RETINOPEXY
+
+What Just Happened?
+You had a pneumatic retinopexy. A gas bubble (SF6) was injected into your eye to push your detached retina back against the eye wall. The bubble will press on the retinal tear over the next 4 days.
+
+Positioning — The Most Important Part
+The success of this procedure depends on positioning. Maintain the position your doctor specified for 4 days. If you do not, the procedure may fail and the retina can re-detach.
+• Brief breaks are OK for eating, using the restroom, and showering — otherwise stay in position.
+• Vision in the operated eye will be impaired and depth perception may be off. Take care on stairs and have someone with you when you walk.
+
+Tomorrow's Follow-Up
+Return tomorrow for laser retinopexy or cryotherapy to permanently seal the retinal tear. This step is essential — without it, the retina can detach again.
+
+Eye Drops
+• Ofloxacin (Ocuflox) antibiotic drops, 4 times per day for 4 days.
+• Continue any other eye drops you have been prescribed.
+
+Gas Bubble (SF6) — Lasts About 2 Weeks
+• Do NOT fly, travel to high altitudes, or scuba dive until the bubble is gone. Altitude changes can cause dangerous pressure rises inside the eye.
+• Wear the green bracelet at all times — it alerts other healthcare providers to the gas bubble. Tell any other doctor before any surgery.
+
+Activity Restrictions
+• No heavy lifting (over 5–10 lbs), swimming, or submerging the eye for 1 week.
+• Do not rub the eye. Do not drive while vision is impaired.
+
+When to Call Right Away
+Contact your eye doctor immediately if you experience:
+• Sudden or significant decrease in vision.
+• Severe or worsening eye pain.
+• Pus, yellow or thick discharge, or increasing redness/swelling (signs of infection — endophthalmitis).
+• A new shadow or curtain, or sudden increase in floaters or flashes (signs of worsening detachment).`,
+
+      es: `DESPUÉS DE SU RETINOPEXIA NEUMÁTICA
+
+¿Qué Pasó?
+Tuvo una retinopexia neumática. Se inyectó una burbuja de gas (SF6) en su ojo para empujar la retina desprendida contra la pared del ojo. La burbuja presionará contra el desgarro retiniano durante los próximos 4 días.
+
+Posicionamiento — La Parte Más Importante
+El éxito depende del posicionamiento. Mantenga la posición indicada durante 4 días. Si no la mantiene, la retina puede volver a desprenderse.
+• Pausas breves para comer, baño y ducharse — por lo demás, mantenga la posición.
+• La visión y la percepción de profundidad estarán afectadas. Tenga cuidado en escaleras y al caminar.
+
+Seguimiento Mañana
+Regrese mañana para láser o crioterapia para sellar permanentemente el desgarro. Sin este paso, la retina puede volver a desprenderse.
+
+Gotas Oftálmicas
+• Gotas antibióticas de Ofloxacino (Ocuflox), 4 veces al día durante 4 días.
+• Continúe con cualquier otra gota que le hayan recetado.
+
+Burbuja de Gas (SF6) — Dura Unas 2 Semanas
+• NO vuele, no viaje a altitudes elevadas, ni bucee hasta que la burbuja desaparezca. Los cambios de altitud pueden causar aumentos peligrosos de presión dentro del ojo.
+• Use el brazalete verde en todo momento — alerta a otros proveedores de salud sobre la burbuja. Informe a cualquier otro médico antes de cualquier cirugía.
+
+Restricciones de Actividad
+• No levante objetos pesados (más de 5–10 lbs), no nade ni sumerja el ojo durante 1 semana.
+• No se frote el ojo. No conduzca mientras la visión esté afectada.
+
+Llame Inmediatamente
+Contacte a su oftalmólogo inmediatamente si experimenta:
+• Disminución súbita o significativa de la visión.
+• Dolor ocular severo o que empeora.
+• Pus, secreción amarilla o espesa, o aumento de enrojecimiento/hinchazón (signos de infección — endoftalmitis).
+• Una nueva sombra o cortina, o aumento súbito de moscas volantes o destellos (signos de empeoramiento del desprendimiento).`,
+
+      vi: `SAU BƠM KHÍ VÕNG MẠC
+
+Điều Gì Vừa Xảy Ra?
+Bạn đã được bơm khí võng mạc. Một bóng khí (SF6) đã được tiêm vào mắt để đẩy võng mạc bị bong trở lại thành mắt. Bóng khí sẽ ép vào vết rách võng mạc trong 4 ngày tiếp theo.
+
+Tư Thế — Phần Quan Trọng Nhất
+Sự thành công của thủ thuật này phụ thuộc vào tư thế. Giữ tư thế bác sĩ chỉ định trong 4 ngày. Nếu bạn không giữ, thủ thuật có thể thất bại và võng mạc có thể bong lại.
+• Nghỉ ngắn được phép để ăn, đi vệ sinh và tắm — ngoài ra hãy giữ tư thế.
+• Thị lực ở mắt phẫu thuật sẽ bị suy giảm và cảm nhận chiều sâu có thể bị ảnh hưởng. Cẩn thận khi lên xuống cầu thang và nhờ người đi cùng khi đi.
+
+Tái Khám Ngày Mai
+Quay lại ngày mai để laser hàn võng mạc hoặc đông lạnh để niêm phong vĩnh viễn vết rách. Bước này rất cần thiết — nếu không, võng mạc có thể bong lại.
+
+Thuốc Nhỏ Mắt
+• Thuốc nhỏ kháng sinh Ofloxacin (Ocuflox), 4 lần mỗi ngày trong 4 ngày.
+• Tiếp tục các loại thuốc nhỏ mắt khác đã được kê đơn.
+
+Bóng Khí (SF6) — Kéo Dài Khoảng 2 Tuần
+• KHÔNG đi máy bay, lên núi cao, hay lặn cho đến khi bóng khí biến mất. Thay đổi độ cao có thể làm áp suất trong mắt tăng nguy hiểm.
+• Đeo vòng tay màu xanh lá cây mọi lúc — cảnh báo các bác sĩ khác về bóng khí. Báo cho bất kỳ bác sĩ nào trước khi làm phẫu thuật khác.
+
+Hạn Chế Hoạt Động
+• Không nâng vật nặng (trên 5–10 lbs), bơi, hoặc ngâm mắt trong 1 tuần.
+• Không dụi mắt. Không lái xe khi thị lực bị suy giảm.
+
+Gọi Ngay
+Liên hệ bác sĩ mắt ngay nếu bạn gặp:
+• Giảm thị lực đột ngột hoặc đáng kể.
+• Đau mắt nặng hoặc tăng dần.
+• Mủ, dịch tiết vàng/đặc, hoặc tăng đỏ/sưng (dấu hiệu nhiễm trùng — viêm nội nhãn).
+• Bóng hoặc màn che mới, hoặc đột ngột tăng đốm đen/lóe sáng (dấu hiệu bong võng mạc đang xấu đi).`,
+
+      pt: `APÓS SUA RETINOPEXIA PNEUMÁTICA
+
+O Que Aconteceu?
+Você fez uma retinopexia pneumática. Uma bolha de gás (SF6) foi injetada para empurrar a retina contra a parede do olho. A bolha pressionará o rasgo durante os próximos 4 dias.
+
+Posicionamento — A Parte Mais Importante
+O sucesso depende do posicionamento. Mantenha a posição especificada por 4 dias. Se não mantiver, a retina pode descolar novamente.
+• Pausas breves para comer, banheiro e banho — caso contrário, mantenha a posição.
+• A visão e a percepção de profundidade estarão prejudicadas. Tome cuidado em escadas e ao caminhar.
+
+Retorno Amanhã
+Retorne amanhã para laser ou crioterapia para selar permanentemente o rasgo. Sem este passo, a retina pode descolar novamente.
+
+Colírios
+• Ofloxacina (Ocuflox) antibiótica, 4 vezes ao dia por 4 dias. Continue outros colírios prescritos.
+
+Bolha de Gás (SF6) — Dura Cerca de 2 Semanas
+• NÃO voe, viaje a altitudes elevadas ou mergulhe até a bolha desaparecer. Mudanças de altitude podem causar aumentos perigosos de pressão dentro do olho.
+• Use a pulseira verde o tempo todo — ela alerta outros profissionais sobre a bolha. Informe qualquer outro médico antes de qualquer cirurgia.
+
+Restrições de Atividade
+• Não levante objetos pesados (mais de 5–10 lbs), nade ou submerja o olho por 1 semana.
+• Não esfregue o olho. Não dirija enquanto a visão estiver prejudicada.
+
+Ligue Imediatamente
+Contate seu oftalmologista imediatamente se você experimentar:
+• Diminuição súbita ou significativa da visão.
+• Dor ocular severa ou que piora.
+• Pus, secreção amarela ou espessa, ou aumento de vermelhidão/inchaço (sinais de infecção — endoftalmite).
+• Uma sombra ou cortina nova, ou aumento súbito de moscas volantes ou flashes (sinais de piora do descolamento).`
+    }
+  },
+
   // ═══════════════════════════════════════════════════════════════════
   // CONDITIONS
   // ═══════════════════════════════════════════════════════════════════
