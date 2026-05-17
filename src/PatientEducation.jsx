@@ -1583,13 +1583,6 @@ Contate seu oftalmologista imediatamente se você experimentar:
 
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
-Eye Words to Know
-• Retina — the layer at the back of the eye that senses light and sends signals to the brain so you can see.
-• Macula — a small but important area in the middle of the retina. It gives us our sharp, central vision.
-• Drusen — tiny white or yellow deposits that build up under the retina. They seldom cause vision loss. But many (or very large) drusen can be a sign of AMD.
-• Anti-VEGF — a class of medications injected into the eye to reduce leaking from abnormal blood vessels.
-• OCT — Optical Coherence Tomography, a painless scan that provides very detailed images of the retina and macula.
-
 What Is AMD?
 Age-related macular degeneration (AMD) is a disease of the retina. It happens when a part of the retina called the macula is damaged. AMD causes loss of central vision, but your peripheral (side) vision will still be normal.
 
@@ -1651,13 +1644,6 @@ These may indicate wet AMD development or progression and need prompt evaluation
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
-Palabras Importantes
-• Retina — capa en la parte posterior del ojo que detecta luz y envía señales al cerebro.
-• Mácula — área pequeña pero importante en el centro de la retina para visión central nítida.
-• Drusen — depósitos pequeños blancos o amarillos bajo la retina. Muchos o muy grandes pueden ser signo de DMAE.
-• Anti-VEGF — medicamentos inyectados en el ojo para reducir fugas de vasos sanguíneos anormales.
-• OCT — Tomografía de Coherencia Óptica, escaneo indoloro que produce imágenes detalladas de la retina.
-
 ¿Qué Es la DMAE?
 Enfermedad de la retina que daña la mácula, causando pérdida de visión central. Su visión periférica (lateral) permanece normal. Imagine que mira la cara de alguien: puede ver su cabello y ropa claramente, pero tiene dificultad para distinguir sus ojos, nariz o expresión — el centro de su visión puede verse borroso, oscuro o vacío. Es la principal causa de pérdida visual en personas mayores de 50 años. Muchos no se dan cuenta hasta que la visión está muy borrosa.
 
@@ -1698,13 +1684,6 @@ Cuándo Llamar de Inmediato
 
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
-Từ Vựng Cần Biết
-• Võng mạc — lớp ở phía sau mắt cảm nhận ánh sáng và gửi tín hiệu đến não.
-• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc cho thị lực trung tâm sắc nét.
-• Drusen — cặn lắng nhỏ trắng hoặc vàng dưới võng mạc. Nhiều hoặc lớn có thể là dấu hiệu AMD.
-• Anti-VEGF — thuốc tiêm vào mắt giảm rò rỉ từ mạch máu bất thường.
-• OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
-
 AMD Là Gì?
 Bệnh võng mạc gây tổn thương hoàng điểm, mất thị lực trung tâm nhưng thị lực ngoại vi (bên) vẫn bình thường. Hãy tưởng tượng nhìn khuôn mặt ai đó: bạn có thể thấy rõ tóc và quần áo, nhưng khó phân biệt mắt, mũi hay biểu cảm — trung tâm tầm nhìn có thể mờ, tối hoặc trống. Nguyên nhân hàng đầu mất thị lực ở người trên 50 tuổi. Nhiều người không biết cho đến khi rất mờ.
 
@@ -1744,13 +1723,6 @@ Khi Nào Cần Gọi Ngay
       pt: `DEGENERAÇÃO MACULAR RELACIONADA À IDADE (DMRI)
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
-
-Palavras Importantes
-• Retina — camada no fundo do olho que detecta luz e envia sinais ao cérebro.
-• Mácula — área pequena mas importante no centro da retina para visão central nítida.
-• Drusen — depósitos pequenos brancos ou amarelos sob a retina. Muitos ou grandes podem ser sinal de DMRI.
-• Anti-VEGF — medicamentos injetados no olho para reduzir vazamento de vasos anormais.
-• OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
 
 O Que É DMRI?
 Doença da retina que danifica a mácula, causando perda de visão central. A visão periférica (lateral) permanece normal. Imagine olhar para o rosto de alguém: pode ver claramente o cabelo e a roupa, mas tem dificuldade em distinguir os olhos, nariz ou expressão — o centro da visão pode ficar embaçado, escuro ou vazio. Principal causa de perda visual em pessoas acima de 50 anos. Muitos não percebem até a visão estar muito embaçada.
@@ -2185,14 +2157,6 @@ O Que Você Pode Fazer
 
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
-Eye Words to Know
-• Retina — the thin layer of tissue lining the back of the eye that senses light and sends images to your brain.
-• Macula — the small center part of the retina responsible for sharp, detailed central vision.
-• Vitreous — the clear gel that fills the inside of the eye.
-• Floaters — small dark spots, specks, or cobweb-like shapes that drift across your vision. They are shadows cast on the retina by tiny clumps in the vitreous gel.
-• Anti-VEGF — a medication injected into the eye that blocks the growth of abnormal blood vessels and reduces fluid leakage.
-• OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
-
 What Is It?
 A complication of diabetes that damages the tiny blood vessels in your retina. Over time, high blood sugar causes these vessels to swell, leak fluid, or close off entirely. When blood flow is cut off, the retina may try to grow new blood vessels — but these new vessels are fragile and bleed easily. Diabetic retinopathy is the leading cause of blindness in working-age adults, but it is manageable with early detection and treatment.
 
@@ -2248,14 +2212,6 @@ These may be signs of bleeding inside the eye, retinal detachment, or dangerousl
       es: `RETINOPATÍA DIABÉTICA
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
-
-Palabras Importantes
-• Retina — la capa delgada de tejido en la parte posterior del ojo que detecta la luz y envía imágenes al cerebro.
-• Mácula — la pequeña zona central de la retina responsable de la visión central nítida y detallada.
-• Vítreo — el gel transparente que llena el interior del ojo.
-• Moscas volantes (floaters) — pequeñas manchas oscuras, puntos o formas de telaraña que flotan en su visión. Son sombras proyectadas en la retina por pequeños grumos en el gel vítreo.
-• Anti-VEGF — un medicamento inyectado en el ojo que bloquea el crecimiento de vasos sanguíneos anormales y reduce la fuga de líquido.
-• OCT — Tomografía de Coherencia Óptica, un escaneo indoloro que toma imágenes detalladas de su retina.
 
 ¿Qué Es?
 Una complicación de la diabetes que daña los pequeños vasos sanguíneos de la retina. Con el tiempo, el azúcar elevada hace que estos vasos se hinchen, filtren líquido o se cierren por completo. Cuando se corta el flujo sanguíneo, la retina puede intentar crear nuevos vasos — pero estos son frágiles y sangran fácilmente. Es la principal causa de ceguera en adultos en edad laboral, pero es manejable con detección y tratamiento tempranos.
@@ -2313,14 +2269,6 @@ Estos pueden ser signos de sangrado dentro del ojo, desprendimiento de retina o 
 
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
-Từ Vựng Cần Biết
-• Võng mạc — lớp mô mỏng lót phía sau mắt, cảm nhận ánh sáng và gửi hình ảnh đến não.
-• Hoàng điểm — vùng trung tâm nhỏ của võng mạc chịu trách nhiệm cho thị lực trung tâm sắc nét.
-• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
-• Ruồi bay (floaters) — các đốm tối nhỏ, chấm hoặc hình mạng nhện trôi nổi trong tầm nhìn. Đó là bóng do các cục nhỏ trong gel dịch kính tạo ra trên võng mạc.
-• Anti-VEGF — thuốc tiêm vào mắt ngăn chặn sự phát triển của mạch máu bất thường và giảm rò rỉ dịch.
-• OCT — Chụp cắt lớp quang học, một phương pháp quét không đau tạo hình ảnh chi tiết của võng mạc.
-
 Là Gì?
 Biến chứng của đái tháo đường gây tổn thương các mạch máu nhỏ trong võng mạc. Theo thời gian, đường huyết cao khiến các mạch máu này sưng lên, rò rỉ dịch hoặc tắc nghẽn hoàn toàn. Khi dòng máu bị cắt, võng mạc có thể cố tạo ra mạch máu mới — nhưng các mạch mới này mỏng manh và dễ chảy máu. Đây là nguyên nhân hàng đầu gây mù ở người trưởng thành trong độ tuổi lao động, nhưng kiểm soát được nếu phát hiện và điều trị sớm.
 
@@ -2376,14 +2324,6 @@ Liên hệ bác sĩ mắt ngay hoặc đi cấp cứu nếu bạn gặp:
       pt: `RETINOPATIA DIABÉTICA
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
-
-Palavras Importantes
-• Retina — a fina camada de tecido no fundo do olho que detecta luz e envia imagens ao cérebro.
-• Mácula — a pequena área central da retina responsável pela visão central nítida e detalhada.
-• Vítreo — o gel transparente que preenche o interior do olho.
-• Moscas volantes (floaters) — pequenas manchas escuras, pontos ou formas de teia que flutuam na sua visão. São sombras projetadas na retina por pequenos grumos no gel vítreo.
-• Anti-VEGF — medicamento injetado no olho que bloqueia o crescimento de vasos sanguíneos anormais e reduz o vazamento de líquido.
-• OCT — Tomografia de Coerência Óptica, um exame indolor que produz imagens detalhadas da retina.
 
 O Que É?
 Uma complicação do diabetes que danifica os pequenos vasos sanguíneos da retina. Com o tempo, a glicemia alta faz com que esses vasos inchem, vazem líquido ou se fechem completamente. Quando o fluxo sanguíneo é interrompido, a retina pode tentar criar novos vasos — mas estes são frágeis e sangram facilmente. É a principal causa de cegueira em adultos em idade laboral, mas é controlável com detecção e tratamento precoces.
@@ -2448,14 +2388,6 @@ Esses podem ser sinais de sangramento dentro do olho, descolamento de retina ou 
 
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
-Eye Words to Know
-• Retina — the layer of cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
-• Macula — a small but important area in the center of the retina for sharp, central vision.
-• Vitreous — the clear, gel-like substance that fills the inside of your eye.
-• Floaters — tiny clumps of cells or other material inside the vitreous. They look like small specks, strings, or clouds moving in your field of vision.
-• Anti-VEGF — a medication injected into the eye that reduces swelling and abnormal blood vessel growth.
-• OCT — Optical Coherence Tomography, a painless scan that shows detailed images of your retina.
-
 What Is It?
 Your retina has veins and other blood vessels that carry blood. When a vein in your retina is blocked (occluded), it is called a retinal vein occlusion. This can be caused by a blood clot, or it can happen when a larger blood vessel presses down on the vein. With retinal vein occlusion, weaker blood vessels may end up carrying more blood. They might start to leak, causing the macula to swell or thicken. This is called macular edema, and it leads to blurry vision or vision loss. When blood flow is severely blocked, the retina may try to grow new blood vessels. These new vessels are fragile and abnormal. They can grow on the surface of the retina, where they may bleed into the vitreous gel (vitreous hemorrhage), causing sudden floaters or vision loss. They can also grow in the iris (colored part of your eye) or in other areas at the front of your eye, where they block the drainage of fluid and cause painful high pressure (neovascular glaucoma).
 
@@ -2509,14 +2441,6 @@ These may be signs of a serious complication that needs prompt treatment.`,
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
-Palabras Importantes
-• Retina — capa de células en la parte posterior del ojo que detecta luz y envía señales al cerebro.
-• Mácula — área pequeña pero importante en el centro de la retina para visión central nítida.
-• Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
-• Moscas volantes (floaters) — pequeños grumos dentro del vítreo que parecen manchas, hilos o nubes moviéndose en la visión.
-• Anti-VEGF — medicamento inyectado en el ojo que reduce hinchazón y crecimiento de vasos anormales.
-• OCT — Tomografía de Coherencia Óptica, escaneo indoloro que muestra imágenes detalladas de la retina.
-
 ¿Qué Es?
 Cuando una vena en la retina se bloquea (ocluye), la sangre y el líquido se filtran causando hinchazón y pérdida de visión. Puede ser causada por un coágulo o cuando un vaso más grande presiona la vena. Los vasos debilitados pueden filtrar, causando edema macular (hinchazón de la mácula). Cuando el flujo sanguíneo está severamente bloqueado, la retina puede intentar crecer vasos nuevos. Estos vasos son frágiles y anormales. Pueden crecer en la superficie de la retina, donde pueden sangrar hacia el gel vítreo (hemorragia vítrea), causando moscas volantes súbitas o pérdida de visión. También pueden crecer en el iris (la parte coloreada del ojo) o en otras áreas al frente del ojo, bloqueando el drenaje de líquido y causando presión alta dolorosa (glaucoma neovascular).
 
@@ -2560,14 +2484,6 @@ Cuándo Llamar de Inmediato
 
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
-Từ Vựng Cần Biết
-• Võng mạc — lớp tế bào ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
-• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc cho thị lực trung tâm sắc nét.
-• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
-• Ruồi bay (floaters) — các cục nhỏ trong dịch kính trông như đốm, sợi hoặc mây trôi trong tầm nhìn.
-• Anti-VEGF — thuốc tiêm vào mắt giảm sưng và ngăn mạch bất thường phát triển.
-• OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
-
 Là Gì?
 Khi tĩnh mạch ở võng mạc bị tắc, máu và dịch rò rỉ gây sưng và mất thị lực. Có thể do cục máu đông hoặc mạch máu lớn hơn đè lên tĩnh mạch. Các mạch yếu có thể rò rỉ gây phù hoàng điểm (sưng hoàng điểm). Khi lưu lượng máu bị tắc nghẽn nghiêm trọng, võng mạc có thể cố gắng mọc mạch máu mới. Những mạch mới này yếu và bất thường. Chúng có thể mọc trên bề mặt võng mạc, nơi chúng có thể chảy máu vào gel dịch kính (xuất huyết dịch kính), gây ra hiện tượng đốm bay đột ngột hoặc mất thị lực. Chúng cũng có thể mọc ở mống mắt (phần có màu của mắt) hoặc các vùng phía trước mắt, chặn thoát dịch và gây áp lực cao đau đớn (glaucoma tân mạch).
 
@@ -2610,14 +2526,6 @@ Khi Nào Cần Gọi Ngay
       pt: `OCLUSÃO VENOSA RETINIANA
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
-
-Palavras Importantes
-• Retina — camada de células no fundo do olho que detecta luz e envia sinais ao cérebro.
-• Mácula — área pequena mas importante no centro da retina para visão central nítida.
-• Vítreo — substância gelatinosa transparente que preenche o interior do olho.
-• Moscas volantes (floaters) — pequenos grumos no vítreo que parecem manchas, fios ou nuvens na visão.
-• Anti-VEGF — medicamento injetado no olho que reduz inchaço e crescimento de vasos anormais.
-• OCT — Tomografia de Coerência Óptica, exame indolor que mostra imagens detalhadas da retina.
 
 O Que É?
 Quando uma veia na retina fica bloqueada (ocluída), sangue e fluido vazam causando inchaço e perda de visão. Pode ser causada por coágulo ou quando um vaso maior pressiona a veia. Os vasos enfraquecidos podem vazar, causando edema macular (inchaço da mácula). Quando o fluxo sanguíneo está severamente bloqueado, a retina pode tentar crescer vasos novos. Esses vasos são frágeis e anormais. Podem crescer na superfície da retina, onde podem sangrar para dentro do gel vítreo (hemorragia vítrea), causando moscas volantes súbitas ou perda de visão. Também podem crescer na íris (a parte colorida do olho) ou em outras áreas na frente do olho, bloqueando a drenagem de fluido e causando pressão alta dolorosa (glaucoma neovascular).
@@ -2841,10 +2749,6 @@ Podem ser sintomas de rasgo ou descolamento de retina — precisam avaliação n
 
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
-Eye Words to Know
-• Retina — the layer of cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
-• Vitreous — the clear, jelly-like substance that fills the middle of the eye.
-
 What Is a Retinal Tear?
 Think of the retina as wallpaper lining the inside of your eye. A retinal tear is a rip in that wallpaper. If fluid passes through the rip and gets underneath, it can pull the wallpaper away from the wall — this is called a retinal detachment, a serious condition that can lead to vision loss. A retinal tear must be treated right away to prevent this from happening.
 
@@ -2895,10 +2799,6 @@ These may be signs of a retinal tear or detachment, a serious problem that needs
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
-Palabras Importantes
-• Retina — capa de células en la parte posterior del ojo que detecta luz y envía señales al cerebro.
-• Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
-
 ¿Qué Es un Desgarro Retiniano?
 Piense en la retina como el papel tapiz que recubre el interior de su ojo. Un desgarro retiniano es una rotura en ese papel tapiz. Si el líquido pasa a través de la rotura y se mete debajo, puede despegar el papel tapiz de la pared — esto se llama desprendimiento de retina, una condición seria que puede causar pérdida de visión. Un desgarro retiniano debe tratarse de inmediato para prevenir que esto ocurra.
 
@@ -2947,10 +2847,6 @@ Estos pueden ser signos de desgarro o desprendimiento de retina, un problema ser
 
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
-Từ Vựng Cần Biết
-• Võng mạc — lớp tế bào ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
-• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
-
 Rách Võng Mạc Là Gì?
 Hãy nghĩ về võng mạc như giấy dán tường lót bên trong mắt. Rách võng mạc là một vết rách trên lớp giấy dán tường đó. Nếu dịch chui qua vết rách và lọt vào bên dưới, nó có thể kéo giấy dán tường ra khỏi tường — đây gọi là bong võng mạc, một tình trạng nghiêm trọng có thể gây mất thị lực. Rách võng mạc phải được điều trị ngay để ngăn điều này xảy ra.
 
@@ -2998,10 +2894,6 @@ Khi Nào Cần Gọi Ngay
       pt: `RASGO RETINIANO
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
-
-Palavras Importantes
-• Retina — camada de células no fundo do olho que detecta luz e envia sinais ao cérebro.
-• Vítreo — substância gelatinosa transparente que preenche o interior do olho.
 
 O Que É um Rasgo Retiniano?
 Pense na retina como o papel de parede que reveste o interior do seu olho. Um rasgo retiniano é uma ruptura nesse papel de parede. Se o fluido passar pela ruptura e entrar por baixo, pode descolar o papel de parede da parede — isso é chamado de descolamento de retina, uma condição séria que pode causar perda de visão. Um rasgo retiniano deve ser tratado imediatamente para prevenir que isso aconteça.
@@ -3167,12 +3059,6 @@ Importante: Esteroides e CSC
 
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
-Eye Words to Know
-• Retina — the layer of nerve cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
-• Macula — a small but important area in the center of the retina. You need the macula to clearly see details and colors of objects in front of you.
-• Vitreous — the clear, gel-like substance that fills the inside of your eye. It helps the eye maintain its shape and also helps send light to the retina.
-• OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
-
 What Is It?
 A macular pucker happens when wrinkles, creases, or bulges form on your macula. The macula must lie flat against the back of your eye to work properly. When the macula wrinkles or bulges, your central vision may be affected. Things can look wavy, or you may have trouble seeing details. You might notice a gray, cloudy, or blank area in your central vision, or even double vision in the affected eye. A macular pucker doesn't usually affect your peripheral (side) vision.
 
@@ -3212,12 +3098,6 @@ Contact your eye doctor immediately if you experience:
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
-Palabras Importantes
-• Retina — la capa de células nerviosas en la parte posterior del ojo que detecta la luz y envía señales al cerebro.
-• Mácula — área pequeña pero importante en el centro de la retina, responsable de la visión central nítida.
-• Vítreo — sustancia gelatinosa y transparente que llena el interior del ojo.
-• OCT — Tomografía de Coherencia Óptica, un escaneo indoloro que produce imágenes detalladas de la retina.
-
 ¿Qué Es?
 Ocurre cuando arrugas o pliegues se forman en la mácula. La mácula debe estar plana contra la parte posterior del ojo para funcionar correctamente. Cuando se arruga, la visión central se ve afectada. Las cosas pueden verse onduladas, o puede tener dificultad para ver detalles. Puede notar un área gris, nublada o en blanco en su visión central. No afecta la visión periférica (lateral).
 
@@ -3255,12 +3135,6 @@ Cuándo Llamar de Inmediato
 
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
-Từ Vựng Cần Biết
-• Võng mạc — lớp tế bào thần kinh ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
-• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc, chịu trách nhiệm cho thị lực trung tâm sắc nét.
-• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
-• OCT — Chụp cắt lớp quang học, quét không đau tạo hình ảnh chi tiết của võng mạc.
-
 Là Gì?
 Nhăn hoàng điểm xảy ra khi nếp nhăn hoặc nếp gấp hình thành trên hoàng điểm. Hoàng điểm cần nằm phẳng để hoạt động đúng. Khi bị nhăn, thị lực trung tâm bị ảnh hưởng. Bạn có thể thấy mọi thứ lượn sóng hoặc khó nhìn chi tiết. Không ảnh hưởng thị lực ngoại vi.
 
@@ -3297,12 +3171,6 @@ Khi Nào Cần Gọi Ngay
       pt: `MEMBRANA EPIRRETINIANA (ENRUGAMENTO MACULAR)
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
-
-Palavras Importantes
-• Retina — camada de células nervosas no fundo do olho que detecta luz e envia sinais ao cérebro.
-• Mácula — área pequena mas importante no centro da retina, responsável pela visão central nítida.
-• Vítreo — substância gelatinosa e transparente que preenche o interior do olho.
-• OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
 
 O Que É?
 Ocorre quando rugas ou pregas se formam na mácula. A mácula precisa estar plana para funcionar corretamente. Quando enruga, a visão central é afetada. As coisas podem parecer onduladas, ou pode ter dificuldade em ver detalhes. Pode notar uma área cinza, turva ou em branco na visão central. Não afeta a visão periférica (lateral).
@@ -3347,12 +3215,6 @@ Quando Ligar Imediatamente
       en: `MACULAR HOLE
 
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
-
-Eye Words to Know
-• Retina — the layer of cells lining the back wall inside the eye. It senses light and sends signals to the brain so you can see.
-• Macula — a small but important area in the center of the retina. You need the macula to clearly see details and colors of objects in front of you.
-• Vitreous — the clear, gel-like substance that fills the inside of your eye. It helps the eye maintain its shape and also helps send light to the retina.
-• OCT — Optical Coherence Tomography, a painless imaging scan that takes detailed cross-section pictures of your retina.
 
 What Is It?
 A macular hole is when a tear or opening forms in your macula. As the hole forms, things in your central vision will look blurry, wavy, or distorted. As the hole grows, a dark or blind spot appears in your central vision. A macular hole usually affects only your central vision. Rarely, it may lead to a retinal detachment, which can also affect your peripheral (side) vision.
@@ -3401,12 +3263,6 @@ Contact your eye doctor immediately if you experience:
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
-Palabras Importantes
-• Retina — capa de células en la parte posterior del ojo que detecta la luz y envía señales al cerebro.
-• Mácula — área pequeña pero importante en el centro de la retina para la visión central nítida.
-• Vítreo — sustancia gelatinosa transparente que llena el interior del ojo.
-• OCT — Tomografía de Coherencia Óptica, escaneo indoloro que produce imágenes detalladas de la retina.
-
 ¿Qué Es?
 Un agujero macular es cuando se forma una abertura en la mácula. La visión central se vuelve borrosa, ondulada o distorsionada. A medida que el agujero crece, aparece un punto oscuro o ciego en la visión central. Generalmente solo afecta la visión central. En casos raros, puede llevar a un desprendimiento de retina, que también puede afectar la visión periférica (lateral).
 
@@ -3451,12 +3307,6 @@ Cuándo Llamar de Inmediato
 
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
-Từ Vựng Cần Biết
-• Võng mạc — lớp tế bào ở thành sau mắt, cảm nhận ánh sáng và gửi tín hiệu đến não.
-• Hoàng điểm — vùng nhỏ nhưng quan trọng ở trung tâm võng mạc cho thị lực trung tâm sắc nét.
-• Dịch kính — chất gel trong suốt lấp đầy bên trong mắt.
-• OCT — Chụp cắt lớp quang học, quét không đau cho hình ảnh chi tiết của võng mạc.
-
 Là Gì?
 Lỗ hoàng điểm là khi hình thành vết rách hoặc lỗ mở ở hoàng điểm. Thị lực trung tâm trở nên mờ, lượn sóng hoặc méo. Khi lỗ lớn hơn, xuất hiện đốm tối hoặc điểm mù. Thường chỉ ảnh hưởng thị lực trung tâm. Hiếm khi, có thể dẫn đến bong võng mạc, ảnh hưởng cả thị lực ngoại vi (bên).
 
@@ -3500,12 +3350,6 @@ Khi Nào Cần Gọi Ngay
       pt: `BURACO MACULAR
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
-
-Palavras Importantes
-• Retina — camada de células no fundo do olho que detecta luz e envia sinais ao cérebro.
-• Mácula — área pequena mas importante no centro da retina para visão central nítida.
-• Vítreo — substância gelatinosa transparente que preenche o interior do olho.
-• OCT — Tomografia de Coerência Óptica, exame indolor que produz imagens detalhadas da retina.
 
 O Que É?
 Um buraco macular é quando uma abertura se forma na mácula. A visão central fica embaçada, ondulada ou distorcida. À medida que o buraco cresce, aparece um ponto escuro ou cego na visão central. Geralmente afeta apenas a visão central. Raramente, pode levar a um descolamento de retina, que também pode afetar a visão periférica (lateral).
@@ -3556,14 +3400,10 @@ Quando Ligar Imediatamente
     content: {
       en: `RETINAL DETACHMENT
 
-Eye Words to Know
-• Retina — thin layer of tissue lining the back of the eye that senses light and sends visual signals to the brain.
-• Vitreous — clear gel that fills the inside of the eye. As it ages, it can pull on the retina and cause tears.
-• Macula — central part of the retina responsible for sharp, detailed vision.
-• Vitrectomy — surgery to repair the retina by removing the vitreous gel and replacing it with a gas bubble or silicone oil.
+[IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
 What Is It?
-A retinal detachment occurs when the retina separates from the back wall of the eye. The retina works like the film in a camera — it captures light and converts it into signals that travel through the optic nerve to the brain. Once separated, the retina can no longer function properly, and the affected area of vision becomes dark or blurred. If the detachment involves the macula, significant central vision loss can occur. Without treatment, retinal detachment almost always leads to permanent blindness in the affected eye. With early detection and modern surgical techniques, the retina can often be successfully reattached.
+A retinal detachment occurs when the retina separates from the back wall of the eye. The affected area of vision becomes dark or blurred, and if the macula is involved, central vision loss can be significant. Without treatment, it almost always leads to permanent blindness. With early detection and modern surgery, the retina can often be successfully reattached.
 
 [IMAGE_PAIR:rd-before|Before Surgery (Detachment)|rd-after|After Surgery (Reattached)|Fundus photographs from an actual case at Vitreo-Retinal Associates: large bullous retinal detachment with extensive retinal folds at presentation (left, VA hand motion), and fully reattached retina at post-operative month 2 (right).]
 
@@ -3585,14 +3425,14 @@ How Is It Diagnosed?
 A dilated fundus exam allows the doctor to examine the entire retina with specialized lenses. If the retina cannot be clearly seen (e.g., due to bleeding inside the eye), an ultrasound (B-scan) is used. OCT scans help assess whether the macula is attached.
 
 Treatment
-Retinal detachment almost always requires surgery. The approach depends on the type and severity of the detachment and whether the macula is still attached. Time is critical when the macula is threatened or involved.
-• Laser Retinopexy or Cryopexy — in-office laser or freezing to seal a tear before the retina fully detaches.
-• Pneumatic Retinopexy — gas bubble injected to press the tear back, sealed with laser or cryopexy. In-office for selected cases.
-• Pars Plana Vitrectomy — the most common repair. Vitreous gel is removed, the retina is flattened, and laser is applied around the tear. A gas bubble or silicone oil holds the retina during healing. Face-down positioning may be required.
-• Scleral Buckle — a silicone band sutured around the outside of the eye gently indents the wall to contact the detached retina. May be used alone or with vitrectomy.
+Retinal detachment almost always requires surgery. Approach depends on type, severity, and whether the macula is involved. Time is critical.
+• Laser Retinopexy or Cryopexy — in-office sealing of a tear before the retina fully detaches.
+• Pneumatic Retinopexy — gas bubble injected to press the tear back, sealed with laser.
+• Pars Plana Vitrectomy — most common repair. Vitreous removed, retina flattened, laser applied. Gas bubble or silicone oil holds the retina during healing. Face-down positioning may be required.
+• Scleral Buckle — silicone band sutured around the eye, indenting the wall to contact the detached retina.
 
 Visual Recovery
-Outcome depends largely on whether the macula was attached at the time of surgery. When caught early — before the macula detaches — most patients recover good central vision. If the macula was already detached, some permanent vision loss is common. If a gas bubble was placed, you CANNOT fly or scuba dive until the bubble is gone (typically 2 to 8 weeks). Surgical risks include infection, bleeding, re-detachment, glaucoma, and cataract.
+Outcome depends on whether the macula was attached at surgery. Caught early (macula attached), most patients recover good central vision. If the macula was already detached, some permanent vision loss is common. With a gas bubble: no flying or scuba diving until it dissolves (2 to 8 weeks). Risks: infection, bleeding, re-detachment, glaucoma, cataract.
 
 When to Call Right Away
 Retinal detachment is a surgical emergency. Contact your eye doctor immediately if you experience:
@@ -3603,43 +3443,37 @@ Retinal detachment is a surgical emergency. Contact your eye doctor immediately 
 
       es: `DESPRENDIMIENTO DE RETINA
 
-Palabras Importantes
-• Retina — capa delgada de tejido en la parte posterior del ojo que detecta la luz y envía señales visuales al cerebro.
-• Vítreo — gel transparente que llena el interior del ojo. Al envejecer puede tirar de la retina y causar desgarros.
-• Mácula — parte central de la retina responsable de la visión nítida y detallada.
-• Vitrectomía — cirugía para reparar la retina removiendo el gel vítreo y reemplazándolo con burbuja de gas o aceite de silicón.
+[IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
 ¿Qué Es?
-Un desprendimiento de retina ocurre cuando la retina se separa de la pared posterior del ojo. La retina funciona como la película de una cámara — captura la luz y la convierte en señales que viajan por el nervio óptico al cerebro. Una vez separada, la retina no puede funcionar correctamente y el área afectada de la visión se vuelve oscura o borrosa. Si el desprendimiento involucra la mácula, puede ocurrir pérdida significativa de la visión central. Sin tratamiento, casi siempre lleva a ceguera permanente. Con detección temprana y técnicas quirúrgicas modernas, la retina a menudo puede reposicionarse exitosamente.
+Un desprendimiento de retina ocurre cuando la retina se separa de la pared posterior del ojo. El área afectada de la visión se vuelve oscura o borrosa, y si involucra la mácula, la pérdida de visión central puede ser significativa. Sin tratamiento, casi siempre lleva a ceguera permanente. Con detección temprana y cirugía moderna, la retina a menudo puede reposicionarse exitosamente.
 
 [IMAGE_PAIR:rd-before|Antes de Cirugía (Desprendimiento)|rd-after|Después de Cirugía (Reposicionada)|Fotografías de fondo de un caso real en Vitreo-Retinal Associates: gran desprendimiento bulloso con pliegues retinianos al presentar (izquierda, visión de movimiento de mano), y retina completamente reposicionada al mes 2 post-operatorio (derecha).]
 
 Factores de Riesgo
-• Miopía alta (corto de vista severo).
-• Desprendimiento previo en cualquier ojo o historia familiar.
+• Miopía alta, desprendimiento previo o historia familiar.
 • Cirugía ocular previa (especialmente catarata) o trauma ocular.
-• Degeneración en empalizada, retinopatía diabética avanzada.
-• Edad mayor de 50 años.
+• Degeneración en empalizada, retinopatía diabética avanzada, edad mayor de 50.
 
 Síntomas
-El desprendimiento de retina es indoloro. Las señales clave son cambios visuales súbitos:
+El desprendimiento es indoloro. Las señales clave son cambios visuales súbitos:
 • Moscas volantes — aumento súbito de puntos, telarañas o motas oscuras.
-• Destellos de luz — destellos breves o arcos, especialmente en la visión periférica.
-• Sombra o cortina — área oscura que comienza en el borde de su visión y avanza hacia el centro.
-• Disminución de visión — visión borrosa o distorsionada, especialmente si la mácula se involucra.
+• Destellos de luz — breves o arcos, especialmente en visión periférica.
+• Sombra o cortina — área oscura desde el borde que avanza hacia el centro.
+• Visión disminuida — borrosa o distorsionada, especialmente si la mácula se involucra.
 
 ¿Cómo Se Diagnostica?
-Un examen de fondo con dilatación permite al médico examinar toda la retina con lentes especializados. Si la retina no se ve claramente (por ejemplo, por sangrado dentro del ojo), se usa un ultrasonido (Eco-B). El OCT ayuda a evaluar si la mácula está adherida.
+Examen de fondo con dilatación con lentes especializados. Si la retina no se ve (sangrado en el ojo), se usa ultrasonido. El OCT evalúa si la mácula está adherida.
 
 Tratamiento
-El desprendimiento casi siempre requiere cirugía. El enfoque depende del tipo y severidad y si la mácula sigue adherida. El tiempo es crítico cuando la mácula está amenazada o involucrada.
-• Retinopexia con Láser o Crioterapia — láser o crioterapia en consultorio para sellar un desgarro antes de que la retina se desprenda totalmente.
-• Retinopexia Neumática — burbuja de gas inyectada para presionar el desgarro, sellado con láser o crioterapia. En consultorio para casos seleccionados.
-• Vitrectomía vía Pars Plana — la reparación más común. Se remueve el gel vítreo, se aplana la retina y se aplica láser alrededor del desgarro. Burbuja de gas o aceite de silicón mantiene la retina durante la cicatrización. Puede requerir posición boca abajo.
-• Cerclaje Escleral — banda de silicón suturada alrededor del exterior del ojo, indentando la pared para contactar la retina desprendida. Puede usarse sola o con vitrectomía.
+El desprendimiento casi siempre requiere cirugía. El enfoque depende del tipo, severidad, y si la mácula está involucrada. El tiempo es crítico.
+• Retinopexia con Láser o Crioterapia — en consultorio, para sellar un desgarro antes del desprendimiento completo.
+• Retinopexia Neumática — burbuja de gas inyectada para presionar el desgarro, sellado con láser.
+• Vitrectomía Pars Plana — la reparación más común. Se remueve el gel vítreo, se aplana la retina y se aplica láser. Burbuja de gas o aceite de silicón mantiene la retina durante la cicatrización. Puede requerir posición boca abajo.
+• Cerclaje Escleral — banda de silicón suturada alrededor del ojo, indentando la pared para contactar la retina desprendida.
 
 Recuperación Visual
-El resultado depende en gran medida de si la mácula estaba adherida al momento de la cirugía. Si se detecta temprano — antes de que la mácula se desprenda — la mayoría recupera buena visión central. Si la mácula ya estaba desprendida, cierta pérdida visual permanente es común. Si se colocó burbuja de gas, NO PUEDE volar ni bucear hasta que la burbuja se disuelva (típicamente 2 a 8 semanas). Riesgos quirúrgicos incluyen infección, sangrado, re-desprendimiento, glaucoma y catarata.
+El resultado depende de si la mácula estaba adherida al momento de la cirugía. Detectado temprano (mácula adherida), la mayoría recupera buena visión central. Si la mácula ya estaba desprendida, cierta pérdida visual permanente es común. Con burbuja de gas: no volar ni bucear hasta que se disuelva (2 a 8 semanas). Riesgos: infección, sangrado, re-desprendimiento, glaucoma, catarata.
 
 Llame Inmediatamente
 El desprendimiento de retina es una emergencia quirúrgica. Contacte a su oftalmólogo inmediatamente si experimenta:
@@ -3650,14 +3484,10 @@ El desprendimiento de retina es una emergencia quirúrgica. Contacte a su oftalm
 
       vi: `BONG VÕNG MẠC
 
-Từ Vựng Cần Biết
-• Võng mạc — lớp mô mỏng lót phía sau mắt, cảm nhận ánh sáng và gửi tín hiệu thị giác đến não.
-• Dịch kính — gel trong suốt lấp đầy bên trong mắt. Khi lão hóa, có thể kéo võng mạc và gây rách.
-• Hoàng điểm — phần trung tâm của võng mạc, chịu trách nhiệm về thị lực sắc nét, chi tiết.
-• Cắt dịch kính — phẫu thuật sửa võng mạc bằng cách loại bỏ gel dịch kính và thay bằng bóng khí hoặc dầu silicon.
+[IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
 Đây Là Gì?
-Bong võng mạc xảy ra khi võng mạc tách khỏi thành sau của mắt. Võng mạc hoạt động giống như phim trong máy ảnh — bắt ánh sáng và chuyển thành tín hiệu đi qua dây thần kinh thị giác đến não. Một khi tách ra, võng mạc không thể hoạt động bình thường và vùng thị lực bị ảnh hưởng trở nên tối hoặc mờ. Nếu bong lan đến hoàng điểm, có thể mất thị lực trung tâm đáng kể. Không điều trị, gần như luôn dẫn đến mù vĩnh viễn. Với phát hiện sớm và kỹ thuật phẫu thuật hiện đại, võng mạc thường có thể được gắn lại thành công.
+Bong võng mạc xảy ra khi võng mạc tách khỏi thành sau của mắt. Vùng thị lực bị ảnh hưởng trở nên tối hoặc mờ, và nếu liên quan đến hoàng điểm, mất thị lực trung tâm có thể đáng kể. Không điều trị, gần như luôn dẫn đến mù vĩnh viễn. Với phát hiện sớm và phẫu thuật hiện đại, võng mạc thường có thể được gắn lại thành công.
 
 [IMAGE_PAIR:rd-before|Trước Phẫu Thuật (Bong)|rd-after|Sau Phẫu Thuật (Đã Gắn Lại)|Ảnh đáy mắt từ ca thực tế tại Vitreo-Retinal Associates: bong võng mạc lớn với các nếp gấp khi đến khám (trái, thị lực đếm ngón tay), và võng mạc đã gắn lại hoàn toàn ở tháng thứ 2 sau phẫu thuật (phải).]
 
@@ -3679,14 +3509,14 @@ Chẩn Đoán
 Khám đáy mắt giãn đồng tử cho phép bác sĩ khám toàn bộ võng mạc với thấu kính chuyên dụng. Nếu không thể nhìn rõ võng mạc (ví dụ do chảy máu trong mắt), dùng siêu âm (B-scan). OCT giúp đánh giá hoàng điểm còn dính hay không.
 
 Điều Trị
-Bong võng mạc gần như luôn cần phẫu thuật. Phương pháp phụ thuộc vào loại và mức độ bong và hoàng điểm còn dính hay không. Thời gian rất quan trọng khi hoàng điểm bị đe dọa hoặc liên quan.
-• Laser hoặc đông lạnh — tại phòng khám để niêm phong vết rách trước khi võng mạc bong hoàn toàn.
-• Bơm khí võng mạc — bóng khí được tiêm để ép vết rách, niêm phong bằng laser hoặc đông lạnh. Tại phòng khám cho ca chọn lọc.
-• Cắt dịch kính qua Pars Plana — phẫu thuật phổ biến nhất. Gel dịch kính được loại bỏ, võng mạc được làm phẳng và laser áp dụng quanh vết rách. Bóng khí hoặc dầu silicon giữ võng mạc trong khi lành. Có thể cần tư thế úp mặt.
-• Đai củng mạc — dải silicon khâu quanh bên ngoài mắt, ấn thành mắt vào trong để tiếp xúc với võng mạc bị bong. Có thể dùng riêng hoặc với cắt dịch kính.
+Bong võng mạc gần như luôn cần phẫu thuật. Phương pháp phụ thuộc vào loại, mức độ, và hoàng điểm có liên quan hay không. Thời gian rất quan trọng.
+• Laser hoặc đông lạnh — tại phòng khám, để niêm phong vết rách trước khi võng mạc bong hoàn toàn.
+• Bơm khí võng mạc — bóng khí tiêm để ép vết rách, niêm phong bằng laser.
+• Cắt dịch kính qua Pars Plana — phẫu thuật phổ biến nhất. Gel dịch kính được loại bỏ, võng mạc làm phẳng và laser áp dụng. Bóng khí hoặc dầu silicon giữ võng mạc trong khi lành. Có thể cần tư thế úp mặt.
+• Đai củng mạc — dải silicon khâu quanh mắt, ấn thành mắt để tiếp xúc với võng mạc bị bong.
 
 Phục Hồi Thị Lực
-Kết quả phụ thuộc lớn vào việc hoàng điểm còn dính tại thời điểm phẫu thuật. Khi phát hiện sớm — trước khi hoàng điểm bong — đa số bệnh nhân phục hồi thị lực trung tâm tốt. Nếu hoàng điểm đã bong, một mức độ mất thị lực vĩnh viễn là phổ biến. Nếu có bóng khí, bạn KHÔNG THỂ đi máy bay hay lặn cho đến khi bóng khí tan (thường 2 đến 8 tuần). Rủi ro phẫu thuật bao gồm nhiễm trùng, chảy máu, bong lại, glôcôm và đục thủy tinh thể.
+Kết quả phụ thuộc vào việc hoàng điểm còn dính khi phẫu thuật. Phát hiện sớm (hoàng điểm còn dính), đa số phục hồi thị lực trung tâm tốt. Nếu hoàng điểm đã bong, mất thị lực vĩnh viễn một phần là phổ biến. Với bóng khí: không đi máy bay hay lặn cho đến khi tan (2 đến 8 tuần). Rủi ro: nhiễm trùng, chảy máu, bong lại, glôcôm, đục thủy tinh thể.
 
 Gọi Ngay
 Bong võng mạc là cấp cứu phẫu thuật. Liên hệ bác sĩ mắt ngay nếu bạn gặp:
@@ -3697,43 +3527,37 @@ Bong võng mạc là cấp cứu phẫu thuật. Liên hệ bác sĩ mắt ngay 
 
       pt: `DESCOLAMENTO DE RETINA
 
-Palavras Importantes
-• Retina — camada fina de tecido que reveste a parte posterior do olho, detecta luz e envia sinais visuais ao cérebro.
-• Vítreo — gel transparente que preenche o interior do olho. Com a idade, pode puxar a retina e causar rasgos.
-• Mácula — parte central da retina responsável pela visão nítida e detalhada.
-• Vitrectomia — cirurgia para reparar a retina removendo o gel vítreo e substituindo por bolha de gás ou óleo de silicone.
+[IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
 
 O Que É?
-O descolamento de retina ocorre quando a retina se separa da parede posterior do olho. A retina funciona como o filme de uma câmera — captura luz e a converte em sinais que viajam pelo nervo óptico até o cérebro. Uma vez separada, a retina não pode funcionar adequadamente e a área afetada da visão fica escura ou borrada. Se o descolamento envolver a mácula, pode ocorrer perda significativa da visão central. Sem tratamento, quase sempre leva à cegueira permanente. Com detecção precoce e técnicas cirúrgicas modernas, a retina pode frequentemente ser reposicionada com sucesso.
+O descolamento de retina ocorre quando a retina se separa da parede posterior do olho. A área afetada da visão fica escura ou borrada, e se envolver a mácula, a perda de visão central pode ser significativa. Sem tratamento, quase sempre leva à cegueira permanente. Com detecção precoce e cirurgia moderna, a retina pode frequentemente ser reposicionada com sucesso.
 
 [IMAGE_PAIR:rd-before|Antes da Cirurgia (Descolamento)|rd-after|Após Cirurgia (Reposicionada)|Fotografias de fundo de um caso real em Vitreo-Retinal Associates: grande descolamento bolhoso com pregas retinianas na apresentação (esquerda, visão de movimento de mão), e retina totalmente reposicionada no mês 2 pós-operatório (direita).]
 
 Fatores de Risco
-• Miopia alta (miopia severa).
-• Descolamento prévio em qualquer olho ou história familiar.
+• Miopia alta, descolamento prévio ou história familiar.
 • Cirurgia ocular prévia (especialmente catarata) ou trauma ocular.
-• Degeneração em treliça, retinopatia diabética avançada.
-• Idade acima de 50 anos.
+• Degeneração em treliça, retinopatia diabética avançada, idade acima de 50.
 
 Sintomas
-O descolamento de retina é indolor. Os principais sinais são mudanças visuais súbitas:
+O descolamento é indolor. Os principais sinais são mudanças visuais súbitas:
 • Moscas volantes — aumento súbito de pontos, teias ou pintas escuras.
-• Flashes de luz — flashes breves ou arcos, especialmente na visão periférica.
-• Sombra ou cortina — área escura que começa na borda da visão e avança para o centro.
-• Diminuição da visão — visão borrada ou distorcida, especialmente se a mácula for envolvida.
+• Flashes de luz — breves ou arcos, especialmente na visão periférica.
+• Sombra ou cortina — área escura desde a borda que avança para o centro.
+• Visão diminuída — borrada ou distorcida, especialmente se a mácula for envolvida.
 
 Como É Diagnosticado?
-Um exame de fundo com dilatação permite examinar toda a retina com lentes especializadas. Se a retina não puder ser vista claramente (por exemplo, por sangramento no olho), usa-se ultrassom (Eco-B). O OCT ajuda a avaliar se a mácula está aderida.
+Exame de fundo com dilatação com lentes especializadas. Se a retina não puder ser vista (sangramento no olho), usa-se ultrassom. O OCT avalia se a mácula está aderida.
 
 Tratamento
-O descolamento quase sempre requer cirurgia. A abordagem depende do tipo e gravidade e se a mácula ainda está aderida. O tempo é crítico quando a mácula está ameaçada ou envolvida.
-• Retinopexia a Laser ou Crioterapia — laser ou crioterapia em consultório para selar um rasgo antes do descolamento completo.
-• Retinopexia Pneumática — bolha de gás injetada para pressionar o rasgo, selada com laser ou crioterapia. Em consultório para casos selecionados.
-• Vitrectomia Via Pars Plana — o reparo mais comum. Gel vítreo é removido, retina é aplanada, e laser é aplicado ao redor do rasgo. Bolha de gás ou óleo de silicone mantém a retina durante a cicatrização. Pode requerer posição de cabeça para baixo.
-• Faixa Escleral — faixa de silicone suturada ao redor da parte externa do olho, indentando a parede para contatar a retina descolada. Pode ser usada sozinha ou com vitrectomia.
+O descolamento quase sempre requer cirurgia. A abordagem depende do tipo, gravidade, e se a mácula está envolvida. O tempo é crítico.
+• Retinopexia a Laser ou Crioterapia — em consultório, para selar um rasgo antes do descolamento completo.
+• Retinopexia Pneumática — bolha de gás injetada para pressionar o rasgo, selada com laser.
+• Vitrectomia Pars Plana — o reparo mais comum. Gel vítreo removido, retina aplanada, laser aplicado. Bolha de gás ou óleo de silicone mantém a retina durante a cicatrização. Pode requerer posição de cabeça para baixo.
+• Faixa Escleral — faixa de silicone suturada ao redor do olho, indentando a parede para contatar a retina descolada.
 
 Recuperação Visual
-O resultado depende em grande parte de se a mácula estava aderida na hora da cirurgia. Quando o descolamento é detectado cedo — antes da mácula descolar — a maioria recupera boa visão central. Se a mácula já estava descolada, alguma perda visual permanente é comum. Se uma bolha de gás foi colocada, você NÃO PODE voar nem mergulhar até a bolha desaparecer (tipicamente 2 a 8 semanas). Riscos cirúrgicos incluem infecção, sangramento, re-descolamento, glaucoma e catarata.
+O resultado depende de se a mácula estava aderida na cirurgia. Detectado cedo, a maioria recupera boa visão. Mácula descolada, perda visual permanente é comum. Com bolha de gás: não voar nem mergulhar até desaparecer (2 a 8 semanas). Riscos: infecção, sangramento, re-descolamento, glaucoma, catarata.
 
 Ligue Imediatamente
 O descolamento de retina é uma emergência cirúrgica. Contate seu oftalmologista imediatamente se experimentar:
