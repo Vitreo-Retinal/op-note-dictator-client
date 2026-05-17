@@ -2158,224 +2158,184 @@ O Que Você Pode Fazer
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
 What Is It?
-A complication of diabetes that damages the tiny blood vessels in your retina. Over time, high blood sugar causes these vessels to swell, leak fluid, or close off entirely. When blood flow is cut off, the retina may try to grow new blood vessels — but these new vessels are fragile and bleed easily. Diabetic retinopathy is the leading cause of blindness in working-age adults, but it is manageable with early detection and treatment.
+A complication of diabetes that damages the tiny blood vessels in your retina. High blood sugar over time causes vessels to swell, leak, or close off. The retina may grow fragile new vessels that bleed easily. It is the leading cause of blindness in working-age adults, but manageable with early detection and treatment.
 
 Stages
-• Mild/Moderate Nonproliferative: Small hemorrhages and weakened vessel walls (microaneurysms). Some vessels may leak fluid or blood into the retina.
-• Severe Nonproliferative: Many vessels are blocked, cutting off blood supply to parts of the retina. The retina sends signals for new vessel growth.
-• Proliferative (PDR): Abnormal new vessels grow on the surface of the retina or optic nerve. These fragile vessels can bleed into the vitreous (vitreous hemorrhage) or pull on the retina, causing retinal detachment.
+• Mild/Moderate Nonproliferative: small hemorrhages and weakened vessel walls; some leakage of fluid or blood.
+• Severe Nonproliferative: many vessels blocked; the retina signals for new vessel growth.
+• Proliferative (PDR): fragile new vessels grow on the retina; can bleed into the vitreous or cause retinal detachment.
 
 Diabetic Macular Edema (DME)
-At any stage, damaged vessels can leak fluid into the macula, causing it to swell. This is called macular edema. It blurs your central vision — the vision you use for reading, driving, and recognizing faces. DME is the most common cause of vision loss from diabetic retinopathy. In severe cases, blood flow to the macula itself may be cut off (macular ischemia), which can cause permanent vision loss.
+At any stage, damaged vessels can leak fluid into the macula causing swelling — macular edema. This blurs central vision (reading, driving, recognizing faces). DME is the most common cause of vision loss in diabetic retinopathy. Severe cases may include macular ischemia (cut blood flow), causing permanent loss.
 
 [IMAGE_PAIR:dr-oct-before|Before Treatment (DME)|dr-oct-after|After Treatment (Resolved)|OCT cross-section showing fluid resolution after anti-VEGF injection therapy.]
 
 Symptoms
-• Often NO symptoms early — this is why regular dilated exams are critical, even if your vision feels fine.
-• Blurry or fluctuating vision (vision that changes from day to day).
-• Floaters — dark spots or strings drifting across your vision.
-• Blank or dark areas in your field of vision.
-• Difficulty seeing at night or in low light.
-• Colors appear faded or washed out.
+• Often NO symptoms early — regular dilated exams are critical.
+• Blurry or fluctuating vision; difficulty seeing at night.
+• Floaters, dark spots, or blank areas in your vision.
 • Sudden vision loss (if bleeding occurs inside the eye).
 
 How Is It Diagnosed?
-• Dilated eye exam — drops are placed to widen your pupils so the doctor can see the retina clearly.
-• OCT (Optical Coherence Tomography) — a painless scan that shows fluid, swelling, or thinning in the retina in fine detail.
-• Fluorescein angiography — a special dye is injected into your arm, and a camera photographs the dye as it flows through the retinal blood vessels. This reveals leaking, blocked, or abnormal vessels.
-• OCT Angiography (OCTA) — a newer, dye-free scan that maps blood flow in the retina.
+• Dilated eye exam.
+• OCT — painless scan that shows fluid, swelling, or thinning.
+• Fluorescein angiography (FA) — dye injected to reveal leaking or blocked vessels.
+• OCT Angiography — dye-free scan that maps blood flow.
 
 Treatment
-Treatment depends on the stage and whether DME is present.
-• DME: Anti-VEGF injections (such as Eylea, Avastin, or Vabysmo) are injected into the eye to reduce swelling and leakage. These are typically given as a series of injections over several months. Focal laser may also be used to seal leaking vessels near the macula. In some cases, steroid injections or implants (such as Ozurdex) may be recommended.
-• Proliferative DR (PDR): PRP (panretinal photocoagulation) laser treats the peripheral retina to stop abnormal vessel growth. Anti-VEGF injections may also be used. If there is significant bleeding into the vitreous or retinal detachment, vitrectomy surgery may be needed to remove blood and repair the retina.
-• Blood sugar control is the single most important thing you can do. Studies show that keeping your A1c well controlled significantly slows progression. Note: if your blood sugar has been very high and is brought down quickly, your vision may temporarily fluctuate. Wait at least one week after stabilizing blood sugar before getting a new glasses prescription.
+Depends on stage and whether DME is present.
+• DME: Anti-VEGF injections (Eylea, Avastin, Vabysmo) reduce swelling, given as a series over months. Focal laser or steroid injections (Ozurdex) may be used.
+• Proliferative DR: PRP laser treats peripheral retina to stop abnormal vessel growth. Anti-VEGF may also be used. Vitrectomy if significant bleeding or detachment.
+• Blood sugar control is the most important thing you can do. After bringing high A1c down, wait at least 1 week before updating glasses.
 
 What You Can Do
-• Keep A1c below 7% (or as directed by your doctor).
-• Control blood pressure and cholesterol — these also damage retinal vessels.
-• Do not smoke. Smoking worsens blood vessel damage.
-• Keep all scheduled eye appointments — even if your vision seems fine.
-• Report new symptoms promptly to your eye doctor.
-• Coordinate with your primary care doctor and kidney specialist if applicable — diabetes affects eyes, kidneys, and nerves together.
-• If you have diabetes, get a dilated eye exam at least once a year.
+• Keep A1c below 7%, control blood pressure and cholesterol, do not smoke.
+• Get a dilated eye exam at least yearly; report new symptoms promptly.
 
 When to Call Right Away
-Contact your eye doctor immediately or seek urgent care if you experience:
+Contact your eye doctor immediately if you experience:
 • Sudden increase in floaters or dark spots.
-• Flashes of light.
-• A dark shadow or curtain covering part of your vision.
+• Flashes of light, or a shadow/curtain across your vision.
 • Sudden, severe vision loss.
-• Severe eye pain with redness (may indicate neovascular glaucoma).
-These may be signs of bleeding inside the eye, retinal detachment, or dangerously high eye pressure — all are treatable but need prompt attention.`,
+• Severe eye pain with redness (may indicate neovascular glaucoma).`,
 
       es: `RETINOPATÍA DIABÉTICA
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
 ¿Qué Es?
-Una complicación de la diabetes que daña los pequeños vasos sanguíneos de la retina. Con el tiempo, el azúcar elevada hace que estos vasos se hinchen, filtren líquido o se cierren por completo. Cuando se corta el flujo sanguíneo, la retina puede intentar crear nuevos vasos — pero estos son frágiles y sangran fácilmente. Es la principal causa de ceguera en adultos en edad laboral, pero es manejable con detección y tratamiento tempranos.
+Complicación de la diabetes que daña los pequeños vasos sanguíneos de la retina. El azúcar elevada hace que los vasos se hinchen, filtren o se cierren. La retina puede crecer nuevos vasos frágiles que sangran fácilmente. Es la principal causa de ceguera en adultos en edad laboral, pero manejable con detección y tratamiento tempranos.
 
 Etapas
-• No proliferativa leve/moderada: pequeñas hemorragias y paredes debilitadas de los vasos (microaneurismas). Algunos vasos pueden filtrar líquido o sangre.
-• No proliferativa severa: muchos vasos están bloqueados, cortando el suministro de sangre a partes de la retina. La retina envía señales para que crezcan nuevos vasos.
-• Proliferativa (RDP): crecen vasos anormales en la superficie de la retina o el nervio óptico. Estos vasos frágiles pueden sangrar dentro del vítreo (hemorragia vítrea) o tirar de la retina, causando desprendimiento de retina.
+• No proliferativa leve/moderada: pequeñas hemorragias y paredes vasculares debilitadas; algunas fugas de líquido o sangre.
+• No proliferativa severa: muchos vasos bloqueados; la retina envía señales para crecer nuevos vasos.
+• Proliferativa (RDP): vasos nuevos frágiles crecen en la retina; pueden sangrar al vítreo o causar desprendimiento.
 
 Edema Macular Diabético (EMD)
-En cualquier etapa, los vasos dañados pueden filtrar líquido en la mácula, causando hinchazón. Esto nubla su visión central — la visión que usa para leer, conducir y reconocer caras. El EMD es la causa más común de pérdida visual por retinopatía diabética. En casos severos, se puede cortar el flujo sanguíneo a la mácula (isquemia macular), lo que puede causar pérdida permanente de visión.
+En cualquier etapa, los vasos dañados pueden filtrar líquido en la mácula, causando hinchazón — edema macular. Esto nubla la visión central (leer, conducir, reconocer caras). EMD es la causa más común de pérdida visual en retinopatía diabética. Casos severos pueden incluir isquemia macular (corte del flujo sanguíneo), causando pérdida permanente.
 
 [IMAGE_PAIR:dr-oct-before|Antes del Tratamiento (EMD)|dr-oct-after|Después del Tratamiento (Resuelto)|OCT mostrando resolución del líquido después de terapia con inyecciones anti-VEGF.]
 
 Síntomas
-• A menudo NO hay síntomas al principio — por eso los exámenes con dilatación son esenciales, aunque su visión parezca normal.
-• Visión borrosa o fluctuante (que cambia de un día a otro).
-• Moscas volantes — puntos oscuros o hilos que flotan en su visión.
-• Áreas oscuras o en blanco en su campo visual.
-• Dificultad para ver de noche o con poca luz.
-• Los colores se ven desvanecidos o apagados.
+• A menudo NO hay síntomas al principio — los exámenes con dilatación son esenciales.
+• Visión borrosa o fluctuante; dificultad para ver de noche.
+• Moscas volantes, manchas oscuras o áreas en blanco.
 • Pérdida súbita de visión (si hay sangrado dentro del ojo).
 
 ¿Cómo Se Diagnostica?
-• Examen con dilatación — se colocan gotas para agrandar las pupilas y ver la retina claramente.
-• OCT — un escaneo indoloro que muestra líquido, hinchazón o adelgazamiento de la retina en detalle.
-• Angiografía con fluoresceína — se inyecta un tinte especial en el brazo y una cámara fotografía el tinte mientras fluye por los vasos retinianos, revelando fugas o vasos anormales.
-• Angiografía por OCT (OCTA) — un escaneo más nuevo, sin tinte, que mapea el flujo sanguíneo en la retina.
+• Examen con dilatación.
+• OCT — escaneo indoloro que muestra líquido, hinchazón o adelgazamiento.
+• Angiografía con fluoresceína (FA) — tinte para revelar vasos con fugas o bloqueados.
+• Angiografía por OCT (OCTA) — escaneo sin tinte que mapea el flujo sanguíneo.
 
 Tratamiento
-El tratamiento depende de la etapa y si hay EMD.
-• EMD: Inyecciones anti-VEGF (como Eylea, Avastin o Vabysmo) se inyectan en el ojo para reducir la hinchazón y la fuga. Se administran como una serie de inyecciones durante varios meses. También se puede usar láser focal. En algunos casos se recomiendan inyecciones o implantes de esteroides (como Ozurdex).
-• RDP: Láser PRP trata la retina periférica para detener el crecimiento de vasos anormales. También se pueden usar inyecciones anti-VEGF. Si hay sangrado significativo o desprendimiento de retina, puede ser necesaria una vitrectomía.
-• El control del azúcar en sangre es lo más importante que puede hacer. Si su azúcar ha estado muy alta y baja rápidamente, su visión puede fluctuar temporalmente. Espere al menos una semana después de estabilizar el azúcar antes de obtener una nueva receta de lentes.
+Depende de la etapa y si hay EMD.
+• EMD: Inyecciones anti-VEGF (Eylea, Avastin, Vabysmo) reducen hinchazón, en serie por varios meses. Pueden usarse láser focal o esteroides (Ozurdex).
+• RDP: Láser PRP trata la retina periférica para detener vasos anormales. Anti-VEGF también puede usarse. Vitrectomía si hay sangrado significativo o desprendimiento.
+• Control de azúcar en sangre es lo más importante. Si baja rápidamente desde alta, espere 1 semana antes de actualizar lentes.
 
 Lo Que Puede Hacer
-• Mantenga A1c por debajo de 7% (o según indique su médico).
-• Controle presión arterial y colesterol — también dañan los vasos retinianos.
-• No fume. Fumar empeora el daño vascular.
-• Asista a todas las citas oftalmológicas — aunque su visión parezca bien.
-• Reporte síntomas nuevos a su oftalmólogo.
-• Coordine con su médico primario y nefrólogo si aplica — la diabetes afecta ojos, riñones y nervios juntos.
-• Si tiene diabetes, hágase un examen con dilatación al menos una vez al año.
+• Mantenga A1c por debajo de 7%, controle presión arterial y colesterol, no fume.
+• Examen con dilatación al menos una vez al año; reporte síntomas nuevos.
 
 Cuándo Llamar de Inmediato
-Contacte a su oftalmólogo o busque atención urgente si experimenta:
+Contacte a su oftalmólogo inmediatamente si experimenta:
 • Aumento súbito de moscas volantes o manchas oscuras.
-• Destellos de luz.
-• Una sombra oscura o cortina cubriendo parte de su visión.
+• Destellos de luz, o sombra/cortina en su visión.
 • Pérdida severa y súbita de visión.
-• Dolor ocular severo con enrojecimiento (puede indicar glaucoma neovascular).
-Estos pueden ser signos de sangrado dentro del ojo, desprendimiento de retina o presión ocular peligrosamente alta — todos son tratables pero necesitan atención inmediata.`,
+• Dolor ocular severo con enrojecimiento (puede indicar glaucoma neovascular).`,
 
       vi: `BỆNH VÕNG MẠC ĐÁI THÁO ĐƯỜNG
 
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
 Là Gì?
-Biến chứng của đái tháo đường gây tổn thương các mạch máu nhỏ trong võng mạc. Theo thời gian, đường huyết cao khiến các mạch máu này sưng lên, rò rỉ dịch hoặc tắc nghẽn hoàn toàn. Khi dòng máu bị cắt, võng mạc có thể cố tạo ra mạch máu mới — nhưng các mạch mới này mỏng manh và dễ chảy máu. Đây là nguyên nhân hàng đầu gây mù ở người trưởng thành trong độ tuổi lao động, nhưng kiểm soát được nếu phát hiện và điều trị sớm.
+Biến chứng của đái tháo đường gây tổn thương các mạch máu nhỏ trong võng mạc. Đường huyết cao làm mạch sưng, rò rỉ hoặc tắc nghẽn. Võng mạc có thể mọc mạch mới mỏng manh dễ chảy máu. Đây là nguyên nhân hàng đầu gây mù ở người trong độ tuổi lao động, nhưng kiểm soát được nếu phát hiện và điều trị sớm.
 
 Các Giai Đoạn
-• Không tăng sinh nhẹ/trung bình: xuất huyết nhỏ và thành mạch yếu (vi phình mạch). Một số mạch có thể rò rỉ dịch hoặc máu.
-• Không tăng sinh nặng: nhiều mạch bị tắc, cắt nguồn máu đến các phần võng mạc. Võng mạc gửi tín hiệu để mọc mạch mới.
-• Tăng sinh (PDR): mạch máu bất thường mọc trên bề mặt võng mạc hoặc thần kinh thị. Các mạch mỏng manh này có thể chảy máu vào dịch kính (xuất huyết dịch kính) hoặc kéo võng mạc, gây bong võng mạc.
+• Không tăng sinh nhẹ/trung bình: xuất huyết nhỏ và thành mạch yếu; một số mạch có thể rò rỉ.
+• Không tăng sinh nặng: nhiều mạch bị tắc; võng mạc gửi tín hiệu để mọc mạch mới.
+• Tăng sinh (PDR): mạch mới mỏng manh mọc trên võng mạc; có thể chảy máu vào dịch kính hoặc gây bong võng mạc.
 
 Phù Hoàng Điểm Đái Tháo Đường (DME)
-Ở bất kỳ giai đoạn nào, mạch máu bị tổn thương có thể rò rỉ dịch vào hoàng điểm, gây sưng. Điều này làm mờ thị lực trung tâm — thị lực bạn dùng để đọc, lái xe và nhận diện khuôn mặt. DME là nguyên nhân mất thị lực phổ biến nhất từ bệnh võng mạc đái tháo đường. Trong trường hợp nặng, dòng máu đến hoàng điểm có thể bị cắt (thiếu máu hoàng điểm), gây mất thị lực vĩnh viễn.
+Ở bất kỳ giai đoạn nào, mạch tổn thương có thể rò rỉ dịch vào hoàng điểm, gây sưng — phù hoàng điểm. Điều này làm mờ thị lực trung tâm (đọc, lái xe, nhận diện khuôn mặt). DME là nguyên nhân mất thị lực phổ biến nhất. Trường hợp nặng có thể có thiếu máu hoàng điểm, gây mất thị lực vĩnh viễn.
 
 [IMAGE_PAIR:dr-oct-before|Trước Điều Trị (DME)|dr-oct-after|Sau Điều Trị (Hết Phù)|OCT cho thấy dịch giảm sau tiêm anti-VEGF.]
 
 Triệu Chứng
-• Thường KHÔNG có triệu chứng sớm — đó là lý do khám mắt có giãn đồng tử định kỳ rất quan trọng.
-• Thị lực mờ hoặc dao động (thay đổi từ ngày này sang ngày khác).
-• Ruồi bay — đốm tối hoặc sợi trôi nổi trong tầm nhìn.
-• Vùng tối hoặc trống trong trường nhìn.
-• Khó nhìn ban đêm hoặc trong ánh sáng yếu.
-• Màu sắc nhạt hoặc bạc màu.
+• Thường KHÔNG có triệu chứng sớm — khám mắt giãn đồng tử định kỳ rất quan trọng.
+• Thị lực mờ hoặc dao động; khó nhìn ban đêm.
+• Ruồi bay, đốm tối hoặc vùng trống trong tầm nhìn.
 • Mất thị lực đột ngột (nếu chảy máu trong mắt).
 
-Chẩn Đoán Như Thế Nào?
-• Khám mắt có giãn đồng tử — nhỏ thuốc giãn đồng tử để bác sĩ nhìn rõ võng mạc.
-• OCT — quét không đau cho thấy dịch, sưng hoặc mỏng võng mạc chi tiết.
-• Chụp mạch huỳnh quang — tiêm thuốc nhuộm đặc biệt vào cánh tay, camera chụp thuốc nhuộm chạy qua mạch máu võng mạc, phát hiện rò rỉ hoặc mạch bất thường.
-• Chụp mạch OCT (OCTA) — phương pháp quét mới, không cần thuốc nhuộm, lập bản đồ dòng máu trong võng mạc.
+Chẩn Đoán
+• Khám mắt có giãn đồng tử.
+• OCT — quét không đau cho thấy dịch, sưng hoặc mỏng võng mạc.
+• Chụp mạch huỳnh quang (FA) — tiêm thuốc nhuộm để phát hiện rò rỉ hoặc mạch tắc.
+• Chụp mạch OCT (OCTA) — không cần thuốc nhuộm, lập bản đồ dòng máu.
 
 Điều Trị
-Điều trị phụ thuộc vào giai đoạn và có DME hay không.
-• DME: Tiêm anti-VEGF (như Eylea, Avastin hoặc Vabysmo) vào mắt để giảm sưng và rò rỉ. Thường tiêm nhiều lần trong vài tháng. Có thể dùng laser tiêu điểm. Trong một số trường hợp, có thể dùng tiêm hoặc cấy steroid (như Ozurdex).
-• Tăng sinh: Laser PRP điều trị võng mạc ngoại vi để ngăn mạch bất thường phát triển. Có thể dùng thêm tiêm anti-VEGF. Nếu chảy máu nhiều hoặc bong võng mạc, có thể cần phẫu thuật cắt dịch kính.
-• Kiểm soát đường huyết là điều quan trọng nhất. Nếu đường huyết rất cao rồi giảm nhanh, thị lực có thể dao động tạm thời. Hãy đợi ít nhất một tuần sau khi ổn định đường huyết trước khi đo kính mới.
+Phụ thuộc vào giai đoạn và có DME hay không.
+• DME: Tiêm anti-VEGF (Eylea, Avastin, Vabysmo) giảm sưng, tiêm nhiều lần trong vài tháng. Có thể dùng laser tiêu điểm hoặc steroid (Ozurdex).
+• Tăng sinh: Laser PRP điều trị võng mạc ngoại vi để ngăn mạch bất thường. Có thể dùng thêm anti-VEGF. Cắt dịch kính nếu chảy máu nhiều hoặc bong võng mạc.
+• Kiểm soát đường huyết là điều quan trọng nhất. Nếu đường huyết rất cao giảm nhanh, đợi 1 tuần trước khi đo kính mới.
 
 Bạn Có Thể Làm Gì
-• Giữ A1c dưới 7% (hoặc theo chỉ dẫn bác sĩ).
-• Kiểm soát huyết áp và cholesterol — cũng gây hại mạch máu võng mạc.
-• Không hút thuốc. Hút thuốc làm tổn thương mạch máu nặng hơn.
-• Giữ tất cả lịch khám mắt — dù thị lực có vẻ bình thường.
-• Báo triệu chứng mới cho bác sĩ mắt.
-• Phối hợp với bác sĩ đa khoa và bác sĩ thận nếu cần — đái tháo đường ảnh hưởng mắt, thận và thần kinh cùng lúc.
-• Nếu bạn bị đái tháo đường, hãy khám mắt có giãn đồng tử ít nhất mỗi năm một lần.
+• Giữ A1c dưới 7%, kiểm soát huyết áp và cholesterol, không hút thuốc.
+• Khám mắt giãn đồng tử ít nhất mỗi năm; báo triệu chứng mới kịp thời.
 
 Khi Nào Cần Gọi Ngay
-Liên hệ bác sĩ mắt ngay hoặc đi cấp cứu nếu bạn gặp:
+Liên hệ bác sĩ mắt ngay nếu bạn gặp:
 • Tăng đột ngột ruồi bay hoặc đốm tối.
-• Chớp sáng.
-• Bóng tối hoặc màn che một phần tầm nhìn.
+• Chớp sáng, hoặc bóng/màn che trong tầm nhìn.
 • Mất thị lực nặng và đột ngột.
-• Đau mắt dữ dội kèm đỏ mắt (có thể là glaucoma tân mạch).
-Đây có thể là dấu hiệu chảy máu trong mắt, bong võng mạc hoặc áp lực mắt cao nguy hiểm — tất cả đều điều trị được nhưng cần chú ý kịp thời.`,
+• Đau mắt dữ dội kèm đỏ mắt (có thể là glaucoma tân mạch).`,
 
       pt: `RETINOPATIA DIABÉTICA
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
 
 O Que É?
-Uma complicação do diabetes que danifica os pequenos vasos sanguíneos da retina. Com o tempo, a glicemia alta faz com que esses vasos inchem, vazem líquido ou se fechem completamente. Quando o fluxo sanguíneo é interrompido, a retina pode tentar criar novos vasos — mas estes são frágeis e sangram facilmente. É a principal causa de cegueira em adultos em idade laboral, mas é controlável com detecção e tratamento precoces.
+Complicação do diabetes que danifica os pequenos vasos sanguíneos da retina. A glicemia alta faz os vasos inchar, vazar ou fechar. A retina pode crescer novos vasos frágeis que sangram facilmente. É a principal causa de cegueira em adultos em idade laboral, mas controlável com detecção e tratamento precoces.
 
 Estágios
-• Não proliferativa leve/moderada: pequenas hemorragias e paredes vasculares enfraquecidas (microaneurismas). Alguns vasos podem vazar líquido ou sangue.
-• Não proliferativa grave: muitos vasos estão bloqueados, cortando o suprimento sanguíneo para partes da retina. A retina envia sinais para crescer novos vasos.
-• Proliferativa (RDP): vasos anormais crescem na superfície da retina ou nervo óptico. Esses vasos frágeis podem sangrar no vítreo (hemorragia vítrea) ou puxar a retina, causando descolamento de retina.
+• Não proliferativa leve/moderada: pequenas hemorragias e paredes vasculares enfraquecidas; algum vazamento de líquido ou sangue.
+• Não proliferativa grave: muitos vasos bloqueados; a retina envia sinais para crescer novos vasos.
+• Proliferativa (RDP): novos vasos frágeis crescem na retina; podem sangrar no vítreo ou causar descolamento.
 
 Edema Macular Diabético (EMD)
-Em qualquer estágio, vasos danificados podem vazar líquido na mácula, causando inchaço. Isso embaça a visão central — a visão usada para ler, dirigir e reconhecer rostos. O EMD é a causa mais comum de perda visual por retinopatia diabética. Em casos graves, o fluxo sanguíneo para a mácula pode ser interrompido (isquemia macular), causando perda permanente de visão.
+Em qualquer estágio, vasos danificados podem vazar líquido na mácula, causando inchaço — edema macular. Isso embaça a visão central (ler, dirigir, reconhecer rostos). EMD é a causa mais comum de perda visual em retinopatia diabética. Casos graves podem incluir isquemia macular, causando perda permanente.
 
 [IMAGE_PAIR:dr-oct-before|Antes do Tratamento (EMD)|dr-oct-after|Após Tratamento (Resolvido)|OCT mostrando resolução do líquido após terapia com injeções anti-VEGF.]
 
 Sintomas
-• Frequentemente SEM sintomas no início — por isso exames com dilatação regulares são essenciais, mesmo que sua visão pareça normal.
-• Visão embaçada ou flutuante (que muda de um dia para o outro).
-• Moscas volantes — pontos escuros ou fios flutuando na visão.
-• Áreas escuras ou em branco no campo visual.
-• Dificuldade para enxergar à noite ou com pouca luz.
-• Cores parecem desbotadas ou apagadas.
+• Frequentemente SEM sintomas no início — exames com dilatação regulares são essenciais.
+• Visão embaçada ou flutuante; dificuldade para enxergar à noite.
+• Moscas volantes, manchas escuras ou áreas em branco.
 • Perda súbita de visão (se houver sangramento dentro do olho).
 
 Como É Diagnosticada?
-• Exame com dilatação — colírios são aplicados para dilatar as pupilas e o médico poder ver a retina claramente.
-• OCT — exame indolor que mostra líquido, inchaço ou afinamento da retina em detalhes.
-• Angiografia com fluoresceína — um corante especial é injetado no braço e uma câmera fotografa o corante fluindo pelos vasos retinianos, revelando vazamentos ou vasos anormais.
-• Angiografia por OCT (OCTA) — exame mais novo, sem corante, que mapeia o fluxo sanguíneo na retina.
+• Exame com dilatação.
+• OCT — exame indolor que mostra líquido, inchaço ou afinamento.
+• Angiografia com fluoresceína (FA) — corante para revelar vasos vazando ou bloqueados.
+• Angiografia por OCT (OCTA) — sem corante, mapeia o fluxo sanguíneo.
 
 Tratamento
-O tratamento depende do estágio e se há EMD.
-• EMD: Injeções anti-VEGF (como Eylea, Avastin ou Vabysmo) são aplicadas no olho para reduzir inchaço e vazamento. São administradas como uma série de injeções ao longo de vários meses. Laser focal também pode ser usado. Em alguns casos, injeções ou implantes de esteroides (como Ozurdex) podem ser recomendados.
-• RDP: Laser PRP trata a retina periférica para interromper o crescimento de vasos anormais. Injeções anti-VEGF também podem ser usadas. Se houver sangramento significativo ou descolamento de retina, vitrectomia pode ser necessária.
-• O controle da glicemia é a coisa mais importante que você pode fazer. Se sua glicemia estiver muito alta e cair rapidamente, sua visão pode flutuar temporariamente. Aguarde pelo menos uma semana após estabilizar a glicemia antes de fazer nova receita de óculos.
+Depende do estágio e se há EMD.
+• EMD: Injeções anti-VEGF (Eylea, Avastin, Vabysmo) reduzem inchaço, em série por vários meses. Laser focal ou esteroides (Ozurdex) podem ser usados.
+• RDP: Laser PRP trata a retina periférica para interromper vasos anormais. Anti-VEGF também pode ser usado. Vitrectomia se houver sangramento significativo ou descolamento.
+• Controle da glicemia é o mais importante. Se cair rapidamente de alta, aguarde 1 semana antes de fazer nova receita de óculos.
 
 O Que Você Pode Fazer
-• Mantenha A1c abaixo de 7% (ou conforme orientação médica).
-• Controle pressão arterial e colesterol — também danificam os vasos retinianos.
-• Não fume. Fumar piora o dano vascular.
-• Compareça a todas as consultas oftalmológicas — mesmo que sua visão pareça boa.
-• Reporte sintomas novos ao seu oftalmologista.
-• Coordene com seu médico clínico e nefrologista se aplicável — o diabetes afeta olhos, rins e nervos juntos.
-• Se você tem diabetes, faça exame com dilatação pelo menos uma vez ao ano.
+• Mantenha A1c abaixo de 7%, controle pressão e colesterol, não fume.
+• Faça exame com dilatação pelo menos uma vez ao ano; reporte sintomas novos.
 
 Quando Ligar Imediatamente
-Entre em contato com seu oftalmologista ou procure atendimento urgente se você tiver:
+Entre em contato com seu oftalmologista imediatamente se tiver:
 • Aumento súbito de moscas volantes ou manchas escuras.
-• Flashes de luz.
-• Uma sombra escura ou cortina cobrindo parte da sua visão.
+• Flashes de luz, ou sombra/cortina em sua visão.
 • Perda severa e súbita de visão.
-• Dor ocular severa com vermelhidão (pode indicar glaucoma neovascular).
-Esses podem ser sinais de sangramento dentro do olho, descolamento de retina ou pressão ocular perigosamente alta — todos são tratáveis mas precisam de atenção imediata.`
+• Dor ocular severa com vermelhidão (pode indicar glaucoma neovascular).`
     }
   },
   {
