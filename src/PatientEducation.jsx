@@ -166,6 +166,169 @@ Ligue para seu Médico Se Tiver
     }
   },
   {
+    id: "inject-procedure",
+    category: "injection",
+    title: { en: "Your Eye Injection — What to Expect", es: "Su Inyección Ocular — Qué Esperar", vi: "Tiêm Mắt Của Bạn — Điều Cần Biết", pt: "Sua Injeção Ocular — O Que Esperar" },
+    tags: ["injection", "intravitreal", "procedure", "what to expect"],
+    content: {
+      en: `YOUR EYE INJECTION — WHAT TO EXPECT
+
+[IMAGE:intravitreal-injection-globe|Figure 1: An intravitreal injection — medication is injected through the white part of the eye into the vitreous (the clear gel that fills the eye).]
+
+What Is an Intravitreal Injection?
+An intravitreal injection is a quick, in-office procedure where medication is injected directly into the vitreous — the clear gel that fills the inside of your eye. The medication spreads to the retina at the back of the eye, where it treats the underlying condition.
+
+Why Is It Done?
+Intravitreal injections are used to treat several common retinal conditions:
+• Wet age-related macular degeneration (AMD) — anti-VEGF drugs such as Avastin, Lucentis, Eylea, Eylea HD, Beovu, or Vabysmo.
+• Diabetic macular edema (DME) and proliferative diabetic retinopathy.
+• Macular edema from retinal vein occlusion (RVO).
+• Geographic atrophy (Syfovre or Izervay) and ocular inflammation (steroid injections).
+
+What Happens During the Procedure?
+The injection itself takes only a few seconds.
+1. Numbing drops are placed in the eye, and the eye is cleaned with an antiseptic (povidone-iodine).
+2. You will be asked to look in a specific direction.
+3. The medication is injected through the white part of the eye (sclera) using a very thin needle. You may feel brief pressure.
+4. The injection site is checked and a rinse may be given to remove the antiseptic.
+
+Will It Hurt?
+Most patients describe brief pressure — much less than expected. The numbing drops minimize discomfort during the injection.
+
+After the Injection
+See the "After Your Eye Injection" handout for full after-care instructions. Briefly:
+• The eye may feel scratchy or irritated for a day; artificial tears help.
+• You may see floaters or small bubbles for 24–48 hours.
+• No swimming, water in the eye, or contact lenses for 3 days.
+
+When to Call Right Away
+Call us immediately if you experience any of the following — especially in the days following the injection:
+• Decreased, blurred, or worsening vision.
+• Severe eye pain, worsening eye pain, or pain above the brow.
+• White or yellow pus or discharge from the eye.
+• Swollen or puffy eyelid(s), or increasing redness around the eye.
+• A new shadow or curtain across your vision.
+• A sudden increase in flashes, or new floaters that do not resolve within 48 hours.`,
+
+      es: `SU INYECCIÓN OCULAR — QUÉ ESPERAR
+
+[IMAGE:intravitreal-injection-globe|Figura 1: Una inyección intravítrea — el medicamento se inyecta a través de la parte blanca del ojo hacia el vítreo (el gel claro que llena el ojo).]
+
+¿Qué Es una Inyección Intravítrea?
+Una inyección intravítrea es un procedimiento rápido en el consultorio donde se inyecta medicamento directamente en el vítreo — el gel claro que llena el interior del ojo. El medicamento se extiende a la retina en la parte posterior del ojo, donde trata la condición subyacente.
+
+¿Por Qué Se Hace?
+Las inyecciones intravítreas se usan para tratar varias condiciones retinianas comunes:
+• Degeneración macular húmeda relacionada con la edad (DMAE) — anti-VEGF como Avastin, Lucentis, Eylea, Eylea HD, Beovu o Vabysmo.
+• Edema macular diabético (EMD) y retinopatía diabética proliferativa.
+• Edema macular por oclusión venosa retiniana (OVR).
+• Atrofia geográfica (Syfovre o Izervay) e inflamación ocular (inyecciones de esteroides).
+
+¿Qué Sucede Durante el Procedimiento?
+La inyección en sí toma solo unos segundos.
+1. Se aplican gotas anestésicas en el ojo y se limpia con un antiséptico (povidona yodada).
+2. Se le pedirá que mire en una dirección específica.
+3. El medicamento se inyecta a través de la parte blanca del ojo (esclera) usando una aguja muy fina. Puede sentir presión breve.
+4. Se revisa el sitio de inyección y se puede dar un enjuague para retirar el antiséptico.
+
+¿Dolerá?
+La mayoría de los pacientes describen presión breve — mucho menos de lo esperado. Las gotas anestésicas minimizan la molestia durante la inyección.
+
+Después de la Inyección
+Consulte el folleto "Después de su Inyección Ocular" para instrucciones completas. Brevemente:
+• El ojo puede sentirse rasposo o irritado por un día; las lágrimas artificiales ayudan.
+• Puede ver moscas volantes o pequeñas burbujas por 24–48 horas.
+• No nadar, no permitir agua en el ojo, ni usar lentes de contacto por 3 días.
+
+Llame Inmediatamente
+Llame al consultorio inmediatamente si experimenta cualquiera de los siguientes — especialmente en los días después de la inyección:
+• Disminución, visión borrosa o empeoramiento de la visión.
+• Dolor ocular severo, dolor que empeora, o dolor encima de la ceja.
+• Pus blanco o amarillo o secreción del ojo.
+• Párpado(s) hinchado(s), o enrojecimiento creciente alrededor del ojo.
+• Una sombra o cortina nueva en su visión.
+• Un aumento súbito de destellos, o nuevas moscas volantes que no se resuelven en 48 horas.`,
+
+      vi: `TIÊM MẮT CỦA BẠN — ĐIỀU CẦN BIẾT
+
+[IMAGE:intravitreal-injection-globe|Hình 1: Một mũi tiêm nội nhãn — thuốc được tiêm qua phần trắng của mắt vào dịch kính (gel trong suốt lấp đầy mắt).]
+
+Tiêm Nội Nhãn Là Gì?
+Tiêm nội nhãn là một thủ thuật nhanh tại phòng khám trong đó thuốc được tiêm trực tiếp vào dịch kính — gel trong suốt lấp đầy bên trong mắt. Thuốc lan đến võng mạc ở phía sau mắt, nơi nó điều trị tình trạng cơ bản.
+
+Tại Sao Được Thực Hiện?
+Tiêm nội nhãn được sử dụng để điều trị một số tình trạng võng mạc thường gặp:
+• Thoái hóa hoàng điểm thể ướt (AMD) — thuốc kháng VEGF như Avastin, Lucentis, Eylea, Eylea HD, Beovu hoặc Vabysmo.
+• Phù hoàng điểm do đái tháo đường (DME) và bệnh võng mạc đái tháo đường tăng sinh.
+• Phù hoàng điểm do tắc tĩnh mạch võng mạc (RVO).
+• Teo địa lý (Syfovre hoặc Izervay) và viêm mắt (tiêm steroid).
+
+Điều Gì Xảy Ra Trong Thủ Thuật?
+Việc tiêm chỉ mất vài giây.
+1. Thuốc nhỏ tê được nhỏ vào mắt và mắt được làm sạch bằng dung dịch sát trùng (povidone-iodine).
+2. Bạn sẽ được yêu cầu nhìn về một hướng cụ thể.
+3. Thuốc được tiêm qua phần trắng của mắt (củng mạc) bằng kim rất mảnh. Bạn có thể cảm thấy áp lực ngắn.
+4. Vị trí tiêm được kiểm tra và có thể được rửa để loại bỏ chất sát trùng.
+
+Có Đau Không?
+Hầu hết bệnh nhân mô tả áp lực ngắn — ít hơn nhiều so với mong đợi. Thuốc nhỏ tê giảm thiểu khó chịu trong quá trình tiêm.
+
+Sau Khi Tiêm
+Xem tờ rơi "Sau Khi Tiêm Mắt" để có hướng dẫn chăm sóc đầy đủ. Tóm tắt:
+• Mắt có thể cảm thấy cộm hoặc kích ứng trong một ngày; nước mắt nhân tạo giúp ích.
+• Bạn có thể thấy đốm đen hoặc bong bóng nhỏ trong 24–48 giờ.
+• Không bơi, không để nước vào mắt, không đeo kính áp tròng trong 3 ngày.
+
+Gọi Ngay
+Gọi cho chúng tôi ngay nếu bạn gặp bất kỳ điều nào sau đây — đặc biệt trong những ngày sau khi tiêm:
+• Giảm, mờ hoặc xấu đi thị lực.
+• Đau mắt nặng, đau tăng dần, hoặc đau trên lông mày.
+• Mủ trắng hoặc vàng hoặc dịch tiết từ mắt.
+• Mí mắt sưng, hoặc đỏ tăng quanh mắt.
+• Bóng hoặc màn che mới trong tầm nhìn.
+• Đột ngột tăng lóe sáng, hoặc đốm đen mới không hết sau 48 giờ.`,
+
+      pt: `SUA INJEÇÃO OCULAR — O QUE ESPERAR
+
+[IMAGE:intravitreal-injection-globe|Figura 1: Uma injeção intravítrea — o medicamento é injetado através da parte branca do olho no vítreo (o gel claro que preenche o olho).]
+
+O Que É uma Injeção Intravítrea?
+Uma injeção intravítrea é um procedimento rápido no consultório onde o medicamento é injetado diretamente no vítreo — o gel claro que preenche o interior do olho. O medicamento se espalha para a retina na parte posterior do olho, onde trata a condição subjacente.
+
+Por Que É Feita?
+Injeções intravítreas são usadas para tratar várias condições retinianas comuns:
+• Degeneração macular úmida relacionada à idade (DMRI) — anti-VEGF como Avastin, Lucentis, Eylea, Eylea HD, Beovu ou Vabysmo.
+• Edema macular diabético (EMD) e retinopatia diabética proliferativa.
+• Edema macular por oclusão venosa retiniana (OVR).
+• Atrofia geográfica (Syfovre ou Izervay) e inflamação ocular (injeções de esteroide).
+
+O Que Acontece Durante o Procedimento?
+A injeção em si leva apenas alguns segundos.
+1. Colírio anestésico é aplicado no olho e o olho é limpo com antisséptico (iodopovidona).
+2. Você será solicitado a olhar em uma direção específica.
+3. O medicamento é injetado através da parte branca do olho (esclera) usando uma agulha muito fina. Você pode sentir pressão breve.
+4. O local da injeção é verificado e um enxágue pode ser dado para remover o antisséptico.
+
+Vai Doer?
+A maioria dos pacientes descreve pressão breve — muito menos do que esperado. O colírio anestésico minimiza o desconforto durante a injeção.
+
+Após a Injeção
+Veja o folheto "Após sua Injeção Ocular" para instruções completas. Brevemente:
+• O olho pode ficar áspero ou irritado por um dia; lágrimas artificiais ajudam.
+• Você pode ver moscas volantes ou pequenas bolhas por 24–48 horas.
+• Não nadar, não permitir água no olho, ou usar lentes de contato por 3 dias.
+
+Ligue Imediatamente
+Ligue-nos imediatamente se você experimentar qualquer um dos seguintes — especialmente nos dias após a injeção:
+• Diminuição, visão borrada ou piora da visão.
+• Dor ocular severa, dor que piora, ou dor acima da sobrancelha.
+• Pus branco ou amarelo ou secreção do olho.
+• Pálpebra(s) inchada(s), ou aumento de vermelhidão ao redor do olho.
+• Uma sombra ou cortina nova em sua visão.
+• Aumento súbito de flashes, ou novas moscas volantes que não se resolvem em 48 horas.`
+    }
+  },
+  {
     id: "inject-post",
     category: "injection",
     title: { en: "After Your Eye Injection — Post-Injection Care", es: "Después de su Inyección — Cuidados Post-Inyección", vi: "Sau Tiêm Mắt — Chăm Sóc Sau Tiêm", pt: "Após a Injeção — Cuidados Pós-Injeção" },
@@ -1458,6 +1621,170 @@ Ligue-nos imediatamente se você experimentar qualquer um dos seguintes:
 • Diminuição significativa da visão.
 • Pus, secreção amarela ou espessa, ou aumento de vermelhidão/inchaço ao redor do olho.
 • Aumento súbito de flashes, novas moscas volantes, ou uma sombra ou cortina em sua visão.`
+    }
+  },
+
+  {
+    id: "proc-iol-exchange",
+    category: "procedure",
+    title: { en: "IOL Exchange Surgery", es: "Cirugía de Intercambio de LIO", vi: "Phẫu Thuật Thay Thấu Kính Nội Nhãn", pt: "Cirurgia de Troca de LIO" },
+    tags: ["IOL exchange", "dislocated lens", "AC-IOL", "sutured IOL", "Akreos", "Yamane"],
+    content: {
+      en: `IOL EXCHANGE SURGERY
+
+[IMAGE:iol-dislocated|Figure 1: A dislocated intraocular lens (IOL) floating in the vitreous cavity.]
+
+What Is an IOL Exchange?
+An intraocular lens (IOL) is the artificial lens placed in your eye during cataract surgery to replace your natural lens. An IOL exchange is a surgery to remove the IOL and place a new one. The most common reason is a dislocated IOL — the original lens has shifted out of position (sometimes years after cataract surgery) because the tiny support structures holding it have weakened.
+
+Why You May Need It
+• A dislocated or displaced IOL causing blurry, double, or distorted vision.
+• An IOL that is no longer positioned properly to focus light onto the retina.
+• Less commonly: lens damage, inflammation around the lens, or a power that needs to be revised.
+
+How the Surgery Is Done
+Performed in the operating room under local or general anesthesia. The surgeon makes tiny incisions, removes the old IOL, and places a new lens. There are two main approaches depending on what support is available in your eye:
+• Anterior Chamber IOL (AC-IOL): the new lens is placed in front of the colored part of the eye (iris). A faster option when there isn't enough natural support behind the iris.
+• Sutured IOL (Akreos or Yamane technique): the new lens is secured to the white part of the eye (sclera) with fine sutures or a specialized technique. This places the lens in the more natural position behind the iris.
+
+Your surgeon will recommend the best approach based on your eye's anatomy.
+
+Medication Alert
+Call your prescribing doctor immediately if you take anticoagulants (aspirin, Coumadin, Eliquis, Xarelto, Plavix) or GLP-1 agonists (Ozempic, Wegovy, Mounjaro, etc.) — these directly impact surgery scheduling and must be reviewed before your date is finalized.
+
+After Surgery
+• Eye patch for the first day; eye shield at night for 1–2 weeks.
+• Use prescribed antibiotic and anti-inflammatory eye drops as directed.
+• Mild discomfort, redness, light sensitivity, and tearing are normal for the first 1–2 weeks.
+• Avoid heavy lifting, bending, and strenuous activity for 2 weeks.
+• Vision improves gradually over weeks to months. You will likely need a new glasses prescription after healing.
+
+Risks of Surgery
+Like any surgery, IOL exchange has some risks: bleeding, infection, retinal detachment, swelling of the cornea or macula, glaucoma (increased eye pressure), and vision loss. There is a small chance the new IOL may not be positioned ideally and require further adjustment.
+
+When to Call Right Away
+Call us immediately if you experience any of the following:
+• Severe or worsening eye pain not relieved by medication.
+• Significant decrease in vision.
+• Increasing redness or pus/discharge (signs of infection).
+• Sudden flashes, new floaters, or a shadow or curtain across your vision.`,
+
+      es: `CIRUGÍA DE INTERCAMBIO DE LIO
+
+[IMAGE:iol-dislocated|Figura 1: Un lente intraocular (LIO) dislocado flotando en la cavidad vítrea.]
+
+¿Qué Es un Intercambio de LIO?
+Un lente intraocular (LIO) es el lente artificial colocado en el ojo durante la cirugía de catarata para reemplazar el lente natural. Un intercambio de LIO es una cirugía para retirar el LIO y colocar uno nuevo. La razón más común es un LIO dislocado — el lente original se ha desplazado fuera de posición (a veces años después de la cirugía de catarata) porque las pequeñas estructuras de soporte que lo sostienen se han debilitado.
+
+Por Qué Puede Necesitarlo
+• Un LIO dislocado o desplazado que causa visión borrosa, doble o distorsionada.
+• Un LIO que ya no está posicionado correctamente para enfocar la luz en la retina.
+• Menos común: daño del lente, inflamación alrededor del lente, o un poder que debe revisarse.
+
+Cómo Se Realiza la Cirugía
+Se realiza en el quirófano bajo anestesia local o general. El cirujano hace pequeñas incisiones, retira el LIO viejo y coloca un lente nuevo. Hay dos enfoques principales según el soporte disponible en el ojo:
+• LIO de Cámara Anterior (AC-LIO): el lente nuevo se coloca delante de la parte coloreada del ojo (iris). Una opción más rápida cuando no hay suficiente soporte natural detrás del iris.
+• LIO Suturado (técnica Akreos o Yamane): el lente nuevo se asegura a la parte blanca del ojo (esclera) con suturas finas o una técnica especializada. Esto coloca el lente en la posición más natural detrás del iris.
+
+Su cirujano recomendará el mejor enfoque según la anatomía de su ojo.
+
+Alerta de Medicamentos
+Llame a su médico prescriptor inmediatamente si toma anticoagulantes (aspirina, Coumadin, Eliquis, Xarelto, Plavix) o agonistas de GLP-1 (Ozempic, Wegovy, Mounjaro, etc.) — estos afectan directamente la programación de la cirugía y deben revisarse antes de finalizar su fecha.
+
+Después de la Cirugía
+• Parche ocular el primer día; protector ocular en la noche durante 1–2 semanas.
+• Use las gotas antibióticas y antiinflamatorias recetadas según indicaciones.
+• Molestia leve, enrojecimiento, sensibilidad a la luz y lagrimeo son normales las primeras 1–2 semanas.
+• Evite levantar objetos pesados, agacharse y actividad intensa durante 2 semanas.
+• La visión mejora gradualmente durante semanas a meses. Probablemente necesitará una nueva graduación de lentes después de la cicatrización.
+
+Riesgos de la Cirugía
+Como cualquier cirugía, el intercambio de LIO tiene algunos riesgos: sangrado, infección, desprendimiento de retina, hinchazón de la córnea o mácula, glaucoma (aumento de presión ocular) y pérdida de visión. Existe una pequeña posibilidad de que el nuevo LIO no quede idealmente posicionado y requiera ajuste adicional.
+
+Llame Inmediatamente
+Llame al consultorio inmediatamente si experimenta cualquiera de los siguientes:
+• Dolor ocular severo o que empeora no aliviado con medicamento.
+• Disminución significativa de la visión.
+• Aumento de enrojecimiento o pus/secreción (signos de infección).
+• Destellos súbitos, nuevas moscas volantes, o una sombra o cortina en su visión.`,
+
+      vi: `PHẪU THUẬT THAY THẤU KÍNH NỘI NHÃN
+
+[IMAGE:iol-dislocated|Hình 1: Một thấu kính nội nhãn (IOL) bị lệch trôi nổi trong khoang dịch kính.]
+
+Thay IOL Là Gì?
+Thấu kính nội nhãn (IOL) là thấu kính nhân tạo được đặt trong mắt trong phẫu thuật đục thủy tinh thể để thay thế thấu kính tự nhiên. Thay IOL là phẫu thuật loại bỏ IOL và đặt một thấu kính mới. Lý do phổ biến nhất là IOL bị lệch — thấu kính ban đầu đã di chuyển khỏi vị trí (đôi khi nhiều năm sau phẫu thuật đục thủy tinh thể) vì các cấu trúc hỗ trợ nhỏ giữ nó đã yếu đi.
+
+Tại Sao Bạn Có Thể Cần Nó
+• IOL bị lệch hoặc di chuyển gây mờ, nhìn đôi hoặc méo mó.
+• IOL không còn được định vị đúng để hội tụ ánh sáng lên võng mạc.
+• Ít gặp hơn: hư hỏng thấu kính, viêm quanh thấu kính, hoặc độ kính cần điều chỉnh.
+
+Phẫu Thuật Được Thực Hiện Như Thế Nào
+Thực hiện tại phòng mổ dưới gây tê tại chỗ hoặc gây mê toàn thân. Bác sĩ phẫu thuật rạch các đường nhỏ, loại bỏ IOL cũ và đặt thấu kính mới. Có hai phương pháp chính tùy vào hỗ trợ có sẵn trong mắt:
+• IOL Tiền Phòng (AC-IOL): thấu kính mới được đặt trước phần có màu của mắt (mống mắt). Một lựa chọn nhanh hơn khi không có đủ hỗ trợ tự nhiên phía sau mống mắt.
+• IOL Khâu (kỹ thuật Akreos hoặc Yamane): thấu kính mới được cố định vào phần trắng của mắt (củng mạc) bằng chỉ khâu mảnh hoặc kỹ thuật chuyên biệt. Điều này đặt thấu kính ở vị trí tự nhiên hơn phía sau mống mắt.
+
+Bác sĩ phẫu thuật sẽ đề xuất phương pháp tốt nhất dựa trên giải phẫu mắt của bạn.
+
+Cảnh Báo Thuốc
+Gọi bác sĩ kê đơn của bạn ngay nếu bạn dùng thuốc chống đông máu (aspirin, Coumadin, Eliquis, Xarelto, Plavix) hoặc chất chủ vận GLP-1 (Ozempic, Wegovy, Mounjaro, v.v.) — những thuốc này ảnh hưởng trực tiếp đến lịch phẫu thuật và phải được xem xét trước khi xác nhận ngày của bạn.
+
+Sau Phẫu Thuật
+• Băng mắt ngày đầu tiên; tấm chắn mắt vào ban đêm trong 1–2 tuần.
+• Dùng thuốc nhỏ kháng sinh và chống viêm được kê đơn theo chỉ dẫn.
+• Khó chịu nhẹ, đỏ, nhạy cảm với ánh sáng và chảy nước mắt là bình thường trong 1–2 tuần đầu.
+• Tránh nâng vật nặng, cúi gập và hoạt động gắng sức trong 2 tuần.
+• Thị lực cải thiện dần qua nhiều tuần đến nhiều tháng. Bạn có thể sẽ cần một đơn kính mới sau khi lành.
+
+Rủi Ro của Phẫu Thuật
+Như bất kỳ phẫu thuật nào, thay IOL có một số rủi ro: chảy máu, nhiễm trùng, bong võng mạc, sưng giác mạc hoặc hoàng điểm, glaucom (tăng áp lực mắt) và mất thị lực. Có khả năng nhỏ IOL mới có thể không được định vị lý tưởng và cần điều chỉnh thêm.
+
+Gọi Ngay
+Gọi cho chúng tôi ngay nếu bạn gặp bất kỳ điều nào sau đây:
+• Đau mắt nặng hoặc tăng dần không giảm với thuốc.
+• Giảm thị lực đáng kể.
+• Tăng đỏ hoặc mủ/dịch tiết (dấu hiệu nhiễm trùng).
+• Lóe sáng đột ngột, đốm đen mới, hoặc bóng hay màn che trong tầm nhìn.`,
+
+      pt: `CIRURGIA DE TROCA DE LIO
+
+[IMAGE:iol-dislocated|Figura 1: Uma lente intraocular (LIO) deslocada flutuando na cavidade vítrea.]
+
+O Que É uma Troca de LIO?
+Uma lente intraocular (LIO) é a lente artificial colocada no olho durante a cirurgia de catarata para substituir a lente natural. Uma troca de LIO é uma cirurgia para remover a LIO e colocar uma nova. A razão mais comum é uma LIO deslocada — a lente original se moveu da posição (às vezes anos após a cirurgia de catarata) porque as pequenas estruturas de suporte que a seguram enfraqueceram.
+
+Por Que Você Pode Precisar
+• Uma LIO deslocada ou desalinhada causando visão borrada, dupla ou distorcida.
+• Uma LIO que não está mais posicionada corretamente para focar luz na retina.
+• Menos comum: dano da lente, inflamação ao redor da lente, ou um grau que precisa ser revisado.
+
+Como a Cirurgia É Feita
+Realizada no centro cirúrgico sob anestesia local ou geral. O cirurgião faz pequenas incisões, remove a LIO antiga e coloca uma nova lente. Há duas abordagens principais conforme o suporte disponível no olho:
+• LIO de Câmara Anterior (AC-LIO): a nova lente é colocada na frente da parte colorida do olho (íris). Uma opção mais rápida quando não há suporte natural suficiente atrás da íris.
+• LIO Suturada (técnica Akreos ou Yamane): a nova lente é fixada à parte branca do olho (esclera) com suturas finas ou uma técnica especializada. Isto coloca a lente na posição mais natural atrás da íris.
+
+Seu cirurgião recomendará a melhor abordagem com base na anatomia do seu olho.
+
+Alerta de Medicamentos
+Ligue para seu médico prescritor imediatamente se você toma anticoagulantes (aspirina, Coumadin, Eliquis, Xarelto, Plavix) ou agonistas de GLP-1 (Ozempic, Wegovy, Mounjaro, etc.) — estes impactam diretamente o agendamento da cirurgia e devem ser revisados antes de sua data ser finalizada.
+
+Após a Cirurgia
+• Tampão ocular no primeiro dia; protetor ocular à noite por 1–2 semanas.
+• Use as gotas antibióticas e antiinflamatórias prescritas conforme instruções.
+• Desconforto leve, vermelhidão, sensibilidade à luz e lacrimejamento são normais nas primeiras 1–2 semanas.
+• Evite levantar peso, abaixar-se e atividade extenuante por 2 semanas.
+• A visão melhora gradualmente ao longo de semanas a meses. Provavelmente precisará de uma nova prescrição de óculos após cicatrização.
+
+Riscos da Cirurgia
+Como qualquer cirurgia, a troca de LIO tem alguns riscos: sangramento, infecção, descolamento de retina, inchaço da córnea ou mácula, glaucoma (aumento de pressão ocular) e perda de visão. Há uma pequena chance de a nova LIO não ficar idealmente posicionada e exigir ajuste adicional.
+
+Ligue Imediatamente
+Ligue-nos imediatamente se você experimentar qualquer um dos seguintes:
+• Dor ocular severa ou que piora não aliviada por medicamento.
+• Diminuição significativa da visão.
+• Aumento de vermelhidão ou pus/secreção (sinais de infecção).
+• Flashes súbitos, novas moscas volantes, ou uma sombra ou cortina em sua visão.`
     }
   },
 
