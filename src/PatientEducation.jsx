@@ -1271,175 +1271,167 @@ Ligue para o Médico Se
     content: {
       en: `SCLERAL BUCKLE SURGERY
 
+[IMAGE:scleral-buckle|Figure 1: A silicone band (scleral buckle) is sewn around the outside of the eye to support a detached retina.]
+
 What Is a Scleral Buckle?
-A scleral buckle is a surgical procedure to repair a retinal detachment. A silicone band is sewn onto the outside of the eye, gently pushing the eye wall inward to bring it back into contact with the detached retina.
+A scleral buckle is surgery to repair a retinal detachment. A soft silicone band is sewn around the outside of the eye, gently indenting the eye wall inward to bring it into contact with the detached retina. The band stays in place permanently — it is not visible from the outside and you will not feel it once you have healed.
 
 When Is It Used?
 • For retinal detachments caused by retinal tears, especially in younger patients or those who have not had cataract surgery.
-• May be used alone or with vitrectomy, laser, or cryotherapy.
+• May be used alone or together with vitrectomy, laser, or cryotherapy.
 
-Before Surgery
+What to Expect
 • Performed in the operating room under local or general anesthesia.
-• Nothing to eat or drink after midnight.
-• Arrange transportation home.
-
-During Surgery
-• The surgeon identifies retinal tear(s).
-• Cryotherapy (freezing) seals the tear(s).
-• A silicone band or sponge is sewn onto the outside of the eye.
-• Fluid under the retina may be drained.
-• The band stays permanently (not visible, you won't feel it once healed).
 • Surgery takes approximately 1–2 hours.
+• Nothing to eat or drink after midnight before surgery.
+• You will need someone to drive you home and stay with you overnight.
+• Cryotherapy (freezing) is usually applied to seal the retinal tear during surgery.
 
 After Surgery
-• Eye patch for 1 day.
-• Use prescribed eye drops as directed.
-• Pain is usually mild to moderate — medication will help.
-• Eye will be red and swollen for 1–2 weeks.
+• Eye patch for about 1 day.
+• Use the prescribed antibiotic and anti-inflammatory eye drops as directed.
+• Mild discomfort, redness, and tearing are normal for the first 1–2 weeks.
+• Avoid heavy lifting, straining, or bending at the waist for 2 weeks.
+• Vision improvement is gradual and may take weeks to months.
 
-Activity Restrictions
-• No heavy lifting (>10 lbs) for 2–4 weeks.
-• Avoid bending at the waist — bend at the knees instead.
-• No swimming for 4 weeks.
-• You may watch TV, read, and use your phone — these do not harm the eye.
+Risks of Surgery
+Like any surgery, scleral buckle surgery has some risks:
+• Double vision (usually temporary).
+• Vision loss.
+• Need for additional surgery if the retina does not fully reattach or if a new tear forms.
+• Bleeding.
+• Infection (rare but serious — see warnings below).
+• Change in your glasses prescription, since the band slightly changes the shape of the eye (often makes the eye more nearsighted).
 
-Recovery
-• Double vision is common in the first few weeks (from swelling) and usually resolves.
-• Best final vision may take 3–6 months.
-• If a gas bubble was also placed, you cannot fly until it dissolves.
-
-Call Your Doctor If
-• Severe or worsening pain.
+When to Call Right Away
+Call us immediately if you experience any of the following:
+• Severe or worsening eye pain not relieved by medication.
 • Significant decrease in vision.
-• New flashes or increase in floaters.
-• A new shadow or curtain in your vision.
-• Fever, excessive redness, or discharge.
-
-Success Rate
-• ~85–90% success with a single operation. Some cases may require additional surgery.`,
+• Pus, yellow or thick discharge, or increasing redness/swelling around the eye.
+• Sudden increase in flashes, new floaters, or a shadow or curtain across your vision.`,
 
       es: `CIRUGÍA DE CERCLAJE ESCLERAL
 
-¿Qué Es un Cerclaje Escleral?
-El cerclaje escleral es un procedimiento quirúrgico para reparar un desprendimiento de retina. Una banda de silicona se cose en el exterior del ojo, empujando suavemente la pared del ojo hacia adentro para ponerla en contacto con la retina desprendida.
+[IMAGE:scleral-buckle|Figura 1: Una banda de silicón (cerclaje escleral) se cose alrededor del exterior del ojo para apoyar una retina desprendida.]
+
+¿Qué Es el Cerclaje Escleral?
+Es una cirugía para reparar un desprendimiento de retina. Se cose una banda blanda de silicón alrededor del exterior del ojo, indentando suavemente la pared del ojo hacia adentro para que entre en contacto con la retina desprendida. La banda queda permanentemente — no es visible desde el exterior y no la sentirá una vez cicatrizado.
 
 ¿Cuándo Se Usa?
-• Para desprendimientos causados por desgarros retinianos, especialmente en pacientes jóvenes o sin cirugía de catarata previa.
-• Puede usarse solo o con vitrectomía, láser o crioterapia.
+• Para desprendimientos de retina causados por desgarros, especialmente en pacientes jóvenes o que no han tenido cirugía de catarata.
+• Puede usarse sola o junto con vitrectomía, láser o crioterapia.
 
-Durante la Cirugía
-• El cirujano identifica los desgarros retinianos.
-• La crioterapia (congelamiento) sella los desgarros.
-• Una banda de silicona se cose en el exterior del ojo.
-• Se puede drenar líquido bajo la retina.
-• La banda permanece permanentemente (no visible, no la sentirá).
-• La cirugía toma 1–2 horas.
+Qué Esperar
+• Se realiza en el quirófano bajo anestesia local o general.
+• La cirugía toma aproximadamente 1–2 horas.
+• Nada de comer o beber después de medianoche antes de la cirugía.
+• Necesitará a alguien que lo lleve a casa y se quede con usted esa noche.
+• Usualmente se aplica crioterapia (congelación) para sellar el desgarro retiniano durante la cirugía.
 
 Después de la Cirugía
-• Parche ocular por 1 día.
-• Use gotas recetadas según indicaciones.
-• El dolor es usualmente leve a moderado.
-• El ojo estará rojo e hinchado por 1–2 semanas.
+• Parche ocular por aproximadamente 1 día.
+• Use las gotas antibióticas y antiinflamatorias recetadas según indicación.
+• Molestia leve, enrojecimiento y lagrimeo son normales las primeras 1–2 semanas.
+• Evite levantar peso, esforzarse o agacharse por 2 semanas.
+• La mejoría visual es gradual y puede tomar semanas a meses.
 
-Restricciones de Actividad
-• No levantar peso (>5 kg) por 2–4 semanas.
-• Evite agacharse — doble las rodillas.
-• No nadar por 4 semanas.
-• Puede ver TV, leer y usar el teléfono.
+Riesgos de la Cirugía
+Como cualquier cirugía, el cerclaje escleral tiene algunos riesgos:
+• Visión doble (usualmente temporal).
+• Pérdida de visión.
+• Necesidad de cirugía adicional si la retina no se vuelve a adherir completamente o si se forma un nuevo desgarro.
+• Sangrado.
+• Infección (rara pero seria — ver advertencias abajo).
+• Cambio en su receta de lentes, ya que la banda cambia ligeramente la forma del ojo (a menudo lo vuelve más miope).
 
-Recuperación
-• Visión doble es común las primeras semanas (por hinchazón) y usualmente se resuelve.
-• La mejor visión final puede tomar 3–6 meses.
-
-Llame a su Médico Si
-• Dolor severo o que empeora.
-• Disminución significativa de visión.
-• Nuevos destellos o aumento de moscas volantes.
-• Nueva sombra o cortina en su visión.
-
-Tasa de Éxito
-• ~85–90% con una sola operación.`,
+Llame Inmediatamente
+Llame al consultorio inmediatamente si experimenta cualquiera de los siguientes:
+• Dolor ocular severo o que empeora, no aliviado por medicación.
+• Disminución significativa de la visión.
+• Pus, secreción amarilla o espesa, o aumento de enrojecimiento/hinchazón alrededor del ojo.
+• Aumento súbito de destellos, nuevas moscas volantes, o una sombra o cortina en su visión.`,
 
       vi: `PHẪU THUẬT ĐAI CỦNG MẠC
 
+[IMAGE:scleral-buckle|Hình 1: Một dải silicon (đai củng mạc) được khâu quanh bên ngoài mắt để nâng đỡ võng mạc bị bong.]
+
 Đai Củng Mạc Là Gì?
-Đai củng mạc là phẫu thuật sửa chữa bong võng mạc. Một dải silicone được khâu bên ngoài mắt, nhẹ nhàng đẩy thành mắt vào trong để tiếp xúc lại với võng mạc bong.
+Đây là phẫu thuật để sửa chữa bong võng mạc. Một dải silicon mềm được khâu quanh bên ngoài mắt, ấn nhẹ thành mắt vào trong để tiếp xúc với võng mạc bị bong. Dải này nằm vĩnh viễn — không nhìn thấy từ bên ngoài và bạn sẽ không cảm nhận được sau khi lành.
 
-Khi Nào Được Sử Dụng?
-• Cho bong võng mạc do rách, đặc biệt ở bệnh nhân trẻ hoặc chưa mổ đục thủy tinh thể.
-• Có thể dùng đơn lẻ hoặc kết hợp cắt dịch kính, laser hoặc áp lạnh.
+Khi Nào Sử Dụng?
+• Cho bong võng mạc do rách võng mạc, đặc biệt ở bệnh nhân trẻ hoặc chưa phẫu thuật đục thủy tinh thể.
+• Có thể dùng đơn lẻ hoặc kết hợp với cắt dịch kính, laser, hoặc đông lạnh.
 
-Trong Phẫu Thuật
-• Phẫu thuật viên xác định vết rách võng mạc.
-• Áp lạnh bịt kín vết rách.
-• Dải silicone được khâu bên ngoài mắt.
-• Dịch dưới võng mạc có thể được hút.
-• Dải đai ở lại vĩnh viễn (không nhìn thấy, không cảm nhận khi lành).
+Những Gì Cần Biết
+• Thực hiện trong phòng mổ với gây tê tại chỗ hoặc gây mê toàn thân.
 • Phẫu thuật mất khoảng 1–2 giờ.
+• Không ăn uống sau nửa đêm trước phẫu thuật.
+• Bạn cần người đưa bạn về và ở lại qua đêm.
+• Đông lạnh (cryotherapy) thường được áp dụng để niêm phong vết rách trong phẫu thuật.
 
 Sau Phẫu Thuật
-• Che mắt 1 ngày.
-• Dùng thuốc nhỏ theo chỉ dẫn.
-• Đau thường nhẹ đến vừa.
-• Mắt đỏ và sưng 1–2 tuần.
+• Đeo miếng che mắt khoảng 1 ngày.
+• Dùng thuốc nhỏ mắt kháng sinh và kháng viêm theo chỉ dẫn.
+• Khó chịu nhẹ, đỏ và chảy nước mắt là bình thường trong 1–2 tuần đầu.
+• Tránh nâng vật nặng, gắng sức, hoặc cúi người trong 2 tuần.
+• Cải thiện thị lực diễn ra dần dần và có thể mất vài tuần đến vài tháng.
 
-Hạn Chế Hoạt Động
-• Không nâng nặng (>5 kg) trong 2–4 tuần.
-• Tránh cúi — gập đầu gối thay vì.
-• Không bơi 4 tuần.
-• Có thể xem TV, đọc sách và dùng điện thoại.
+Rủi Ro Phẫu Thuật
+Như mọi phẫu thuật, đai củng mạc có một số rủi ro:
+• Nhìn đôi (thường tạm thời).
+• Mất thị lực.
+• Cần phẫu thuật thêm nếu võng mạc không gắn lại hoàn toàn hoặc nếu hình thành vết rách mới.
+• Chảy máu.
+• Nhiễm trùng (hiếm nhưng nghiêm trọng — xem cảnh báo bên dưới).
+• Thay đổi đơn kính, vì dải này làm thay đổi nhẹ hình dạng mắt (thường làm mắt cận thị hơn).
 
-Hồi Phục
-• Nhìn đôi phổ biến vài tuần đầu (do sưng) và thường hết.
-• Thị lực tốt nhất có thể mất 3–6 tháng.
-
-Gọi Bác Sĩ Nếu
-• Đau nặng hoặc tăng.
+Gọi Ngay
+Gọi cho chúng tôi ngay nếu bạn gặp bất kỳ điều nào sau đây:
+• Đau mắt nặng hoặc tăng dần, không giảm với thuốc.
 • Giảm thị lực đáng kể.
-• Ánh sáng lóe mới hoặc đốm đen tăng.
-• Bóng hoặc màn mới trong tầm nhìn.`,
+• Mủ, dịch tiết vàng hoặc đặc, hoặc tăng đỏ/sưng quanh mắt.
+• Đột ngột tăng lóe sáng, đốm đen mới, hoặc bóng/màn che trong tầm nhìn.`,
 
       pt: `CIRURGIA DE INTROFLEXÃO ESCLERAL
 
-O Que É Introflexão Escleral?
-É um procedimento cirúrgico para reparar descolamento de retina. Uma faixa de silicone é costurada no exterior do olho, empurrando suavemente a parede do olho para dentro para reconectar com a retina descolada.
+[IMAGE:scleral-buckle|Figura 1: Uma faixa de silicone (introflexão escleral) é suturada ao redor do exterior do olho para apoiar uma retina descolada.]
 
-Quando É Usado?
-• Para descolamentos causados por rasgos retinianos, especialmente em pacientes jovens ou sem cirurgia de catarata prévia.
-• Pode ser usado sozinho ou com vitrectomia, laser ou crioterapia.
+O Que É a Introflexão Escleral?
+É uma cirurgia para reparar um descolamento de retina. Uma faixa macia de silicone é suturada ao redor do exterior do olho, indentando suavemente a parede do olho para dentro para contatar a retina descolada. A faixa fica permanentemente — não é visível por fora e você não sentirá depois de cicatrizado.
 
-Durante a Cirurgia
-• O cirurgião identifica os rasgos retinianos.
-• Crioterapia (congelamento) sela os rasgos.
-• Uma faixa de silicone é costurada no exterior do olho.
-• Líquido sob a retina pode ser drenado.
-• A faixa permanece permanentemente (não visível, não sentirá).
-• A cirurgia leva 1–2 horas.
+Quando É Usada?
+• Para descolamentos de retina causados por rasgos, especialmente em pacientes jovens ou que não fizeram cirurgia de catarata.
+• Pode ser usada sozinha ou junto com vitrectomia, laser ou crioterapia.
+
+O Que Esperar
+• Realizada no centro cirúrgico sob anestesia local ou geral.
+• A cirurgia leva aproximadamente 1–2 horas.
+• Nada para comer ou beber após meia-noite antes da cirurgia.
+• Você precisará de alguém para levá-lo para casa e ficar com você durante a noite.
+• Crioterapia (congelamento) geralmente é aplicada para selar o rasgo retiniano durante a cirurgia.
 
 Após a Cirurgia
-• Curativo ocular por 1 dia.
-• Use colírios prescritos conforme orientação.
-• Dor geralmente leve a moderada.
-• Olho ficará vermelho e inchado por 1–2 semanas.
+• Tampão ocular por cerca de 1 dia.
+• Use os colírios antibióticos e anti-inflamatórios prescritos conforme orientação.
+• Desconforto leve, vermelhidão e lacrimejamento são normais nas primeiras 1–2 semanas.
+• Evite levantar peso, fazer esforço, ou curvar-se por 2 semanas.
+• A melhora visual é gradual e pode levar semanas a meses.
 
-Restrições de Atividade
-• Não levantar peso (>5 kg) por 2–4 semanas.
-• Evite curvar-se — dobre os joelhos.
-• Não nadar por 4 semanas.
-• Pode assistir TV, ler e usar celular.
+Riscos da Cirurgia
+Como qualquer cirurgia, a introflexão escleral tem alguns riscos:
+• Visão dupla (geralmente temporária).
+• Perda de visão.
+• Necessidade de cirurgia adicional se a retina não readerir completamente ou se um novo rasgo se formar.
+• Sangramento.
+• Infecção (rara mas séria — veja avisos abaixo).
+• Mudança em sua prescrição de óculos, já que a faixa muda ligeiramente a forma do olho (geralmente torna o olho mais míope).
 
-Recuperação
-• Visão dupla é comum nas primeiras semanas (do inchaço) e geralmente resolve.
-• Melhor visão final pode levar 3–6 meses.
-
-Ligue para o Médico Se
-• Dor severa ou que piora.
-• Diminuição significativa de visão.
-• Novos flashes ou aumento de moscas volantes.
-• Nova sombra ou cortina na visão.
-
-Taxa de Sucesso
-• ~85–90% com uma única operação.`
+Ligue Imediatamente
+Ligue-nos imediatamente se você experimentar qualquer um dos seguintes:
+• Dor ocular severa ou que piora, não aliviada por medicação.
+• Diminuição significativa da visão.
+• Pus, secreção amarela ou espessa, ou aumento de vermelhidão/inchaço ao redor do olho.
+• Aumento súbito de flashes, novas moscas volantes, ou uma sombra ou cortina em sua visão.`
     }
   },
 
