@@ -1120,147 +1120,173 @@ Notas Importantes
     title: { en: "Vitrectomy Surgery", es: "Cirugía de Vitrectomía", vi: "Phẫu Thuật Cắt Dịch Kính", pt: "Cirurgia de Vitrectomia" },
     tags: ["surgery", "vitrectomy", "OR"],
     content: {
-      en: `VITRECTOMY SURGERY — WHAT TO EXPECT
+      en: `VITRECTOMY SURGERY
+
+[IMAGE:vitrectomy-diagram|Figure 1: Vitrectomy — the cutter and light pipe are inserted through tiny incisions in the white part of the eye.]
 
 What Is a Vitrectomy?
-A vitrectomy removes the vitreous gel (clear jelly filling the eye) so your surgeon can access and repair problems at the back of the eye — retinal detachments, macular holes, epiretinal membranes, vitreous hemorrhage, or other retinal conditions.
+A vitrectomy removes the vitreous gel (the clear jelly filling the eye) so your surgeon can access and repair problems at the back of the eye — retinal detachments, macular holes, epiretinal membranes, vitreous hemorrhage, and other retinal conditions.
 
 Before Surgery
 • Pre-operative assessment; may need blood work or medical clearance.
-• Follow fasting instructions — typically nothing to eat or drink after midnight.
-• Continue regular medications unless your surgeon advises otherwise.
+• Nothing to eat or drink after midnight; continue regular medications unless your surgeon advises otherwise.
 • Arrange transportation — you cannot drive yourself home.
+
+Medication Alert
+Call your prescribing doctor immediately if you take anticoagulants (aspirin, Coumadin, Eliquis, Xarelto, Plavix) or GLP-1 agonists (Ozempic, Wegovy, Mounjaro, etc.) — these directly impact surgery scheduling and must be reviewed before your date is finalized.
 
 During Surgery
 • Performed in the operating room under local or general anesthesia.
-• Three tiny incisions (less than 1 mm) are made in the white part of the eye.
+• Three tiny incisions (less than 1 mm) in the white part of the eye.
 • The vitreous gel is removed and replaced with saline, air, or a gas bubble.
-• Surgery typically takes 30 minutes to 2 hours depending on complexity.
+• Surgery typically takes 30 minutes to 2 hours.
 
 After Surgery
-• You may need specific head positioning (face-down) if a gas bubble was used.
-• Use prescribed eye drops as directed (antibiotic and anti-inflammatory).
+• You may need face-down positioning if a gas bubble was used.
+• Use prescribed antibiotic and anti-inflammatory eye drops as directed.
 • Wear the eye shield at night for 1–2 weeks.
 • Avoid heavy lifting, straining, or bending at the waist for 2 weeks.
+• Vision improvement is gradual — weeks to months. Mild discomfort, redness, and tearing are normal the first week.
 
-If a Gas Bubble Was Placed
-• You CANNOT fly until the gas bubble dissolves (usually 2–8 weeks).
-• Inform any anesthesiologist if you need other surgery — nitrous oxide must be avoided.
-• The bubble gradually shrinks and is replaced by your eye's own fluid.
+Gas Bubble Precautions
+• You will not be able to see well through the gas bubble until it resolves.
+• Do NOT lie on your back until the gas bubble resolves.
+• You CANNOT fly or travel to high altitudes until the bubble dissolves (usually 2–8 weeks).
+• Inform any anesthesiologist about the gas bubble before other surgery — nitrous oxide must be avoided.
+• Wear the green bracelet until cleared by your doctor.
 
-Recovery
-• Vision improvement is gradual — may take weeks to months.
-• Mild discomfort, redness, and tearing are normal for the first week.
-• Most patients return to light activities within a few days, normal activities within 2–4 weeks.
-
-Call Your Doctor If
+When to Call Right Away
+Call us immediately if you experience any of the following:
 • Severe pain not relieved by prescribed medication.
-• Significant vision loss.
-• Increasing redness or discharge.
-• Flashes, new floaters, or a shadow/curtain in your vision.`,
+• Significant decrease in vision.
+• Increasing redness or pus/discharge (signs of infection).
+• Sudden flashes, new floaters, or a shadow or curtain across your vision.`,
 
       es: `CIRUGÍA DE VITRECTOMÍA
 
+[IMAGE:vitrectomy-diagram|Figura 1: Vitrectomía — el cortador y la fibra de luz se insertan a través de incisiones diminutas en la parte blanca del ojo.]
+
 ¿Qué Es una Vitrectomía?
-Una vitrectomía remueve el gel vítreo (la gelatina transparente que llena el ojo) para que el cirujano pueda acceder y reparar problemas en la parte posterior del ojo — desprendimientos de retina, agujeros maculares, membranas epirretinianas, hemorragia vítrea u otras condiciones.
+Una vitrectomía remueve el gel vítreo (la gelatina transparente que llena el ojo) para que el cirujano pueda acceder y reparar problemas en la parte posterior del ojo — desprendimientos de retina, agujeros maculares, membranas epirretinianas, hemorragia vítrea y otras condiciones.
 
 Antes de la Cirugía
-• Evaluación preoperatoria; puede necesitar análisis de sangre.
-• Siga las instrucciones de ayuno — típicamente nada de comer o beber después de medianoche.
-• Continúe medicamentos regulares a menos que el cirujano indique lo contrario.
+• Evaluación preoperatoria; puede necesitar análisis de sangre o autorización médica.
+• Nada de comer o beber después de medianoche; continúe medicamentos regulares a menos que el cirujano indique lo contrario.
 • Organice transporte — no puede conducir a casa.
+
+Alerta de Medicamentos
+Llame a su médico recetador inmediatamente si toma anticoagulantes (aspirina, Coumadin, Eliquis, Xarelto, Plavix) o agonistas GLP-1 (Ozempic, Wegovy, Mounjaro, etc.) — afectan directamente la programación de la cirugía y deben revisarse antes de finalizar la fecha.
 
 Durante la Cirugía
 • Se realiza en quirófano bajo anestesia local o general.
-• Se hacen tres incisiones diminutas (menos de 1 mm).
-• El gel vítreo se remueve y se reemplaza con solución salina, aire o una burbuja de gas.
+• Tres incisiones diminutas (menos de 1 mm) en la parte blanca del ojo.
+• El gel vítreo se remueve y se reemplaza con solución salina, aire o burbuja de gas.
 • La cirugía típicamente toma 30 minutos a 2 horas.
 
 Después de la Cirugía
-• Puede necesitar posicionamiento específico (boca abajo) si se usó burbuja de gas.
-• Use las gotas recetadas según indicaciones.
+• Puede necesitar posición boca abajo si se usó burbuja de gas.
+• Use las gotas antibióticas y antiinflamatorias según indicación.
 • Use el protector ocular de noche por 1–2 semanas.
 • Evite levantar peso, esfuerzo o agacharse por 2 semanas.
+• La mejoría visual es gradual — semanas a meses. Molestia leve, enrojecimiento y lagrimeo son normales la primera semana.
 
-Si Se Colocó una Burbuja de Gas
-• NO puede volar hasta que la burbuja se disuelva (2–8 semanas).
-• Informe a cualquier anestesiólogo si necesita otra cirugía.
+Precauciones con la Burbuja de Gas
+• No podrá ver bien a través de la burbuja de gas hasta que se disuelva.
+• NO se acueste boca arriba hasta que la burbuja se disuelva.
+• NO PUEDE volar ni viajar a altitudes elevadas hasta que la burbuja se disuelva (2–8 semanas).
+• Informe a cualquier anestesiólogo sobre la burbuja antes de otra cirugía — debe evitarse óxido nitroso.
+• Use el brazalete verde hasta que su médico le autorice.
 
-Recuperación
-• La mejoría visual es gradual — puede tomar semanas a meses.
-• Molestia leve, enrojecimiento y lagrimeo son normales la primera semana.
-
-Llame a su Médico Si
-• Dolor severo no aliviado por medicación.
-• Pérdida significativa de visión.
-• Enrojecimiento creciente o secreción.
-• Destellos, nuevas moscas volantes o cortina en su visión.`,
+Llame Inmediatamente
+Llame al consultorio inmediatamente si experimenta cualquiera de los siguientes:
+• Dolor severo no aliviado por medicación recetada.
+• Disminución significativa de la visión.
+• Enrojecimiento creciente o pus/secreción (signos de infección).
+• Destellos súbitos, nuevas moscas volantes, o una sombra o cortina en su visión.`,
 
       vi: `PHẪU THUẬT CẮT DỊCH KÍNH
 
+[IMAGE:vitrectomy-diagram|Hình 1: Cắt dịch kính — đầu cắt và đèn được đưa vào qua các vết rạch nhỏ ở phần trắng mắt.]
+
 Cắt Dịch Kính Là Gì?
-Cắt dịch kính loại bỏ gel dịch kính (chất keo trong suốt bên trong mắt) để phẫu thuật viên tiếp cận và sửa chữa vấn đề phía sau mắt — bong võng mạc, lỗ hoàng điểm, màng trước võng mạc, xuất huyết dịch kính hoặc các bệnh võng mạc khác.
+Cắt dịch kính loại bỏ gel dịch kính (chất keo trong suốt bên trong mắt) để phẫu thuật viên tiếp cận và sửa chữa vấn đề phía sau mắt — bong võng mạc, lỗ hoàng điểm, màng trước võng mạc, xuất huyết dịch kính và các bệnh võng mạc khác.
 
 Trước Phẫu Thuật
-• Đánh giá trước mổ; có thể cần xét nghiệm máu.
-• Tuân theo hướng dẫn nhịn ăn — thường không ăn uống sau nửa đêm.
-• Tiếp tục thuốc thường ngày trừ khi phẫu thuật viên nói khác.
+• Đánh giá trước mổ; có thể cần xét nghiệm máu hoặc giấy phép y tế.
+• Không ăn uống sau nửa đêm; tiếp tục thuốc thường ngày trừ khi phẫu thuật viên nói khác.
 • Sắp xếp người đưa đón — không thể tự lái xe về.
+
+Cảnh Báo về Thuốc
+Gọi bác sĩ kê đơn ngay nếu bạn dùng thuốc chống đông (aspirin, Coumadin, Eliquis, Xarelto, Plavix) hoặc thuốc đồng vận GLP-1 (Ozempic, Wegovy, Mounjaro, v.v.) — ảnh hưởng trực tiếp đến lịch phẫu thuật và phải được xem xét trước khi xác định ngày.
 
 Trong Phẫu Thuật
 • Thực hiện trong phòng mổ dưới gây tê tại chỗ hoặc gây mê toàn thân.
-• Ba vết rạch nhỏ (dưới 1 mm) được tạo trên phần trắng mắt.
+• Ba vết rạch nhỏ (dưới 1 mm) trên phần trắng mắt.
 • Gel dịch kính được loại bỏ và thay bằng nước muối, khí hoặc bong bóng khí.
 • Phẫu thuật thường mất 30 phút đến 2 giờ.
 
 Sau Phẫu Thuật
-• Có thể cần tư thế đặc biệt (úp mặt) nếu dùng bong bóng khí.
-• Dùng thuốc nhỏ theo chỉ dẫn.
+• Có thể cần tư thế úp mặt nếu dùng bong bóng khí.
+• Dùng thuốc nhỏ kháng sinh và kháng viêm theo chỉ dẫn.
 • Đeo tấm che mắt ban đêm 1–2 tuần.
 • Tránh nâng nặng, gắng sức hoặc cúi người 2 tuần.
+• Cải thiện thị lực diễn ra dần dần — vài tuần đến vài tháng. Khó chịu nhẹ, đỏ và chảy nước mắt là bình thường tuần đầu.
 
-Nếu Có Bong Bóng Khí
-• KHÔNG được bay cho đến khi bong bóng tan (thường 2–8 tuần).
-• Thông báo bác sĩ gây mê nếu cần phẫu thuật khác.
+Lưu Ý về Bong Bóng Khí
+• Bạn sẽ không nhìn rõ qua bong bóng khí cho đến khi tan.
+• KHÔNG nằm ngửa cho đến khi bong bóng khí tan.
+• KHÔNG được bay hoặc lên độ cao cho đến khi bong bóng tan (thường 2–8 tuần).
+• Thông báo bác sĩ gây mê về bong bóng khí trước phẫu thuật khác — phải tránh khí cười (nitrous oxide).
+• Đeo vòng tay màu xanh lá cây cho đến khi bác sĩ cho phép.
 
-Gọi Bác Sĩ Nếu
+Gọi Ngay
+Gọi cho chúng tôi ngay nếu bạn gặp bất kỳ điều nào sau đây:
 • Đau nặng không giảm với thuốc.
-• Mất thị lực đáng kể.
-• Đỏ mắt tăng hoặc dịch tiết.
-• Ánh sáng lóe, đốm đen mới hoặc bóng/màn trong tầm nhìn.`,
+• Giảm thị lực đáng kể.
+• Đỏ mắt tăng hoặc mủ/dịch tiết (dấu hiệu nhiễm trùng).
+• Lóe sáng đột ngột, đốm đen mới, hoặc bóng hoặc màn che trong tầm nhìn.`,
 
       pt: `CIRURGIA DE VITRECTOMIA
 
+[IMAGE:vitrectomy-diagram|Figura 1: Vitrectomia — o cortador e o cabo de luz são inseridos através de incisões minúsculas na parte branca do olho.]
+
 O Que É Vitrectomia?
-A vitrectomia remove o gel vítreo (geleia transparente que preenche o olho) para que o cirurgião acesse e repare problemas na parte posterior do olho — descolamentos de retina, buracos maculares, membranas epirretinianas, hemorragia vítrea ou outras condições.
+A vitrectomia remove o gel vítreo (geleia transparente que preenche o olho) para que o cirurgião acesse e repare problemas na parte posterior do olho — descolamentos de retina, buracos maculares, membranas epirretinianas, hemorragia vítrea e outras condições.
 
 Antes da Cirurgia
-• Avaliação pré-operatória; pode precisar de exames de sangue.
-• Siga instruções de jejum — tipicamente nada para comer ou beber após meia-noite.
-• Continue medicamentos regulares, a menos que o cirurgião oriente diferente.
+• Avaliação pré-operatória; pode precisar de exames de sangue ou autorização médica.
+• Nada para comer ou beber após meia-noite; continue medicamentos regulares a menos que o cirurgião oriente diferente.
 • Providencie transporte — não pode dirigir para casa.
+
+Alerta de Medicamentos
+Ligue para seu médico prescritor imediatamente se você toma anticoagulantes (aspirina, Coumadin, Eliquis, Xarelto, Plavix) ou agonistas GLP-1 (Ozempic, Wegovy, Mounjaro, etc.) — afetam diretamente o agendamento da cirurgia e devem ser revisados antes de finalizar a data.
 
 Durante a Cirurgia
 • Realizada no centro cirúrgico sob anestesia local ou geral.
-• Três incisões minúsculas (menos de 1 mm) são feitas na parte branca do olho.
+• Três incisões minúsculas (menos de 1 mm) na parte branca do olho.
 • O gel vítreo é removido e substituído por soro, ar ou bolha de gás.
 • A cirurgia tipicamente leva 30 minutos a 2 horas.
 
 Após a Cirurgia
-• Pode precisar de posicionamento específico (face para baixo) se bolha de gás foi usada.
-• Use colírios prescritos conforme orientação.
+• Pode precisar de posição face para baixo se bolha de gás foi usada.
+• Use colírios antibióticos e anti-inflamatórios conforme orientação.
 • Use protetor ocular à noite por 1–2 semanas.
 • Evite levantar peso, esforço ou curvar-se por 2 semanas.
+• A melhora visual é gradual — semanas a meses. Desconforto leve, vermelhidão e lacrimejamento são normais na primeira semana.
 
-Se Uma Bolha de Gás Foi Colocada
-• NÃO pode voar até a bolha dissolver (2–8 semanas).
-• Informe qualquer anestesista se precisar de outra cirurgia.
+Precauções com a Bolha de Gás
+• Você não conseguirá enxergar bem através da bolha de gás até que se dissolva.
+• NÃO deite de costas até a bolha de gás se dissolver.
+• NÃO PODE voar nem viajar a altitudes elevadas até a bolha dissolver (2–8 semanas).
+• Informe qualquer anestesista sobre a bolha antes de outra cirurgia — óxido nitroso deve ser evitado.
+• Use a pulseira verde até seu médico liberar.
 
-Ligue para o Médico Se
-• Dor severa não aliviada por medicação.
-• Perda significativa de visão.
-• Vermelhidão crescente ou secreção.
-• Flashes, moscas volantes novas ou cortina na visão.`
+Ligue Imediatamente
+Ligue-nos imediatamente se você experimentar qualquer um dos seguintes:
+• Dor severa não aliviada por medicação prescrita.
+• Diminuição significativa da visão.
+• Vermelhidão crescente ou pus/secreção (sinais de infecção).
+• Flashes súbitos, novas moscas volantes, ou uma sombra ou cortina em sua visão.`
     }
   },
   {
