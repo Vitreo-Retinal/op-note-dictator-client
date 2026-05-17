@@ -1443,6 +1443,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           ["coding", "AI Coding"],
           ["inject", "Can We Inject?"],
           ["education", "Patient Ed"],
+          ["evidence", "Evidence"],
           ...(surgeon && surgeon.hasRobocall ? [["robocall", "Robocall"]] : []),
         ].map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} style={{
@@ -2068,6 +2069,51 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         {tab === "education" && (
           <div style={{ margin: "-20px", minHeight: "80vh" }}>
             <PatientEducation onBack={() => setTab("input")} />
+          </div>
+        )}
+
+        {/* ── EVIDENCE (OpenEvidence) TAB ──────────────────── */}
+        {tab === "evidence" && (
+          <div style={{ padding: "24px", maxWidth: 720, margin: "0 auto" }}>
+            <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, overflow: "hidden" }}>
+              <div style={{ background: "linear-gradient(135deg,#0ea5e9,#0284c7)", padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: "1.6rem" }}>📚</span>
+                <div style={{ fontSize: "1rem", fontWeight: 700, color: "#fff", fontFamily: S.font }}>OpenEvidence — AI Clinical Literature Search</div>
+              </div>
+              <div style={{ padding: "18px 22px" }}>
+                <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: 1.55, marginBottom: 14 }}>
+                  Evidence-based, peer-reviewed answers to clinical questions. Useful for quick lookups during a visit, complex case workups, and reviewing the latest literature on treatments and outcomes. Free for verified clinicians.
+                </div>
+                <div style={{ fontSize: "0.78rem", color: S.muted, marginBottom: 16, lineHeight: 1.5 }}>
+                  Opens openevidence.com in a new tab. You'll need to be signed in to your OpenEvidence account. Each surgeon needs an individual account (sign up at openevidence.com if you don't have one).
+                </div>
+                <a
+                  href="https://www.openevidence.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-block",
+                    background: "linear-gradient(135deg,#0ea5e9,#0284c7)",
+                    color: "#fff",
+                    padding: "10px 22px",
+                    borderRadius: 8,
+                    textDecoration: "none",
+                    fontFamily: S.font,
+                    fontWeight: 600,
+                    fontSize: "0.88rem",
+                  }}
+                >
+                  Open OpenEvidence ↗
+                </a>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 18, padding: "12px 16px", background: S.card, border: `1px dashed ${S.border}`, borderRadius: 10 }}>
+              <div style={{ fontSize: "0.75rem", color: S.muted, fontWeight: 600, marginBottom: 6, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 0.5 }}>Examples to try</div>
+              <div style={{ fontSize: "0.78rem", color: "#cbd5e1", lineHeight: 1.6 }}>
+                "Latest evidence for Vabysmo dosing intervals in nAMD" &middot; "PRP vs anti-VEGF for PDR — long-term outcomes" &middot; "Best management of post-vitrectomy hypotony" &middot; "Pneumatic retinopexy success rates by detachment configuration"
+              </div>
+            </div>
           </div>
         )}
 
