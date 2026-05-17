@@ -2389,60 +2389,50 @@ Esses podem ser sinais de sangramento dentro do olho, descolamento de retina ou 
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
 What Is It?
-Your retina has veins and other blood vessels that carry blood. When a vein in your retina is blocked (occluded), it is called a retinal vein occlusion. This can be caused by a blood clot, or it can happen when a larger blood vessel presses down on the vein. With retinal vein occlusion, weaker blood vessels may end up carrying more blood. They might start to leak, causing the macula to swell or thicken. This is called macular edema, and it leads to blurry vision or vision loss. When blood flow is severely blocked, the retina may try to grow new blood vessels. These new vessels are fragile and abnormal. They can grow on the surface of the retina, where they may bleed into the vitreous gel (vitreous hemorrhage), causing sudden floaters or vision loss. They can also grow in the iris (colored part of your eye) or in other areas at the front of your eye, where they block the drainage of fluid and cause painful high pressure (neovascular glaucoma).
+A retinal vein occlusion happens when a vein in the retina is blocked, often by a blood clot or pressure from a nearby vessel. Blocked drainage causes the macula to swell (macular edema), leading to blurry vision or vision loss. In severe cases, the retina may grow fragile new blood vessels that bleed into the vitreous or cause painful high eye pressure (neovascular glaucoma).
 
 Types
-• Central RVO (CRVO): The main vein of the eye is blocked, causing bleeding and swelling throughout the retina. Can cause more significant vision loss.
-• Branch RVO (BRVO): A smaller branch vein attached to the main vein is blocked, causing bleeding in parts of the retina. Usually affects part of your vision.
+• Central RVO (CRVO): main vein of the eye is blocked, causing bleeding and swelling throughout the retina. Can cause significant vision loss.
+• Branch RVO (BRVO): a smaller branch vein is blocked, affecting part of the retina and part of vision.
 
 Risk Factors
-• High blood pressure (most common).
-• Diabetes.
-• Glaucoma (increased pressure inside the eye).
-• Diseases related to blood vessels (vascular disease) or obesity.
-• High cholesterol.
+• High blood pressure (most common), diabetes, high cholesterol.
+• Glaucoma or vascular disease.
 • Blood clotting disorders.
-• Age over 50.
-• Smoking.
+• Age over 50, smoking, obesity.
 
 Symptoms
 • Sudden painless blurry or decreased vision in one eye.
-• A lot of floaters in your field of vision.
+• A lot of floaters.
 • Dark areas or missing spots in your vision.
-• Pain inside your eye if new blood vessels grow and cause high pressure (neovascular glaucoma).
-
-[PAGE_BREAK]
+• Eye pain if new vessels grow and cause high pressure (neovascular glaucoma).
 
 How Is It Diagnosed?
-• Dilated eye exam — drops are placed to widen your pupils so the doctor can look through a special lens at the inside of your eye and see the bleeding.
-• Fluorescein angiography — a dye is injected into a vein in your arm and a camera photographs the retinal blood vessels, showing if any are blocked or leaking.
-• OCT (Optical Coherence Tomography) — a painless scan that measures the thickness of the retina and shows swelling of the macula.
+• Dilated eye exam.
+• Fluorescein angiography — dye injected into the arm, camera photographs retinal vessels to show blockages or leakage.
+• OCT — painless scan that measures retinal thickness and macular swelling.
 
 [IMAGE_PAIR:rvo-oct-before|Before Treatment|rvo-oct-after|After Treatment|OCT scan showing macular edema before and after anti-VEGF treatment]
 
 Treatment
-Your doctor will treat you based on what he or she sees in your eye. Treatment may include:
-• Anti-VEGF injections (most common treatment) — medication injected into the eye to reduce swelling of the macula. This helps slow vision loss and may improve vision. Treatment is typically given as a series of injections over several months.
-• Steroid injections or implants — in some cases, used to reduce inflammation and swelling.
-• Laser surgery — may be used to shrink blood vessels that are bleeding or to prevent abnormal new vessels from growing.
-• Managing your health — diabetes, glaucoma, high blood pressure, and other health problems can lead to retinal vein occlusion. Taking care of your health can keep you from getting this serious eye problem.
-
-It is very important to call your ophthalmologist right away if you have any symptoms. Without treatment, retinal vein occlusion may lead to permanent vision loss.
+• Anti-VEGF injections (most common) — reduce macular swelling, slow vision loss, may improve vision. Series over several months.
+• Steroid injections or implants — used in some cases.
+• Laser surgery — to shrink bleeding vessels or prevent abnormal new vessels.
+• Manage diabetes, blood pressure, and other health conditions.
 
 When to Call Right Away
-Contact your eye doctor immediately or seek urgent care if you experience:
+Contact your eye doctor immediately if you experience:
 • Sudden blurry vision or vision loss in one eye.
 • Sudden increase in floaters.
-• Pain in your eye with redness (may indicate neovascular glaucoma).
-• A dark shadow or curtain covering part of your vision.
-These may be signs of a serious complication that needs prompt treatment.`,
+• Eye pain with redness (may indicate neovascular glaucoma).
+• Dark shadow or curtain across your vision.`,
 
       es: `OCLUSIÓN VENOSA RETINIANA
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
 ¿Qué Es?
-Cuando una vena en la retina se bloquea (ocluye), la sangre y el líquido se filtran causando hinchazón y pérdida de visión. Puede ser causada por un coágulo o cuando un vaso más grande presiona la vena. Los vasos debilitados pueden filtrar, causando edema macular (hinchazón de la mácula). Cuando el flujo sanguíneo está severamente bloqueado, la retina puede intentar crecer vasos nuevos. Estos vasos son frágiles y anormales. Pueden crecer en la superficie de la retina, donde pueden sangrar hacia el gel vítreo (hemorragia vítrea), causando moscas volantes súbitas o pérdida de visión. También pueden crecer en el iris (la parte coloreada del ojo) o en otras áreas al frente del ojo, bloqueando el drenaje de líquido y causando presión alta dolorosa (glaucoma neovascular).
+Una oclusión venosa retiniana ocurre cuando una vena en la retina se bloquea, frecuentemente por un coágulo o presión de un vaso cercano. El bloqueo causa que la mácula se inflame (edema macular), llevando a visión borrosa o pérdida de visión. En casos severos, la retina puede formar vasos sanguíneos frágiles que sangran al vítreo o causan presión ocular alta dolorosa (glaucoma neovascular).
 
 Tipos
 • OVCR (central): La vena principal del ojo se bloquea, causando sangrado e hinchazón en toda la retina.
@@ -2457,8 +2447,6 @@ Síntomas
 • Áreas oscuras o puntos faltantes en la visión.
 • Dolor ocular si crecen vasos nuevos y causan presión alta (glaucoma neovascular).
 
-[PAGE_BREAK]
-
 ¿Cómo Se Diagnostica?
 • Examen con dilatación para ver el sangrado.
 • Angiografía con fluoresceína — tinte para ver vasos bloqueados o con fugas.
@@ -2471,8 +2459,6 @@ Tratamiento
 • Esteroides inyectados o implantados en algunos casos.
 • Láser para vasos que sangran o para prevenir crecimiento de vasos anormales.
 • Controlar su salud — presión arterial, diabetes, colesterol y glaucoma.
-
-Es muy importante llamar a su oftalmólogo inmediatamente si tiene síntomas. Sin tratamiento, la oclusión venosa retiniana puede causar pérdida permanente de visión.
 
 Cuándo Llamar de Inmediato
 • Visión borrosa o pérdida súbita en un ojo.
@@ -2500,8 +2486,6 @@ Triệu Chứng
 • Vùng tối hoặc điểm thiếu trong tầm nhìn.
 • Đau mắt nếu mạch mới mọc gây áp lực cao (glaucoma tân mạch).
 
-[PAGE_BREAK]
-
 Chẩn Đoán
 • Khám mắt có giãn đồng tử để thấy xuất huyết.
 • Chụp mạch huỳnh quang — thuốc nhuộm để thấy mạch tắc hoặc rò rỉ.
@@ -2515,8 +2499,6 @@ Chẩn Đoán
 • Laser để thu nhỏ mạch chảy máu hoặc ngăn mạch bất thường phát triển.
 • Kiểm soát sức khỏe — huyết áp, đái tháo đường, cholesterol, glaucoma.
 
-Rất quan trọng gọi bác sĩ ngay nếu có triệu chứng. Không điều trị, tắc tĩnh mạch võng mạc có thể gây mất thị lực vĩnh viễn.
-
 Khi Nào Cần Gọi Ngay
 • Mờ hoặc mất thị lực đột ngột ở một mắt.
 • Tăng đột ngột ruồi bay.
@@ -2528,7 +2510,7 @@ Khi Nào Cần Gọi Ngay
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
 
 O Que É?
-Quando uma veia na retina fica bloqueada (ocluída), sangue e fluido vazam causando inchaço e perda de visão. Pode ser causada por coágulo ou quando um vaso maior pressiona a veia. Os vasos enfraquecidos podem vazar, causando edema macular (inchaço da mácula). Quando o fluxo sanguíneo está severamente bloqueado, a retina pode tentar crescer vasos novos. Esses vasos são frágeis e anormais. Podem crescer na superfície da retina, onde podem sangrar para dentro do gel vítreo (hemorragia vítrea), causando moscas volantes súbitas ou perda de visão. Também podem crescer na íris (a parte colorida do olho) ou em outras áreas na frente do olho, bloqueando a drenagem de fluido e causando pressão alta dolorosa (glaucoma neovascular).
+A oclusão venosa retiniana ocorre quando uma veia na retina fica bloqueada, frequentemente por coágulo ou pressão de um vaso próximo. O bloqueio causa inchaço da mácula (edema macular), levando a visão embaçada ou perda de visão. Em casos severos, a retina pode formar vasos sanguíneos frágeis que sangram para o vítreo ou causam pressão ocular alta dolorosa (glaucoma neovascular).
 
 Tipos
 • OVCR (central): A veia principal do olho fica bloqueada, causando sangramento e inchaço em toda a retina.
@@ -2543,8 +2525,6 @@ Sintomas
 • Áreas escuras ou pontos faltando na visão.
 • Dor no olho se vasos novos crescerem e causarem pressão alta (glaucoma neovascular).
 
-[PAGE_BREAK]
-
 Como É Diagnosticada?
 • Exame com dilatação para ver o sangramento.
 • Angiografia com fluoresceína — corante para ver vasos bloqueados ou com vazamento.
@@ -2557,8 +2537,6 @@ Tratamento
 • Esteroides injetados ou implantados em alguns casos.
 • Laser para vasos que sangram ou para prevenir crescimento de vasos anormais.
 • Cuidar da saúde — pressão arterial, diabetes, colesterol, glaucoma.
-
-É muito importante ligar para seu oftalmologista imediatamente se tiver sintomas. Sem tratamento, a oclusão venosa retiniana pode causar perda permanente de visão.
 
 Quando Ligar Imediatamente
 • Visão embaçada ou perda súbita em um olho.
@@ -3217,39 +3195,37 @@ Quando Ligar Imediatamente
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
 What Is It?
-A macular hole is when a tear or opening forms in your macula. As the hole forms, things in your central vision will look blurry, wavy, or distorted. As the hole grows, a dark or blind spot appears in your central vision. A macular hole usually affects only your central vision. Rarely, it may lead to a retinal detachment, which can also affect your peripheral (side) vision.
+A macular hole is a tear or opening in your macula. Central vision becomes blurry, wavy, or distorted, and a dark or blind spot may appear as the hole grows. Macular holes usually affect only central vision; rarely they can lead to a retinal detachment.
 
 [IMAGE_PAIR:mh-oct-before|Before Surgery (Macular Hole)|mh-oct-after|After Surgery (Hole Closed)|OCT cross-section showing open macular hole before surgery and closed hole after vitrectomy with gas bubble.]
 
 What Causes It?
-Age is the most common cause. As you get older, the vitreous begins to shrink and pull away from the retina. Usually this happens with no problems. But sometimes the vitreous can stick to the macula and stretch it, causing a hole to form. A macular hole can also form when the macula swells from other eye disease, or it can be caused by an eye injury.
+Age is the most common cause. The vitreous shrinks with age and pulls away from the retina; if it sticks to the macula and stretches it, a hole can form. Other causes: swelling from eye disease or eye injury.
 
 Symptoms
 • Blurry, wavy, or distorted central vision.
-• A dark or blind spot in the center of your vision that grows over time.
+• A dark or blind spot in central vision that grows over time.
 • Difficulty reading, recognizing faces, or seeing fine details.
 • Straight lines look bent or wavy.
 
 How Is It Diagnosed?
-• Dilated eye exam — drops are placed to widen your pupils so the doctor can look through a special lens at the inside of your eye.
-• OCT (Optical Coherence Tomography) — a painless scan that produces very detailed pictures of the retina and macula, clearly showing the hole.
+• Dilated eye exam.
+• OCT (Optical Coherence Tomography) — a painless scan that clearly shows the hole.
 
 Treatment
-Surgery called vitrectomy is the best way to treat a macular hole. Your surgeon removes the vitreous that is pulling on your macula, then places a gas bubble inside the eye. This bubble pushes against the back of your eye, helping bring the edges of the hole close together so it can heal. That is why face-down positioning after surgery is so critical for its success. The gas bubble slowly goes away on its own and is replaced by fluid your eye naturally produces.
+Vitrectomy is the standard treatment. The surgeon removes the vitreous pulling on your macula and places a gas bubble inside the eye to bring the hole edges together. Face-down positioning is critical for success. The bubble dissolves on its own and is replaced by your eye's natural fluid.
 
 Things to Know About Surgery
-• Your eye may hurt after surgery. Your surgeon will have you take medicine to help with pain.
-• You will need to wear an eye patch for a short time. You will also need to put drops in your eye.
-• You may be asked to keep your face down in a specific position for a period of time, depending on your surgeon's preference. This keeps the gas bubble in place to heal properly.
-• You CANNOT fly in an airplane, go to mountains/high altitudes, or scuba dive until the gas bubble is gone. A rapid altitude change can make eye pressure rise dangerously.
-• If you need to have any other type of surgery, be sure to tell your doctor before surgery that you have a gas bubble in your eye.
-• Your vision may improve as the macular hole closes. It may take several months for the hole to finish healing. How much vision you get back depends on the size of your macular hole and how long it was there before surgery.
+• Pain medication, eye patch, and drops as prescribed.
+• Face-down positioning is required (duration set by your surgeon).
+• Do NOT fly, go to high altitudes, or scuba dive until the gas bubble is gone. Tell any other doctor about the bubble before any surgery.
+• Vision recovery takes several months. How much you recover depends on hole size and how long it was present.
 
 Surgery Risks
-Like any surgery, vitrectomy has some risks, including eye infection, bleeding in the eye, retinal detachment, glaucoma (increased pressure inside the eye), vision loss, and cataract (the lens in your eye becoming cloudy).
+Like any surgery, vitrectomy has some risks: infection, bleeding, retinal detachment, glaucoma, vision loss, and cataract.
 
 Success Rate
-• About 90–95% of macular holes close successfully with one surgery. Earlier treatment generally gives better visual results.
+• About 90–95% of macular holes close successfully with one surgery. Earlier treatment gives better visual results.
 
 When to Call Right Away
 Contact your eye doctor immediately if you experience:
