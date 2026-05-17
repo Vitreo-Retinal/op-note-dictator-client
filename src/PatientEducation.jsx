@@ -1610,99 +1610,80 @@ Contate seu oftalmologista imediatamente se você experimentar:
 [IMAGE:eye-anatomy|Figure 1: Anatomy of the Eye]
 
 What Is AMD?
-Age-related macular degeneration (AMD) is a disease of the retina. It happens when a part of the retina called the macula is damaged. AMD causes loss of central vision, but your peripheral (side) vision will still be normal.
-
-For instance, imagine looking at someone's face. With AMD, you might see their hair and clothing clearly, but have trouble making out their eyes, nose, or expression — the center of your vision may look blurry, dark, or missing.
-
-AMD is very common. It is a leading cause of vision loss in people 50 years or older. Many people don't realize they have AMD until their vision is very blurry. This is why it is important to have regular visits to your ophthalmologist. They can look for early signs of AMD before you have any vision problems.
+Age-related macular degeneration (AMD) is a disease that damages the macula — the central part of the retina. AMD causes loss of central vision while peripheral (side) vision remains normal. It is a leading cause of vision loss in people over 50. Many people don't realize they have AMD until vision becomes very blurry, which is why regular eye exams matter — they catch early signs before symptoms appear.
 
 [IMAGE_PAIR:amd-oct-before|Before Treatment (Wet AMD)|amd-oct-after|After Treatment (Resolved)|OCT cross-section showing fluid under the retina before treatment and resolution after anti-VEGF injections.]
 
 Two Types of AMD
-• Dry AMD: This form is quite common. About 80% (8 out of 10) of people who have AMD have the dry form. Dry AMD is when parts of the macula get thinner with age and tiny deposits (drusen) build up. People with dry AMD may have drusen, pigment changes, or geographic atrophy (an area of cell loss in the retina). Geographic atrophy can cause loss of central vision. Treatment options for dry AMD are growing. Photobiomodulation (PBM) therapy uses low-level light to support retinal cells, and newer medications can slow geographic atrophy. Your doctor will discuss which treatments may be right for you.
-• Wet AMD: This form is less common but much more serious. Wet AMD is when new, abnormal blood vessels grow under the retina. These vessels may leak blood or other fluids, causing scarring of the macula. Vision loss is faster with wet AMD than dry AMD. Wet AMD is treated with anti-VEGF injections.
+• Dry AMD (most common, ~80%): the macula thins and tiny deposits (drusen) build up. May progress to geographic atrophy (cell loss causing central vision loss). Newer treatments — photobiomodulation (PBM) and injectable medications — can slow geographic atrophy.
+• Wet AMD (less common, more serious): new abnormal blood vessels grow under the retina and leak blood or fluid. Vision loss is faster than dry AMD. Treated with anti-VEGF injections.
 
 Risk Factors
-You are more likely to develop AMD if you:
-• Are over 50 years old.
-• Have a family history of AMD.
-• Smoke cigarettes.
-• Eat a diet high in saturated fat (meat, butter, cheese).
-• Are overweight.
-• Have high blood pressure or high cholesterol.
-• Have heart disease.
+• Age over 50, family history, smoking.
+• High blood pressure, high cholesterol, heart disease.
+• Diet high in saturated fat; overweight.
 
 How Is AMD Diagnosed?
-• Dilated eye exam — your ophthalmologist will put drops in your eye to dilate your pupil, then look through a special lens to check the retina and macula.
-• OCT (Optical Coherence Tomography) — a painless scan that provides very detailed images of the retina and macula.
-• OCTA (OCT Angiography) — looks closely at blood vessels in and under the retina without needing a dye.
-• Fluorescein angiography — a yellow dye is injected into a vein in your arm and a camera photographs the retina, showing if abnormal new blood vessels are growing.
+• Dilated eye exam.
+• OCT — painless scan with detailed images of the retina and macula.
+• OCTA — visualizes retinal blood vessels without dye.
+• Fluorescein angiography — dye-based imaging that shows abnormal new blood vessels.
 
 Treatment
-• Dry AMD: People with lots of drusen or serious vision loss might benefit from AREDS2 vitamins: Vitamin C (500 mg), Vitamin E (400 IU), Lutein (10 mg), Zeaxanthin (2 mg), Zinc (80 mg), Copper (2 mg). Your ophthalmologist can tell you if these are recommended for you. Beta carotene should not be used by smokers as it raised the risk of lung cancer. For geographic atrophy, newer medications (such as Izervay or Syfovre) injected into the eye may slow progression. Photobiomodulation (PBM) therapy uses low-level light to support retinal health and may help reduce drusen burden.
-• Wet AMD: Anti-VEGF medications (such as Avastin, Lucentis, Eylea, Eylea HD, Beovu, and Vabysmo) are injected into the eye to reduce leaking from abnormal blood vessels. Treatment starts with monthly injections, then may be extended based on your response. Early and consistent treatment gives the best chance of preserving vision. That is why it is critical to contact your doctor right away if you notice any sudden change on your Amsler grid.
+• Dry AMD: AREDS2 vitamins (ask your doctor; smokers should avoid beta-carotene). For geographic atrophy, newer injectable medications (Izervay, Syfovre) may slow progression. Photobiomodulation (PBM) therapy may also help.
+• Wet AMD: Anti-VEGF injections (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) reduce leaking from abnormal vessels. Treatment starts monthly and may be extended based on response. Early, consistent treatment gives the best chance of preserving vision.
 
 What You Can Do
-• Keep all scheduled appointments — even if vision feels stable. Skipping treatment can lead to permanent vision loss.
-• Use the Amsler grid daily to monitor for changes. Check one eye at a time with your reading glasses on. Keep it in a place where you see it every day (like the refrigerator or bathroom mirror).
-• Take AREDS2 vitamins as recommended by your doctor.
-• Do not smoke.
-• Eat leafy greens (spinach, kale), yellow fruits, fish, and a balanced, nutrient-rich diet.
-• Exercise regularly, manage blood pressure and cholesterol.
-• Wear UV-protective sunglasses outdoors.
-
-Making the Most of Your Vision
-If you have AMD, you can often still do many of your favorite things with special low vision tools — magnifying glasses, handheld computers, electronic items, and more. Good lighting and high-contrast materials (such as large-print books or bold-lined writing paper) can also make everyday tasks easier. A vision rehabilitation specialist can teach you how to use your side vision and help you find support services and tools. Ask your ophthalmologist for a referral.
-
-Test Your Vision with the Amsler Grid
-Keep the Amsler grid in a place where you see it every day. In good light, look at the grid from about 12 to 15 inches away. Be sure to wear your reading glasses if you normally use them. Cover one eye. Look directly at the dot in the center of the grid. Notice if any of the lines look bent or wavy. See if any part of the grid looks blurry, dim, or out of shape. Now cover your other eye and test your vision the same way again. Call your ophthalmologist right away if you notice that any lines or parts of the grid look wavy, blurry, or dim.
+• Keep all scheduled appointments — skipping treatment can lead to permanent vision loss.
+• Use the Amsler grid daily, one eye at a time, with reading glasses. Place it where you see it daily (refrigerator, bathroom mirror).
+• Take AREDS2 vitamins as recommended; don't smoke.
+• Eat leafy greens, fish, and a balanced diet; manage blood pressure/cholesterol; wear UV sunglasses outdoors.
 
 When to Call Right Away
-Contact your eye doctor immediately if you experience:
+Call us immediately if you experience any of the following:
 • New or worsening blurry or distorted central vision.
 • Straight lines that look wavy or bent (metamorphopsia).
-• A new dark or empty spot in the center of your vision.
-• Any sudden change in your Amsler grid test.
-• Difficulty reading, recognizing faces, or driving.
-These may indicate wet AMD development or progression and need prompt evaluation.`,
+• A new dark or empty spot in your central vision.
+• Any sudden change in your Amsler grid test.`,
 
       es: `DEGENERACIÓN MACULAR RELACIONADA CON LA EDAD (DMAE)
 
 [IMAGE:eye-anatomy|Figura 1: Anatomía del Ojo]
 
 ¿Qué Es la DMAE?
-Enfermedad de la retina que daña la mácula, causando pérdida de visión central. Su visión periférica (lateral) permanece normal. Imagine que mira la cara de alguien: puede ver su cabello y ropa claramente, pero tiene dificultad para distinguir sus ojos, nariz o expresión — el centro de su visión puede verse borroso, oscuro o vacío. Es la principal causa de pérdida visual en personas mayores de 50 años. Muchos no se dan cuenta hasta que la visión está muy borrosa.
+Enfermedad de la retina que daña la mácula, causando pérdida de visión central mientras la visión periférica (lateral) permanece normal. Es la principal causa de pérdida visual en personas mayores de 50 años. Muchos no se dan cuenta hasta que la visión está muy borrosa — los exámenes regulares detectan signos tempranos antes de que aparezcan síntomas.
 
 [IMAGE_PAIR:amd-oct-before|Antes del Tratamiento (DMAE Húmeda)|amd-oct-after|Después del Tratamiento (Resuelto)|OCT mostrando líquido bajo la retina antes y resolución después de inyecciones anti-VEGF.]
 
 Dos Tipos
-• DMAE Seca: Más común (~80%). La mácula se adelgaza y se acumulan drusen. Puede incluir atrofia geográfica (pérdida de células en la retina). Las opciones de tratamiento están creciendo: la terapia de fotobiomodulación (PBM) usa luz de bajo nivel para apoyar las células retinianas, y medicamentos más nuevos pueden retardar la atrofia geográfica. Su médico le indicará qué tratamientos son adecuados para usted.
-• DMAE Húmeda: Menos común pero más seria. Vasos sanguíneos anormales crecen bajo la retina y filtran sangre o líquido. La pérdida visual es más rápida. Se trata con inyecciones anti-VEGF.
+• DMAE Seca (más común, ~80%): la mácula se adelgaza y se acumulan drusen. Puede progresar a atrofia geográfica (pérdida de células causando pérdida de visión central). Tratamientos más nuevos — fotobiomodulación (PBM) e inyecciones — pueden retardar la atrofia geográfica.
+• DMAE Húmeda (menos común, más seria): vasos sanguíneos anormales crecen bajo la retina y filtran sangre o líquido. La pérdida visual es más rápida. Se trata con inyecciones anti-VEGF.
 
 Factores de Riesgo
-• Mayor de 50 años, historia familiar, tabaquismo, dieta alta en grasas saturadas, sobrepeso, presión alta, colesterol alto, enfermedades cardíacas.
+• Mayor de 50 años, historia familiar, tabaquismo.
+• Presión alta, colesterol alto, enfermedad cardíaca.
+• Dieta alta en grasas saturadas; sobrepeso.
 
 ¿Cómo Se Diagnostica?
-• Examen con dilatación, OCT, OCTA, angiografía con fluoresceína.
+• Examen con dilatación.
+• OCT — escaneo indoloro con imágenes detalladas de la retina y la mácula.
+• OCTA — visualiza vasos retinianos sin tinte.
+• Angiografía con fluoresceína — imagen con tinte que muestra vasos anormales.
 
 Tratamiento
-• DMAE Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinc 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos más nuevos (Izervay, Syfovre). Beta caroteno NO para fumadores. La terapia de fotobiomodulación (PBM) usa luz de bajo nivel para apoyar la salud retiniana y puede ayudar a reducir la carga de drusen.
-• DMAE Húmeda: Inyecciones anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) para reducir fugas. Tratamiento comienza mensual, luego se extiende según respuesta. El tratamiento temprano y constante da la mejor oportunidad de preservar la visión. Por eso es fundamental que contacte a su médico de inmediato si nota algún cambio repentino en la cuadrícula de Amsler.
+• DMAE Seca: Vitaminas AREDS2 (consulte con su médico; fumadores deben evitar beta caroteno). Para atrofia geográfica: medicamentos inyectables más nuevos (Izervay, Syfovre) pueden retardar la progresión. Fotobiomodulación (PBM) también puede ayudar.
+• DMAE Húmeda: Inyecciones anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) reducen fugas de vasos anormales. Tratamiento comienza mensual, luego se extiende según respuesta. Tratamiento temprano y constante da la mejor oportunidad de preservar la visión.
 
 Lo Que Puede Hacer
-• Asista a todas las citas programadas.
-• Use la cuadrícula de Amsler diariamente. Revise un ojo a la vez con sus lentes de lectura puestos.
-• Tome vitaminas AREDS2 según recomendación.
-• No fume. Coma vegetales de hoja verde, frutas amarillas, pescado.
-• Ejercicio regular, controle presión arterial y colesterol.
-• Use lentes de sol con protección UV.
+• Asista a todas las citas — saltar tratamiento puede causar pérdida visual permanente.
+• Use la cuadrícula de Amsler diariamente, un ojo a la vez, con lentes de lectura. Colóquela donde la vea a diario (refrigerador, espejo del baño).
+• Tome vitaminas AREDS2 según recomendación; no fume.
+• Coma vegetales de hoja verde, pescado y dieta balanceada; controle presión y colesterol; use lentes de sol con protección UV.
 
-Aprovechando al Máximo Su Visión
-Si tiene DMAE, a menudo puede seguir haciendo muchas de sus actividades favoritas con herramientas especiales de baja visión — lupas, dispositivos electrónicos y más. La buena iluminación y los materiales de alto contraste (como libros con letra grande o papel con líneas gruesas) también facilitan las tareas diarias. Un especialista en rehabilitación visual puede enseñarle a usar su visión lateral y ayudarle a encontrar servicios y herramientas de apoyo. Pida una referencia a su oftalmólogo.
-
-Cuándo Llamar de Inmediato
+Llame Inmediatamente
+Llame al consultorio inmediatamente si experimenta cualquiera de los siguientes:
 • Visión central borrosa o distorsionada nueva o que empeora.
-• Líneas rectas que se ven onduladas.
+• Líneas rectas que se ven onduladas o torcidas (metamorfopsia).
 • Punto oscuro o vacío nuevo en la visión central.
 • Cualquier cambio súbito en la cuadrícula de Amsler.`,
 
@@ -1711,78 +1692,80 @@ Cuándo Llamar de Inmediato
 [IMAGE:eye-anatomy|Hình 1: Giải Phẫu Mắt]
 
 AMD Là Gì?
-Bệnh võng mạc gây tổn thương hoàng điểm, mất thị lực trung tâm nhưng thị lực ngoại vi (bên) vẫn bình thường. Hãy tưởng tượng nhìn khuôn mặt ai đó: bạn có thể thấy rõ tóc và quần áo, nhưng khó phân biệt mắt, mũi hay biểu cảm — trung tâm tầm nhìn có thể mờ, tối hoặc trống. Nguyên nhân hàng đầu mất thị lực ở người trên 50 tuổi. Nhiều người không biết cho đến khi rất mờ.
+Bệnh võng mạc gây tổn thương hoàng điểm, mất thị lực trung tâm nhưng thị lực ngoại vi (bên) vẫn bình thường. Nguyên nhân hàng đầu mất thị lực ở người trên 50 tuổi. Nhiều người không biết cho đến khi thị lực rất mờ — khám mắt định kỳ phát hiện dấu hiệu sớm trước khi xuất hiện triệu chứng.
 
 [IMAGE_PAIR:amd-oct-before|Trước Điều Trị (AMD Ướt)|amd-oct-after|Sau Điều Trị (Hết)|OCT cho thấy dịch dưới võng mạc trước và hết sau tiêm anti-VEGF.]
 
 Hai Loại
-• AMD Khô: Phổ biến hơn (~80%). Hoàng điểm mỏng đi và tích tụ drusen. Có thể bao gồm teo địa lý (mất tế bào). Các lựa chọn điều trị đang phát triển: liệu pháp quang sinh học (PBM) sử dụng ánh sáng cường độ thấp để hỗ trợ tế bào võng mạc, và thuốc mới có thể làm chậm teo địa lý. Bác sĩ sẽ trao đổi phương pháp điều trị phù hợp với bạn.
-• AMD Ướt: Ít phổ biến nhưng nghiêm trọng hơn. Mạch máu bất thường mọc dưới võng mạc và rò rỉ. Mất thị lực nhanh hơn. Điều trị bằng tiêm anti-VEGF.
+• AMD Khô (phổ biến hơn, ~80%): hoàng điểm mỏng đi và tích tụ drusen. Có thể tiến triển thành teo địa lý (mất tế bào gây mất thị lực trung tâm). Các điều trị mới — quang sinh học (PBM) và thuốc tiêm — có thể làm chậm teo địa lý.
+• AMD Ướt (ít phổ biến, nghiêm trọng hơn): mạch máu bất thường mọc dưới võng mạc và rò rỉ máu hoặc dịch. Mất thị lực nhanh hơn. Điều trị bằng tiêm anti-VEGF.
 
 Yếu Tố Nguy Cơ
-• Trên 50 tuổi, tiền sử gia đình, hút thuốc, chế độ ăn nhiều chất béo bão hòa, thừa cân, tăng huyết áp, cholesterol cao, bệnh tim.
+• Trên 50 tuổi, tiền sử gia đình, hút thuốc.
+• Tăng huyết áp, cholesterol cao, bệnh tim.
+• Chế độ ăn nhiều chất béo bão hòa; thừa cân.
 
 Chẩn Đoán
-• Khám mắt có giãn đồng tử, OCT, OCTA, chụp mạch huỳnh quang.
+• Khám mắt có giãn đồng tử.
+• OCT — quét không đau cho hình ảnh chi tiết của võng mạc và hoàng điểm.
+• OCTA — hiển thị mạch máu võng mạc không cần thuốc nhuộm.
+• Chụp mạch huỳnh quang — chụp với thuốc nhuộm cho thấy mạch máu bất thường.
 
 Điều Trị
-• AMD Khô: Vitamin AREDS2 (Vitamin C 500mg, Vitamin E 400IU, Lutein 10mg, Zeaxanthin 2mg, Kẽm 80mg, Đồng 2mg). Cho teo địa lý: thuốc mới (Izervay, Syfovre). Beta carotene KHÔNG cho người hút thuốc. Liệu pháp quang sinh học (PBM) sử dụng ánh sáng cường độ thấp để hỗ trợ sức khỏe võng mạc và có thể giúp giảm gánh nặng drusen.
-• AMD Ướt: Tiêm anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) giảm rò rỉ. Bắt đầu hàng tháng, sau kéo dài theo đáp ứng. Điều trị sớm và đều đặn mang lại cơ hội tốt nhất để bảo tồn thị lực. Vì vậy, điều quan trọng là liên hệ bác sĩ ngay nếu bạn nhận thấy bất kỳ thay đổi đột ngột nào trên lưới Amsler.
+• AMD Khô: Vitamin AREDS2 (hỏi bác sĩ; người hút thuốc nên tránh beta carotene). Cho teo địa lý: thuốc tiêm mới (Izervay, Syfovre) có thể làm chậm tiến triển. Quang sinh học (PBM) cũng có thể giúp.
+• AMD Ướt: Tiêm anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) giảm rò rỉ từ mạch bất thường. Bắt đầu hàng tháng, sau kéo dài theo đáp ứng. Điều trị sớm và đều đặn mang lại cơ hội tốt nhất bảo tồn thị lực.
 
 Bạn Có Thể Làm Gì
-• Giữ tất cả lịch hẹn.
-• Dùng lưới Amsler hàng ngày. Kiểm tra từng mắt một với kính đọc sách.
-• Uống vitamin AREDS2 theo khuyến nghị.
-• Không hút thuốc. Ăn rau xanh lá, trái cây vàng, cá.
-• Tập thể dục, kiểm soát huyết áp và cholesterol.
-• Đeo kính râm chống tia UV.
+• Giữ tất cả lịch hẹn — bỏ điều trị có thể gây mất thị lực vĩnh viễn.
+• Dùng lưới Amsler hàng ngày, từng mắt một, với kính đọc sách. Đặt ở nơi bạn thấy hàng ngày (tủ lạnh, gương phòng tắm).
+• Uống vitamin AREDS2 theo khuyến nghị; không hút thuốc.
+• Ăn rau xanh lá, cá và chế độ ăn cân bằng; kiểm soát huyết áp/cholesterol; đeo kính râm chống UV.
 
-Tận Dụng Tối Đa Thị Lực
-Nếu bạn bị AMD, bạn vẫn có thể làm nhiều hoạt động yêu thích với các công cụ hỗ trợ thị lực kém — kính lúp, thiết bị điện tử và nhiều hơn nữa. Ánh sáng tốt và vật liệu có độ tương phản cao (sách chữ lớn, giấy kẻ đậm) cũng giúp các công việc hàng ngày dễ dàng hơn. Chuyên gia phục hồi thị lực có thể hướng dẫn bạn sử dụng thị lực bên và tìm dịch vụ hỗ trợ. Hãy xin giấy giới thiệu từ bác sĩ nhãn khoa.
-
-Khi Nào Cần Gọi Ngay
+Gọi Ngay
+Gọi cho chúng tôi ngay nếu bạn gặp bất kỳ điều nào sau đây:
 • Mờ hoặc méo thị lực trung tâm mới hoặc nặng hơn.
-• Đường thẳng trông lượn sóng.
-• Đốm tối hoặc trống mới ở trung tâm.
-• Thay đổi đột ngột trên lưới Amsler.`,
+• Đường thẳng trông lượn sóng hoặc cong (metamorphopsia).
+• Đốm tối hoặc trống mới ở trung tâm tầm nhìn.
+• Bất kỳ thay đổi đột ngột nào trên lưới Amsler.`,
 
       pt: `DEGENERAÇÃO MACULAR RELACIONADA À IDADE (DMRI)
 
 [IMAGE:eye-anatomy|Figura 1: Anatomia do Olho]
 
 O Que É DMRI?
-Doença da retina que danifica a mácula, causando perda de visão central. A visão periférica (lateral) permanece normal. Imagine olhar para o rosto de alguém: pode ver claramente o cabelo e a roupa, mas tem dificuldade em distinguir os olhos, nariz ou expressão — o centro da visão pode ficar embaçado, escuro ou vazio. Principal causa de perda visual em pessoas acima de 50 anos. Muitos não percebem até a visão estar muito embaçada.
+Doença da retina que danifica a mácula, causando perda de visão central enquanto a visão periférica (lateral) permanece normal. Principal causa de perda visual em pessoas acima de 50 anos. Muitos não percebem até a visão estar muito embaçada — exames regulares detectam sinais precoces antes que apareçam sintomas.
 
 [IMAGE_PAIR:amd-oct-before|Antes do Tratamento (DMRI Úmida)|amd-oct-after|Após Tratamento (Resolvido)|OCT mostrando fluido sob a retina antes e resolução após injeções anti-VEGF.]
 
 Dois Tipos
-• DMRI Seca: Mais comum (~80%). A mácula afina e se acumulam drusen. Pode incluir atrofia geográfica (perda de células). As opções de tratamento estão crescendo: a terapia de fotobiomodulação (PBM) usa luz de baixa intensidade para apoiar as células da retina, e medicamentos mais novos podem retardar a atrofia geográfica. Seu médico discutirá quais tratamentos são adequados para você.
-• DMRI Úmida: Menos comum mas mais séria. Vasos anormais crescem sob a retina e vazam sangue ou fluido. Perda visual mais rápida. Tratada com injeções anti-VEGF.
+• DMRI Seca (mais comum, ~80%): a mácula afina e se acumulam drusen. Pode progredir para atrofia geográfica (perda de células causando perda de visão central). Tratamentos mais novos — fotobiomodulação (PBM) e injetáveis — podem retardar a atrofia geográfica.
+• DMRI Úmida (menos comum, mais séria): vasos anormais crescem sob a retina e vazam sangue ou fluido. Perda visual mais rápida. Tratada com injeções anti-VEGF.
 
 Fatores de Risco
-• Acima de 50 anos, história familiar, tabagismo, dieta rica em gordura saturada, sobrepeso, pressão alta, colesterol alto, doença cardíaca.
+• Acima de 50 anos, história familiar, tabagismo.
+• Pressão alta, colesterol alto, doença cardíaca.
+• Dieta rica em gordura saturada; sobrepeso.
 
 Como É Diagnosticada?
-• Exame com dilatação, OCT, OCTA, angiografia com fluoresceína.
+• Exame com dilatação.
+• OCT — exame indolor com imagens detalhadas da retina e mácula.
+• OCTA — visualiza vasos retinianos sem corante.
+• Angiografia com fluoresceína — imagem com corante que mostra vasos anormais.
 
 Tratamento
-• DMRI Seca: Vitaminas AREDS2 (Vitamina C 500mg, Vitamina E 400UI, Luteína 10mg, Zeaxantina 2mg, Zinco 80mg, Cobre 2mg). Para atrofia geográfica: medicamentos mais novos (Izervay, Syfovre). Beta caroteno NÃO para fumantes. A terapia de fotobiomodulação (PBM) usa luz de baixa intensidade para apoiar a saúde da retina e pode ajudar a reduzir a carga de drusen.
-• DMRI Úmida: Injeções anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) para reduzir vazamento. Tratamento começa mensal, depois estendido conforme resposta. Tratamento precoce e consistente oferece a melhor chance de preservar a visão. Por isso é fundamental entrar em contato com seu médico imediatamente se notar qualquer mudança súbita na grade de Amsler.
+• DMRI Seca: Vitaminas AREDS2 (pergunte ao seu médico; fumantes devem evitar beta caroteno). Para atrofia geográfica: medicamentos injetáveis mais novos (Izervay, Syfovre) podem retardar a progressão. Fotobiomodulação (PBM) também pode ajudar.
+• DMRI Úmida: Injeções anti-VEGF (Avastin, Lucentis, Eylea, Eylea HD, Beovu, Vabysmo) reduzem vazamento de vasos anormais. Tratamento começa mensal, depois estendido conforme resposta. Tratamento precoce e consistente oferece a melhor chance de preservar a visão.
 
 O Que Você Pode Fazer
-• Compareça a todas as consultas.
-• Use a grade de Amsler diariamente. Verifique um olho de cada vez com seus óculos de leitura.
-• Tome vitaminas AREDS2 conforme recomendado.
-• Não fume. Coma vegetais verde-escuros, frutas amarelas, peixe.
-• Exercício regular, controle pressão arterial e colesterol.
-• Use óculos de sol com proteção UV.
+• Compareça a todas as consultas — pular tratamento pode causar perda visual permanente.
+• Use a grade de Amsler diariamente, um olho de cada vez, com óculos de leitura. Coloque-a onde a veja diariamente (geladeira, espelho do banheiro).
+• Tome vitaminas AREDS2 conforme recomendado; não fume.
+• Coma vegetais verde-escuros, peixe e dieta balanceada; controle pressão/colesterol; use óculos de sol com proteção UV.
 
-Aproveitando ao Máximo Sua Visão
-Se você tem DMRI, muitas vezes ainda pode fazer suas atividades favoritas com ferramentas especiais de baixa visão — lupas, dispositivos eletrônicos e mais. Boa iluminação e materiais de alto contraste (como livros com letras grandes ou papel com linhas grossas) também facilitam as tarefas do dia a dia. Um especialista em reabilitação visual pode ensinar você a usar sua visão lateral e encontrar serviços de apoio. Peça um encaminhamento ao seu oftalmologista.
-
-Quando Ligar Imediatamente
+Ligue Imediatamente
+Ligue-nos imediatamente se você experimentar qualquer um dos seguintes:
 • Visão central embaçada ou distorcida nova ou piorando.
-• Linhas retas que parecem onduladas.
+• Linhas retas que parecem onduladas ou tortas (metamorfopsia).
 • Ponto escuro ou vazio novo no centro da visão.
 • Qualquer mudança súbita na grade de Amsler.`
     }
