@@ -576,6 +576,138 @@ Lembretes Úteis
   // PROCEDURES
   // ═══════════════════════════════════════════════════════════════════
   {
+    id: "proc-retinal-laser",
+    category: "procedure",
+    title: { en: "Retinal Laser", es: "Láser Retiniano", vi: "Laser Võng Mạc", pt: "Laser Retiniano" },
+    tags: ["laser", "PRP", "retinopexy", "tear", "hole"],
+    content: {
+      en: `RETINAL LASER
+
+What Is It?
+Retinal laser is an in-office procedure that uses a precise beam of light to treat the retina. It is used to seal retinal tears or holes (laser retinopexy) and to treat abnormal blood vessels in conditions like diabetic retinopathy or vein occlusion (PRP — panretinal photocoagulation).
+
+How It Is Done
+• Eye drops dilate the pupil and numb the eye.
+• Your doctor may use a contact lens gently placed on the eye, or perform the laser through a lens held in front of the eye (no contact). The choice depends on the location and type of treatment.
+• The laser delivers many small flashes of light to targeted areas of the retina.
+
+During the Procedure
+• The laser may hurt — patients often describe brief, sharp sensations. The pain typically goes away as soon as the laser is completed.
+• The bright lights can occasionally trigger a migraine in patients prone to them.
+• It is important to look exactly where your doctor tells you to look. DO NOT look directly at the laser — this protects your central vision.
+
+Right After the Laser
+• The laser lights are very bright. For a few moments after the laser is completed, you may feel like you cannot see anything — this is normal.
+• Your vision returns gradually, sometimes with color hues (pink, purple). The hues will fade slowly.
+• The laser does NOT eliminate floaters. If you had floaters before, they will still be there afterward.
+• Mild redness or eye discomfort for a day or two is normal.
+
+After the Procedure
+• You may resume normal activities. Do not drive the day of the laser if your vision is still blurry from the dilation drops.
+• Continue any other eye drops you have been prescribed.
+
+When to Call Right Away
+Call us immediately if you experience any of the following:
+• A new shadow or curtain across your vision.
+• A sudden increase in new floaters or flashes of light.
+• Severe or worsening eye pain.
+• A significant decrease in vision after the initial return.`,
+
+      es: `LÁSER RETINIANO
+
+¿Qué Es?
+El láser retiniano es un procedimiento en consultorio que usa luz precisa para tratar la retina. Se usa para sellar desgarros o agujeros retinianos (retinopexia con láser) y para tratar vasos sanguíneos anormales en retinopatía diabética u oclusión venosa (PRP — fotocoagulación panretiniana).
+
+Cómo Se Realiza
+• Las gotas dilatan la pupila y adormecen el ojo.
+• Su médico puede usar un lente de contacto en el ojo, o usar un lente sostenido frente al ojo (sin contacto), según la ubicación del tratamiento.
+• El láser administra pequeños destellos de luz a áreas específicas de la retina.
+
+Durante el Procedimiento
+• El láser puede doler — los pacientes a menudo describen sensaciones breves y agudas. El dolor generalmente desaparece tan pronto como el láser termina.
+• Las luces brillantes ocasionalmente pueden desencadenar una migraña en pacientes propensos.
+• Es importante mirar exactamente donde su médico le diga. NO mire directamente al láser — esto protege su visión central.
+
+Justo Después del Láser
+• Las luces del láser son muy brillantes. Por unos momentos después puede sentir que no ve nada — esto es normal. La visión regresa gradualmente, a veces con tonos de color (rosado, púrpura) que se desvanecerán lentamente.
+• El láser NO elimina las moscas volantes existentes. Enrojecimiento leve o molestia ocular por un día o dos es normal.
+
+Después del Procedimiento
+• Puede reanudar sus actividades normales. No conduzca el día del láser si su visión sigue borrosa por las gotas de dilatación.
+• Continúe cualquier otra gota oftálmica que le hayan recetado.
+
+Llame Inmediatamente
+Llame al consultorio inmediatamente si experimenta cualquiera de los siguientes:
+• Una sombra o cortina nueva en su visión.
+• Un aumento súbito de nuevas moscas volantes o destellos de luz.
+• Dolor ocular severo o que empeora.
+• Una disminución significativa de la visión después del retorno inicial.`,
+
+      vi: `LASER VÕNG MẠC
+
+Đây Là Gì?
+Laser võng mạc là một thủ thuật tại phòng khám sử dụng chùm tia sáng chính xác để điều trị võng mạc. Được dùng để niêm phong vết rách hoặc lỗ võng mạc (laser hàn võng mạc) và để điều trị các mạch máu bất thường trong các tình trạng như bệnh võng mạc tiểu đường hoặc tắc tĩnh mạch (PRP — laser quang đông toàn võng mạc).
+
+Cách Thực Hiện
+• Thuốc nhỏ mắt làm giãn đồng tử và gây tê mắt.
+• Bác sĩ có thể dùng thấu kính tiếp xúc nhẹ đặt trên mắt, hoặc thực hiện laser qua thấu kính giữ trước mắt (không tiếp xúc). Lựa chọn phụ thuộc vào vị trí và loại điều trị.
+• Laser phát ra nhiều tia sáng nhỏ đến các khu vực mục tiêu của võng mạc.
+
+Trong Khi Thực Hiện
+• Laser có thể đau — bệnh nhân thường mô tả cảm giác ngắn, sắc. Cơn đau thường biến mất ngay khi laser kết thúc.
+• Ánh sáng chói có thể đôi khi kích hoạt cơn đau nửa đầu ở những người dễ bị.
+• Quan trọng là nhìn chính xác nơi bác sĩ chỉ dẫn. KHÔNG nhìn thẳng vào laser — điều này bảo vệ thị lực trung tâm.
+
+Ngay Sau Laser
+• Ánh sáng laser rất chói. Trong vài giây sau khi laser kết thúc, bạn có thể cảm thấy như không nhìn thấy gì — điều này bình thường.
+• Thị lực trở lại dần dần, đôi khi với sắc màu (hồng, tím). Các sắc màu sẽ phai dần.
+• Laser KHÔNG loại bỏ đốm đen. Nếu trước đây có đốm đen, sau laser vẫn còn.
+• Đỏ nhẹ hoặc khó chịu trong mắt từ một đến hai ngày là bình thường.
+
+Sau Thủ Thuật
+• Có thể tiếp tục hoạt động bình thường. Không lái xe vào ngày làm laser nếu thị lực còn mờ do thuốc giãn đồng tử.
+• Tiếp tục các loại thuốc nhỏ mắt khác đã được kê đơn.
+
+Gọi Ngay
+Gọi cho chúng tôi ngay nếu bạn gặp bất kỳ điều nào sau đây:
+• Bóng hoặc màn che mới trong tầm nhìn.
+• Đột ngột tăng đốm đen hoặc lóe sáng mới.
+• Đau mắt nặng hoặc tăng dần.
+• Giảm thị lực đáng kể sau khi đã trở lại bình thường.`,
+
+      pt: `LASER RETINIANO
+
+O Que É?
+O laser retiniano é um procedimento ambulatorial que usa luz precisa para tratar a retina. É usado para selar rasgos ou buracos retinianos (retinopexia a laser) e para tratar vasos sanguíneos anormais em retinopatia diabética ou oclusão venosa (PRP — fotocoagulação panretiniana).
+
+Como É Realizado
+• Colírios dilatam a pupila e anestesiam o olho.
+• Seu médico pode usar uma lente de contato no olho, ou uma lente segurada na frente do olho (sem contato), conforme a localização do tratamento.
+• O laser entrega pequenos flashes de luz a áreas específicas da retina.
+
+Durante o Procedimento
+• O laser pode doer — pacientes frequentemente descrevem sensações breves e agudas. A dor geralmente desaparece assim que o laser termina.
+• As luzes brilhantes ocasionalmente podem desencadear uma enxaqueca em pacientes propensos.
+• É importante olhar exatamente onde seu médico disser. NÃO olhe diretamente para o laser — isso protege sua visão central.
+
+Logo Após o Laser
+• As luzes do laser são muito brilhantes. Por alguns momentos depois você pode sentir que não consegue ver nada — isso é normal. A visão retorna gradualmente, às vezes com tons de cor (rosa, roxo) que desaparecerão lentamente.
+• O laser NÃO elimina moscas volantes existentes. Vermelhidão leve ou desconforto ocular por um ou dois dias é normal.
+
+Após o Procedimento
+• Pode retomar suas atividades normais. Não dirija no dia do laser se sua visão ainda estiver embaçada pelas gotas de dilatação.
+• Continue qualquer outro colírio que tenha sido prescrito.
+
+Ligue Imediatamente
+Ligue-nos imediatamente se você experimentar qualquer um dos seguintes:
+• Uma sombra ou cortina nova em sua visão.
+• Um aumento súbito de novas moscas volantes ou flashes de luz.
+• Dor ocular severa ou que piora.
+• Uma diminuição significativa da visão após o retorno inicial.`
+    }
+  },
+
+  {
     id: "proc-prp",
     category: "procedure",
     title: { en: "Panretinal Photocoagulation (PRP) Laser", es: "Fotocoagulación Panretiniana (PRP)", vi: "Laser Quang Đông Toàn Võng Mạc (PRP)", pt: "Fotocoagulação Panretiniana (PRP)" },
