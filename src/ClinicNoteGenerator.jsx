@@ -405,10 +405,9 @@ PHYSICIAN ABBREVIATIONS:
 - Always expand these to the full name in the generated note.
 
 PLAQUENIL LIFETIME DOSE CALCULATION:
-- When the physician provides dose and duration, CALCULATE and include the cumulative lifetime dose
-- Formula: daily dose (mg) × 365 × years
-- Example: 200mg BID (=400mg/day) × 10 years = 400 × 365 × 10 = 1,460,000 mg = 1,460 g cumulative dose
-- Include in the note: "Cumulative lifetime dose: approximately [X] g"
+- The system pre-computes the cumulative lifetime dose and appends it to the input as [PLAQUENIL CUMULATIVE DOSE: X g]
+- When you see this tag, include it in the note: "Cumulative lifetime dose: approximately [X] g"
+- If the tag is NOT present but the physician mentions Plaquenil dose/duration, do NOT attempt to calculate — just note the dose and duration as given
 - Risk increases significantly after cumulative dose >1,000 g or >5 years of use
 - MP = membrane peel, MS = membrane stripping, ADLs = activities of daily living
 - metamorphopsia = distorted vision
@@ -1327,6 +1326,44 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     return lines.join("\n");
   }
 
+  // ── Plaquenil cumulative dose calculator ────────────────────────
+  function calcPlaquenilDose(inputText) {
+    const lower = inputText.toLowerCase();
+    if (!lower.includes("plaquenil") && !lower.includes("hydroxychloroquine")) return "";
+
+    // Extract daily dose: "200mg qday", "200 mg daily", "200mg BID", "400mg qday", etc.
+    const doseMatch = lower.match(/(\d+)\s*mg\s*(?:po\s+)?(?:qday|daily|qd|bid|tid|q\s*day)/i);
+    if (!doseMatch) return "";
+
+    let dailyDose = parseInt(doseMatch[0].match(/\d+/)[0]);
+    // If BID, double it
+    if (/bid/i.test(doseMatch[0])) dailyDose *= 2;
+    // If TID, triple it
+    if (/tid/i.test(doseMatch[0])) dailyDose *= 3;
+
+    // Extract duration: "x 10 years", "x10 years", "since 2013", "for 10 years", "10 yrs"
+    let years = null;
+
+    // Pattern 1: "since YYYY"
+    const sinceMatch = lower.match(/since\s+(\d{4})/);
+    if (sinceMatch) {
+      years = new Date().getFullYear() - parseInt(sinceMatch[1]);
+    }
+
+    // Pattern 2: "x 10 years", "x10 yrs", "for 10 years"
+    if (!years) {
+      const yrsMatch = lower.match(/(?:x\s*|for\s+)(\d+)\s*(?:years?|yrs?)/);
+      if (yrsMatch) years = parseInt(yrsMatch[1]);
+    }
+
+    if (!years || years <= 0) return "";
+
+    const totalMg = Math.round(dailyDose * 365 * years);
+    const totalG = Math.round(totalMg / 1000);
+
+    return `\n\n[PLAQUENIL CUMULATIVE DOSE: ${totalG} g (${dailyDose} mg/day × ${years} years)]`;
+  }
+
   // ── Run ───────────────────────────────────────────────────────────
   async function run() {
     if (!note.trim()) return;
@@ -1336,9 +1373,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       const timeNote = timeSpent.trim() ? `\n\nTIME SPENT WITH PATIENT: ${timeSpent.trim()} minutes (use for time-based coding if it supports a higher E/M level than MDM alone)` : "";
       const globalContext = calcGlobalPeriodContext(note);
       const globalNote = globalContext ? `\n\n${globalContext}` : "";
+      const plaquenilNote = calcPlaquenilDose(note);
       const userMessage = mode === "generate"
-        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}${globalNote}`
-        : `Optimize this existing A/P note with minimum billing language:\n\n${note}${timeNote}${globalNote}`;
+        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}${globalNote}${plaquenilNote}`
+        : `Optimize this existing A/P note with minimum billing language:\n\n${note}${timeNote}${globalNote}${plaquenilNote}`;
 
       const res = await fetch(`${API_BASE}/api/generate-note`, {
         method: "POST",
