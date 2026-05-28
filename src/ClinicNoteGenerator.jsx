@@ -138,7 +138,7 @@ const DEFAULT_EXAMPLES = [
   {
     id: "ex_endophthalmitis",
     label: "Endophthalmitis — post-cataract, tap & inject",
-    shorthand: `67 yo M here for urgent visit\n\n1. Post-cataract surgery endophthalmitis OD\ns/p phaco-IOL w Dr. Robbins (3/10/2026)\nToday with pain, photophobia and hypopyon\n\nPlan\nAC tap and send for cultures\nIntravitreal inj of Vanc + Ceftaz\nPF q1hr\nAtropine QD\nF/u tomorrow\nDiscussed guarded vision prognosis given this eye infection as well as the potential need for surgical intervention`,
+    shorthand: `67 yo M here for urgent visit\n\n1. Post-cataract surgery endophthalmitis OD\ns/p phaco-IOL w Dr. Robbins (3/10/2026)\nToday with pain, photophobia and hypopyon\n\nPlan\nVit tap and send for cultures\nIntravitreal inj of Vanc + Ceftaz\nPF q1hr\nAtropine QD\nF/u tomorrow\nDiscussed guarded vision prognosis given this eye infection as well as the potential need for surgical intervention`,
     builtin: true,
   },
   {
