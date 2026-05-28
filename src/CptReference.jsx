@@ -309,6 +309,17 @@ const CPT_DB = [
     modifiers: "None typically.",
     tips: "Alteplase (Activase) is the standard tPA used for subretinal injection. Typical dose is 25–50 μg diluted in BSS. Check payer policy for drug reimbursement when used with 0810T. Some practices use tenecteplase (TNK) off-label — J-code may differ.",
   },
+  // INTRAVITREAL ANTIBIOTICS (Endophthalmitis)
+  {
+    code: "J7999",
+    desc: "Compounded drug, not otherwise classified — intravitreal vancomycin and/or ceftazidime",
+    category: "J-Codes",
+    global: "N/A",
+    indication: "Intravitreal antibiotics for endophthalmitis (tap-and-inject or PPV). VRA uses Turbare Manufacturing compounded kit: Vancomycin 10mg/1mL (NDC 83556-0510-02) + Ceftazidime 22.5mg/1mL (NDC 83556-0422-02). Preservative-free, single-use vials, 0.8mL in 3mL vial.",
+    bundling: "Bill alongside 67015 (vitreous tap) for tap-and-inject. Bill TWO separate J7999 line items — one for vancomycin, one for ceftazidime. Do NOT use J3370, J3373, or J0713 — those are for NON-compounded liquid/powder vials only. Your Turbare kit is compounded (503B outsourcing facility), so J7999 is the correct code for BOTH drugs.",
+    modifiers: "-JZ on each J7999 line item (zero wastage — single-use vial, discard remainder).",
+    tips: "CLAIM SUBMISSION (CMS-1500): Item 19 — list drug name, dosage, and invoice amount for EACH drug (e.g., 'Vancomycin 10mg/1mL, $XX.XX; Ceftazidime 22.5mg/1mL, $XX.XX'). Item 24a — report NDC per payer policy (Vanc NDC: 83556-0510-02, Ceft NDC: 83556-0422-02). UOM: report volume injected in ML (e.g., ML0.1 for 0.1mL intravitreal dose). NOTE: Medicare does not associate compounded medications with an NDC, but other payers may require it. KEY DISTINCTION: J3373 (vancomycin per 10mg, eff. July 2025) and J0713 (ceftazidime per 500mg) are ONLY for non-compounded liquid or reconstituted powder vials — NOT for your Turbare compounded kit.",
+  },
 
   // ═══════════════════════════════════════════════════════════════════
   // LASER PROCEDURES
@@ -883,8 +894,13 @@ const KEYWORD_MAP = {
   "bilateral": [],
   // Antibiotics
   "antibiotics": ["67028","67015"],
-  "vancomycin": ["67028","67015"],
-  "ceftazidime": ["67028","67015"],
+  "vancomycin": ["J7999","67028","67015"],
+  "ceftazidime": ["J7999","67028","67015"],
+  "compounded antibiotic": ["J7999"],
+  "compounded drug": ["J7999"],
+  "j7999": ["J7999"],
+  "turbare": ["J7999"],
+  "endophthalmitis antibiotics": ["J7999","67015"],
   // Misc
   "ac tap": ["65800"],
   "paracentesis": ["65800"],
@@ -954,6 +970,7 @@ const TERM_GROUPS = {
   ppl: ["ppl","pars plana lensectomy","lensectomy"],
   biopsy: ["biopsy","tap","vitreous biopsy","vitreous tap","diagnostic tap"],
   endophthalmitis: ["endophthalmitis","endoph","tap and inject","tap inject","tap-and-inject"],
+  compounded_abx: ["compounded antibiotic","compounded drug","j7999","turbare","vancomycin","ceftazidime","vanc","ceftaz","endophthalmitis antibiotics"],
   antibiotics: ["antibiotics","antibiotic","antifungal","vancomycin","ceftazidime","voriconazole","amikacin"],
   contralateral: ["contralateral","other eye","fellow eye","bilateral","os","od","both eyes"],
   ac_iol: ["ac iol","ac-iol","anterior chamber iol","anterior chamber lens"],
@@ -1016,6 +1033,8 @@ const CODE_RULES = {
   "66825": { require: [["iol"]], exclude: ["ac_iol","yamane","akreos","scleral_fixation"], boost: ["ppv"] },
   // Injection
   "67028": { require: [["injection","antibiotics"]], exclude: ["ppv","rd","biopsy","endophthalmitis"], boost: [] },
+  // Compounded intravitreal antibiotics
+  "J7999": { require: [["compounded_abx","endophthalmitis"]], boost: ["antibiotics"] },
   // J-codes
   "J9035": { require: [["avastin"]], boost: ["injection"] },
   "J0178": { require: [["eylea"]], exclude: ["eylea_hd"], boost: ["injection"] },
