@@ -1896,7 +1896,7 @@ function TreeDiagram() {
 // ── AI Coding Assistant ─────────────────────────────────────────────
 const AI_API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
-export function AICodingAssistant() {
+export function AICodingAssistant({ showReimbursement = false }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1920,7 +1920,7 @@ export function AICodingAssistant() {
       const res = await fetch(`${AI_API_BASE}/api/cpt-assist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updated }),
+        body: JSON.stringify({ messages: updated, showReimbursement }),
       });
       const data = await res.json();
       if (data.success && data.reply) {
@@ -2149,7 +2149,7 @@ export default function CptReference({ onBack }) {
         </div>
       </div>
 
-      {view === "ai" && <AICodingAssistant />}
+      {view === "ai" && <AICodingAssistant showReimbursement={false} />}
       {view === "tree" && <DecisionTreeView />}
       {view === "diagram" && <TreeDiagram />}
 

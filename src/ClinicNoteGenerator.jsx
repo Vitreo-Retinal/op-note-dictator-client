@@ -2105,7 +2105,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         {/* ── AI CODING TAB ────────────────────────────────────── */}
         {tab === "coding" && (
           <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <AICodingAssistant />
+            <AICodingAssistant showReimbursement={true} />
           </div>
         )}
 
