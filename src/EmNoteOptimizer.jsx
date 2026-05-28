@@ -92,7 +92,7 @@ E/M LEVEL SHORTCUTS (use as baseline, then adjust per MDM complexity):
 - Level 4 (99214): Rx/injection/surgery decision — new or changed treatment, injection given, surgery planned (wet AMD injection, RVO with anti-VEGF, DME treatment, laser). Also: drug management changes (new Rx, switch drugs), uveitis with intensive immunosuppressive management.
 - Level 5 (99215): ER/emergency-level complexity — urgent conditions, multiple complex decisions (endophthalmitis, acute RD, oncology, disease progression requiring therapy switch with extensive risk discussion). PITFALLS: "blinding disease in the future" is NOT Level 5 — must be threat TODAY. "Severe disease" alone is NOT Level 5. Decision for RD surgery is NOT automatically Level 5. Must meet 2 of 3 MDM categories: (1) illness posing threat to body function with near-term treatment, (2) decision regarding emergency major surgery or hospitalization.
 
-G2211 applies only when: E/M code (99213-99215) supported AND established patient with serious chronic condition. Do NOT report G2211 with -25 modifier. NEVER with eye codes (92012/92014). 0.49 RVU / $16.04.
+G2211 applies only when: E/M code (99213-99215) supported AND established patient with serious chronic condition. Do NOT report G2211 with -25 modifier. NEVER with eye codes (92012/92014). 0.49 RVU / $16.37 (2026 CF $33.40 × 0.49).
 
 SURGERY MODIFIER REIMBURSEMENT:
 - -58 (staged/planned): new postop period starts, 100% allowable.
@@ -136,7 +136,7 @@ IMAGING MUTUAL EXCLUSIVITY (flag conflicts if imaging mentioned):
 - FA (92235) and fundus photos/FAF (92250): NOT mutually exclusive — can bill both same day
 - FA (92235) and OCTA (92137): NOT mutually exclusive — can bill both same day
 - CPT 92137 (OCTA + retinal OCT combo, new 1/1/2025): Use 92137 instead of 92134 when OCTA is performed. 92134 reimbursement reduced as of 1/1/2025. 92133, 92134, and 92137 are all mutually exclusive with each other.
-- APRIL 2026 UPDATE: NCCI removed PTP edits between 92137 and 92235/92240/92242 (retroactive to Oct 2025). OCTA + FA and OCTA + ICG CAN now be billed same day. Edits between 92137 and eye codes remain with CCMI indicator 1.
+- APRIL 2026 UPDATE: NCCI removed PTP edits between 92137 and 92235/92240/92242 (retroactive to Oct 2025). OCTA + FA and OCTA + ICG CAN now be billed same day. NCCI edits between 92137 and eye visit codes (92002/92004/92012/92014) were also DELETED (Jan 2026, retroactive to 10/1/2025) — no modifier needed when billing 92137 with eye visit codes.
 - OCTA DOCUMENTATION: Flag if OCTA mentioned but medical necessity not documented. Must document WHY OCTA needed instead of OCT alone and how findings influenced treatment.
 - BILATERAL INJECTION (67028): MUE = 1, bilateral indicator = 1 (150% payment). Bill single line with -50 modifier. Wet AMD + GA same eye → 1 unit of 67028 only, link both ICD-10 codes.
 - 0996T (new 2026): Capsular bag prosthesis + IOL + scleral fixation + vitrectomy. Do NOT bill 66985/66986/67036 separately.
