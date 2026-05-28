@@ -629,6 +629,17 @@ const CPT_DB = [
     modifiers: "-LT/-RT.",
     tips: "Effective July 1, 2023 (Category III). Use when subretinal injection is the PRIMARY procedure — PPV + retinotomy + subretinal injection of tPA/gene therapy + gas. For submacular hemorrhage: typical dose is 25–50 μg alteplase subretinally, then gas tamponade. If a different primary procedure is performed (e.g., membrane removal with incidental subretinal injection), use the appropriate 67036–67043 code instead. Category III codes may have limited payer coverage — verify reimbursement.",
   },
+  // CAPSULAR BAG PROSTHESIS
+  {
+    code: "0996T",
+    desc: "Insertion and scleral fixation of capsular bag prosthesis containing IOL, with vitrectomy",
+    category: "Vitrectomy",
+    global: "N/A (Category III — no RVUs assigned)",
+    indication: "Scleral fixation of prosthetic capsular bag with integrated IOL for eyes without adequate capsular support — dislocated IOL, absent or compromised capsular bag, inadequate zonular support. Includes vitrectomy and removal of crystalline lens or dislocated IOL when performed.",
+    bundling: "ALL-INCLUSIVE — do NOT bill separately for: cataract extraction (66982, 66984), IOL insertion/exchange (66682, 66985, 66986), IOL repositioning (66825), vitrectomy (67005, 67010, 67015, 67036, 67039, 67040, 67041, 67042, 67043), or lens removal (66850). If PPV + lens removal is performed WITHOUT the capsular bag prosthesis device, do NOT use 0996T — bill standard vitrectomy + lens codes instead.",
+    modifiers: "-LT/-RT.",
+    tips: "Category III code effective January 1, 2026 (sunset January 2030). The prosthetic capsular bag device is still investigational (not yet FDA-approved as of 2026) — coverage is MAC/payer-dependent with no national Medicare payment rate. Submit claims to payer first; do NOT default to patient-pay. Use ABN for Medicare patients when coverage is uncertain. This code is ONLY for use with the specific prosthetic capsular bag device — standard scleral-fixated IOL cases (Yamane, Gore-Tex suture, etc.) should continue to use existing codes (67036 + 66985/66986). MACs may require operative notes submitted with the claim.",
+  },
 
   // ═══════════════════════════════════════════════════════════════════
   // OTHER PROCEDURES
@@ -793,7 +804,7 @@ const KEYWORD_MAP = {
   "iol exchange": ["66986"],
   "iol reposition": ["66825"],
   "reposition": ["66825"],
-  "dislocated iol": ["66986","66825","67036"],
+  "dislocated iol": ["66986","66825","67036","0996T"],
   "subluxated": ["66825","66986"],
   "secondary iol": ["66985"],
   "lens": ["66986","66985","66850","66852"],
@@ -855,8 +866,11 @@ const KEYWORD_MAP = {
   "yamane": ["66985","67036"],
   "flanged haptic": ["66985","67036"],
   "intrascleral": ["66985","66682","67036"],
-  "scleral fixation": ["66985","66682","67036"],
-  "scleral fixated": ["66985","66682","67036"],
+  "scleral fixation": ["66985","66682","67036","0996T"],
+  "scleral fixated": ["66985","66682","67036","0996T"],
+  "capsular bag prosthesis": ["0996T"],
+  "prosthetic capsular bag": ["0996T"],
+  "0996t": ["0996T"],
   "sf iol": ["66985","66682","67036"],
   "akreos": ["66985","66682","67036"],
   "gore-tex": ["66985","66682","67036"],
@@ -946,6 +960,7 @@ const TERM_GROUPS = {
   yamane: ["yamane","flanged haptic","flanged","intrascleral","sutureless fixation","sutureless iol"],
   akreos: ["akreos","gore-tex","goretex","gore tex","sutured scleral","4-point fixation","four point fixation"],
   scleral_fixation: ["scleral fixation","scleral fixated","scleral-fixated","sf iol","sfiol","scleral fix"],
+  capsular_bag_prosthesis: ["capsular bag prosthesis","prosthetic capsular bag","capsular prosthesis","pcb iol"],
   // Drugs
   avastin: ["avastin","bevacizumab","bev"],
   eylea: ["eylea","aflibercept"],
@@ -993,6 +1008,8 @@ const CODE_RULES = {
   "67121": { require: [["oil"]], exclude: ["rd"], boost: [] },
   // Vitreous tap/biopsy
   "67015": { require: [["biopsy","endophthalmitis"]], exclude: ["ppv","rd"], boost: ["endophthalmitis"] },
+  // Capsular bag prosthesis
+  "0996T": { require: [["capsular_bag_prosthesis"]], boost: ["iol","scleral_fixation","ppv"] },
   // Lensectomy / lens removal (bundled with PPV — informational)
   "66852": { require: [["ppl"]], exclude: ["iol","phaco"], boost: ["ppv"] },
   "66850": { require: [["phaco","dislocated_lens"]], exclude: ["ppl"], boost: [] },
