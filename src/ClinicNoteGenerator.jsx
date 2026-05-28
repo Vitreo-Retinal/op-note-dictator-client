@@ -761,8 +761,8 @@ Full pneumatic day output: E/M 99215-57, Procedures: 67110 + 65800.
 
 ENDOPHTHALMITIS CODING RULES (CCI bundling):
 67028 (intravitreal injection) is CCI-bundled with BOTH 67015 (vitreous tap) AND 65800 (AC paracentesis). Never bill 67028 alongside either one.
-- Vitreous tap + intravitreal antibiotic (V+C): Bill 67015 only + J-code. Do NOT add 67028.
-- AC tap + intravitreal antibiotic (no vitreous tap): 65800 and 67028 are also bundled. Bill 67028 (higher allowable, ~4.08 RVU vs ~2.71) + J-code. Do NOT add 65800.
+- Vitreous tap + intravitreal antibiotic (V+C): E/M 99215-57 + 67015 only + J-code. Do NOT add 67028. -57 because 67015 is 90-day global.
+- AC tap + intravitreal antibiotic (no vitreous tap, e.g. vit tap was dry): E/M 99215-25 + 65800 + J-code. 65800 and 67028 are CCI-bundled — bill 65800 only (0-day global → -25 on E/M, NOT -57). Do NOT bill 67028.
 - Vitreous tap + AC tap + intravitreal antibiotic: Bill 67015 + 65800 + J-code. These two are NOT bundled with each other. 67028 is eliminated (absorbed by 67015).
 - Always include J-code(s) for the antibiotic drug(s) administered (e.g., vancomycin, ceftazidime).
 - If during another surgery's global period (e.g., cataract postop): append -78 to procedure codes (related complication, unplanned return to OR).

@@ -101,7 +101,8 @@ SURGERY MODIFIER REIMBURSEMENT:
 
 GLOBAL PERIODS — flag when relevant to modifier selection:
 - 90-day global: ALL vitrectomy (67036-67043), ALL RD codes (67107-67113), IOL codes, 0810T, focal laser 67210, choroidal photocoag 67220, YAG capsulotomy 66821.
-- 10-day global: Injection 67028, tap 67015, prophylactic laser 67145, tear laser 67105, PRP 67228.
+- 10-day global: Injection 67028, prophylactic laser 67145, tear laser 67105, PRP 67228.
+- 90-day global ALSO includes: 67015 (vitreous tap/biopsy) — use -57, NOT -25.
 - Same-day exam modifier by global: 10-day procedures → use -25 on E/M. 90-day procedures → use -57 on E/M.
 - RETINA LASER MODIFIER RULE: 67105 (laser RD), 67145 (prophylactic laser), 67228 (PRP) → all 10-day global → use -25. 67210 (focal/grid macular laser), 67220 (choroidal photocoag), and 66821 (YAG capsulotomy) are 90-day global → use -57.
 - YAG POSTOP AWARENESS: If patient is within 90 days of 66821 YAG by another surgeon, injection → 67028-79, E/M → add -24.
