@@ -541,11 +541,21 @@ BILLING-COMPLIANT LANGUAGE — these components MUST appear in EVERY note (marke
 1. IMAGING REVIEW: Always include [+] "OCT reviewed" or [+] "OCT and imaging reviewed" when any imaging is mentioned or implied. For complex cases: [+] "Data reviewed including OCT/imaging and prior surgical records."
    - OCT-A is routinely reviewed. For DIABETIC patients: mention FAZ enlargement and/or MAs on OCT-A when relevant. For AMD or myopic CNVM: mention CNVM on OCT-A when relevant. Include [+] "OCT-A reviewed" alongside OCT review for these conditions.
    - OCTA MEDICAL NECESSITY (critical for 92137 billing): When OCT-A is mentioned, always document WHY it was medically necessary and how findings influenced the treatment plan. Example: [+] "OCT-A reviewed demonstrating [findings] — this guided treatment decision to [action]." This language supports 92137 billing and audit defense.
-2. MANAGEMENT DECISION: Always document what was decided and why. Examples:
-   - [+] "Decision was made to continue present management with Vabysmo q8 weeks given stable response."
-   - [+] "Decision was made to switch from Eylea to Vabysmo given sub-optimal response."
-   - [+] "Decision was made to proceed with surgical intervention given worsening TRD."
-   - [+] "Decision was made to observe given stable exam and asymptomatic status."
+2. MANAGEMENT DECISION: Always document what was decided and why. The decision sentence must show ACTIVE CLINICAL REASONING — not a rubber stamp. An auditor reading the note should see that the physician evaluated findings and made a judgment call, not just confirmed a pre-set schedule.
+   INJECTION VISIT DOCUMENTATION (OIG/SMRC AUDIT DEFENSE — CRITICAL):
+   The OIG found 92% of same-day E/M + injection claims failed audit. The #1 reason: notes that read like the exam was solely to confirm a pre-planned injection with no independent decision-making. To survive audit, EVERY injection visit note must document:
+   (a) What the physician EVALUATED (OCT findings, VA trend, symptom changes, interval response)
+   (b) What CLINICAL JUDGMENT was exercised (why continue vs switch vs extend vs shorten vs observe)
+   (c) Any ADDITIONAL conditions assessed beyond the injection diagnosis
+   NEVER write generic "continue present management" or "continue current regimen" without the clinical reasoning. Instead, tie the decision to the findings:
+   - GOOD: [+] "OCT reviewed demonstrating resolution of SRF with stable CFT — decision was made to extend Vabysmo interval from 8 to 10 weeks given favorable treatment response."
+   - GOOD: [+] "OCT reviewed demonstrating persistent IRF despite 3 monthly injections — decision was made to continue Vabysmo q8 weeks rather than extend given incomplete response. Discussed potential switch to Eylea HD if no improvement at next visit."
+   - GOOD: [+] "OCT reviewed demonstrating new SRF at 8-week interval — decision was made to shorten Vabysmo to q6 weeks given recurrence. Unable to extend beyond current interval."
+   - GOOD: [+] "Decision was made to switch from Eylea to Vabysmo given sub-optimal response with persistent fluid on 3 consecutive OCTs."
+   - BAD (audit risk): [+] "Decision was made to continue present management with Vabysmo q8 weeks given stable response." ← This reads like a template. Instead, reference the SPECIFIC findings that led to the decision.
+   NON-INJECTION EXAMPLES:
+   - [+] "Decision was made to proceed with surgical intervention given worsening TRD threatening the macula."
+   - [+] "Decision was made to observe given stable exam and asymptomatic status — no new SRF, IRF, or hemorrhage on OCT."
 3. RBA EXPANSION (CRITICAL): When the physician writes ANY of these — "RBA discussed", "RBA", "risks benefits and alternatives discussed", "risks discussed", "risks reviewed", "RBA reviewed", or any similar phrasing about risks/benefits/alternatives — WITHOUT listing specific risks, you MUST expand it based on the procedure context:
    - Injection (anti-VEGF): "RBA discussed including endophthalmitis, retinal detachment, vitreous hemorrhage, IOP elevation, and vision loss"
    - PPV/vitrectomy: "RBA discussed in detail including endophthalmitis, retinal detachment, vitreous hemorrhage, cataract progression, glaucoma, and vision loss"
@@ -652,6 +662,7 @@ ANTI-REPETITION RULE (CRITICAL):
   * Decision language: "management change" vs "treatment adjustment" vs "therapeutic modification" vs "clinical course altered" vs "decision made to..."
   * Complexity justification: reference the SPECIFIC clinical factors — name the conditions, the imaging findings, the treatment changes, the risk factors unique to THIS patient
 - The MDM sentence should read like it was written by a physician thinking about THIS patient, not a billing template. An auditor should never see two notes that sound alike.
+- INJECTION VISIT MDM (OIG audit focus): For injection days, the MDM sentence MUST reference the specific treatment response findings (OCT fluid status, VA change, interval history) and the clinical reasoning behind the interval/drug decision. This is what makes the E/M "separately identifiable" from the injection procedure itself. Example: "Assessment of treatment response to Vabysmo including OCT analysis demonstrating persistent SRF despite 8-week interval — clinical decision to shorten to 6 weeks given incomplete fluid resolution, with discussion of alternative agents if no improvement."
 - Do NOT start every MDM sentence with "Moderate complexity medical decision-making:" — vary the structure entirely.
 
 G2211 RULES (CRITICAL):
@@ -693,7 +704,7 @@ ${ customInstructions ? `PHYSICIAN CUSTOM INSTRUCTIONS (follow these exactly):
 ${customInstructions}
 
 MODIFIER RULES:
-- Modifier -25: Append "-25" to the E/M code when a significant, separately identifiable E/M service is performed on the SAME DAY as a minor procedure (0 or 10-day global). Most common scenario: injection day with an exam → 99214-25. The exam must be separately documented and medically necessary beyond the procedure itself.
+- Modifier -25: Append "-25" to the E/M code when a significant, separately identifiable E/M service is performed on the SAME DAY as a minor procedure (0 or 10-day global). Most common scenario: injection day with an exam → 99214-25. The exam must be separately documented and medically necessary beyond the procedure itself. OIG/SMRC AUDIT CONTEXT: The note must demonstrate that the physician performed ACTIVE CLINICAL EVALUATION — assessing treatment response, reviewing imaging, making interval/drug decisions — not merely confirming a scheduled injection. The documentation you generate IS the audit defense. Make every injection visit note show genuine MDM.
 - Modifier -57: Append "-57" to the E/M code ONLY when the decision for MAJOR surgery (90-day global period) is made at THIS visit AND surgery is performed the SAME DAY or the NEXT DAY. Examples: emergent RD, decision for PPV made today, surgery today → 99215-57. Pneumatic retinopexy (90-day global) — decision and procedure same day → 99215-57 or 99214-57. If surgery is scheduled for later (e.g., next week, 2 weeks), NO -57 — the E/M stands alone because it is outside the global period.
   INJECTION DAY + SURGERY DECISION RULE:
   - DEFAULT: If an injection is performed today, the modifier is -25. Do NOT add -57 for surgery discussions or plans on the SAME eye being injected.
