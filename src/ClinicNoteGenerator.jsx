@@ -2977,7 +2977,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
             { cat: "Z-Codes & Status", code: "Z79.4", desc: "Long-term (current) use of insulin (T2DM only)" },
             { cat: "Z-Codes & Status", code: "Z79.84", desc: "Long-term (current) use of oral hypoglycemic drugs (metformin, glipizide)" },
             { cat: "Z-Codes & Status", code: "Z79.85", desc: "Long-term (current) use of injectable non-insulin antidiabetic drugs (Ozempic, Trulicity)" },
-            { cat: "Z-Codes & Status", code: "Z79.899", desc: "Other long-term drug therapy (Plaquenil, tamoxifen, etc.)" }
+            { cat: "Z-Codes & Status", code: "Z79.899", desc: "Other long-term drug therapy (Plaquenil, tamoxifen, etc.)" },
+            { cat: "Z-Codes & Status", code: "Z03.89", desc: "Encounter for observation for other suspected diseases ruled out — use BEFORE starting Plaquenil/chloroquine (baseline screening OCT)" },
+            { cat: "Z-Codes & Status", code: "Z03.823", desc: "Encounter for observation for suspected inserted (injected) foreign body ruled out" },
+            { cat: "Z-Codes & Status", code: "Z09", desc: "Encounter for follow-up exam after completed treatment — use with Z79.899 for ongoing Plaquenil/chloroquine monitoring OCT" }
           ];
 
           // Smart search: expand clinical shorthand before matching
