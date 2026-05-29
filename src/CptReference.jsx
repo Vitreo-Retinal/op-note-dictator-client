@@ -2084,6 +2084,73 @@ export function AICodingAssistant({ showReimbursement = false }) {
 }
 
 // ── Component ───────────────────────────────────────────────────────
+// ── Surgical code decision map (Visual tab) ─────────────────────────
+const RD_LEAVES = [
+  { code: "67110", label: "Pneumatic (office gas)" },
+  { code: "67107", label: "Scleral buckle only" },
+  { code: "67108", label: "PPV ± buckle" },
+  { code: "67113", label: "Complex + membrane peel" },
+];
+const PPV_LEAVES = [
+  { code: "67036", label: "Base: VH, floaters, dropped IOL" },
+  { code: "67039", label: "+ focal endolaser" },
+  { code: "67040", label: "+ PRP (for PDR)" },
+  { code: "67041", label: "+ ERM / pucker peel" },
+  { code: "67042", label: "+ ILM peel (MH, DME, VMT)" },
+  { code: "67043", label: "+ subretinal membrane (CNVM)" },
+];
+function SurgicalCodeMap({ onPick }) {
+  const [hover, setHover] = useState(null);
+  const detail = hover ? CPT_CATALOG.find((c) => c.code === hover) : null;
+  const globalLabel = (g) =>
+    g === "XXX" ? "no global period" : g === "ZZZ" ? "add-on code" : g === "YYY" ? "carrier-determined" : g + "-day global";
+  const Leaf = ({ x, y, leaf, color, light }) => {
+    const on = hover === leaf.code;
+    return (
+      <g style={{ cursor: "pointer" }} onMouseEnter={() => setHover(leaf.code)} onMouseLeave={() => setHover(null)} onClick={() => onPick(leaf.code)}>
+        <rect x={x} y={y} width="300" height="34" rx="8" fill={on ? "#273449" : "#1e293b"} stroke={on ? color : "#334155"} />
+        <rect x={x} y={y} width="4" height="34" fill={color} />
+        <text x={x + 16} y={y + 22} fill="#e2e8f0" fontSize="11.5">{leaf.label}</text>
+        <rect x={x + 238} y={y + 6} width="52" height="22" rx="6" fill="#0b1220" stroke={color} />
+        <text x={x + 264} y={y + 21} textAnchor="middle" fill={light} fontSize="12" fontFamily="ui-monospace, monospace">{leaf.code}</text>
+      </g>
+    );
+  };
+  return (
+    <div style={{ padding: "20px", maxWidth: 820, margin: "0 auto" }}>
+      <svg viewBox="0 0 760 470" style={{ width: "100%", height: "auto" }} fontFamily="ui-sans-serif, system-ui, sans-serif">
+        <text x="24" y="30" fill={S.bright} fontSize="16" fontWeight="700">Surgical Code Selection</text>
+        <text x="24" y="49" fill={S.muted} fontSize="12">Vitrectomy &amp; retinal detachment — which 67xxx code?</text>
+        <circle cx="566" cy="26" r="5" fill="#ef4444" /><text x="576" y="30" fill={S.muted} fontSize="11">RD repair</text>
+        <circle cx="566" cy="45" r="5" fill="#6366f1" /><text x="576" y="49" fill={S.muted} fontSize="11">PPV — other</text>
+        <rect x="300" y="70" width="160" height="40" rx="10" fill="#1e293b" stroke="#475569" />
+        <text x="380" y="95" textAnchor="middle" fill="#e2e8f0" fontSize="12.5" fontWeight="600">Reason for surgery?</text>
+        <path d="M340 110 C 280 124, 230 126, 190 144" fill="none" stroke="#475569" strokeWidth="1.5" />
+        <path d="M420 110 C 480 124, 530 126, 570 144" fill="none" stroke="#475569" strokeWidth="1.5" />
+        <rect x="90" y="144" width="200" height="30" rx="8" fill="#ef444422" stroke="#ef4444" />
+        <text x="190" y="164" textAnchor="middle" fill="#fca5a5" fontSize="12" fontWeight="700">RETINAL DETACHMENT</text>
+        <rect x="470" y="144" width="200" height="30" rx="8" fill="#6366f122" stroke="#6366f1" />
+        <text x="570" y="164" textAnchor="middle" fill="#a5b4fc" fontSize="12" fontWeight="700">PPV — NON-RD</text>
+        {RD_LEAVES.map((l, i) => <Leaf key={l.code} x={40} y={190 + i * 42} leaf={l} color="#ef4444" light="#fca5a5" />)}
+        {PPV_LEAVES.map((l, i) => <Leaf key={l.code} x={420} y={190 + i * 42} leaf={l} color="#6366f1" light="#a5b4fc" />)}
+        <line x1="40" y1="452" x2="720" y2="452" stroke="#334155" strokeWidth="1" />
+      </svg>
+      <div style={{ marginTop: 4, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, minHeight: 22, fontSize: "0.8rem", color: S.text }}>
+        {detail ? (
+          <span><span style={{ fontFamily: S.mono, fontWeight: 700, color: S.accentLight }}>{detail.code}</span> {"—"} {detail.desc} <span style={{ color: S.muted }}>({globalLabel(detail.global)})</span>{detail.note ? ` — ${detail.note}` : ""}</span>
+        ) : (
+          <span style={{ color: S.muted, fontStyle: "italic" }}>Hover a code for its description · click to open it in Browse.</span>
+        )}
+      </div>
+      <div style={{ marginTop: 10, fontSize: "0.78rem", color: S.muted, lineHeight: 1.6 }}>
+        <span style={{ color: "#fbbf24", fontWeight: 600 }}>Key rules: </span>
+        Multiple techniques, same eye {"→"} bill the single highest code (not stacked). 67113 requires a membrane peel {"—"} without one, complex RD is still 67108.
+      </div>
+    </div>
+  );
+}
+
+// ── Component ───────────────────────────────────────────────────────
 export default function CptReference({ onBack }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -2125,10 +2192,9 @@ export default function CptReference({ onBack }) {
         <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>Retina Surgery CPT Reference</div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 3, background: S.bg, borderRadius: 8, padding: 3 }}>
           {[
-            { id: "ai", label: "AI Coding Assistant", bg: "#8b5cf6" },
-            { id: "search", label: "Search", bg: S.accent },
-            { id: "tree", label: "Guided", bg: "#10b981" },
-            { id: "diagram", label: "Diagram", bg: "#f59e0b" },
+            { id: "search", label: "Browse", bg: S.accent },
+            { id: "ai", label: "Ask AI", bg: "#8b5cf6" },
+            { id: "diagram", label: "Visual", bg: "#f59e0b" },
           ].map((v) => (
             <button
               key={v.id}
@@ -2145,8 +2211,7 @@ export default function CptReference({ onBack }) {
       </div>
 
       {view === "ai" && <AICodingAssistant showReimbursement={false} />}
-      {view === "tree" && <DecisionTreeView />}
-      {view === "diagram" && <TreeDiagram />}
+      {view === "diagram" && <SurgicalCodeMap onPick={(code) => { setSearch(code); setCategory("all"); setExpanded(code); setView("search"); }} />}
 
       {view === "search" && <>
       {/* Search */}
