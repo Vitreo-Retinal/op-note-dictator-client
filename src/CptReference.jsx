@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { CPT_CATALOG, CPT_CATEGORIES } from "./cptCatalog";
 
 // ── Styles (shared palette with the rest of the app) ────────────────
 const S = {
@@ -1161,16 +1162,7 @@ function smartSearch(query, list) {
 // ── Category metadata ───────────────────────────────────────────────
 const CATEGORIES = [
   { id: "all", label: "All Codes" },
-  { id: "Vitrectomy", label: "Vitrectomy" },
-  { id: "Retinal Detachment", label: "RD Repair" },
-  { id: "Pneumatic / Tamponade", label: "Pneumatic / Oil" },
-  { id: "Injection", label: "Injection" },
-  { id: "J-Codes", label: "J-Codes" },
-  { id: "Laser", label: "Laser" },
-  { id: "IOL / Lens", label: "IOL / Lens" },
-  { id: "Diagnostic", label: "Diagnostic" },
-  { id: "E/M", label: "E/M" },
-  { id: "Other Procedures", label: "Other" },
+  ...CPT_CATEGORIES.map((c) => ({ id: c, label: c })),
 ];
 
 // ── Vitrectomy Decision Tree ────────────────────────────────────────
@@ -2099,12 +2091,15 @@ export default function CptReference({ onBack }) {
   const [view, setView] = useState("search"); // "search" | "tree" | "diagram" | "ai"
 
   const filtered = useMemo(() => {
-    let list = CPT_DB;
+    let list = CPT_CATALOG;
     if (category !== "all") {
-      list = list.filter((c) => c.category === category);
+      list = list.filter((c) => c.cat === category);
     }
-    if (search.trim()) {
-      list = smartSearch(search, list);
+    const q = search.toLowerCase().trim();
+    if (q) {
+      list = list.filter((c) =>
+        `${c.code} ${c.desc} ${c.note}`.toLowerCase().includes(q)
+      );
     }
     return list;
   }, [search, category]);
@@ -2158,7 +2153,7 @@ export default function CptReference({ onBack }) {
       <div style={{ padding: "16px 20px 8px", maxWidth: 800, margin: "0 auto" }}>
         <input
           type="text"
-          placeholder="Describe the case: PPV, ILM peel, C3F8 for mac hole..."
+          placeholder="Search by code, name, or keyword — e.g. 67042, ILM peel, injection, OCT"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -2175,7 +2170,7 @@ export default function CptReference({ onBack }) {
           }}
         />
         <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 6, fontFamily: S.mono }}>
-          Try: "PPV ILM peel gas mac hole" · "buckle RD" · "avastin injection" · "focal laser DME" · "YAG"
+          Search any retina code by number, description, or note — or browse by category below.
         </div>
       </div>
 
@@ -2266,7 +2261,7 @@ export default function CptReference({ onBack }) {
                         fontFamily: S.mono,
                       }}
                     >
-                      {cpt.category}
+                      {cpt.cat}
                     </span>
                     {cpt.global && cpt.global !== "N/A" && (
                       <span
@@ -2298,20 +2293,21 @@ export default function CptReference({ onBack }) {
                     marginTop: 0,
                   }}
                 >
-                  {cpt.indication && (
-                    <DetailSection label="Indication" text={cpt.indication} />
+                  {cpt.global && (
+                    <DetailSection label="Global Period" text={
+                      cpt.global === "XXX" ? "N/A — global concept does not apply" :
+                      cpt.global === "ZZZ" ? "Add-on code (no separate global)" :
+                      cpt.global === "YYY" ? "Carrier-determined" :
+                      cpt.global + "-day global"
+                    } />
                   )}
-                  {cpt.bundling && (
-                    <DetailSection label="Bundling Rules" text={cpt.bundling} color="#eab308" />
+                  {cpt.note && (
+                    <DetailSection label="Notes" text={cpt.note} color="#eab308" />
                   )}
-                  {cpt.modifiers && (
-                    <DetailSection label="Modifiers" text={cpt.modifiers} color="#6366f1" />
-                  )}
-                  {cpt.tips && (
-                    <DetailSection label="Coding Tips" text={cpt.tips} color="#22c55e" />
-                  )}
-                  {cpt.jcodes && (
-                    <DetailSection label="J-Codes" text={cpt.jcodes} color="#f97316" />
+                  {!cpt.note && !cpt.global && (
+                    <div style={{ fontSize: "0.8rem", color: S.muted, marginTop: 12 }}>
+                      No additional notes. Ask the AI Coding Assistant for bundling, modifiers, or reimbursement.
+                    </div>
                   )}
                 </div>
               )}
