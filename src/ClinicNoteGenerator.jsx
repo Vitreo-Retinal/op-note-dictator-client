@@ -719,7 +719,7 @@ MODIFIER RULES:
 - Modifier -59 (Distinct procedural service): Use when two normally-bundled procedures are performed same eye same day and are truly separate services. Example: intravitreal injection + focal laser same eye same day → -59 on the second (lesser) procedure to indicate it is distinct.
 - If NO procedure is performed today and no same-day/next-day surgical decision is made → no procedure modifier needed. The E/M code stands alone (or with -24 if in a global period for a prior surgery).
 - CRITICAL -25 RULE: Modifier -25 means a procedure was PERFORMED TODAY alongside the E/M. If NO procedure is performed today (no injection, no laser, no surgery), then -25 does NOT apply. NEVER add -25 when the procedure line is "None". Example: CRAO workup only, no injection → 99215-24 (NOT 99215-24-25). Post-op check + wet AMD injection → 99214-24-25 (injection was performed → -25 applies).
-- -25 NOT NEEDED ON NEW PATIENT CODES: NEVER append -25 to 99203/99204/99205 or 92002/92004. New patient visits inherently include the decision-making component — -25 is redundant and incorrect on new patient codes.
+- -25 IS REQUIRED ON THE E/M (NEW AND ESTABLISHED) WHEN A MINOR PROCEDURE IS DONE TODAY: when an injection (67028) or a 10-day laser is performed today, append -25 to the E/M code — INCLUDING new patient codes 99203/99204/99205. New-patient status does NOT exempt -25; without it NCCI bundles the E/M into the procedure and the visit is denied. (Eye visit codes 92002/92004/92012/92014 do NOT take -25 — CCI does not bundle eye codes with 67028.)
 - NEVER append -RT or -LT to E/M codes (99213-99215) or Eye visit codes (92012/92014/92002/92004). Laterality modifiers are ONLY for procedures and diagnostics, never on visit codes.
 - 99211 RESTRICTION: Never output 99211 on injection days. 99211 bundles with all testing and cannot coexist with procedures. The minimum E/M for an injection day is 99213-25.
 - IMPORTANT: Modifiers -24, -58, -78, -79 are relevant when the patient is WITHIN a prior surgery's global period. If not in a global period, these do not apply.
@@ -781,7 +781,7 @@ Use 92012 for simple interim visits with minimal MDM (e.g., pressure recheck, qu
 POST-OP visits within global period are NOT separately billable — output "POST-OP (in global)".
 MANDATORY CHECK BEFORE OUTPUTTING -25: Look at your ---PROCEDURE--- line. Is it "None"? If YES → do NOT add -25 to the E/M code. -25 ONLY appears when a procedure is ACTUALLY PERFORMED today. No procedure = no -25, period.
 ---PROCEDURE---
-Procedure code(s) with modifiers if a procedure is performed today. Examples: "67028" (injection), "67028-79" (injection unrelated to prior surgery global), "67028-50" (bilateral injection), "67210-58" (staged laser in global). If no procedure today, output "None".
+Procedure code(s) WITH laterality (-RT/-LT) AND the drug J-code when an injection of a specific drug is given. Format: "<code>-<RT/LT>, <Jcode>". Examples: "67028-LT, J2777" (Vabysmo OS), "67028-RT, J0178" (Eylea OD), "67028-79" (injection unrelated to prior surgery global), "67028-50" (bilateral). Drug→J-code: Avastin=J9035, Eylea 2mg=J0178, Eylea HD=J0717, Lucentis=J2778, Vabysmo=J2777, Beovu=J0179, Izervay=J2782, Syfovre=J2781, Ozurdex=J1094, Kenalog/Triesence=J3301, Byooviz=Q5124, Cimerli=Q5128. If no procedure today, output "None".
 ---G2211---
 YES or NO (always NO on injection days, post-op visits within global period, and primarily surgical patients)
 ---CHANGES---
@@ -953,7 +953,7 @@ Use 92012 for simple interim visits with minimal MDM (e.g., pressure recheck, qu
 POST-OP visits within global period are NOT separately billable — output "POST-OP (in global)".
 MANDATORY CHECK BEFORE OUTPUTTING -25: Look at your ---PROCEDURE--- line. Is it "None"? If YES → do NOT add -25 to the E/M code. -25 ONLY appears when a procedure is ACTUALLY PERFORMED today. No procedure = no -25, period.
 ---PROCEDURE---
-Procedure code(s) with modifiers if performed today. Examples: "67028" (injection), "67028-79" (unrelated to prior surgery global), "67028-50" (bilateral), "67210-58" (staged laser in global). If no procedure today, output "None".
+Procedure code(s) WITH laterality (-RT/-LT) AND the drug J-code when an injection of a specific drug is given. Format: "<code>-<RT/LT>, <Jcode>". Examples: "67028-LT, J2777" (Vabysmo OS), "67028-RT, J0178" (Eylea OD), "67028-79" (unrelated to prior surgery global), "67028-50" (bilateral). Drug→J-code: Avastin=J9035, Eylea 2mg=J0178, Eylea HD=J0717, Lucentis=J2778, Vabysmo=J2777, Beovu=J0179, Izervay=J2782, Syfovre=J2781, Ozurdex=J1094, Kenalog/Triesence=J3301, Byooviz=Q5124, Cimerli=Q5128. If no procedure today, output "None".
 ---G2211---
 YES or NO (always NO on injection days, post-op visits within global period, and primarily surgical patients)
 ---CHANGES---
@@ -1006,22 +1006,28 @@ function parseResponse(text) {
   };
   const hasProcedure = text.includes("---PROCEDURE---");
   const hasDiagnoses = text.includes("---DIAGNOSES---");
+  let code = sec("CODE", hasProcedure ? "PROCEDURE" : "G2211");
   const procedure = hasProcedure ? sec("PROCEDURE", "G2211") : "";
   let g2211 = sec("G2211", "CHANGES").trim() === "YES";
   let note = sec("NOTE", "END");
-  // Hard guard: G2211 is never payable on a day a procedure is performed today
-  // (the same-day E/M carries -25, and CMS does not reimburse G2211 with -25).
-  // This protects against the model emitting a G2211 sentence on injection/laser/surgery days.
+  // Guards for same-day procedure days (the E/M carries -25).
   const procedureToday = !!procedure && procedure.trim() !== "" && !/^none\b/i.test(procedure.trim());
   if (procedureToday) {
+    // (1) G2211 is never payable alongside -25 — force NO and strip any longitudinal/complexity add-on sentence.
     g2211 = false;
     note = note
       .split("\n")
       .filter((l) => !/longitudinal managing physician|ongoing complexity given|visit[- ]complexity add|\bG2211\b/i.test(l))
       .join("\n");
+    // (2) Ensure -25 on the E/M for a same-day MINOR procedure (injection / 10-day laser).
+    //     New-patient status does NOT exempt -25; without it the E/M bundles into the procedure.
+    const minorProc = /\b(67028|67105|67145|67141|67228|67031)\b/.test(procedure);
+    if (minorProc && /^\s*99\d{3}/.test(code) && !/-25\b/.test(code)) {
+      code = code.replace(/^(\s*99\d{3}(?:-\d{2})*)/, "$1-25");
+    }
   }
   return {
-    code: sec("CODE", hasProcedure ? "PROCEDURE" : "G2211"),
+    code,
     procedure,
     g2211,
     changes: sec("CHANGES", hasDiagnoses ? "DIAGNOSES" : "NOTE").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
