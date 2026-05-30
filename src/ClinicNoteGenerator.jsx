@@ -666,6 +666,7 @@ ANTI-REPETITION RULE (CRITICAL):
 - Do NOT start every MDM sentence with "Moderate complexity medical decision-making:" — vary the structure entirely.
 
 G2211 RULES (CRITICAL):
+- HARD GATE — CHECK THIS FIRST, IT OVERRIDES EVERYTHING BELOW: If ANY procedure is performed TODAY (the PROCEDURE field is anything other than "None" — any intravitreal injection such as Vabysmo/Eylea/Avastin/Lucentis/Beovu, or any laser/surgery), then G2211 = NO and you must NOT write any longitudinal / managing-physician / ongoing-complexity sentence anywhere in the note. This beats the "AMD is longitudinal" default and the example below. Giving an anti-VEGF injection today = injection day = G2211 NO, no matter how chronic, bilateral, or complex the disease is.
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215. IMPORTANT: G2211 can ONLY be added to E/M codes (99xxx), NOT to eye exam codes (92014, 92004, 92012). If G2211 is eligible, prefer 99214 over 92014 for better reimbursement.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
 - NEVER recommend G2211 on INJECTION DAYS or POST-OP VISITS within a global period. G2211 = NO when: (1) an injection is being PERFORMED TODAY, OR (2) the visit is within the postoperative global period of a prior surgery (90-day global: PPV, scleral buckle, pneumatic retinopexy, IOL exchange; 10-day global: intravitreal injection, laser). A post-op visit for a 90-day global procedure means any visit within 90 days of surgery. A post-op visit for a 10-day global procedure (injection/laser) is only within 10 days.
@@ -675,7 +676,7 @@ G2211 RULES (CRITICAL):
 - DEFAULT TO G2211 = YES on any non-injection, non-post-op, non-surgical-condition visit where the physician is the longitudinal managing physician for the patient's chronic condition.
 - No frequency limit — can be billed at every eligible non-injection visit.
 - If G2211 qualifies, add a sentence (after the MDM justification if present) at the end of the Plan. No header or label.
-- Example: "[+] Longitudinal managing physician for this patient's wet AMD; ongoing complexity given need for continued anti-VEGF therapy with monitoring for treatment response and fellow eye conversion."
+- Example (a NON-injection / monitoring day only — never write this on a day an injection is given): "[+] Longitudinal managing physician for this patient's diabetic retinopathy; ongoing complexity with continued surveillance, risk-factor optimization, and monitoring for progression."
 - Must be visit-specific and varied in wording.
 - If G2211 does NOT apply (injection day, post-op visit, or primarily surgical patient), do NOT write anything about G2211 in the note. No explanation needed — the surgeon already knows why. Only include the G2211 sentence when it IS applicable.
 
@@ -904,6 +905,7 @@ ANTI-REPETITION RULE (CRITICAL):
 - The MDM sentence should read like it was written by a physician thinking about THIS patient, not a billing template. An auditor should never see two notes that sound alike.
 
 G2211 RULES (CRITICAL):
+- HARD GATE — CHECK THIS FIRST, IT OVERRIDES EVERYTHING BELOW: If ANY procedure is performed TODAY (the PROCEDURE field is anything other than "None" — any intravitreal injection such as Vabysmo/Eylea/Avastin/Lucentis/Beovu, or any laser/surgery), then G2211 = NO and you must NOT write any longitudinal / managing-physician / ongoing-complexity sentence anywhere in the note. This beats the "AMD is longitudinal" default and the example below. Giving an anti-VEGF injection today = injection day = G2211 NO, no matter how chronic, bilateral, or complex the disease is.
 - G2211 can be billed with ANY E/M level (99213, 99214, 99215) — not just 99215. IMPORTANT: G2211 can ONLY be added to E/M codes (99xxx), NOT to eye exam codes (92014, 92004, 92012). If G2211 is eligible, prefer 99214 over 92014 for better reimbursement.
 - Requirement: physician is the longitudinal managing physician for the patient's serious/complex condition.
 - NEVER recommend G2211 on INJECTION DAYS or POST-OP VISITS within a global period. G2211 = NO when: (1) injection PERFORMED TODAY (uses modifier -25, CMS does not reimburse G2211 with -25), OR (2) visit is within postoperative global period (90-day: PPV, SB, pneumatic, IOL exchange; 10-day: injection, laser).
@@ -1004,13 +1006,27 @@ function parseResponse(text) {
   };
   const hasProcedure = text.includes("---PROCEDURE---");
   const hasDiagnoses = text.includes("---DIAGNOSES---");
+  const procedure = hasProcedure ? sec("PROCEDURE", "G2211") : "";
+  let g2211 = sec("G2211", "CHANGES").trim() === "YES";
+  let note = sec("NOTE", "END");
+  // Hard guard: G2211 is never payable on a day a procedure is performed today
+  // (the same-day E/M carries -25, and CMS does not reimburse G2211 with -25).
+  // This protects against the model emitting a G2211 sentence on injection/laser/surgery days.
+  const procedureToday = !!procedure && procedure.trim() !== "" && !/^none\b/i.test(procedure.trim());
+  if (procedureToday) {
+    g2211 = false;
+    note = note
+      .split("\n")
+      .filter((l) => !/longitudinal managing physician|ongoing complexity given|visit[- ]complexity add|\bG2211\b/i.test(l))
+      .join("\n");
+  }
   return {
     code: sec("CODE", hasProcedure ? "PROCEDURE" : "G2211"),
-    procedure: hasProcedure ? sec("PROCEDURE", "G2211") : "",
-    g2211: sec("G2211", "CHANGES").trim() === "YES",
+    procedure,
+    g2211,
     changes: sec("CHANGES", hasDiagnoses ? "DIAGNOSES" : "NOTE").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
     diagnoses: hasDiagnoses ? sec("DIAGNOSES", "NOTE") : "",
-    note: sec("NOTE", "END"),
+    note,
   };
 }
 
