@@ -18,7 +18,9 @@ const PAYERS = {
   HPHC: "Harvard Pilgrim",
   TuftsDirect: "Tufts Health Direct",
   MGB: "Mass General Brigham Health Plan",
+  MassHealth: "MassHealth (Medicaid)",
 };
+const hasPayer = (x, k) => k === "MassHealth" ? (x.mh != null || (x.type === "drug" && x.medicare != null)) : !!x.payers[k];
 
 const money = (v) => "$" + Math.round(v).toLocaleString();
 
@@ -94,19 +96,21 @@ export default function RateComparison({ onBack, embedded = false }) {
 
   const payerItems = Object.keys(PAYERS).map((k) => ({ val: k, label: PAYERS[k] }));
   const codeItems = useMemo(
-    () => HUB_DATA.filter((d) => d.payers[payer]).map((d) => ({ val: d.code, label: d.desc ? `${d.code} — ${d.desc}` : d.code, search: `${d.code} ${d.desc || ""} ${d.kw || ""}`.toLowerCase() })),
+    () => HUB_DATA.filter((d) => hasPayer(d, payer)).map((d) => ({ val: d.code, label: d.desc ? `${d.code} — ${d.desc}` : d.code, search: `${d.code} ${d.desc || ""} ${d.kw || ""}`.toLowerCase() })),
     [payer]
   );
 
   function pickPayer(k) {
     setPayer(k);
-    const d = HUB_DATA.find((x) => x.code === code && x.payers[k]);
-    if (!d) { const f = HUB_DATA.find((x) => x.payers[k]); setCode(f ? f.code : ""); }
+    const d = HUB_DATA.find((x) => x.code === code && hasPayer(x, k));
+    if (!d) { const f = HUB_DATA.find((x) => hasPayer(x, k)); setCode(f ? f.code : ""); }
   }
 
   const d = HUB_DATA.find((x) => x.code === code);
-  const p = d && d.payers[payer];
   const isDrug = d && d.type === "drug";
+  const isMH = payer === "MassHealth";
+  const mhRate = d ? (isDrug ? d.medicare : (d.mh != null ? d.mh : null)) : null;
+  const p = isMH ? (mhRate != null ? { vra: mhRate, lex: null } : null) : (d && d.payers[payer]);
   const upd = isDrug && d.units_per_dose ? d.units_per_dose : 1;
   const doseNote = upd > 1 ? "/dose" : isDrug ? "/unit" : "";
   const vra = p && p.vra != null ? p.vra * upd : null;
@@ -119,14 +123,15 @@ export default function RateComparison({ onBack, embedded = false }) {
   const medBar = worcU != null ? worcU * upd : null;
   const vraPct = p && p.vra != null && worcU ? p.vra / worcU : null;
   const lexPct = p && p.lex != null && bosU ? p.lex / bosU : null;
-  // MassHealth (Medicaid) benchmark: state-set, same for all providers. Drugs = Medicare ASP.
-  const mhRate = d ? (isDrug ? d.medicare : (d.mh != null ? d.mh : null)) : null;
   const mhDenom = isDrug ? (d && d.medicare) : worcU;
   const max = Math.max(vra || 0, lex || 0, medBar || 0);
 
   let verdict = null;
   if (p && p.vra != null) {
-    if (lex == null) {
+    if (isMH) {
+      if (isDrug) verdict = { c: S.gray, t: "MassHealth pays physician-administered drugs at the Medicare ASP rate — same as Medicare. State-set, identical for all providers." };
+      else { const pct = vraPct ? Math.round(vraPct * 100) : null; verdict = { c: S.amber, t: `State-set Medicaid rate — identical for every provider (no negotiation).${pct ? ` At ${pct}% of Medicare` : ""}${medBar != null ? `, about ${money(medBar - vra)} below Medicare per service` : ""}. This is your reimbursement floor.` }; }
+    } else if (lex == null) {
       verdict = { c: S.blue, t: `Lexington isn't contracted in this plan's network — no peer comparison.${vraPct ? ` You're at ${vraPct.toFixed(2)}× ${isDrug ? "Medicare" : "Worcester Medicare"}.` : ""}` };
     } else if (isDrug) {
       const g = (vra / lex - 1) * 100;
@@ -165,12 +170,12 @@ export default function RateComparison({ onBack, embedded = false }) {
             <div style={{ fontSize: "0.8rem", color: S.gray, marginBottom: 18 }}>{d.desc}</div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 22 }}>
-              <Card label="Your rate (VRA)" value={<>{money(vra)}<span style={{ fontSize: "0.75rem", color: S.muted }}>{doseNote}</span></>} color={S.blue} />
+              <Card label={isMH ? "MassHealth rate" : "Your rate (VRA)"} value={<>{money(vra)}<span style={{ fontSize: "0.75rem", color: S.muted }}>{doseNote}</span></>} color={S.blue} />
               {vraPct != null && <Card label={isDrug ? "vs Medicare" : "vs local Medicare"} value={`${vraPct.toFixed(2)}×`} />}
-              {lex != null ? <Card label="vs Lexington" value={`${vra / lex - 1 >= 0 ? "+" : ""}${((vra / lex - 1) * 100).toFixed(0)}%`} color={vra / lex - 1 < -0.015 ? S.amber : S.green} /> : <Card label="vs Lexington" value="n/a" />}
+              {!isMH && (lex != null ? <Card label="vs Lexington" value={`${vra / lex - 1 >= 0 ? "+" : ""}${((vra / lex - 1) * 100).toFixed(0)}%`} color={vra / lex - 1 < -0.015 ? S.amber : S.green} /> : <Card label="vs Lexington" value="n/a" />)}
             </div>
 
-            <Bar label="You (VRA)" val={vra} max={max} color={S.blue} />
+            <Bar label={isMH ? "MassHealth" : "You (VRA)"} val={vra} max={max} color={S.blue} />
             {lex != null && <Bar label="Lexington" val={lex} max={max} color={S.gray} />}
             {medBar != null && <Bar label={isDrug ? "Medicare" : "Medicare (Worcester)"} val={medBar} max={max} color={S.amber} />}
 
@@ -181,7 +186,7 @@ export default function RateComparison({ onBack, embedded = false }) {
               </div>
             )}
 
-            {mhRate != null && mhDenom ? (
+            {!isMH && mhRate != null && mhDenom ? (
               <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 10, padding: "10px 14px", marginTop: 10 }}>
                 <span style={{ color: S.gray, fontSize: "0.95rem" }}>◆</span>
                 <span style={{ fontSize: "0.8rem", color: S.gray, lineHeight: 1.5 }}>
