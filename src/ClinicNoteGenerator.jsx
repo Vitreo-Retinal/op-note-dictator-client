@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { AICodingAssistant } from "./CptReference.jsx";
+import RateComparison from "./RateComparison.jsx";
 import PatientEducation from "./PatientEducation.jsx";
 import DropSchedule from "./DropSchedule.jsx";
 import OpNoteDictator from "./OpNoteDictator.jsx";
@@ -1519,6 +1520,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           ["rules", "Expansion Rules"],
           ["instructions", "My Instructions"],
           ["coding", "AI Coding"],
+          ["rates", "Rate Comparison"],
           ["inject", "Can We Inject?"],
           ["education", "Patient Ed"],
           ["evidence", "Evidence"],
@@ -2128,6 +2130,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         {tab === "coding" && (
           <div style={{ maxWidth: 800, margin: "0 auto" }}>
             <AICodingAssistant showReimbursement={true} />
+          </div>
+        )}
+
+        {/* ── RATE COMPARISON TAB ──────────────────────────────── */}
+        {tab === "rates" && (
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            <RateComparison embedded />
           </div>
         )}
 

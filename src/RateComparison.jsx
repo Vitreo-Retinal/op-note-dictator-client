@@ -70,7 +70,7 @@ function Bar({ label, val, max, color, sub }) {
         <span style={{ color: S.gray }}>{label}{sub && <span style={{ color: S.muted }}> {sub}</span>}</span>
         <span style={{ fontWeight: 700, color: S.bright }}>{money(val)}</span>
       </div>
-      <div style={{ height: 14, background: S.bg, borderRadius: 7, overflow: "hidden" }}>
+      <div style={{ height: 14, background: S.card, borderRadius: 7, overflow: "hidden" }}>
         <div style={{ height: "100%", width: `${w}%`, background: color, borderRadius: 7 }} />
       </div>
     </div>
@@ -79,14 +79,14 @@ function Bar({ label, val, max, color, sub }) {
 
 function Card({ label, value, color }) {
   return (
-    <div style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 10, padding: "12px 14px" }}>
+    <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: "12px 14px" }}>
       <div style={{ fontSize: "0.72rem", color: S.muted, marginBottom: 5, fontFamily: S.mono }}>{label}</div>
       <div style={{ fontSize: "1.4rem", fontWeight: 700, color: color || S.bright }}>{value}</div>
     </div>
   );
 }
 
-export default function RateComparison({ onBack }) {
+export default function RateComparison({ onBack, embedded = false }) {
   const [payer, setPayer] = useState("BCBS");
   const [code, setCode] = useState("67028");
 
@@ -130,12 +130,14 @@ export default function RateComparison({ onBack }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
-      <div style={{ padding: "10px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Back</button>
-        <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>📊 Rate Comparison</span>
-        <span style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.mono }}>VRA vs Lexington vs Medicare</span>
-      </div>
+    <div style={embedded ? { fontFamily: S.font, color: S.text } : { minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
+      {!embedded && (
+        <div style={{ padding: "10px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Back</button>
+          <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>📊 Rate Comparison</span>
+          <span style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.mono }}>VRA vs Lexington vs Medicare</span>
+        </div>
+      )}
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "24px 20px 48px" }}>
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 24 }}>
