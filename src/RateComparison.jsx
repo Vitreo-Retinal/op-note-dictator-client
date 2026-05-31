@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { HUB_DATA } from "./hubData.js";
+import { LOCAL_MED } from "./localMedicare.js";
 
 // ── Manager's Hub: payer rate comparison (VRA vs Lexington vs Medicare) ──
 // Reachable from the Manager's Hub and the Doctor's Hub. Reimbursement-bearing,
@@ -109,23 +110,28 @@ export default function RateComparison({ onBack, embedded = false }) {
   const doseNote = upd > 1 ? "/dose" : isDrug ? "/unit" : "";
   const vra = p && p.vra != null ? p.vra * upd : null;
   const lex = p && p.lex != null ? p.lex * upd : null;
-  const med = d && d.medicare != null ? d.medicare * upd : null;
-  const max = Math.max(vra || 0, lex || 0, med || 0);
+  // Local Medicare by locality: drugs have NO geographic adjustment (national ASP);
+  // procedures use Worcester (VRA) vs Metropolitan Boston (Lexington) GPCI.
+  const loc = d ? LOCAL_MED[d.code] : null;
+  const worcU = isDrug ? (d && d.medicare) : (loc ? loc.worc : (d && d.medicare));
+  const bosU = isDrug ? (d && d.medicare) : (loc ? loc.bos : (d && d.medicare));
+  const medBar = worcU != null ? worcU * upd : null;
+  const vraPct = p && p.vra != null && worcU ? p.vra / worcU : null;
+  const lexPct = p && p.lex != null && bosU ? p.lex / bosU : null;
+  const max = Math.max(vra || 0, lex || 0, medBar || 0);
 
   let verdict = null;
-  if (vra != null) {
+  if (p && p.vra != null) {
     if (lex == null) {
-      verdict = { c: S.blue, t: `Lexington isn't contracted in this plan's network — no peer comparison.${med ? ` You're at ${(vra / med).toFixed(2)}× Medicare.` : ""}` };
-    } else {
+      verdict = { c: S.blue, t: `Lexington isn't contracted in this plan's network — no peer comparison.${vraPct ? ` You're at ${vraPct.toFixed(2)}× ${isDrug ? "Medicare" : "Worcester Medicare"}.` : ""}` };
+    } else if (isDrug) {
       const g = (vra / lex - 1) * 100;
-      if (g >= -1.5) {
-        verdict = { c: S.green, t: g > 1.5 ? `You're contracted ${g.toFixed(0)}% above Lexington — strong position.` : "On par with Lexington — same top-tier rate." };
-      } else {
-        const gap = -g;
-        if (isDrug) verdict = { c: S.amber, t: `Lexington is ${gap.toFixed(0)}% higher on this drug. Drugs aren't geographically adjusted, so this is a real contract gap.` };
-        else if (gap <= 11) verdict = { c: S.amber, t: `Lexington is ${gap.toFixed(0)}% higher — within the ~9% Boston-vs-Worcester premium, so largely geographic.` };
-        else verdict = { c: S.red, t: `Lexington is ${gap.toFixed(0)}% higher — beyond the ~9% geography premium; ~${(gap - 9).toFixed(0)}% looks like a real contract gap.` };
-      }
+      if (g >= -1.5) verdict = { c: S.green, t: g > 1.5 ? `You're paid ${g.toFixed(0)}% above Lexington on this drug.` : "On par with Lexington on this drug." };
+      else verdict = { c: S.amber, t: `Lexington is ${(-g).toFixed(0)}% higher on this drug. Drugs aren't geographically adjusted, so this is a real contract gap.` };
+    } else if (vraPct != null && lexPct != null) {
+      const v = vraPct * 100, l = lexPct * 100;
+      if (v >= l - 1.5) verdict = { c: S.green, t: `Geography-adjusted, you're even or ahead: ${v.toFixed(0)}% of Worcester Medicare vs Lexington's ${l.toFixed(0)}% of Boston Medicare. Any raw dollar gap is regional, not negotiation.` };
+      else verdict = { c: (l - v) > 5 ? S.red : S.amber, t: `Even after geography, Lexington is contracted higher: you at ${v.toFixed(0)}% of Worcester Medicare vs their ${l.toFixed(0)}% of Boston Medicare — about ${(l - v).toFixed(0)} points of genuine contract gap.` };
     }
   }
 
@@ -156,13 +162,13 @@ export default function RateComparison({ onBack, embedded = false }) {
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 22 }}>
               <Card label="Your rate (VRA)" value={<>{money(vra)}<span style={{ fontSize: "0.75rem", color: S.muted }}>{doseNote}</span></>} color={S.blue} />
-              {med != null && <Card label="vs Medicare" value={`${(vra / med).toFixed(2)}×`} />}
+              {vraPct != null && <Card label={isDrug ? "vs Medicare" : "vs local Medicare"} value={`${vraPct.toFixed(2)}×`} />}
               {lex != null ? <Card label="vs Lexington" value={`${vra / lex - 1 >= 0 ? "+" : ""}${((vra / lex - 1) * 100).toFixed(0)}%`} color={vra / lex - 1 < -0.015 ? S.amber : S.green} /> : <Card label="vs Lexington" value="n/a" />}
             </div>
 
             <Bar label="You (VRA)" val={vra} max={max} color={S.blue} />
             {lex != null && <Bar label="Lexington" val={lex} max={max} color={S.gray} />}
-            {med != null && <Bar label="Medicare" val={med} max={max} color={S.amber} />}
+            {medBar != null && <Bar label={isDrug ? "Medicare" : "Medicare (Worcester)"} val={medBar} max={max} color={S.amber} />}
 
             {verdict && (
               <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: S.card, border: `1px solid ${verdict.c}`, borderRadius: 10, padding: "12px 14px", marginTop: 16 }}>
@@ -174,7 +180,7 @@ export default function RateComparison({ onBack, embedded = false }) {
         )}
 
         <p style={{ fontSize: "0.7rem", color: S.muted, marginTop: 28, lineHeight: 1.6, fontFamily: S.mono }}>
-          In-office (POS 11) commercial rates from published MRFs · Medicare = 2026 MPFS / ASP · drugs per standard dose · Lexington = Boston Medicare locality (~9% higher cost basis than Worcester).
+          In-office (POS 11) commercial rates from published MRFs · Medicare = 2026 MPFS (procedures) / ASP (drugs). "vs local Medicare" applies each practice's own MA locality GPCI — Worcester (Rest of MA) for VRA, Metro Boston for Lexington — so the geography is removed and what's left is the true contract difference. Drugs are national (no geographic adjustment).
         </p>
       </div>
     </div>
