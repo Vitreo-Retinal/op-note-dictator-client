@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { HUB_DATA } from "./hubData.js";
 
 // ── Manager's Hub: payer rate comparison (VRA vs Lexington vs Medicare) ──
@@ -24,6 +24,7 @@ function Combo({ label, value, placeholder, items, onPick }) {
   // items: [{ val, label }]
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const inputRef = useRef(null);
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = q ? items.filter((it) => it.label.toLowerCase().includes(q)) : items;
@@ -34,11 +35,12 @@ function Combo({ label, value, placeholder, items, onPick }) {
     <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
       <label style={{ display: "block", fontSize: "0.72rem", color: S.muted, marginBottom: 4, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 1 }}>{label}</label>
       <input
+        ref={inputRef}
         type="text"
         value={open ? query : value}
         placeholder={placeholder}
-        onFocus={() => { setOpen(true); setQuery(""); }}
-        onChange={(e) => setQuery(e.target.value)}
+        onFocus={(e) => { setOpen(true); setQuery(""); e.target.select(); }}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         style={{ width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "11px 13px", color: S.text, fontFamily: S.font, fontSize: "0.9rem", boxSizing: "border-box" }}
       />
@@ -47,7 +49,7 @@ function Combo({ label, value, placeholder, items, onPick }) {
           {shown.length === 0 && <div style={{ padding: "10px 12px", fontSize: "0.78rem", color: S.muted }}>No matches</div>}
           {shown.map((it) => (
             <div key={it.val}
-              onMouseDown={(e) => { e.preventDefault(); onPick(it.val); setOpen(false); }}
+              onMouseDown={(e) => { e.preventDefault(); onPick(it.val); setQuery(""); setOpen(false); if (inputRef.current) inputRef.current.blur(); }}
               style={{ padding: "9px 12px", fontSize: "0.85rem", color: S.text, cursor: "pointer", borderBottom: `1px solid ${S.border}` }}
               onMouseEnter={(e) => (e.currentTarget.style.background = S.bg)}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
