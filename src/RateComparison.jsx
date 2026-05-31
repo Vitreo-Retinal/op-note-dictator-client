@@ -18,6 +18,7 @@ const PAYERS = {
   HPHC: "Harvard Pilgrim",
   TuftsDirect: "Tufts Health Direct",
   MGB: "Mass General Brigham Health Plan",
+  Fallon: "Fallon Health",
   MassHealth: "MassHealth (Medicaid)",
 };
 const hasPayer = (x, k) => k === "MassHealth" ? (x.mh != null || (x.type === "drug" && x.medicare != null)) : !!x.payers[k];
