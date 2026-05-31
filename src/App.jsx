@@ -4,6 +4,7 @@ import ClinicNoteGenerator from "./ClinicNoteGenerator.jsx";
 import CptReference from "./CptReference.jsx";
 import PatientEducation from "./PatientEducation.jsx";
 import Documents from "./Documents.jsx";
+import RateComparison from "./RateComparison.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -85,7 +86,7 @@ function PasswordGate({ onSuccess }) {
 }
 
 // ── Homepage ────────────────────────────────────────────────────────
-function Homepage({ onSelectTool, onSelectDoctor }) {
+function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
   const sharedTools = [
     {
       id: "inject",
@@ -173,6 +174,27 @@ function Homepage({ onSelectTool, onSelectDoctor }) {
               <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", fontWeight: 700, color: "#fff", fontFamily: S.mono }}>{doc.name}</div>
             </button>
           ))}
+        </div>
+
+        {/* Practice management divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "32px 0 18px" }}>
+          <div style={{ height: 1, flex: 1, background: S.border }} />
+          <span style={{ fontSize: "0.75rem", color: S.muted, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 1 }}>Practice Management</span>
+          <div style={{ height: 1, flex: 1, background: S.border }} />
+        </div>
+
+        {/* Manager's Hub (PIN-gated) */}
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button onClick={onSelectManager}
+            style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 12, padding: "16px 28px", cursor: "pointer", transition: "border-color 0.2s, transform 0.15s", display: "flex", alignItems: "center", gap: 12, minWidth: 240 }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#06b6d4"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = S.border; e.currentTarget.style.transform = "translateY(0)"; }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg,#0891b2,#0e7490)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>📊</div>
+            <div style={{ textAlign: "left" }}>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Manager's Hub</div>
+              <div style={{ fontSize: "0.7rem", color: S.muted, fontFamily: S.mono }}>Rate comparison · PIN required</div>
+            </div>
+          </button>
         </div>
       </div>
     </div>
@@ -265,6 +287,41 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
   );
 }
 
+// ── Manager's Hub PIN Gate (client-side; separate from doctor PINs) ──
+function ManagerPinGate({ onSuccess, onCancel }) {
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (pin.trim() === "2967") {
+      onSuccess();
+    } else {
+      setError("Incorrect PIN.");
+      setPin("");
+    }
+  }
+
+  return (
+    <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
+      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: "36px 32px", width: "100%", maxWidth: 340, textAlign: "center" }}>
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#0891b2,#0e7490)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", margin: "0 auto 14px" }}>📊</div>
+        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>Manager's Hub</div>
+        <div style={{ fontSize: "0.76rem", color: S.muted, marginBottom: 20 }}>Enter manager PIN to continue</div>
+        <input type="password" inputMode="numeric" pattern="[0-9]*" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="PIN" autoFocus
+          style={{ display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px", color: S.text, fontFamily: S.mono, fontSize: "1.1rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center", letterSpacing: 6 }} />
+        {error && <div style={{ color: "#f87171", fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button type="button" onClick={onCancel}
+            style={{ flex: 1, background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 0", color: S.muted, fontFamily: S.font, fontSize: "0.85rem", cursor: "pointer" }}>Cancel</button>
+          <button type="submit" disabled={!pin.trim()}
+            style={{ flex: 1, background: !pin.trim() ? S.card : "linear-gradient(135deg,#0891b2,#0e7490)", color: !pin.trim() ? "#475569" : "#fff", border: "none", borderRadius: 8, padding: "10px 0", fontSize: "0.85rem", fontFamily: S.font, fontWeight: 600, cursor: !pin.trim() ? "not-allowed" : "pointer" }}>Enter</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 // ── App Router ──────────────────────────────────────────────────────
 export default function App() {
   const [authed, setAuthed] = useState(false);
@@ -333,11 +390,20 @@ export default function App() {
     );
   }
 
+  // ── Manager's Hub (PIN-gated; managers + doctors, never techs) ──
+  if (page === "managerpin") {
+    return <ManagerPinGate onSuccess={() => setPage("manager")} onCancel={() => setPage("home")} />;
+  }
+  if (page === "manager") {
+    return <RateComparison onBack={() => setPage("home")} />;
+  }
+
   // ── Homepage ──
   return (
     <Homepage
       onSelectTool={(id) => setPage(id)}
       onSelectDoctor={(doc) => { setActiveSurgeon(doc); setPage("pin"); }}
+      onSelectManager={() => setPage("managerpin")}
     />
   );
 }
