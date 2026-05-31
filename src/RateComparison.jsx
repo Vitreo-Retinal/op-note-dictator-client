@@ -28,7 +28,7 @@ function Combo({ label, value, placeholder, items, onPick }) {
   const inputRef = useRef(null);
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const list = q ? items.filter((it) => it.label.toLowerCase().includes(q)) : items;
+    const list = q ? items.filter((it) => (it.search || it.label).includes(q)) : items;
     return list.slice(0, 60);
   }, [query, items]);
 
@@ -93,7 +93,7 @@ export default function RateComparison({ onBack, embedded = false }) {
 
   const payerItems = Object.keys(PAYERS).map((k) => ({ val: k, label: PAYERS[k] }));
   const codeItems = useMemo(
-    () => HUB_DATA.filter((d) => d.payers[payer]).map((d) => ({ val: d.code, label: d.desc ? `${d.code} — ${d.desc}` : d.code })),
+    () => HUB_DATA.filter((d) => d.payers[payer]).map((d) => ({ val: d.code, label: d.desc ? `${d.code} — ${d.desc}` : d.code, search: `${d.code} ${d.desc || ""} ${d.kw || ""}`.toLowerCase() })),
     [payer]
   );
 
