@@ -119,6 +119,9 @@ export default function RateComparison({ onBack, embedded = false }) {
   const medBar = worcU != null ? worcU * upd : null;
   const vraPct = p && p.vra != null && worcU ? p.vra / worcU : null;
   const lexPct = p && p.lex != null && bosU ? p.lex / bosU : null;
+  // MassHealth (Medicaid) benchmark: state-set, same for all providers. Drugs = Medicare ASP.
+  const mhRate = d ? (isDrug ? d.medicare : (d.mh != null ? d.mh : null)) : null;
+  const mhDenom = isDrug ? (d && d.medicare) : worcU;
   const max = Math.max(vra || 0, lex || 0, medBar || 0);
 
   let verdict = null;
@@ -177,6 +180,15 @@ export default function RateComparison({ onBack, embedded = false }) {
                 <span style={{ fontSize: "0.85rem", color: S.text, lineHeight: 1.5 }}>{verdict.t}</span>
               </div>
             )}
+
+            {mhRate != null && mhDenom ? (
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 10, padding: "10px 14px", marginTop: 10 }}>
+                <span style={{ color: S.gray, fontSize: "0.95rem" }}>◆</span>
+                <span style={{ fontSize: "0.8rem", color: S.gray, lineHeight: 1.5 }}>
+                  <span style={{ color: S.text, fontWeight: 700 }}>MassHealth (Medicaid): {money(mhRate * upd)}{doseNote}</span> — {Math.round((mhRate / mhDenom) * 100)}% of Medicare · state‑set rate, same for all providers{isDrug ? " (drugs paid at Medicare ASP)" : ""}.
+                </span>
+              </div>
+            ) : null}
           </>
         )}
 
