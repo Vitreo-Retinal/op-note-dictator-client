@@ -17,6 +17,7 @@ const PAYERS = {
   BCBS: "Blue Cross Blue Shield MA",
   HPHC: "Harvard Pilgrim",
   TuftsDirect: "Tufts Health Direct",
+  MGB: "Mass General Brigham Health Plan",
 };
 
 const money = (v) => "$" + Math.round(v).toLocaleString();
