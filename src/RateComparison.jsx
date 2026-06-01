@@ -19,17 +19,17 @@ const PAYERS = {
   TuftsDirect: "Tufts Health Direct",
   MGB: "Mass General Brigham Health Plan",
   Fallon: "Fallon Community Care (Connector)",
-  MassHealth: "MassHealth (Medicaid)",
-  WellSense: "WellSense (MassHealth MCO)",
-  TuftsTogether: "Tufts Health Together (MassHealth MCO)",
+  MassHealth: "MassHealth (Medicaid FFS)",
   VAOptum: "VA-Optum (VA Community Care)",
 };
-// Government benchmark payers: fixed schedules, not negotiated (no Lexington comparison).
-//   medicaid → pays the MassHealth state schedule (procedures = mh; drugs = Medicare ASP)
-//   medicare → pays the Medicare rate (procedures = Worcester locality; drugs = ASP)
-const MEDICAID_BENCH = new Set(["MassHealth", "WellSense", "TuftsTogether"]);
+// Government benchmark payers: FIXED schedules, not negotiated (no Lexington comparison).
+//   medicaid → MassHealth FFS: procedures = 101 CMR 317; drugs = Medicare ASP (per 101 CMR 317.04)
+//   medicare → Medicare rate (procedures = Worcester locality; drugs = ASP)
+// NOTE: MassHealth MCOs (Tufts Together, WellSense, etc.) are NOT here — they negotiate their own
+// rates (esp. drugs), publish no MRF (Medicaid is TiC-exempt), so they need EOB data, not this benchmark.
+const MEDICAID_BENCH = new Set(["MassHealth"]);
 const MEDICARE_BENCH = new Set(["VAOptum"]);
-const BENCH_SHORT = { MassHealth: "MassHealth", WellSense: "WellSense", TuftsTogether: "Tufts Together", VAOptum: "VA-Optum" };
+const BENCH_SHORT = { MassHealth: "MassHealth", VAOptum: "VA-Optum" };
 const hasPayer = (x, k) =>
   MEDICAID_BENCH.has(k) ? (x.mh != null || (x.type === "drug" && x.medicare != null))
   : MEDICARE_BENCH.has(k) ? (x.medicare != null || LOCAL_MED[x.code] != null)
