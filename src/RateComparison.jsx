@@ -20,11 +20,19 @@ const PAYERS = {
   MGB: "Mass General Brigham Health Plan",
   Fallon: "Fallon Community Care (Connector)",
   MassHealth: "MassHealth (Medicaid)",
+  WellSense: "WellSense (MassHealth MCO)",
+  TuftsTogether: "Tufts Health Together (MassHealth MCO)",
   VAOptum: "VA-Optum (VA Community Care)",
 };
+// Government benchmark payers: fixed schedules, not negotiated (no Lexington comparison).
+//   medicaid → pays the MassHealth state schedule (procedures = mh; drugs = Medicare ASP)
+//   medicare → pays the Medicare rate (procedures = Worcester locality; drugs = ASP)
+const MEDICAID_BENCH = new Set(["MassHealth", "WellSense", "TuftsTogether"]);
+const MEDICARE_BENCH = new Set(["VAOptum"]);
+const BENCH_SHORT = { MassHealth: "MassHealth", WellSense: "WellSense", TuftsTogether: "Tufts Together", VAOptum: "VA-Optum" };
 const hasPayer = (x, k) =>
-  k === "MassHealth" ? (x.mh != null || (x.type === "drug" && x.medicare != null))
-  : k === "VAOptum" ? (x.medicare != null || LOCAL_MED[x.code] != null)
+  MEDICAID_BENCH.has(k) ? (x.mh != null || (x.type === "drug" && x.medicare != null))
+  : MEDICARE_BENCH.has(k) ? (x.medicare != null || LOCAL_MED[x.code] != null)
   : !!x.payers[k];
 
 const money = (v) => "$" + Math.round(v).toLocaleString();
@@ -113,8 +121,9 @@ export default function RateComparison({ onBack, embedded = false }) {
 
   const d = HUB_DATA.find((x) => x.code === code);
   const isDrug = d && d.type === "drug";
-  const isMH = payer === "MassHealth";
-  const isVA = payer === "VAOptum";
+  const isMH = MEDICAID_BENCH.has(payer);
+  const isVA = MEDICARE_BENCH.has(payer);
+  const benchShort = BENCH_SHORT[payer] || "";
   const mhRate = d ? (isDrug ? d.medicare : (d.mh != null ? d.mh : null)) : null;
   const vaRate = d ? (isDrug ? d.medicare : (LOCAL_MED[d.code] ? LOCAL_MED[d.code].worc : d.medicare)) : null;
   const p = isMH ? (mhRate != null ? { vra: mhRate, lex: null } : null)
@@ -138,8 +147,9 @@ export default function RateComparison({ onBack, embedded = false }) {
   let verdict = null;
   if (p && p.vra != null) {
     if (isMH) {
-      if (isDrug) verdict = { c: S.gray, t: "MassHealth pays physician-administered drugs at the Medicare ASP rate — same as Medicare. State-set, identical for all providers." };
-      else { const pct = vraPct ? Math.round(vraPct * 100) : null; verdict = { c: S.amber, t: `State-set Medicaid rate — identical for every provider (no negotiation).${pct ? ` At ${pct}% of Medicare` : ""}${medBar != null ? `, about ${money(medBar - vra)} below Medicare per service` : ""}. This is your reimbursement floor.` }; }
+      const mcoNote = payer === "MassHealth" ? "" : " (MassHealth MCO — pays the state schedule)";
+      if (isDrug) verdict = { c: S.gray, t: `${benchShort} pays physician-administered drugs at the Medicare ASP rate — the MassHealth schedule${mcoNote}. State-set, identical for all providers.` };
+      else { const pct = vraPct ? Math.round(vraPct * 100) : null; verdict = { c: S.amber, t: `${benchShort}: state-set MassHealth (Medicaid) rate${mcoNote} — identical for every provider, no negotiation.${pct ? ` At ${pct}% of Medicare` : ""}${medBar != null ? `, about ${money(medBar - vra)} below Medicare per service` : ""}. Your reimbursement floor.` }; }
     } else if (isVA) {
       verdict = { c: S.gray, t: isDrug
         ? "VA Community Care pays physician-administered drugs at the Medicare Part B rate (ASP + 6%) — same as Medicare. Federally set, identical for every provider; a negotiated Optum contract rate, if any, would override."
@@ -183,12 +193,12 @@ export default function RateComparison({ onBack, embedded = false }) {
             <div style={{ fontSize: "0.8rem", color: S.gray, marginBottom: 18 }}>{d.desc}</div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 22 }}>
-              <Card label={isMH ? "MassHealth rate" : isVA ? "VA-Optum rate" : "Your rate (VRA)"} value={<>{money(vra)}<span style={{ fontSize: "0.75rem", color: S.muted }}>{doseNote}</span></>} color={S.blue} />
+              <Card label={(isMH || isVA) ? benchShort + " rate" : "Your rate (VRA)"} value={<>{money(vra)}<span style={{ fontSize: "0.75rem", color: S.muted }}>{doseNote}</span></>} color={S.blue} />
               {vraPct != null && <Card label={isDrug ? "vs Medicare" : "vs local Medicare"} value={`${vraPct.toFixed(2)}×`} />}
               {!isMH && !isVA && (lex != null ? <Card label="vs Lexington" value={`${vra / lex - 1 >= 0 ? "+" : ""}${((vra / lex - 1) * 100).toFixed(0)}%`} color={vra / lex - 1 < -0.015 ? S.amber : S.green} /> : <Card label="vs Lexington" value="n/a" />)}
             </div>
 
-            <Bar label={isMH ? "MassHealth" : isVA ? "VA-Optum" : "You (VRA)"} val={vra} max={max} color={S.blue} />
+            <Bar label={(isMH || isVA) ? benchShort : "You (VRA)"} val={vra} max={max} color={S.blue} />
             {lex != null && <Bar label="Lexington" val={lex} max={max} color={S.gray} />}
             {medBar != null && <Bar label={isDrug ? "Medicare" : "Medicare (Worcester)"} val={medBar} max={max} color={S.amber} />}
 
