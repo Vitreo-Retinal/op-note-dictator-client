@@ -225,7 +225,7 @@ export default function RateComparison({ onBack, embedded = false }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 20 }}>
             <Card label={data.kind === "bench" ? "Rate · all providers" : "Your rate (VRA)"} value={money(vra)} color={S.blue} sub={data.vra_pctile != null ? `${ordinal(data.vra_pctile)} percentile of ${fld.n} MA providers` : null} />
             {data.kind !== "bench" && <Card label={targetLabel || "Comparison"} value={money(targetVal)} />}
-            {vraPctOfMed != null && data.kind !== "bench" && <Card label="vs local Medicare" value={`${vraPctOfMed.toFixed(2)}×`} sub="Worcester locality" />}
+            {vraPctOfMed != null && data.kind !== "bench" && <Card label="vs local Medicare" value={`${vraPctOfMed.toFixed(2)}×`} sub={`Worcester · Medicare ${money(medLocal)}`} />}
           </div>
 
           {verdict && (
