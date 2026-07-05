@@ -55,6 +55,7 @@ function PasswordGate({ onSuccess }) {
       });
       const data = await res.json();
       if (data.success) {
+        if (data.token) sessionStorage.setItem("vra_token", data.token);
         onSuccess();
       } else {
         setError("Incorrect password.");
@@ -245,6 +246,7 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
       });
       const data = await res.json();
       if (data.success) {
+        if (data.token) sessionStorage.setItem("vra_token", data.token);
         onSuccess();
       } else {
         setError("Incorrect PIN.");
@@ -287,18 +289,35 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
   );
 }
 
-// ── Manager's Hub PIN Gate (client-side; separate from doctor PINs) ──
+// ── Manager's Hub PIN Gate (verified server-side as of July 2026) ──
 function ManagerPinGate({ onSuccess, onCancel }) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (pin.trim() === "2967") {
-      onSuccess();
-    } else {
-      setError("Incorrect PIN.");
-      setPin("");
+    if (!pin.trim()) return;
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/api/verify-pin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ surgeonId: "MANAGER", pin: pin.trim() }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (data.token) sessionStorage.setItem("vra_token", data.token);
+        onSuccess();
+      } else {
+        setError("Incorrect PIN.");
+        setPin("");
+      }
+    } catch {
+      setError("Could not connect to server.");
+    } finally {
+      setLoading(false);
     }
   }
 
