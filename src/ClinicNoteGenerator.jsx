@@ -1413,7 +1413,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     if (!note.trim()) return;
     setLoading(true); setError(""); setResult(null);
     try {
-      const systemPrompt = buildSystemPrompt(mode, examples, customInstructions);
+      // System prompt now lives server-side (server/prompts/note-generator-prompt.js, July 2026).
+      // The server builds it from mode + examples + customInstructions sent below.
       const timeNote = timeSpent.trim() ? `\n\nTIME SPENT WITH PATIENT: ${timeSpent.trim()} minutes (use for time-based coding if it supports a higher E/M level than MDM alone)` : "";
       const globalContext = calcGlobalPeriodContext(note);
       const globalNote = globalContext ? `\n\n${globalContext}` : "";
@@ -1426,7 +1427,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system: systemPrompt,
+          mode,
+          examples,
+          customInstructions,
           userMessage,
           model: "claude-sonnet-4-6",
           max_tokens: 3000,
