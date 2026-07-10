@@ -47,15 +47,42 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const [lastInjDate, setLastInjDate] = useState("");
   const [fuWeeks, setFuWeeks] = useState("");
 
-  // Voice dictation (Deepgram)
+  // Voice dictation (Whisper + Haiku cleanup)
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [pendingEdit, setPendingEdit] = useState(""); // dictated edit instruction being applied
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerRef = useRef(null);
+  const noteRef = useRef(null);              // the note textarea (for cursor position)
+  const lastCursorRef = useRef(null);        // last cursor position in the note (null = append at end)
+  const recordingPurposeRef = useRef("insert"); // "insert" (into note) | "edit" (spoken instruction)
+  const runRef = useRef(null);               // set below, lets dictation auto-trigger a regenerate
 
-  const startRecording = useCallback(async () => {
+  // Deliver a finished transcript according to the recording's purpose
+  const deliverTranscript = (text) => {
+    if (recordingPurposeRef.current === "edit") {
+      setPendingEdit(text);
+      if (runRef.current) runRef.current(text); // apply the spoken edit + regenerate
+      return;
+    }
+    setNote(prev => {
+      if (!prev) return text;
+      const pos = lastCursorRef.current;
+      if (pos == null || pos >= prev.length) return prev + "\n" + text; // no cursor known → append (original behavior)
+      // Insert at the cursor with smart spacing
+      const before = prev.slice(0, pos);
+      const after = prev.slice(pos);
+      const lead = before && !/\s$/.test(before) ? " " : "";
+      const trail = after && !/^\s/.test(after) ? " " : "";
+      lastCursorRef.current = pos + lead.length + text.length;
+      return before + lead + text + trail + after;
+    });
+  };
+
+  const startRecording = useCallback(async (purpose) => {
+    recordingPurposeRef.current = purpose === "edit" ? "edit" : "insert";
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
@@ -88,10 +115,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               });
               const cleanData = await cleanResp.json();
               const finalText = cleanData.success && cleanData.cleaned ? cleanData.cleaned : data.transcript;
-              setNote(prev => prev ? prev + "\n" + finalText : finalText);
+              deliverTranscript(finalText);
             } catch {
               // If cleanup fails, use raw transcript
-              setNote(prev => prev ? prev + "\n" + data.transcript : data.transcript);
+              deliverTranscript(data.transcript);
             }
           } else {
             setError(data.error || "Transcription failed");
@@ -267,7 +294,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
 
   // ── Run ───────────────────────────────────────────────────────────
-  async function run() {
+  // Optional editInstruction: a dictated spoken edit to apply during regeneration
+  // (guard against React passing the click event when used as onClick={run}).
+  async function run(editInstruction) {
+    const edit = typeof editInstruction === "string" ? editInstruction.trim() : "";
     if (!note.trim()) return;
     setLoading(true); setError(""); setResult(null);
     try {
@@ -277,9 +307,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       const globalContext = calcGlobalPeriodContext(note);
       const globalNote = globalContext ? `\n\n${globalContext}` : "";
       const plaquenilNote = calcPlaquenilDose(note);
+      const editNote = edit ? `\n\nDICTATED EDIT INSTRUCTION — the physician spoke this change; apply it to the note content before finalizing (it is an instruction, not note text): ${edit}` : "";
       const userMessage = mode === "generate"
-        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}${globalNote}${plaquenilNote}`
-        : `Optimize this existing A/P note with minimum billing language:\n\n${note}${timeNote}${globalNote}${plaquenilNote}`;
+        ? `Expand this shorthand into a formatted A/P note with billing language:\n\n${note}${timeNote}${globalNote}${plaquenilNote}${editNote}`
+        : `Optimize this existing A/P note with minimum billing language:\n\n${note}${timeNote}${globalNote}${plaquenilNote}${editNote}`;
 
       const res = await fetch(`${API_BASE}/api/generate-note`, {
         method: "POST",
@@ -300,6 +331,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       const parsed = parseResponse(text);
       setResult(parsed);
       setTab("output");
+      if (edit) setPendingEdit(""); // spoken edit applied — clear the banner
 
       // Use deterministic ICD-10 codes from server (dictionary lookup, no Haiku)
       if (data.icd10Codes && data.icd10Codes.length > 0) {
@@ -313,6 +345,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       setLoading(false);
     }
   }
+  runRef.current = run; // lets the dictation pipeline auto-trigger a regenerate with a spoken edit
 
   // ── Render note with [+] badges ───────────────────────────────────
   function renderBold(segment, segKey) {
@@ -473,10 +506,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 : "Paste your structured A/P note — the tool inserts minimum billing-compliant language."}
             </div>
 
-            {/* Dictation mic button */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            {/* Dictation mic buttons */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
               <button
-                onClick={isRecording ? stopRecording : startRecording}
+                onClick={isRecording ? stopRecording : () => startRecording("insert")}
                 disabled={isTranscribing}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
@@ -511,16 +544,58 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   </>
                 )}
               </button>
+              {!isRecording && (
+                <button
+                  onClick={() => startRecording("edit")}
+                  disabled={isTranscribing || loading || !note.trim()}
+                  title={!note.trim() ? "Enter or dictate a note first" : "Speak a change — it will be applied and the note regenerated"}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "8px 16px", borderRadius: 8,
+                    border: `1px solid ${!note.trim() || loading ? S.border : "#8b5cf6"}`,
+                    background: S.card,
+                    color: !note.trim() || loading ? "#475569" : "#c4b5fd",
+                    fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600,
+                    cursor: isTranscribing || loading || !note.trim() ? "not-allowed" : "pointer",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="9" y="1" width="6" height="12" rx="3" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="23" />
+                    <line x1="8" y1="23" x2="16" y2="23" />
+                  </svg>
+                  Dictate an Edit
+                </button>
+              )}
               {isRecording && (
                 <span style={{ fontSize: "0.72rem", color: "#ef4444", fontWeight: 600 }}>
-                  ● Recording — speak now
+                  ● Recording — {recordingPurposeRef.current === "edit" ? "speak the change you want (e.g. “change follow-up to 2 weeks”)" : "speak now"}
                 </span>
               )}
             </div>
 
+            {/* Dictation tips + pending edit banner */}
+            {!isRecording && !pendingEdit && (
+              <div style={{ fontSize: "0.66rem", color: "#475569", marginBottom: 8 }}>
+                Tip: click a spot in the note, then Dictate — your words are inserted right there. Or use Dictate an Edit to speak a change and regenerate hands-free.
+              </div>
+            )}
+            {pendingEdit && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#2e1065", border: "1px solid #8b5cf6", borderRadius: 8, padding: "8px 12px", marginBottom: 10, fontSize: "0.76rem", color: "#ddd6fe" }}>
+                <span style={{ fontWeight: 700, flexShrink: 0 }}>{loading ? "Applying edit:" : "Edit heard:"}</span>
+                <span style={{ flex: 1, fontStyle: "italic" }}>&ldquo;{pendingEdit}&rdquo;</span>
+                <button onClick={() => setPendingEdit("")} style={{ background: "none", border: "none", color: "#a78bfa", cursor: "pointer", fontSize: "0.9rem", flexShrink: 0 }}>✕</button>
+              </div>
+            )}
+
             <textarea
+              ref={noteRef}
               value={note}
-              onChange={e => setNote(e.target.value)}
+              onChange={e => { setNote(e.target.value); lastCursorRef.current = e.target.selectionStart; }}
+              onSelect={e => { lastCursorRef.current = e.target.selectionStart; }}
+              onKeyUp={e => { lastCursorRef.current = e.target.selectionStart; }}
               placeholder={mode === "generate"
                 ? "67 yo W, AMD denies Fhx, non-smoker, OD I dry, OS wet AMD failed A and E, on V q8..."
                 : "Paste your structured A/P note here..."}
