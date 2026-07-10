@@ -281,12 +281,145 @@ function SurgicalCodeMap({ onPick }) {
   );
 }
 
+// ── Modifier decision map (-25 vs -57) ──────────────────────────────
+const MINOR_LEAVES = [
+  { code: "67028", label: "Intravitreal injection" },
+  { code: "67145", label: "Laser retinopexy (tear)" },
+  { code: "67228", label: "PRP" },
+  { code: "65800", label: "AC tap / paracentesis" },
+  { code: "67141", label: "Cryotherapy (tear)" },
+];
+const MAJOR_LEAVES = [
+  { code: "67015", label: "Vitreous tap (tap & inject)" },
+  { code: "67108", label: "RD repair — decision today" },
+  { code: "66821", label: "YAG capsulotomy — 90-day laser!" },
+];
+function ModifierMap({ onPick }) {
+  const [hover, setHover] = useState(null);
+  const detail = hover ? CPT_CATALOG.find((c) => c.code === hover) : null;
+  const Leaf = ({ x, y, leaf, color, light }) => {
+    const on = hover === leaf.code;
+    return (
+      <g style={{ cursor: "pointer" }} onMouseEnter={() => setHover(leaf.code)} onMouseLeave={() => setHover(null)} onClick={() => onPick(leaf.code)}>
+        <rect x={x} y={y} width="300" height="32" rx="8" fill={on ? "#273449" : "#1e293b"} stroke={on ? color : "#334155"} />
+        <rect x={x} y={y} width="4" height="32" fill={color} />
+        <text x={x + 16} y={y + 21} fill="#e2e8f0" fontSize="11.5">{leaf.label}</text>
+        <rect x={x + 238} y={y + 5} width="52" height="22" rx="6" fill="#0b1220" stroke={color} />
+        <text x={x + 264} y={y + 20} textAnchor="middle" fill={light} fontSize="12" fontFamily="ui-monospace, monospace">{leaf.code}</text>
+      </g>
+    );
+  };
+  return (
+    <div style={{ padding: "20px", maxWidth: 820, margin: "0 auto" }}>
+      <svg viewBox="0 0 760 480" style={{ width: "100%", height: "auto" }} fontFamily="ui-sans-serif, system-ui, sans-serif">
+        <text x="24" y="30" fill={S.bright} fontSize="16" fontWeight="700">-25 vs -57 — Which modifier goes on the E/M?</text>
+        <text x="24" y="49" fill={S.muted} fontSize="12">Decided ONLY by the global period of the procedure billed today — never by how urgent the visit was.</text>
+        <rect x="255" y="66" width="250" height="40" rx="10" fill="#1e293b" stroke="#475569" />
+        <text x="380" y="91" textAnchor="middle" fill="#e2e8f0" fontSize="12.5" fontWeight="600">Procedure performed at TODAY's visit?</text>
+        <path d="M310 106 C 250 118, 210 120, 175 138" fill="none" stroke="#475569" strokeWidth="1.5" />
+        <path d="M450 106 C 510 118, 550 120, 585 138" fill="none" stroke="#475569" strokeWidth="1.5" />
+        <rect x="80" y="138" width="190" height="30" rx="8" fill="#22c55e22" stroke="#22c55e" />
+        <text x="175" y="158" textAnchor="middle" fill="#86efac" fontSize="12" fontWeight="700">NO — E/M alone, no modifier</text>
+        <rect x="490" y="138" width="190" height="30" rx="8" fill="#f59e0b22" stroke="#f59e0b" />
+        <text x="585" y="158" textAnchor="middle" fill="#fcd34d" fontSize="12" fontWeight="700">YES — check its GLOBAL period</text>
+        <path d="M540 168 C 470 184, 330 186, 210 204" fill="none" stroke="#475569" strokeWidth="1.5" />
+        <path d="M630 168 C 660 184, 665 186, 640 204" fill="none" stroke="#475569" strokeWidth="1.5" />
+        <rect x="60" y="204" width="300" height="34" rx="8" fill="#eab30822" stroke="#eab308" />
+        <text x="210" y="226" textAnchor="middle" fill="#fde047" fontSize="13" fontWeight="800">0- or 10-day global → -25</text>
+        <rect x="420" y="204" width="300" height="34" rx="8" fill="#ef444422" stroke="#ef4444" />
+        <text x="570" y="226" textAnchor="middle" fill="#fca5a5" fontSize="13" fontWeight="800">90-day global → -57</text>
+        {MINOR_LEAVES.map((l, i) => <Leaf key={l.code} x={60} y={252 + i * 40} leaf={l} color="#eab308" light="#fde047" />)}
+        {MAJOR_LEAVES.map((l, i) => <Leaf key={l.code} x={420} y={252 + i * 40} leaf={l} color="#ef4444" light="#fca5a5" />)}
+        <line x1="40" y1="462" x2="720" y2="462" stroke="#334155" strokeWidth="1" />
+      </svg>
+      <div style={{ marginTop: 4, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, minHeight: 22, fontSize: "0.8rem", color: S.text }}>
+        {detail ? (
+          <span><span style={{ fontFamily: S.mono, fontWeight: 700, color: S.accentLight }}>{detail.code}</span> {"—"} {detail.desc}{detail.note ? ` — ${detail.note}` : ""}</span>
+        ) : (
+          <span style={{ color: S.muted, fontStyle: "italic" }}>Hover a code for its description · click to open it in Browse.</span>
+        )}
+      </div>
+      <div style={{ marginTop: 10, fontSize: "0.78rem", color: S.muted, lineHeight: 1.6 }}>
+        <span style={{ color: "#fbbf24", fontWeight: 600 }}>Key rules: </span>
+        An emergency Level-5 visit does NOT change the modifier {"—"} endophthalmitis with only an AC tap (0-day) is still 99215-25.
+        A dry vitreous tap is not billable {"—"} the modifier follows the code you actually bill.
+        66821 YAG is the exception laser: 90-day {"→"} -57.
+        Unrelated E/M during another surgery's global {"→"} -24 instead.
+      </div>
+    </div>
+  );
+}
+
+// ── Imaging same-day compatibility map ──────────────────────────────
+const OCT_LEAVES = [
+  { code: "92134", label: "OCT — macula" },
+  { code: "92133", label: "OCT — optic nerve (RNFL)" },
+  { code: "92137", label: "OCT-A (angiography)" },
+];
+const ANGIO_LEAVES = [
+  { code: "92235", label: "FA alone" },
+  { code: "92240", label: "ICG alone" },
+  { code: "92242", label: "FA + ICG same session" },
+];
+function ImagingMap({ onPick }) {
+  const [hover, setHover] = useState(null);
+  const detail = hover ? CPT_CATALOG.find((c) => c.code === hover) : null;
+  const Leaf = ({ x, y, leaf, color, light, w = 300 }) => {
+    const on = hover === leaf.code;
+    return (
+      <g style={{ cursor: "pointer" }} onMouseEnter={() => setHover(leaf.code)} onMouseLeave={() => setHover(null)} onClick={() => onPick(leaf.code)}>
+        <rect x={x} y={y} width={w} height="32" rx="8" fill={on ? "#273449" : "#1e293b"} stroke={on ? color : "#334155"} />
+        <rect x={x} y={y} width="4" height="32" fill={color} />
+        <text x={x + 16} y={y + 21} fill="#e2e8f0" fontSize="11.5">{leaf.label}</text>
+        <rect x={x + w - 62} y={y + 5} width="52" height="22" rx="6" fill="#0b1220" stroke={color} />
+        <text x={x + w - 36} y={y + 20} textAnchor="middle" fill={light} fontSize="12" fontFamily="ui-monospace, monospace">{leaf.code}</text>
+      </g>
+    );
+  };
+  return (
+    <div style={{ padding: "20px", maxWidth: 820, margin: "0 auto" }}>
+      <svg viewBox="0 0 760 500" style={{ width: "100%", height: "auto" }} fontFamily="ui-sans-serif, system-ui, sans-serif">
+        <text x="24" y="30" fill={S.bright} fontSize="16" fontWeight="700">Imaging — what can share a visit?</text>
+        <text x="24" y="49" fill={S.muted} fontSize="12">All of these are inherently bilateral: ONE unit whether one or both eyes — never -RT/-LT/-50.</text>
+        <rect x="40" y="70" width="330" height="180" rx="10" fill="#ef444411" stroke="#ef4444" />
+        <text x="56" y="94" fill="#fca5a5" fontSize="12.5" fontWeight="700">OCT FAMILY — pick ONE per visit</text>
+        <text x="56" y="110" fill={S.muted} fontSize="10.5">92133 / 92134 / 92137 are mutually exclusive</text>
+        {OCT_LEAVES.map((l, i) => <Leaf key={l.code} x={56} y={120 + i * 40} leaf={l} color="#ef4444" light="#fca5a5" w={298} />)}
+        <rect x="400" y="70" width="330" height="180" rx="10" fill="#6366f111" stroke="#6366f1" />
+        <text x="416" y="94" fill="#a5b4fc" fontSize="12.5" fontWeight="700">ANGIOGRAPHY — combined code rule</text>
+        <text x="416" y="110" fill={S.muted} fontSize="10.5">Both dyes same session → bill 92242 ONLY, never 92235 + 92240</text>
+        {ANGIO_LEAVES.map((l, i) => <Leaf key={l.code} x={416} y={120 + i * 40} leaf={l} color="#6366f1" light="#a5b4fc" w={298} />)}
+        <rect x="40" y="270" width="690" height="200" rx="10" fill="#f59e0b11" stroke="#f59e0b" />
+        <text x="56" y="294" fill="#fcd34d" fontSize="12.5" fontWeight="700">SAME-DAY WATCH-OUTS</text>
+        <text x="70" y="322" fill="#ef4444" fontSize="14" fontWeight="800">✗</text>
+        <text x="90" y="322" fill="#e2e8f0" fontSize="11.5">92250 fundus photos + OCT (92133/92134) same eye — generally mutually exclusive (-59 on 92250 only if truly separate &amp; necessary)</text>
+        <text x="70" y="352" fill="#ef4444" fontSize="14" fontWeight="800">✗</text>
+        <text x="90" y="352" fill="#e2e8f0" fontSize="11.5">92083 visual field + 92133 RNFL OCT same day — LCDs call this not medically necessary. Alternate the visits.</text>
+        <text x="70" y="382" fill="#ef4444" fontSize="14" fontWeight="800">✗</text>
+        <text x="90" y="382" fill="#e2e8f0" fontSize="11.5">92250 photos with 92242 — photos are BUNDLED into the combined angiography code. Never bill separately.</text>
+        <text x="70" y="412" fill="#22c55e" fontSize="14" fontWeight="800">✓</text>
+        <text x="90" y="412" fill="#e2e8f0" fontSize="11.5">92083 visual field + 92134 macular OCT same day — both billable (e.g., Plaquenil screening: exam + 10-2 VF + OCT).</text>
+        <text x="70" y="442" fill="#22c55e" fontSize="14" fontWeight="800">✓</text>
+        <text x="90" y="442" fill="#e2e8f0" fontSize="11.5">One OCT + FA (or 92242) same day — different modality families, both billable when each is medically necessary.</text>
+      </svg>
+      <div style={{ marginTop: 4, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, minHeight: 22, fontSize: "0.8rem", color: S.text }}>
+        {detail ? (
+          <span><span style={{ fontFamily: S.mono, fontWeight: 700, color: S.accentLight }}>{detail.code}</span> {"—"} {detail.desc}{detail.note ? ` — ${detail.note}` : ""}</span>
+        ) : (
+          <span style={{ color: S.muted, fontStyle: "italic" }}>Hover a code for its description · click to open it in Browse.</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Component ───────────────────────────────────────────────────────
 export default function CptReference({ onBack }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [expanded, setExpanded] = useState(null);
-  const [view, setView] = useState("search"); // "search" | "tree" | "diagram" | "ai"
+  const [view, setView] = useState("search"); // "search" | "diagram" | "ai"
+  const [mapView, setMapView] = useState("surgery"); // "surgery" | "modifiers" | "imaging"
 
   const filtered = useMemo(() => {
     let list = CPT_CATALOG;
@@ -342,7 +475,35 @@ export default function CptReference({ onBack }) {
       </div>
 
       {view === "ai" && <AICodingAssistant showReimbursement={false} />}
-      {view === "diagram" && <SurgicalCodeMap onPick={(code) => { setSearch(code); setCategory("all"); setExpanded(code); setView("search"); }} />}
+      {view === "diagram" && (() => {
+        const pick = (code) => { setSearch(code); setCategory("all"); setExpanded(code); setView("search"); };
+        return (
+          <div>
+            <div style={{ display: "flex", gap: 6, justifyContent: "center", paddingTop: 16 }}>
+              {[
+                { id: "surgery", label: "Surgery codes" },
+                { id: "modifiers", label: "-25 vs -57" },
+                { id: "imaging", label: "Imaging rules" },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => setMapView(m.id)}
+                  style={{
+                    padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontSize: "0.75rem",
+                    fontFamily: S.font, fontWeight: 600,
+                    border: mapView === m.id ? "1px solid #f59e0b" : `1px solid ${S.border}`,
+                    background: mapView === m.id ? "#f59e0b22" : "transparent",
+                    color: mapView === m.id ? "#fcd34d" : S.muted,
+                  }}
+                >{m.label}</button>
+              ))}
+            </div>
+            {mapView === "surgery" && <SurgicalCodeMap onPick={pick} />}
+            {mapView === "modifiers" && <ModifierMap onPick={pick} />}
+            {mapView === "imaging" && <ImagingMap onPick={pick} />}
+          </div>
+        );
+      })()}
 
       {view === "search" && <>
       {/* Search */}
