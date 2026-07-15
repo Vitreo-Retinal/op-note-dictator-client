@@ -19,6 +19,42 @@ const S = {
   font: "Georgia, serif", mono: "monospace",
 };
 
+// ── PBM/Valeda ICD-10 + billing modifier mapping (added July 2026) ───
+// VRA policy: intermediate dry AMD ONLY for now (practice VA range 20/40–20/70).
+// Non-foveal GA + drusen is a FUTURE toggle — the mapping is ready below but is NOT
+// wired to any UI control. Do not expose it until Mari enables it.
+const PBM_ICD_INTERMEDIATE = { OD: "H35.3112", OS: "H35.3122", OU: "H35.3132" };
+const PBM_ICD_GA_FUTURE = { OD: "H35.3113", OS: "H35.3123", OU: "H35.3133" }; // NOT enabled — future toggle only
+const PBM_CPT_MODIFIER = { OD: "-RT", OS: "-LT", OU: "-50" };
+
+// ── Deterministic PBM session note builder (no AI call) ───────────────
+// The Procedure and Tolerance lines are ALWAYS present, regardless of which
+// optional fields (BCVA, cumulative count, next session) were captured.
+function buildPbmNote(f) {
+  const icd = PBM_ICD_INTERMEDIATE[f.eye] || "";
+  const eyeMod = PBM_CPT_MODIFIER[f.eye] || "";
+  const gaMod = f.abn === "Y" ? "-GA" : "";
+  const vaLine = f.va ? ` Baseline BCVA ${f.va} (initiation examination).` : "";
+  const cumLine = f.cumulative ? `, cumulative treatment ${f.cumulative} for this eye` : "";
+  const nextLine = f.next ? ` Next session: ${f.next}.` : "";
+  const lines = [
+    "PHOTOBIOMODULATION (VALEDA) — SESSION NOTE",
+    "",
+    `Date of service: ${f.date}`,
+    `Proceduralist: ${f.proceduralist} (performed personally by the physician)`,
+    `Diagnosis: Nonexudative age-related macular degeneration, intermediate dry stage, ${f.eye} — ${icd}`,
+    `Indication: Intermediate dry AMD meeting treatment criteria (qualifying drusen and BCVA documented at the initiation examination; no neovascular AMD; no center-involving geographic atrophy).${vaLine} Session ${f.session} of 9${cumLine}.`,
+    `Procedure: Photobiomodulation therapy of the retina, ${f.eye}, using the Valeda Light Delivery System (590/660/850 nm multiwavelength LED) delivered per manufacturer protocol.`,
+    `Tolerance: ${f.tolerance}`,
+    `Discharge instructions: Resume normal activities. Call the office for new flashes, floaters, curtain over vision, or vision change.${nextLine}`,
+    "",
+    "---BILLING---",
+    `0936T${eyeMod}${gaMod} — 1 unit — ${icd}`,
+    "No E/M billed today (session-day rule). If a separate unrelated problem was examined today, bill that E/M with -25 under the unrelated diagnosis only.",
+  ];
+  return lines.join("\n");
+}
+
 
 // ── Component ───────────────────────────────────────────────────────
 export default function ClinicNoteGenerator({ onBack, surgeon }) {
@@ -57,14 +93,68 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const timerRef = useRef(null);
   const noteRef = useRef(null);              // the note textarea (for cursor position)
   const lastCursorRef = useRef(null);        // last cursor position in the note (null = append at end)
-  const recordingPurposeRef = useRef("insert"); // "insert" (into note) | "edit" (spoken instruction)
+  const recordingPurposeRef = useRef("insert"); // "insert" (into note) | "edit" (spoken instruction) | "pbm" (session fields)
   const runRef = useRef(null);               // set below, lets dictation auto-trigger a regenerate
+
+  // ── PBM Session mode state (added July 2026) ──────────────────────
+  const [pbmEye, setPbmEye] = useState("");                 // "" | "OD" | "OS" | "OU"
+  const [pbmSession, setPbmSession] = useState("");         // "1".."9"
+  const [pbmCumulative, setPbmCumulative] = useState("");   // optional cumulative-per-eye count
+  const [pbmDate, setPbmDate] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  });
+  const [pbmProceduralist, setPbmProceduralist] = useState(() => (surgeon && surgeon.name ? `Dr. ${surgeon.name}` : "Dr. ___"));
+  const [pbmAbn, setPbmAbn] = useState("Y");                // "Y" | "N" — pre-checked per Mari's spec
+  const [pbmTolerance, setPbmTolerance] = useState("Patient tolerated the procedure well; no complications.");
+  const [pbmVA, setPbmVA] = useState("");                   // optional baseline BCVA (from initiation exam)
+  const [pbmNext, setPbmNext] = useState("");               // optional next-session note
+  const [pbmNote, setPbmNote] = useState("");               // assembled deterministic note (shown in Output tab)
+  const [pbmCopied, setPbmCopied] = useState(false);
+  const [pbmExtracting, setPbmExtracting] = useState(false);
+  const [pbmExtractError, setPbmExtractError] = useState("");
+
+  // Extract PBM session fields from a cleaned dictation transcript (Haiku, strict JSON).
+  // Only stated fields are applied — unstated fields keep their current/default values.
+  const extractPbmFields = async (text) => {
+    setPbmExtracting(true);
+    setPbmExtractError("");
+    try {
+      const resp = await fetch(`${API_BASE}/api/extract-pbm-fields`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript: text }),
+      });
+      const data = await resp.json();
+      if (!data.success || !data.fields) {
+        setPbmExtractError(data.error || "Could not read session details from dictation.");
+        return;
+      }
+      const f = data.fields;
+      if (f.eye === "OD" || f.eye === "OS" || f.eye === "OU") setPbmEye(f.eye);
+      if (f.session && Number(f.session) >= 1 && Number(f.session) <= 9) setPbmSession(String(Math.round(Number(f.session))));
+      if (f.cumulative) setPbmCumulative(String(f.cumulative));
+      if (f.abn === "Y" || f.abn === "N") setPbmAbn(f.abn);
+      if (f.tolerance) setPbmTolerance(f.tolerance);
+      if (f.va) setPbmVA(f.va);
+      if (f.next) setPbmNext(f.next);
+      if (f.proceduralist) setPbmProceduralist(f.proceduralist);
+    } catch (e) {
+      setPbmExtractError("Field extraction error: " + e.message);
+    } finally {
+      setPbmExtracting(false);
+    }
+  };
 
   // Deliver a finished transcript according to the recording's purpose
   const deliverTranscript = (text) => {
     if (recordingPurposeRef.current === "edit") {
       setPendingEdit(text);
       if (runRef.current) runRef.current(text); // apply the spoken edit + regenerate
+      return;
+    }
+    if (recordingPurposeRef.current === "pbm") {
+      extractPbmFields(text); // populate the PBM checklist/form from dictation
       return;
     }
     setNote(prev => {
@@ -82,7 +172,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   };
 
   const startRecording = useCallback(async (purpose) => {
-    recordingPurposeRef.current = purpose === "edit" ? "edit" : "insert";
+    recordingPurposeRef.current = purpose === "edit" ? "edit" : purpose === "pbm" ? "pbm" : "insert";
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
@@ -487,7 +577,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           <div>
             {/* Mode toggle */}
             <div style={{ display: "flex", gap: 0, marginBottom: 16, borderRadius: 8, overflow: "hidden", border: `1px solid ${S.border}` }}>
-              {[["generate", "Generate from Shorthand"], ["optimize", "Optimize Existing Note"]].map(([m, label]) => (
+              {[["generate", "Generate from Shorthand"], ["optimize", "Optimize Existing Note"], ["pbm", "PBM Session"]].map(([m, label]) => (
                 <button key={m} onClick={() => setMode(m)} style={{
                   flex: 1, padding: "10px 12px", background: mode === m ? S.accent : S.card,
                   color: mode === m ? "#fff" : S.muted, border: "none",
@@ -498,6 +588,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               ))}
             </div>
 
+            {mode !== "pbm" && (<>
             {/* Hint */}
             <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", fontSize: "0.76rem", color: "#94a3b8", lineHeight: 1.6, marginBottom: 14 }}>
               <span style={{ color: S.amber, fontWeight: 700 }}>No PHI.</span>{" "}
@@ -633,12 +724,240 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 {loading ? "Working..." : mode === "generate" ? "Generate Note →" : "Optimize →"}
               </button>
             </div>
+            </>)}
+
+            {/* ── PBM SESSION MODE ────────────────────────────────── */}
+            {mode === "pbm" && (
+              <div>
+                {/* Hint */}
+                <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", fontSize: "0.76rem", color: "#94a3b8", lineHeight: 1.6, marginBottom: 14 }}>
+                  <span style={{ color: S.amber, fontWeight: 700 }}>No PHI.</span>{" "}
+                  Dictate the session details or fill the form — the note is assembled deterministically (no AI call). Review the checklist, then click Generate.
+                </div>
+
+                {/* Say these points checklist + Dictate button */}
+                <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 16 }}>
+                  <div style={{ flex: "1 1 280px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px" }}>
+                    <div style={{ fontSize: "0.66rem", color: S.muted, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
+                      Say these points
+                    </div>
+                    {[
+                      { key: "eye", label: "Eye(s) — OD / OS / OU", value: pbmEye, required: true },
+                      { key: "session", label: "Session number (of 9)", value: pbmSession ? `${pbmSession} of 9` : "", required: true },
+                      { key: "abn", label: "ABN on file", value: pbmAbn === "Y" ? "Yes" : "No", required: true },
+                      { key: "tolerance", label: "Tolerance", value: pbmTolerance, required: false },
+                      { key: "va", label: "Baseline BCVA (optional)", value: pbmVA, required: false },
+                      { key: "next", label: "Next session (optional)", value: pbmNext, required: false },
+                    ].map((item) => {
+                      const captured = !!item.value;
+                      return (
+                        <div key={item.key} style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 5 }}>
+                          <span style={{ color: captured ? S.green : "#475569", fontWeight: 700, fontSize: "0.82rem", flexShrink: 0, width: 14 }}>
+                            {captured ? "✓" : "○"}
+                          </span>
+                          <span style={{ fontSize: "0.76rem", color: captured ? S.text : "#64748b" }}>
+                            {item.label}{item.required && !captured ? " (required)" : ""}
+                            {captured && item.key !== "tolerance" ? ` — ${item.value}` : ""}
+                          </span>
+                        </div>
+                      );
+                    })}
+                    <div style={{ fontSize: "0.68rem", color: "#64748b", fontStyle: "italic", marginTop: 4, paddingLeft: 22 }}>
+                      &ldquo;{pbmTolerance}&rdquo;
+                    </div>
+                  </div>
+
+                  <div style={{ flex: "1 1 220px", display: "flex", flexDirection: "column", gap: 8, justifyContent: "flex-start" }}>
+                    <button
+                      onClick={isRecording ? stopRecording : () => startRecording("pbm")}
+                      disabled={isTranscribing || pbmExtracting}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 6, justifyContent: "center",
+                        padding: "10px 16px", borderRadius: 8,
+                        border: isRecording ? "2px solid #ef4444" : `1px solid ${S.border}`,
+                        background: isRecording ? "#7f1d1d" : S.card,
+                        color: isRecording ? "#fca5a5" : S.text,
+                        fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600,
+                        cursor: isTranscribing || pbmExtracting ? "wait" : "pointer",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="1" width="6" height="12" rx="3" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                      </svg>
+                      {isRecording
+                        ? `Stop (${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, "0")})`
+                        : isTranscribing ? "Transcribing..."
+                        : pbmExtracting ? "Reading session details..."
+                        : "Dictate Session"}
+                    </button>
+                    {isRecording && recordingPurposeRef.current === "pbm" && (
+                      <span style={{ fontSize: "0.7rem", color: "#ef4444", fontWeight: 600 }}>
+                        ● Recording — speak eye, session number, ABN status, and anything different from the defaults
+                      </span>
+                    )}
+                    {pbmExtractError && (
+                      <span style={{ fontSize: "0.7rem", color: "#f87171" }}>{pbmExtractError}</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Form fields */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Eye (required)</label>
+                    <div style={{ display: "flex", gap: 0, borderRadius: 8, overflow: "hidden", border: `1px solid ${S.border}`, width: "fit-content" }}>
+                      {["OD", "OS", "OU"].map(e => (
+                        <button key={e} onClick={() => setPbmEye(e)} style={{
+                          padding: "7px 18px", background: pbmEye === e ? S.accent : S.card,
+                          color: pbmEye === e ? "#fff" : S.muted, border: "none",
+                          fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
+                        }}>
+                          {e}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <div>
+                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Session # of 9 (required)</label>
+                      <input type="number" min={1} max={9} value={pbmSession} onChange={e => setPbmSession(e.target.value)} style={inputStyle({ width: 80 })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Cumulative for this eye (optional)</label>
+                      <input type="number" min={1} value={pbmCumulative} onChange={e => setPbmCumulative(e.target.value)} style={inputStyle({ width: 110 })} />
+                      {pbmCumulative && Number(pbmCumulative) > 54 && (
+                        <div style={{ color: S.amber, fontSize: "0.68rem", marginTop: 4, fontWeight: 600, maxWidth: 220 }}>
+                          ⚠ Exceeds the 54-treatment evidence cap for this eye
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Date of service</label>
+                      <input type="date" value={pbmDate} onChange={e => setPbmDate(e.target.value)} style={inputStyle({ width: 160 })} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Proceduralist</label>
+                    <input type="text" value={pbmProceduralist} onChange={e => setPbmProceduralist(e.target.value)} style={inputStyle({ maxWidth: 260 })} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>ABN on file (required — drives -GA)</label>
+                    <div style={{ display: "flex", gap: 0, borderRadius: 8, overflow: "hidden", border: `1px solid ${S.border}`, width: "fit-content" }}>
+                      {["Y", "N"].map(v => (
+                        <button key={v} onClick={() => setPbmAbn(v)} style={{
+                          padding: "7px 18px", background: pbmAbn === v ? S.accent : S.card,
+                          color: pbmAbn === v ? "#fff" : S.muted, border: "none",
+                          fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
+                        }}>
+                          {v === "Y" ? "Yes" : "No"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Tolerance</label>
+                    <input type="text" value={pbmTolerance} onChange={e => setPbmTolerance(e.target.value)} style={inputStyle({})} />
+                  </div>
+
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <div>
+                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Baseline BCVA (optional — from initiation exam)</label>
+                      <input type="text" placeholder="e.g. 20/50" value={pbmVA} onChange={e => setPbmVA(e.target.value)} style={inputStyle({ width: 130 })} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Next session (optional)</label>
+                      <input type="text" placeholder="e.g. in 2 weeks" value={pbmNext} onChange={e => setPbmNext(e.target.value)} style={inputStyle({})} />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
+                  <button
+                    onClick={() => {
+                      const dateObj = pbmDate ? new Date(pbmDate + "T12:00:00") : new Date();
+                      const assembled = buildPbmNote({
+                        date: formatDate(dateObj),
+                        proceduralist: pbmProceduralist.trim() || "Dr. ___",
+                        eye: pbmEye,
+                        session: pbmSession,
+                        cumulative: pbmCumulative,
+                        abn: pbmAbn,
+                        tolerance: pbmTolerance.trim() || "Patient tolerated the procedure well; no complications.",
+                        va: pbmVA.trim(),
+                        next: pbmNext.trim(),
+                      });
+                      setPbmNote(assembled);
+                      setTab("output");
+                    }}
+                    disabled={!pbmEye || !pbmSession}
+                    style={{
+                      background: !pbmEye || !pbmSession ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)",
+                      color: !pbmEye || !pbmSession ? "#475569" : "#fff",
+                      border: "none", borderRadius: 8, padding: "10px 24px", fontSize: "0.9rem",
+                      fontFamily: S.font, fontWeight: 600, cursor: !pbmEye || !pbmSession ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    Generate Session Note →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* ── OUTPUT TAB ─────────────────────────────────────────── */}
         {tab === "output" && (
           <div>
+            {mode === "pbm" ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {!pbmNote && <div style={{ textAlign: "center", padding: "60px 0", color: "#475569" }}>Fill out the PBM Session form and click Generate first.</div>}
+                {pbmNote && (
+                  <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: 18 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                      <div style={{ fontSize: "0.66rem", color: S.accent, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        PBM / Valeda Session Note
+                      </div>
+                      <button onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(pbmNote);
+                          setPbmCopied(true);
+                          setTimeout(() => setPbmCopied(false), 2000);
+                        } catch {
+                          const ta = document.createElement("textarea");
+                          ta.value = pbmNote;
+                          ta.style.position = "fixed";
+                          ta.style.opacity = "0";
+                          document.body.appendChild(ta);
+                          ta.select();
+                          document.execCommand("copy");
+                          document.body.removeChild(ta);
+                          setPbmCopied(true);
+                          setTimeout(() => setPbmCopied(false), 2000);
+                        }
+                      }} style={btnStyle(pbmCopied ? "#059669" : S.bg, pbmCopied ? "#fff" : "#94a3b8", { border: `1px solid ${pbmCopied ? "#059669" : S.border}`, padding: "3px 10px", fontSize: "0.68rem", transition: "all 0.2s" })}>
+                        {pbmCopied ? "Copied!" : "Copy note"}
+                      </button>
+                    </div>
+                    <div style={{ fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.9, color: S.text, whiteSpace: "pre-wrap" }}>
+                      {pbmNote}
+                    </div>
+                  </div>
+                )}
+                {pbmNote && (
+                  <button onClick={() => setTab("input")} style={btnStyle("none", S.muted, { border: `1px solid ${S.border}`, alignSelf: "flex-start" })}>
+                    &#8592; Back to PBM form
+                  </button>
+                )}
+              </div>
+            ) : (<>
             {loading && (
               <div style={{ textAlign: "center", padding: "60px 0", color: S.muted }}>
                 <div style={{ width: 34, height: 34, border: `3px solid ${S.border}`, borderTopColor: S.accent, borderRadius: "50%", animation: "spin .8s linear infinite", margin: "0 auto 12px" }} />
@@ -864,6 +1183,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 })()}
               </div>
             )}
+            </>)}
           </div>
         )}
 
