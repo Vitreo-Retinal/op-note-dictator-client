@@ -419,6 +419,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       const text = (data.content || []).map(b => b.text || "").join("");
       if (!text.includes("---CODE---")) throw new Error("Unexpected response format. First 300 chars: " + text.substring(0, 300));
       const parsed = parseResponse(text);
+      parsed.safetyFlags = Array.isArray(data.safetyFlags) ? data.safetyFlags : [];
       setResult(parsed);
       setTab("output");
       if (edit) setPendingEdit(""); // spoken edit applied — clear the banner
@@ -968,6 +969,20 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
             {!loading && !result && <div style={{ textAlign: "center", padding: "60px 0", color: "#475569" }}>Generate or optimize a note first.</div>}
             {result && (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+
+                {/* Safety flags — deterministic warnings from the server; never part of the copied note */}
+                {result.safetyFlags?.length > 0 && (
+                  <div style={{ background: "#451a03", border: "1px solid #f59e0b", borderRadius: 10, padding: "12px 16px" }}>
+                    <div style={{ fontSize: "0.7rem", color: "#fcd34d", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>
+                      ⚠ Safety flags — review before signing (not included in the copied note)
+                    </div>
+                    {result.safetyFlags.map((f, i) => (
+                      <div key={i} style={{ fontSize: "0.8rem", color: "#fde68a", lineHeight: 1.5, marginBottom: 4, display: "flex", gap: 8 }}>
+                        <span style={{ flexShrink: 0 }}>•</span><span>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Code badges */}
                 <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
