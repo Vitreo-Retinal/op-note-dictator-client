@@ -7,11 +7,21 @@ function parseResponse(text) {
     return (e === -1 ? text.slice(s) : text.slice(s, e))
       .replace("---" + a + "---", "").trim();
   };
+  // Section bounded by whatever "---X---" marker comes next (robust to the
+  // CHANGES section being removed from the output format, July 2026).
+  const secAuto = (a) => {
+    const marker = "---" + a + "---";
+    const s = text.indexOf(marker);
+    if (s === -1) return "";
+    const rest = text.slice(s + marker.length);
+    const e = rest.indexOf("---");
+    return (e === -1 ? rest : rest.slice(0, e)).trim();
+  };
   const hasProcedure = text.includes("---PROCEDURE---");
   const hasDiagnoses = text.includes("---DIAGNOSES---");
   let code = sec("CODE", hasProcedure ? "PROCEDURE" : "G2211");
   const procedure = hasProcedure ? sec("PROCEDURE", "G2211") : "";
-  let g2211 = sec("G2211", "CHANGES").trim() === "YES";
+  let g2211 = secAuto("G2211") === "YES";
   let note = sec("NOTE", "END");
   // Guards for same-day procedure days (the E/M carries -25).
   const procedureToday = !!procedure && procedure.trim() !== "" && !/^none\b/i.test(procedure.trim());
@@ -33,7 +43,12 @@ function parseResponse(text) {
     code,
     procedure,
     g2211,
-    changes: sec("CHANGES", hasDiagnoses ? "DIAGNOSES" : "NOTE").split("\n").map(s => s.replace(/^[-•]\s*/, "").trim()).filter(Boolean),
+    // Billing-additions list is derived deterministically from the [+] markers
+    // in the note body (July 2026 — Sonnet no longer writes a CHANGES section;
+    // this also works on older outputs, which carry the same [+] markers).
+    changes: Array.from(note.matchAll(/\[\+\]\s*([^\n[]+?)(?=\s*\[\+\]|[\n]|$)/g))
+      .map((m) => m[1].replace(/[.,;\s]+$/, "").trim())
+      .filter(Boolean),
     diagnoses: hasDiagnoses ? sec("DIAGNOSES", "NOTE") : "",
     note,
   };
