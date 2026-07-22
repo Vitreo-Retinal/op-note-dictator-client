@@ -87,8 +87,10 @@ export default function RateComparison({ onBack, embedded = false }) {
   const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState("field_rest_of_ma");
   const [geoAdj, setGeoAdj] = useState(true);
+  const [drugEcon, setDrugEcon] = useState([]); // hub_drug_economics(): per-dose buy-and-bill margins
 
   useEffect(() => {
+    supabase.rpc("hub_drug_economics").then(({ data }) => setDrugEcon(data || []));
     supabase.rpc("hub_codes").then(({ data }) => setCodes((data || []).filter((c) => c.has_market)));
     supabase.rpc("hub_networks").then(({ data }) => {
       const list = data || [];
@@ -310,13 +312,17 @@ export default function RateComparison({ onBack, embedded = false }) {
           {/* drug margin */}
           {isDrug && (
             <div style={{ background: S.card, border: `1px solid ${margin ? S.green : S.border}`, borderRadius: 10, padding: "12px 14px", marginTop: 16 }}>
-              <div style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.mono, marginBottom: 6 }}>DRUG MARGIN (BUY &amp; BILL)</div>
+              <div style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.mono, marginBottom: 6 }}>DRUG MARGIN (BUY &amp; BILL){data.description ? ` · ${data.description}` : ""}</div>
               {margin ? (
-                <div style={{ fontSize: "0.85rem", color: S.text, lineHeight: 1.6 }}>
-                  Reimbursement <b>{money(vra)}</b>/unit − acquisition <b>{money(margin.acqPerUnit)}</b>/unit =
-                  <b style={{ color: margin.perUnit >= 0 ? S.green : S.red }}> {money(margin.perUnit)}/unit</b>
-                  {upd > 1 ? <> · <b style={{ color: margin.perDose >= 0 ? S.green : S.red }}>{money(margin.perDose)}/dose</b> ({upd} units)</> : null}
-                </div>
+                <>
+                  <div style={{ fontSize: "0.92rem", fontWeight: 700, color: S.text, lineHeight: 1.6 }}>
+                    Reimbursement {money(vra * upd)}/dose − acquisition {money(margin.acqPerUnit * upd)}/dose =
+                    <span style={{ color: margin.perDose >= 0 ? S.green : S.red }}> {money(margin.perDose)}/dose</span>
+                  </div>
+                  <div style={{ fontSize: "0.76rem", color: S.muted, marginTop: 4 }}>
+                    {money(margin.perUnit)}/unit · {upd} units/dose
+                  </div>
+                </>
               ) : (
                 <div style={{ fontSize: "0.82rem", color: S.muted }}>No acquisition cost entered yet for this drug — add it in <span style={{ fontFamily: S.mono }}>drug_costs</span> to see margin.</div>
               )}
@@ -327,6 +333,30 @@ export default function RateComparison({ onBack, embedded = false }) {
             Office (POS 11) rates. UHC = published Transparency-in-Coverage files (full MA peer field); regional plans = your contracted VRA vs. Lexington rates; Medicare / MassHealth = fee schedules. "Normalize to Worcester" applies the Boston→Worcester Medicare GPCI ratio so cross-locality gaps reflect contract, not geography. Drugs are national ASP (no geographic adjustment).
           </p>
         </>
+      )}
+
+      {/* Drug economics overview — all injection drugs by product/dose, always visible */}
+      {drugEcon.length > 0 && (
+        <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: "12px 14px", marginTop: 24 }}>
+          <div style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>DRUG ECONOMICS · MEDICARE BUY-AND-BILL</div>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "0 0 6px", borderBottom: `1px solid ${S.border}`, fontSize: "0.68rem", color: S.muted, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 0.5 }}>
+            <span style={{ flex: 3 }}>Drug</span>
+            <span style={{ flex: 1, textAlign: "right" }}>Acq</span>
+            <span style={{ flex: 1, textAlign: "right" }}>Medicare/dose</span>
+            <span style={{ flex: 1, textAlign: "right" }}>Margin/dose</span>
+          </div>
+          {[...drugEcon].sort((a, b) => Number(b.margin_per_dose) - Number(a.margin_per_dose)).map((d) => (
+            <div key={d.code} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "8px 0", borderBottom: `1px solid ${S.border}` }}>
+              <span style={{ flex: 3, fontSize: "0.82rem", color: S.text, paddingRight: 8, wordBreak: "break-word" }}>{d.drug_name}</span>
+              <span style={{ flex: 1, textAlign: "right", fontSize: "0.82rem", color: S.gray }}>{money(Number(d.acq_cost))}</span>
+              <span style={{ flex: 1, textAlign: "right", fontSize: "0.82rem", color: S.gray }}>{money(Number(d.medicare_per_dose))}</span>
+              <span style={{ flex: 1, textAlign: "right", fontSize: "0.82rem", fontWeight: 700, color: Number(d.margin_per_dose) >= 0 ? S.green : S.red }}>{money(Number(d.margin_per_dose))}</span>
+            </div>
+          ))}
+          <div style={{ fontSize: "0.7rem", color: S.muted, marginTop: 10, lineHeight: 1.6 }}>
+            Acquisition as of {drugEcon[0].acq_as_of} · Medicare ASP+6 as of {drugEcon[0].medicare_as_of}. Buy-and-bill margin before 2% sequestration; commercial payers vary — use the picker above for a specific plan.
+          </div>
+        </div>
       )}
     </Shell>
   );
