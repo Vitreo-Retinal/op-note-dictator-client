@@ -355,6 +355,7 @@ export default function RateComparison({ onBack, embedded = false }) {
           ))}
           <div style={{ fontSize: "0.7rem", color: S.muted, marginTop: 10, lineHeight: 1.6 }}>
             Acquisition as of {drugEcon[0].acq_as_of} · Medicare ASP+6 as of {drugEcon[0].medicare_as_of}. Buy-and-bill margin before 2% sequestration; commercial payers vary — use the picker above for a specific plan.
+            <br /><span style={{ color: S.amber }}>Timing:</span> these are <b>forward</b> figures at the current-quarter rate — right for "should I use this drug now" decisions. Payments landing in the bank now are for prior-period claims paid at the <b>prior</b> quarter's ASP rate (Medicare resets quarterly on a ~2-quarter lag), so this month's receipts won't match these margins exactly.
           </div>
         </div>
       )}

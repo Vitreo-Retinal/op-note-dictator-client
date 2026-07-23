@@ -188,8 +188,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
         setIsTranscribing(true);
         try {
-          // Step 1: Whisper transcription
-          const resp = await fetch(`${API_BASE}/api/transcribe`, {
+          // Step 1: Whisper transcription. Pass the recording purpose so the server
+          // can use the short command-oriented prompt for "Dictate an Edit" (short
+          // clips fare worse with the full note glossary). insert/pbm use the default.
+          const resp = await fetch(`${API_BASE}/api/transcribe?purpose=${encodeURIComponent(recordingPurposeRef.current)}`, {
             method: "POST",
             headers: { "Content-Type": "audio/webm" },
             body: audioBlob,
