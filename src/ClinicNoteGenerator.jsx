@@ -668,6 +668,17 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   ● Recording — {recordingPurposeRef.current === "edit" ? "speak the change you want (e.g. “change follow-up to 2 weeks”)" : "speak now"}
                 </span>
               )}
+              {!isRecording && note.trim() && (
+                <button
+                  onClick={() => { setNote(""); setError(""); setPendingEdit(""); if (noteRef.current) noteRef.current.focus(); }}
+                  title="Clear the input box"
+                  style={{
+                    marginLeft: "auto", padding: "8px 14px", borderRadius: 8,
+                    border: `1px solid ${S.border}`, background: S.card, color: S.muted,
+                    fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600, cursor: "pointer",
+                  }}
+                >✕ Clear</button>
+              )}
             </div>
 
             {/* Dictation tips + pending edit banner */}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { CPT_CATALOG, CPT_CATEGORIES } from "./cptCatalog";
 
 // ── Styles (shared palette with the rest of the app) ────────────────
@@ -24,6 +24,22 @@ export function AICodingAssistant({ showReimbursement = false }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const chatEndRef = { current: null };
+
+  // Fill from wherever this component sits down to the bottom of the viewport, so the
+  // input box is always on-screen without page-scrolling — regardless of how much
+  // chrome is above it (the note-generator embed has a taller header than the
+  // standalone CPT-reference view, which the old fixed "100vh - 70px" didn't handle).
+  const containerRef = useRef(null);
+  const [maxH, setMaxH] = useState("calc(100dvh - 70px)");
+  useEffect(() => {
+    const measure = () => {
+      const el = containerRef.current;
+      if (el) setMaxH(`calc(100dvh - ${Math.round(el.getBoundingClientRect().top)}px)`);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   const scrollToBottom = () => {
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -93,7 +109,7 @@ export function AICodingAssistant({ showReimbursement = false }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 70px)", maxWidth: 800, margin: "0 auto" }}>
+    <div ref={containerRef} style={{ display: "flex", flexDirection: "column", height: maxH, maxWidth: 800, margin: "0 auto" }}>
       {/* Chat messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
         {messages.length === 0 && (
