@@ -19,6 +19,85 @@ const S = {
   font: "Georgia, serif", mono: "monospace",
 };
 
+// ── PRE-FLIGHT UNKNOWN-DRUG CHECK (July 2026) ── START (do not move markers;
+// the node unit test extracts everything between START/END and evals it) ─────
+// Layer 3 of the wrong-drug defense, and the only one that runs BEFORE the AI
+// sees the input. Sonnet substitutes a real drug when it meets an unknown token
+// (typo / new abbreviation / dictation garble). This catches the token in the
+// physician's own shorthand and asks first. Pure synchronous regex — no API
+// call, no async, zero added latency to generation.
+//
+// SOURCE OF TRUTH for the drug vocabulary is server/lib/injection-intervals.js
+// (DRUG_TABLE / BILLED_DRUG_ALIASES). This is a deliberate static CLIENT COPY so
+// the check costs no round-trip. WHEN A DRUG IS ADDED, UPDATE BOTH.
+const KNOWN_DRUG_TOKENS = [
+  // Brand names + generics (matched case-insensitively)
+  "Eylea", "aflibercept", "Avastin", "bevacizumab", "Vabysmo", "faricimab",
+  "Lucentis", "ranibizumab", "Beovu", "brolucizumab", "Izervay", "avacincaptad",
+  "Syfovre", "pegcetacoplan", "Susvimo", "Byooviz", "Cimerli", "Ozurdex",
+  "dexamethasone", "Yutiq", "Iluvien", "Kenalog", "Triesence", "triamcinolone",
+  "Xipere", "tPA", "alteplase", "anti-VEGF", "antiVEGF", "IVI",
+  // Non-billed agents that legitimately follow "inject" in retina shorthand —
+  // listed so tap-and-inject / pneumatic dictation doesn't false-positive.
+  "vancomycin", "vanc", "ceftazidime", "ceftaz", "amikacin", "voriconazole",
+  "vori", "amphotericin", "ampho", "foscarnet", "ganciclovir", "clindamycin",
+  "air", "gas", "SF6", "C3F8", "saline", "steroid", "silicone",
+  // Mari's shorthand. Single letters are matched UPPERCASE-ONLY (a lowercase
+  // "a"/"i"/"s" in prose is a word, not a drug); multi-char shorthand is
+  // matched case-insensitively.
+  "A", "E", "E2", "E8", "EHD", "V", "L", "L3", "L5", "I", "Iz", "S",
+  // Literal HCPCS codes, in case the physician dictates the code itself
+  "J0178", "J0177", "J9035", "J2777", "J2778", "J0179", "J2782", "J2781",
+  "Q5124", "Q5128", "J1094", "J3301", "J3299", "J2997",
+];
+const KNOWN_SINGLE_LETTER_DRUGS = new Set(["A", "E", "V", "L", "I", "S"]); // case-sensitive
+const KNOWN_DRUG_LOWER = new Set(
+  KNOWN_DRUG_TOKENS.filter(t => !KNOWN_SINGLE_LETTER_DRUGS.has(t)).map(t => t.toLowerCase())
+);
+// Words that routinely follow "inject"/"switch to" and are obviously not drugs.
+const DRUG_SLOT_STOPWORDS = new Set([
+  "today", "tomorrow", "yesterday", "od", "os", "ou", "the", "a", "an", "and", "or",
+  "with", "without", "now", "next", "patient", "pt", "both", "eye", "eyes", "right",
+  "left", "in", "into", "at", "on", "to", "per", "for", "of", "no", "not", "again",
+  "was", "were", "is", "are", "be", "been", "done", "given", "performed",
+  "administered", "planned", "plan", "plans", "prn", "same", "day", "this", "that",
+  "it", "her", "him", "his", "them", "if", "when", "then", "will", "would", "may",
+  "might", "after", "before", "last", "first", "second", "third", "another",
+  "repeat", "continue", "continued", "hold", "holding", "tap", "p", "s/p", "x",
+  "q", "wk", "wks", "week", "weeks", "month", "months", "mo", "inj", "injection",
+  "injections", "drug", "med", "meds", "medication", "dose", "today's", "sp",
+]);
+// Only look at the token sitting in a DRUG SLOT — right after an injection /
+// switch / start verb, or right before "inj today". Deliberately conservative:
+// a miss costs nothing (two server-side guards remain), a false alarm costs a click.
+const DRUG_SLOT_AFTER_RX = /\b(?:inject(?:ion|ing)?|switch(?:ing)? to|start(?:ing|ed)? on?)\s+([A-Za-z][\w-]{0,15})\b/gi;
+const DRUG_SLOT_BEFORE_RX = /\b([A-Za-z][\w-]{0,15})\s+inj(?:ection)?\s+today\b/gi;
+
+function findUnknownDrugTokens(input) {
+  if (!input || typeof input !== "string") return [];
+  const out = [];
+  const seen = new Set();
+  const consider = (tok) => {
+    if (!tok || seen.has(tok)) return;
+    seen.add(tok);
+    if (DRUG_SLOT_STOPWORDS.has(tok.toLowerCase())) return;
+    if (/^\d/.test(tok)) return;                       // 4 (units), 2026 …
+    if (/^(?:q|x)\d+$/i.test(tok)) return;             // q8, x2 — intervals, not drugs
+    if (tok.length === 1 && tok !== tok.toUpperCase()) return; // lone lowercase letter ("s/p" → "p")
+    if (KNOWN_SINGLE_LETTER_DRUGS.has(tok)) return;    // uppercase A/E/V/L/I/S
+    if (KNOWN_DRUG_LOWER.has(tok.toLowerCase())) return;
+    out.push(tok);
+  };
+  for (const rx of [DRUG_SLOT_AFTER_RX, DRUG_SLOT_BEFORE_RX]) {
+    rx.lastIndex = 0; // module-level /g regexes are stateful — reset before each use
+    let m;
+    while ((m = rx.exec(input)) !== null) consider(m[1]);
+    rx.lastIndex = 0;
+  }
+  return out;
+}
+// ── PRE-FLIGHT UNKNOWN-DRUG CHECK ── END ─────────────────────────────
+
 // ── PBM/Valeda ICD-10 + billing modifier mapping (added July 2026) ───
 // VRA policy: intermediate dry AMD ONLY for now (practice VA range 20/40–20/70).
 // Non-foveal GA + drusen is a FUTURE toggle — the mapping is ready below but is NOT
@@ -64,6 +143,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Pre-flight unknown-drug warning: holds the offending token while the
+  // physician decides. Set on the first Generate click, cleared by any edit
+  // (effect below) or by the second "Generate anyway" click.
+  const [pendingUnknown, setPendingUnknown] = useState(null);
   const [tab, setTab] = useState("input"); // input | output | examples | rules | codes
   const [codeSearch, setCodeSearch] = useState("");
   const [copied, setCopied] = useState(false);
@@ -440,6 +523,23 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   }
   runRef.current = run; // lets the dictation pipeline auto-trigger a regenerate with a spoken edit
 
+  // ── Generate click: deterministic pre-flight before any network call ──
+  // Generate mode only (optimize gets pasted full notes; PBM never calls the AI).
+  // Synchronous regex on text already in memory — no added latency.
+  function handleGenerate() {
+    if (mode === "generate" && !pendingUnknown) {
+      const unknown = findUnknownDrugTokens(note);
+      if (unknown.length > 0) {
+        setPendingUnknown(unknown[0]); // ask first — do NOT call the API
+        return;
+      }
+    }
+    setPendingUnknown(null); // "Generate anyway" (or nothing to warn about)
+    run();
+  }
+  // Any edit to the input — or a mode switch — invalidates the warning.
+  useEffect(() => { setPendingUnknown(null); }, [note, mode]);
+
   // ── Render note with [+] badges ───────────────────────────────────
   function renderBold(segment, segKey) {
     // Split on **bold** patterns and render as <strong>
@@ -728,14 +828,22 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               </div>
             )}
 
+            {/* Pre-flight unknown-drug warning — no API call was made */}
+            {pendingUnknown && (
+              <div style={{ background: "#451a03", border: "1px solid #f59e0b", borderRadius: 8, padding: "10px 14px", marginTop: 10, fontSize: "0.78rem", color: "#fde68a", lineHeight: 1.5 }}>
+                <span style={{ fontWeight: 700, color: "#fcd34d" }}>⚠ Unknown drug &ldquo;{pendingUnknown}&rdquo;</span>{" "}
+                — not a recognized drug or abbreviation. Fix the input, or generate anyway.
+              </div>
+            )}
+
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-              <button onClick={run} disabled={loading || !note.trim()} style={{
-                background: loading || !note.trim() ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)",
+              <button onClick={handleGenerate} disabled={loading || !note.trim()} style={{
+                background: loading || !note.trim() ? S.card : pendingUnknown ? "linear-gradient(135deg,#b45309,#f59e0b)" : "linear-gradient(135deg,#6366f1,#8b5cf6)",
                 color: loading || !note.trim() ? "#475569" : "#fff",
                 border: "none", borderRadius: 8, padding: "10px 24px", fontSize: "0.9rem",
                 fontFamily: S.font, fontWeight: 600, cursor: loading || !note.trim() ? "not-allowed" : "pointer",
               }}>
-                {loading ? "Working..." : mode === "generate" ? "Generate Note →" : "Optimize →"}
+                {loading ? "Working..." : pendingUnknown ? "Generate anyway →" : mode === "generate" ? "Generate Note →" : "Optimize →"}
               </button>
             </div>
             </>)}
