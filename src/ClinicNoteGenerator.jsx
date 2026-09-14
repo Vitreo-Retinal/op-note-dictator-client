@@ -140,6 +140,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const [mode, setMode] = useState("generate"); // generate | optimize
   const [note, setNote] = useState("");
   const [timeSpent, setTimeSpent] = useState(""); // optional — minutes spent with patient
+  // ── Modifier-25 audit-proofing (Sep 2026, per Mari) ───────────────
+  // WHY: the OCB $3.9M FCA settlement (DOJ, Jul 31 2026) put injection-day -25
+  // E/M under audit. A CC/HPI that names the appointment ("here for injection",
+  // "8-week visit") reads to an auditor as an exam that merely confirms a
+  // planned procedure. Pasting the tech's intake line here gets a purpose-neutral
+  // CC/HPI back in the same API call as the A/P. Per-visit, like the note itself.
+  const [intakeText, setIntakeText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -150,6 +157,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const [tab, setTab] = useState("input"); // input | output | examples | rules | codes
   const [codeSearch, setCodeSearch] = useState("");
   const [copied, setCopied] = useState(false);
+  const [hpiCopied, setHpiCopied] = useState(false); // Sep 2026, per Mari — CC/HPI card copy feedback
   const [copiedCodes, setCopiedCodes] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -420,6 +428,30 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     }
   }, [result]);
 
+  // ── Copy the generated CC/HPI (Sep 2026, per Mari) ────────────────
+  // Separate from copyNote: the HPI is pasted over the intake HPI in NextGen,
+  // the A/P goes in the A/P field. Same clipboard + "Copied" feedback pattern.
+  const copyHpi = useCallback(async () => {
+    if (!result?.hpi) return;
+    const clean = result.hpi;
+    try {
+      await navigator.clipboard.writeText(clean);
+      setHpiCopied(true);
+      setTimeout(() => setHpiCopied(false), 2000);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = clean;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setHpiCopied(true);
+      setTimeout(() => setHpiCopied(false), 2000);
+    }
+  }, [result]);
+
   // ── Example management ────────────────────────────────────────────
   const addExample = () => {
     if (!newExample.label.trim() || !newExample.shorthand.trim()) return;
@@ -495,6 +527,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           examples,
           customInstructions,
           userMessage,
+          // Sep 2026, per Mari — optional; when present the server appends
+          // HPI_RULES and returns a CC/HPI block plus AUDIT: safety flags.
+          ...(intakeText.trim() ? { intakeText: intakeText.trim() } : {}),
           model: "claude-sonnet-4-6",
           max_tokens: 3000,
         }),
@@ -505,6 +540,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       if (!text.includes("---CODE---")) throw new Error("Unexpected response format. First 300 chars: " + text.substring(0, 300));
       const parsed = parseResponse(text);
       parsed.safetyFlags = Array.isArray(data.safetyFlags) ? data.safetyFlags : [];
+      parsed.hpi = data.hpi || null; // Sep 2026, per Mari — only present when intakeText was sent
       setResult(parsed);
       setTab("output");
       if (edit) setPendingEdit(""); // spoken edit applied — clear the banner
@@ -559,6 +595,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         {renderBold(part, i)}
       </span>
     ));
+  }
+
+  // ── [DOCUMENT: …] highlighting for the CC/HPI card (Sep 2026, per Mari) ──
+  // The HPI generator never invents a symptom: anything it could not source from
+  // the intake text comes back as a placeholder. Amber so it can't be pasted past.
+  function renderHpi(text) {
+    if (!text) return null;
+    return String(text).split(/(\[DOCUMENT:[^\]]*\])/g).map((p, i) =>
+      /^\[DOCUMENT:/.test(p)
+        ? <span key={i} style={{ background: "#451a03", color: "#fcd34d", border: `1px solid ${S.amber}`, borderRadius: 4, padding: "0 4px", fontWeight: 700 }}>{p}</span>
+        : <span key={i}>{p}</span>
+    );
   }
 
   const getCodeStyle = (code) => {
@@ -770,7 +818,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               )}
               {!isRecording && note.trim() && (
                 <button
-                  onClick={() => { setNote(""); setError(""); setPendingEdit(""); if (noteRef.current) noteRef.current.focus(); }}
+                  onClick={() => { setNote(""); setIntakeText(""); setError(""); setPendingEdit(""); if (noteRef.current) noteRef.current.focus(); }}
                   title="Clear the input box"
                   style={{
                     marginLeft: "auto", padding: "8px 14px", borderRadius: 8,
@@ -819,6 +867,26 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.82rem", width: 70, boxSizing: "border-box" }}
               />
               <span style={{ fontSize: "0.66rem", color: "#475569" }}>99213=20 min · 99214=30 min · 99215=40 min</span>
+            </div>
+
+            {/* ── Optional CC/HPI intake (Sep 2026, per Mari) ──────────
+                Audit-proofing for injection-day modifier-25 after the OCB FCA
+                settlement: paste what the tech wrote and the same API call
+                returns a purpose-neutral CC/HPI alongside the A/P. */}
+            <div style={{ marginTop: 12 }}>
+              <label style={{ display: "block", fontSize: "0.72rem", color: S.muted, marginBottom: 6 }}>
+                CC/HPI intake (optional) — paste the tech&rsquo;s line or type your own
+              </label>
+              <textarea
+                value={intakeText}
+                onChange={e => setIntakeText(e.target.value)}
+                placeholder="87 yo M wet AMD OD, mild distortion OD, no complaints OS; dry AMD OS"
+                rows={3}
+                style={{ display: "block", width: "100%", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: 12, color: S.bright, fontFamily: S.mono, fontSize: "0.8rem", lineHeight: 1.7, resize: "vertical", boxSizing: "border-box" }}
+              />
+              <div style={{ fontSize: "0.66rem", color: "#475569", marginTop: 5 }}>
+                Leave blank to skip. Dates and treatment history stay in the A/P — never in the CC/HPI.
+              </div>
             </div>
 
 
@@ -1097,11 +1165,24 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     <div style={{ fontSize: "0.7rem", color: "#fcd34d", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>
                       ⚠ Safety flags — review before signing (not included in the copied note)
                     </div>
-                    {result.safetyFlags.map((f, i) => (
-                      <div key={i} style={{ fontSize: "0.8rem", color: "#fde68a", lineHeight: 1.5, marginBottom: 4, display: "flex", gap: 8 }}>
-                        <span style={{ flexShrink: 0 }}>•</span><span>{f}</span>
-                      </div>
-                    ))}
+                    {result.safetyFlags.map((f, i) => {
+                      // Sep 2026, per Mari — modifier-25 audit flags (CC/HPI lint,
+                      // header lint, truth check, -25 defensibility) arrive prefixed
+                      // "AUDIT: ". They get their own badge so they read as an
+                      // audit-exposure note, not a clinical safety guard.
+                      const isAudit = typeof f === "string" && f.startsWith("AUDIT: ");
+                      const body = isAudit ? f.slice(7) : f;
+                      return (
+                        <div key={i} style={{ fontSize: "0.8rem", color: "#fde68a", lineHeight: 1.5, marginBottom: 4, display: "flex", gap: 8 }}>
+                          {isAudit ? (
+                            <span style={{ flexShrink: 0, background: "#78350f", color: "#fcd34d", border: `1px solid ${S.amber}`, borderRadius: 20, padding: "1px 8px", fontSize: "0.58rem", fontFamily: S.mono, fontWeight: 700, letterSpacing: "0.06em", alignSelf: "flex-start", marginTop: 2 }}>AUDIT</span>
+                          ) : (
+                            <span style={{ flexShrink: 0 }}>•</span>
+                          )}
+                          <span>{body}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
@@ -1171,6 +1252,28 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                           {c.primary && <span style={{ fontSize: "0.58rem", color: "#6366f1", fontWeight: 700, flexShrink: 0 }}>PRIMARY</span>}
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── CC/HPI card (Sep 2026, per Mari) ────────────────
+                    Only rendered when an intake line was supplied. Sits ABOVE
+                    the A/P because that is the paste order in NextGen. */}
+                {result.hpi && (
+                  <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: 18 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+                      <div style={{ fontSize: "0.66rem", color: S.accent, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                        CC / HPI (audit-safe)
+                      </div>
+                      <button onClick={copyHpi} style={btnStyle(hpiCopied ? "#059669" : S.bg, hpiCopied ? "#fff" : "#94a3b8", { border: `1px solid ${hpiCopied ? "#059669" : S.border}`, padding: "3px 10px", fontSize: "0.68rem", transition: "all 0.2s" })}>
+                        {hpiCopied ? "Copied!" : "Copy CC/HPI"}
+                      </button>
+                    </div>
+                    <div style={{ fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.9, color: S.text, whiteSpace: "pre-wrap" }}>
+                      {renderHpi(result.hpi)}
+                    </div>
+                    <div style={{ fontSize: "0.66rem", color: S.muted, marginTop: 10, lineHeight: 1.5 }}>
+                      Paste over the intake HPI in NextGen. Dates and treatment history stay in the A/P.
                     </div>
                   </div>
                 )}

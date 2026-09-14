@@ -5,6 +5,7 @@ import CptReference from "./CptReference.jsx";
 import PatientEducation from "./PatientEducation.jsx";
 import Documents from "./Documents.jsx";
 import RateComparison from "./RateComparison.jsx";
+import IntakeHpi from "./IntakeHpi.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -112,6 +113,17 @@ function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
       description: "Searchable handout library for conditions, procedures, and post-injection instructions. Printable.",
       gradient: "linear-gradient(135deg,#f59e0b,#d97706)",
       tags: ["EN", "ES", "VI", "PT"],
+    },
+    // Sep 2026, per Mari — added after the OCB modifier-25 FCA settlement.
+    // Techs write the CC/HPI on injection days, so the audit-safe wording tool
+    // lives out here in the shared grid with no PIN, next to their other tools.
+    {
+      id: "intakehpi",
+      title: "Intake CC/HPI",
+      icon: "📝",
+      description: "Audit-safe chief complaint & HPI",
+      gradient: "linear-gradient(135deg,#8b5cf6,#6d28d9)",
+      tags: ["Injection day", "Techs"],
     },
     {
       id: "documents",
@@ -345,7 +357,7 @@ function ManagerPinGate({ onSuccess, onCancel }) {
 export default function App() {
   const [authed, setAuthed] = useState(false);
   const [page, setPage] = useState("home");
-  // page: home | inject | coding | education | documents | dictator | doctor | pin
+  // page: home | inject | coding | education | intakehpi | documents | dictator | doctor | pin
   const [activeSurgeon, setActiveSurgeon] = useState(null);
 
   if (!authed) {
@@ -377,6 +389,11 @@ export default function App() {
 
   if (page === "education") {
     return <PatientEducation onBack={() => setPage("home")} />;
+  }
+
+  // Sep 2026, per Mari — tech-facing CC/HPI tool (OCB modifier-25 settlement). No PIN.
+  if (page === "intakehpi") {
+    return <IntakeHpi onBack={() => setPage("home")} />;
   }
 
   if (page === "documents") {
