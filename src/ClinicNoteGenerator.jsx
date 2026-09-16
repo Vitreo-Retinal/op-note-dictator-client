@@ -7,7 +7,7 @@ import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
-import { majorHoliday, parseLocalNoon } from "./lib/practiceCalendar.js";
+import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
@@ -407,6 +407,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       daysSince,
       nextDate,
       holiday: nextDate ? majorHoliday(nextDate) : null,
+      blackout: nextDate ? injectionBlackout(nextDate) : null,
       sched: nextDate ? scheduleHit(nextDate) : null, // empty for non-MR profiles
     };
   })();
@@ -792,6 +793,12 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   {injCalc.sched && injCalc.sched.call && (
                     <span style={{ marginLeft: 8, color: S.muted, fontWeight: 400 }}>
                       {injCalc.sched.call.surgeon_id === "MR" ? "(your call week)" : `(on call that week: ${injCalc.sched.call.surgeon_id})`}
+                    </span>
+                  )}
+                  {/* Injection blackout — independent of holiday/schedule (per Mari, Sep 2026) */}
+                  {injCalc.blackout && (
+                    <span style={{ marginLeft: 8, color: "#fca5a5", fontWeight: 700 }}>
+                      🚫 {injCalc.blackout}
                     </span>
                   )}
                 </span>

@@ -56,4 +56,15 @@ const parseLocalNoon = (s) => {
   return new Date(y, m - 1, d, 12);
 };
 
-export { easterMonthDay, NOWRUZ_DAY, majorHoliday, parseLocalNoon };
+// Injection booking blackout (per Mari, Sep 2026): the FIRST TWO WEEKS of January
+// (Jan 1–14) no injections can be booked EXCEPT Avastin — new-year benefit/PA
+// resets. Returns the banner text when the date falls in the window, else null.
+const injectionBlackout = (d) => {
+  if (!d) return null;
+  if (d.getMonth() === 0 && d.getDate() <= 14) {
+    return "Jan 1–14: no injections can be booked except Avastin";
+  }
+  return null;
+};
+
+export { easterMonthDay, NOWRUZ_DAY, majorHoliday, parseLocalNoon, injectionBlackout };

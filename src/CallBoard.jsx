@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient.js";
-import { majorHoliday, parseLocalNoon } from "./lib/practiceCalendar.js";
+import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 
 // ── Call Board — practice-wide, homepage header card (Sep 2026, per Mari) ─
 // "Wire the call schedule somewhere in the front. Put the date on the site as
@@ -68,6 +68,8 @@ export default function CallBoard() {
   const fuDate = fuWeeks && n > 0 ? new Date(today.getTime() + n * 7 * 24 * 60 * 60 * 1000) : null;
   const fuHoliday = fuDate ? majorHoliday(fuDate) : null;
   const fuCall = fuDate ? callFor(fuDate) : null;
+  // Injection blackout banner — shown when TODAY or the computed F/U date is Jan 1–14.
+  const blackout = injectionBlackout(fuDate) || injectionBlackout(today);
 
   return (
     <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: "14px 16px", marginBottom: 20 }}>
@@ -128,6 +130,13 @@ export default function CallBoard() {
           </>
         )}
       </div>
+
+      {/* Injection blackout banner — first two weeks of January (per Mari, Sep 2026) */}
+      {blackout && (
+        <div style={{ marginTop: 10, background: "#450a0a", border: "1px solid #ef4444", borderRadius: 8, padding: "8px 12px", fontSize: "0.78rem", color: "#fecaca", fontFamily: S.mono, fontWeight: 700 }}>
+          🚫 {blackout}
+        </div>
+      )}
     </div>
   );
 }
