@@ -39,6 +39,7 @@ const majorHoliday = (d) => {
   if (m === 3 && dow === 1 && day >= 15 && day <= 21) return "Patriots' Day";  // third Monday of April (MA)
   if (m === 8 && dow === 1 && day <= 7) return "Labor Day";                    // first Monday of September
   if (m === 9 && dow === 1 && day >= 8 && day <= 14) return "Indigenous Peoples Day"; // second Monday of October
+  if (m === 10 && dow === 3 && day >= 21 && day <= 27) return "Day before Thanksgiving"; // Wednesday before
   if (m === 10 && dow === 4 && day >= 22 && day <= 28) return "Thanksgiving";  // fourth Thursday of November
   if (m === 10 && dow === 5 && day >= 23 && day <= 29) return "Black Friday";  // Friday after Thanksgiving
   if (m === 11 && day === 24) return "Christmas Eve";
