@@ -7,6 +7,7 @@ import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
+import { supabase } from "./supabaseClient.js";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -360,13 +361,69 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     if (m === 4 && dow === 1 && day >= 25) return "Memorial Day";                // last Monday of May
     if (m === 5 && day === 19) return "Juneteenth";
     if (m === 6 && day === 4) return "July 4th";
+    if (m === 3 && dow === 1 && day >= 15 && day <= 21) return "Patriots' Day";  // third Monday of April (MA)
     if (m === 8 && dow === 1 && day <= 7) return "Labor Day";                    // first Monday of September
     if (m === 9 && dow === 1 && day >= 8 && day <= 14) return "Indigenous Peoples Day"; // second Monday of October
     if (m === 10 && dow === 4 && day >= 22 && day <= 28) return "Thanksgiving";  // fourth Thursday of November
     if (m === 10 && dow === 5 && day >= 23 && day <= 29) return "Black Friday";  // Friday after Thanksgiving
     if (m === 11 && day === 24) return "Christmas Eve";
     if (m === 11 && day === 25) return "Christmas Day";
+    if (m === 11 && day === 31) return "New Year's Eve";
     return null;
+  };
+
+  // ── Schedule awareness (Mari / "MR" profile only, Sep 2026) ───────
+  // Warns when the computed next-appt date lands on a day she's away, has no
+  // clinic, or is in the OR, and flags her on-call weeks. Fetched ONCE in the
+  // background so the calculator itself stays synchronous; fails silent (empty
+  // list) so a dead RPC can never break the calculator. Other profiles never
+  // fetch and see exactly the pre-existing behavior.
+  const isMR = !!(surgeon && surgeon.id === "MR");
+  const [schedule, setSchedule] = useState([]);
+  const [callSchedule, setCallSchedule] = useState([]); // WHOLE practice rotation — helpful for post-op planning
+  useEffect(() => {
+    if (!isMR) { setSchedule([]); setCallSchedule([]); return; }
+    let alive = true;
+    supabase
+      .rpc("hub_surgeon_schedule", { p_surgeon: "MR" })
+      .then(({ data, error }) => { if (alive && !error) setSchedule(data || []); })
+      .catch(() => { /* fail silent — calculator must never break */ });
+    supabase
+      .rpc("hub_call_schedule")
+      .then(({ data, error }) => { if (alive && !error) setCallSchedule(data || []); })
+      .catch(() => { /* fail silent */ });
+    return () => { alive = false; };
+  }, [isMR]);
+
+  // 'YYYY-MM-DD' → local Date at noon. Noon (not midnight) so DST shifts and
+  // the UTC-parsing of bare date strings can't push us to the adjacent day.
+  const parseLocalNoon = (s) => {
+    if (!s) return null;
+    const [y, m, d] = String(s).slice(0, 10).split("-").map(Number);
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d, 12);
+  };
+
+  // Sync array scan. Returns the first blocking row (vacation | no_clinic | or)
+  // containing the date, plus the practice-wide call row containing it (whoever's
+  // on call that week — useful for post-op planning, per Mari Sep 2026).
+  const scheduleHit = (dateObj) => {
+    const out = { block: null, call: null };
+    if (!dateObj) return out;
+    const t = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), 12).getTime();
+    const inRange = (r) => {
+      const s = parseLocalNoon(r.start_date);
+      const e = parseLocalNoon(r.end_date);
+      return s && e && t >= s.getTime() && t <= e.getTime(); // inclusive both ends
+    };
+    for (const r of schedule || []) {
+      if (r.type === "call") continue; // call comes from the practice-wide rotation below
+      if (!out.block && (r.type === "vacation" || r.type === "no_clinic" || r.type === "or") && inRange(r)) out.block = r;
+    }
+    for (const r of callSchedule || []) {
+      if (!out.call && inRange(r)) out.call = r;
+    }
+    return out;
   };
 
   const injCalc = (() => {
@@ -390,7 +447,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     }
 
     if (weeksSince === null && nextDate === null) return null;
-    return { weeksSince, daysSince, nextDate, holiday: nextDate ? majorHoliday(nextDate) : null };
+    return {
+      weeksSince,
+      daysSince,
+      nextDate,
+      holiday: nextDate ? majorHoliday(nextDate) : null,
+      sched: nextDate ? scheduleHit(nextDate) : null, // empty for non-MR profiles
+    };
   })();
 
   const formatDate = (d) => {
@@ -753,11 +816,27 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 <span style={{ fontSize: "0.72rem", color: S.muted }}>weeks</span>
               </div>
               {injCalc && injCalc.nextDate && (
-                <span style={{ fontSize: "0.82rem", color: injCalc.holiday ? "#f59e0b" : S.green, fontFamily: S.mono, fontWeight: 700 }}>
+                <span style={{ fontSize: "0.82rem", color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) ? "#f59e0b" : S.green, fontFamily: S.mono, fontWeight: 700 }}>
                   Next appt: {formatDate(injCalc.nextDate)}
                   {injCalc.holiday && (
                     <span style={{ marginLeft: 8, color: "#fbbf24" }}>
                       ⚠ {injCalc.holiday} — office closed, pick an adjacent day
+                    </span>
+                  )}
+                  {/* Holiday wins; otherwise the schedule conflict, if any. MR only. */}
+                  {!injCalc.holiday && injCalc.sched && injCalc.sched.block && (
+                    <span style={{ marginLeft: 8, color: "#fbbf24" }}>
+                      {injCalc.sched.block.type === "vacation"
+                        ? `⚠ You're away: ${injCalc.sched.block.title}`
+                        : injCalc.sched.block.type === "no_clinic"
+                        ? `⚠ No clinic that day (${injCalc.sched.block.title})`
+                        : `⚠ OR day: ${injCalc.sched.block.title}`}
+                    </span>
+                  )}
+                  {/* Independent of the above — call week is a note, not a conflict. */}
+                  {injCalc.sched && injCalc.sched.call && (
+                    <span style={{ marginLeft: 8, color: S.muted, fontWeight: 400 }}>
+                      {injCalc.sched.call.surgeon_id === "MR" ? "(your call week)" : `(on call that week: ${injCalc.sched.call.surgeon_id})`}
                     </span>
                   )}
                 </span>
