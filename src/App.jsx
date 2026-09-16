@@ -6,6 +6,7 @@ import PatientEducation from "./PatientEducation.jsx";
 import Documents from "./Documents.jsx";
 import RateComparison from "./RateComparison.jsx";
 import IntakeHpi from "./IntakeHpi.jsx";
+import CallBoard from "./CallBoard.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -145,6 +146,10 @@ function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
       </div>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 20px 48px" }}>
+        {/* Call board — practice-wide date + on-call + F/U counter. Sep 2026, per
+            Mari: everyone (techs, managers, doctors) sees it, no PIN. */}
+        <CallBoard />
+
         {/* Shared tools */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 32 }}>
           {sharedTools.map((tool) => (
