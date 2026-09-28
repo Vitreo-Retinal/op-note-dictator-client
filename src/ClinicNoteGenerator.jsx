@@ -590,8 +590,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           // Sep 2026, per Mari — optional; when present the server appends
           // HPI_RULES and returns a CC/HPI block plus AUDIT: safety flags.
           ...(intakeText.trim() ? { intakeText: intakeText.trim() } : {}),
-          model: "claude-sonnet-4-6",
-          max_tokens: 3000,
+          // Sep 28 2026: Sonnet 5.5 (A/B: best coding accuracy — G2211, -24/-79, unknown-drug safety).
+          // 8000 because 5.5 bills hidden thinking as output; 3000 truncated complex notes.
+          model: "claude-sonnet-5-5",
+          max_tokens: 8000,
         }),
       });
       const data = await res.json();
