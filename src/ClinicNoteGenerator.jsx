@@ -281,17 +281,21 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
         setIsTranscribing(true);
         try {
-          // Step 1: Whisper transcription. Pass the recording purpose so the server
-          // can use the short command-oriented prompt for "Dictate an Edit" (short
-          // clips fare worse with the full note glossary). insert/pbm use the default.
-          const resp = await fetch(`${API_BASE}/api/transcribe?purpose=${encodeURIComponent(recordingPurposeRef.current)}`, {
+          // ONE round trip (Sep 2026): the server transcribes AND cleans up
+          // (?cleanup=1 → { transcript, cleaned }). Pass the recording purpose so
+          // the server can use the short command-oriented prompt for "Dictate an
+          // Edit" (short clips fare worse with the full note glossary).
+          const resp = await fetch(`${API_BASE}/api/transcribe?purpose=${encodeURIComponent(recordingPurposeRef.current)}&cleanup=1`, {
             method: "POST",
             headers: { "Content-Type": "audio/webm" },
             body: audioBlob,
           });
           const data = await resp.json();
-          if (data.success && data.transcript) {
-            // Step 2: Clean up medical terminology via Haiku
+          if (data.success && data.transcript && "cleaned" in data) {
+            deliverTranscript(data.cleaned || data.transcript);
+          } else if (data.success && data.transcript) {
+            // Older server (no `cleaned` field): the original two-step flow —
+            // clean up medical terminology via /api/cleanup-transcript.
             try {
               const cleanResp = await fetch(`${API_BASE}/api/cleanup-transcript`, {
                 method: "POST",
