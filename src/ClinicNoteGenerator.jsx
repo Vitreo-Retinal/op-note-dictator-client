@@ -594,6 +594,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           // 8000 because 5.5 bills hidden thinking as output; 3000 truncated complex notes.
           model: "claude-sonnet-5-5",
           max_tokens: 8000,
+          // Sep 29 2026: low effort + no up-front thinking — ~3–5 s/note, cheaper than 4.6.
+          // Passed the full 16-scenario suite live; the server's -24/-79 guard and the
+          // code ladder in the prompt cover what low effort used to miss.
+          effort: "low",
+          thinking: "between_tools",
         }),
       });
       const data = await res.json();
