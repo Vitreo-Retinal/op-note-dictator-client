@@ -9,7 +9,7 @@ import IntakeHpi from "./IntakeHpi.jsx";
 import CallBoard from "./CallBoard.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon } from "./icons.jsx";
-import logo from "./vra-logo-flat.png";
+import logo from "./vra-logo.png";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -135,7 +135,7 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
       <style>{RESPONSIVE_CSS}</style>
       {/* Top bar */}
       <header className="vra-bar" style={appBar}>
-        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block" }} />
+        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 48, width: "auto", display: "block" }} />
         <span style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Practice Hub</div>
         <div style={{ flex: 1 }} />

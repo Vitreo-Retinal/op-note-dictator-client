@@ -4,7 +4,7 @@
 // className hooks (vra-wrap, vra-row2, vra-seg …) work at phone width.
 import { T, appBar, RESPONSIVE_CSS } from "./theme.js";
 import { BackIcon } from "./icons.jsx";
-import logo from "./vra-logo-flat.png";
+import logo from "./vra-logo.png";
 
 export function backBtnStyle(extra = {}) {
   return {
@@ -52,7 +52,7 @@ export default function PageBar({ onBack, title, sub, right, backLabel = "Hub", 
             <BackIcon />{backLabel}
           </button>
         )}
-        <img className="vra-bar-hide" src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", flexShrink: 0 }} />
+        <img className="vra-bar-hide" src={logo} alt="Vitreo-Retinal Associates" style={{ height: 48, width: "auto", display: "block", flexShrink: 0 }} />
         <span className="vra-bar-hide" style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{title}</div>
         {sub && <div className="vra-bar-hide" style={{ fontSize: 13, color: T.muted, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{sub}</div>}
