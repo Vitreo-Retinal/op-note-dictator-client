@@ -1,4 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { S, T, btn, btnSm, card, chip, field, fieldLabel, secHead } from "./theme.js";
+import PageBar from "./PageBar.jsx";
+import { MicIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -623,242 +626,127 @@ const STATUS_LABELS = {
 };
 
 const STATUS_COLORS = {
-  idle: { bg: "#0e2a45", border: "#22d3ee", text: "#22d3ee" },
-  initiating: { bg: "#1a1a2e", border: "#f59e0b", text: "#f59e0b" },
-  initiated: { bg: "#1a1a2e", border: "#f59e0b", text: "#f59e0b" },
-  ringing: { bg: "#1a1a2e", border: "#f59e0b", text: "#f59e0b" },
-  "in-progress": { bg: "#0a2e1a", border: "#22c55e", text: "#22c55e" },
-  answered: { bg: "#0a2e1a", border: "#22c55e", text: "#22c55e" },
-  completed: { bg: "#0a2e1a", border: "#22c55e", text: "#22c55e" },
-  failed: { bg: "#2e0a0a", border: "#f87171", text: "#f87171" },
-  busy: { bg: "#2e0a0a", border: "#f87171", text: "#f87171" },
-  "no-answer": { bg: "#2e0a0a", border: "#f87171", text: "#f87171" },
-  canceled: { bg: "#1a1a2e", border: "#64748b", text: "#64748b" },
+  idle: { bg: T.accent, border: T.accent, text: T.onAccent },
+  initiating: { bg: T.amberSoft, border: T.gold, text: T.amber },
+  initiated: { bg: T.amberSoft, border: T.gold, text: T.amber },
+  ringing: { bg: T.amberSoft, border: T.gold, text: T.amber },
+  "in-progress": { bg: T.greenSoft, border: T.green, text: T.green },
+  answered: { bg: T.greenSoft, border: T.green, text: T.green },
+  completed: { bg: T.greenSoft, border: T.green, text: T.green },
+  failed: { bg: T.redSoft, border: T.red, text: T.red },
+  busy: { bg: T.redSoft, border: T.red, text: T.red },
+  "no-answer": { bg: T.redSoft, border: T.red, text: T.red },
+  canceled: { bg: T.paper, border: T.line, text: T.muted },
 };
 
 /* ── Styles ────────────────────────────────────────────────────── */
+// Call status → chip tone (green recording/connected, amber pending, red error, muted idle)
+const STATUS_TONE = {
+  idle: "muted", initiating: "amber", initiated: "amber", ringing: "amber",
+  "in-progress": "green", answered: "green", completed: "green",
+  failed: "red", busy: "red", "no-answer": "red", canceled: "muted",
+};
+
+const ctl = {
+  width: "100%",
+  height: 32,
+  background: T.surface,
+  border: `1px solid ${T.line}`,
+  color: T.ink,
+  padding: "0 10px",
+  borderRadius: T.r,
+  fontSize: 13.5,
+  fontFamily: T.sans,
+  boxSizing: "border-box",
+  outline: "none",
+};
+
 const styles = {
   root: {
     minHeight: "100vh",
-    background: "#0a0f1a",
-    color: "#e2e8f0",
-    fontFamily: "'IBM Plex Mono', 'Courier New', monospace",
-    display: "flex",
-    flexDirection: "column",
-  },
-  header: {
-    padding: "16px 24px",
-    borderBottom: "1px solid #1e3a5f",
-    background: "#060d18",
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-  headerDot: {
-    width: 8, height: 8, borderRadius: "50%", background: "#22d3ee",
-  },
-  headerTitle: {
-    fontSize: 13,
-    fontWeight: 600,
-    letterSpacing: "0.15em",
-    color: "#94a3b8",
-    textTransform: "uppercase",
+    background: T.paper,
+    color: T.ink,
+    fontFamily: T.sans,
   },
   body: {
-    flex: 1,
+    maxWidth: 1120,
+    margin: "0 auto",
+    padding: "20px 24px 48px",
+    boxSizing: "border-box",
     display: "grid",
-    gridTemplateColumns: "220px 1fr",
-    overflow: "hidden",
-    height: "calc(100vh - 49px)",
+    gridTemplateColumns: "230px minmax(0, 1fr)",
+    gap: 20,
+    alignItems: "start",
   },
-  sidebar: {
-    borderRight: "1px solid #1e3a5f",
-    overflowY: "auto",
-    padding: "20px 12px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
+  sidebar: card({ overflow: "hidden", position: "sticky", top: 16 }),
+  sidebarHead: {
+    fontSize: 13.5, fontWeight: 600, color: T.ink, padding: "10px 14px",
+    borderBottom: `1px solid ${T.line}`, background: T.paper,
   },
-  sectionLabel: {
-    fontSize: 10,
-    letterSpacing: "0.15em",
-    color: "#475569",
-    textTransform: "uppercase",
-    padding: "12px 8px 6px",
-    fontWeight: 700,
-  },
+  sectionLabel: secHead({ marginTop: 22 }),
   procBtn: (active) => ({
-    background: active ? "#0e2a45" : "transparent",
-    border: active ? "1px solid #22d3ee" : "1px solid transparent",
-    color: active ? "#22d3ee" : "#64748b",
-    padding: "8px 10px",
-    borderRadius: 4,
-    cursor: "pointer",
-    fontSize: 11,
-    textAlign: "left",
-    letterSpacing: "0.02em",
-    transition: "all 0.15s",
-    fontFamily: "inherit",
-  }),
-  main: {
-    display: "grid",
-    gridTemplateColumns: "300px 1fr",
-    overflow: "hidden",
-  },
-  formPanel: {
-    borderRight: "1px solid #1e3a5f",
-    overflowY: "auto",
-    padding: "20px 16px",
-  },
-  previewPanel: {
-    overflowY: "auto",
-    padding: "20px 24px",
-    background: "#060d18",
-    display: "flex",
-    flexDirection: "column",
-  },
-  fieldGroup: {
-    marginBottom: 12,
-  },
-  label: {
     display: "block",
-    fontSize: 10,
-    color: "#64748b",
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    marginBottom: 4,
-  },
-  input: {
     width: "100%",
-    background: "#0a1628",
-    border: "1px solid #1e3a5f",
-    color: "#cbd5e1",
-    padding: "7px 10px",
-    borderRadius: 3,
-    fontSize: 12,
-    fontFamily: "inherit",
-    boxSizing: "border-box",
-    outline: "none",
+    background: active ? T.accentSoft : "transparent",
+    border: "none",
+    borderTop: `1px solid ${T.line}`,
+    color: active ? T.accent : T.ink2,
+    fontWeight: active ? 500 : 400,
+    padding: "9px 14px",
+    cursor: "pointer",
+    fontSize: 13.5,
+    textAlign: "left",
+    transition: "background .15s",
+    fontFamily: T.sans,
+    lineHeight: 1.4,
+  }),
+  main: { minWidth: 0 },
+  grid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 },
+  fieldGroup: field(),
+  fieldWide: field({ gridColumn: "1 / -1" }),
+  label: fieldLabel(),
+  input: ctl,
+  select: { ...ctl, cursor: "pointer" },
+  noteCard: card({ marginTop: 22 }),
+  noteHead: {
+    display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+    padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`,
   },
-  select: {
-    width: "100%",
-    background: "#0a1628",
-    border: "1px solid #1e3a5f",
-    color: "#cbd5e1",
-    padding: "7px 10px",
-    borderRadius: 3,
-    fontSize: 12,
-    fontFamily: "inherit",
-    boxSizing: "border-box",
-    outline: "none",
-    appearance: "none",
-  },
-  divider: {
-    height: 1,
-    background: "#1e3a5f",
-    margin: "16px 0",
+  previewTitle: {
+    fontSize: 14,
+    color: T.accent,
+    fontWeight: 600,
   },
   noteTextarea: {
-    flex: 1,
+    display: "block",
     width: "100%",
-    minHeight: 500,
+    minHeight: 520,
     background: "transparent",
-    border: "1px solid #1e3a5f",
-    borderRadius: 4,
-    color: "#94a3b8",
-    fontSize: 12,
-    lineHeight: 1.8,
-    fontFamily: "inherit",
-    padding: "12px 14px",
+    border: 0,
+    color: T.ink,
+    fontSize: 13.5,
+    lineHeight: 1.75,
+    fontFamily: T.mono,
+    padding: "16px 18px",
     resize: "vertical",
     outline: "none",
     boxSizing: "border-box",
     whiteSpace: "pre-wrap",
-  },
-  previewHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  previewTitle: {
-    fontSize: 10,
-    letterSpacing: "0.15em",
-    color: "#475569",
-    textTransform: "uppercase",
-    fontWeight: 700,
-  },
-  copyBtn: {
-    background: "#0e2a45",
-    border: "1px solid #1e3a5f",
-    color: "#22d3ee",
-    padding: "5px 14px",
-    borderRadius: 3,
-    cursor: "pointer",
-    fontSize: 11,
-    fontFamily: "inherit",
-    letterSpacing: "0.05em",
-    transition: "all 0.15s",
+    borderRadius: `0 0 ${T.rLg}px ${T.rLg}px`,
   },
   dictateBtn: (callStatus) => {
-    const colors = STATUS_COLORS[callStatus] || STATUS_COLORS.idle;
     const isActive = ["initiating", "initiated", "ringing", "in-progress", "answered"].includes(callStatus);
-    return {
-      background: colors.bg,
-      border: `1px solid ${colors.border}`,
-      color: colors.text,
-      padding: "10px 20px",
-      borderRadius: 3,
+    const idle = callStatus === "idle";
+    return btn(idle ? "primary" : "secondary", {
       cursor: isActive ? "not-allowed" : "pointer",
-      fontSize: 12,
-      fontFamily: "inherit",
-      letterSpacing: "0.08em",
-      textTransform: "uppercase",
-      width: "100%",
-      marginTop: 8,
-      transition: "all 0.15s",
-      opacity: isActive ? 0.8 : 1,
-    };
+      fontSize: 13.5,
+      flexShrink: 0,
+      transition: "all .15s",
+      ...(idle ? {} : { color: T.muted }),
+    });
   },
-  phoneInput: {
-    width: "100%",
-    background: "#0a1628",
-    border: "1px solid #1e3a5f",
-    color: "#cbd5e1",
-    padding: "7px 10px",
-    borderRadius: 3,
-    fontSize: 12,
-    fontFamily: "inherit",
-    boxSizing: "border-box",
-    outline: "none",
-  },
-  callStatusBar: (status) => {
-    const colors = STATUS_COLORS[status] || STATUS_COLORS.idle;
-    return {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "8px 12px",
-      marginTop: 8,
-      borderRadius: 3,
-      background: colors.bg,
-      border: `1px solid ${colors.border}`,
-      color: colors.text,
-      fontSize: 11,
-      letterSpacing: "0.05em",
-    };
-  },
-  cancelBtn: {
-    background: "transparent",
-    border: "1px solid #f87171",
-    color: "#f87171",
-    padding: "3px 10px",
-    borderRadius: 3,
-    cursor: "pointer",
-    fontSize: 10,
-    fontFamily: "inherit",
-    letterSpacing: "0.05em",
-  },
+  phoneInput: { ...ctl, fontFamily: T.mono, fontSize: 13, flex: "1 1 180px", width: "auto", minWidth: 0 },
+  cancelBtn: btnSm("secondary", { color: T.red, borderColor: T.red, height: 24, padding: "0 8px", fontSize: 12 }),
 };
 
 /* ── Component ────────────────────────────────────────────────── */
@@ -980,10 +868,11 @@ export default function OpNoteDictator({ onBack }) {
   const formatDuration = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   const renderField = (field) => (
-    <div key={field.id} style={styles.fieldGroup}>
+    <div key={field.id} style={field.type === "textarea" ? styles.fieldWide : styles.fieldGroup}>
       <label style={styles.label}>{field.label}</label>
       {field.type === "select" ? (
         <select
+          className="vra-input"
           style={styles.select}
           value={fields[field.id] || field.options[0]}
           onChange={e => updateField(field.id, e.target.value)}
@@ -992,13 +881,15 @@ export default function OpNoteDictator({ onBack }) {
         </select>
       ) : field.type === "textarea" ? (
         <textarea
-          style={{ ...styles.input, minHeight: 50, resize: "vertical", lineHeight: 1.5 }}
+          className="vra-input"
+          style={{ ...styles.input, height: "auto", minHeight: 56, padding: "7px 10px", resize: "vertical", lineHeight: 1.5 }}
           placeholder={field.placeholder || ""}
           value={fields[field.id] || ""}
           onChange={e => updateField(field.id, e.target.value)}
         />
       ) : (
         <input
+          className="vra-input"
           style={styles.input}
           type="text"
           placeholder={field.placeholder || ""}
@@ -1011,22 +902,16 @@ export default function OpNoteDictator({ onBack }) {
 
   return (
     <div style={styles.root}>
-      <div style={styles.header}>
-        {onBack && (
-          <button onClick={onBack} style={{ background: "none", border: "1px solid #1e3a5f", borderRadius: 6, color: "#64748b", padding: "4px 10px", cursor: "pointer", fontFamily: "Georgia, serif", fontSize: "0.78rem", marginRight: 4 }}>
-            &#8592; Back
-          </button>
-        )}
-        <div style={styles.headerDot} />
-        <span style={styles.headerTitle}>Op Note Dictator — Retina-Rx</span>
-      </div>
-      <div style={styles.body}>
+      <PageBar onBack={onBack} backLabel="Back" title="Op Note Dictator — Retina-Rx" />
+      <div className="vra-side vra-wrap" style={styles.body}>
         {/* Procedure selector */}
-        <div style={styles.sidebar}>
-          <div style={styles.sectionLabel}>Procedure</div>
+        <div className="vra-oplist" style={styles.sidebar}>
+          <div style={styles.sidebarHead}>Procedure</div>
           {PROCEDURES.map(p => (
             <button
               key={p.id}
+              className={selectedProc === p.id ? undefined : "vra-rowbtn"}
+              aria-pressed={selectedProc === p.id}
               style={styles.procBtn(selectedProc === p.id)}
               onClick={() => setSelectedProc(p.id)}
             >
@@ -1037,47 +922,49 @@ export default function OpNoteDictator({ onBack }) {
 
         <div style={styles.main}>
           {/* Form */}
-          <div style={styles.formPanel}>
-            <div style={styles.sectionLabel}>Patient</div>
+          <h2 style={{ ...styles.sectionLabel, marginTop: 0 }}>Patient</h2>
+          <div className="vra-row2" style={styles.grid}>
             {COMMON_FIELDS.map(renderField)}
-            <div style={styles.divider} />
-            <div style={styles.sectionLabel}>Procedure Details</div>
+          </div>
+
+          <h2 style={styles.sectionLabel}>Procedure Details</h2>
+          <div className="vra-row2" style={styles.grid}>
             {procFields.map(renderField)}
+          </div>
 
-            <div style={styles.divider} />
-            <div style={styles.sectionLabel}>Dictation</div>
-
-            <div style={styles.fieldGroup}>
-              <label style={styles.label}>Dictation Line</label>
+          <h2 style={styles.sectionLabel}>Dictation</h2>
+          <div style={field()}>
+            <label style={styles.label}>Dictation Line</label>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <input
+                className="vra-input"
                 style={styles.phoneInput}
                 type="tel"
                 value={phoneNumber}
                 onChange={e => setPhoneNumber(e.target.value)}
                 disabled={isCallActive}
               />
+              <button
+                style={styles.dictateBtn(callStatus)}
+                onClick={handleDictate}
+                disabled={isCallActive}
+              >
+                {callStatus === "idle" ? <MicIcon /> : null}{STATUS_LABELS[callStatus] || callStatus}
+              </button>
             </div>
 
             {callError && (
-              <div style={{ color: "#f87171", fontSize: 11, padding: "6px 0", letterSpacing: "0.02em" }}>
-                {callError}
+              <div style={{ display: "flex", gap: 8, alignItems: "flex-start", color: T.red, fontSize: 13, marginTop: 10 }}>
+                <span style={{ marginTop: 1 }}><AlertIcon size={15} /></span>{callError}
               </div>
             )}
 
-            <button
-              style={styles.dictateBtn(callStatus)}
-              onClick={handleDictate}
-              disabled={isCallActive}
-            >
-              {callStatus === "idle" ? "▶ " : ""}{STATUS_LABELS[callStatus] || callStatus}
-            </button>
-
             {callStatus !== "idle" && (
-              <div style={styles.callStatusBar(callStatus)}>
-                <span>
-                  {isCallActive && "● "}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
+                <span style={chip(STATUS_TONE[callStatus] || "muted", { fontSize: 12.5, padding: "2px 10px" })}>
+                  {isCallActive && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "currentColor", display: "inline-block" }} />}
                   {STATUS_LABELS[callStatus]}
-                  {isCallActive && ` — ${formatDuration(callDuration)}`}
+                  {isCallActive && <span style={{ fontFamily: T.mono, fontWeight: 400 }}>{` — ${formatDuration(callDuration)}`}</span>}
                 </span>
                 {isCallActive && (
                   <button
@@ -1096,22 +983,21 @@ export default function OpNoteDictator({ onBack }) {
           </div>
 
           {/* Editable Note */}
-          <div style={styles.previewPanel}>
-            <div style={styles.previewHeader}>
-              <span style={styles.previewTitle}>
-                Operative Note {noteEdited && <span style={{ color: "#f59e0b", fontSize: 10, marginLeft: 8 }}>● edited</span>}
-              </span>
-              <div style={{ display: "flex", gap: 8 }}>
+          <div className="vra-editor" style={styles.noteCard}>
+            <div style={styles.noteHead}>
+              <span style={styles.previewTitle}>Operative Note</span>
+              {noteEdited && <span style={chip("amber")}>edited</span>}
+              <div style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
                 {noteEdited && (
                   <button
-                    style={{ ...styles.copyBtn, color: "#f59e0b" }}
+                    style={btnSm("secondary", { color: T.amber })}
                     onClick={() => { setNoteEdited(false); setEditedNote(generatedNote); }}
                   >
                     Regenerate
                   </button>
                 )}
-                <button style={styles.copyBtn} onClick={handleCopy}>
-                  {copied ? "✓ Copied" : "Copy"}
+                <button style={btnSm("primary", copied ? { background: T.green, borderColor: T.green } : {})} onClick={handleCopy}>
+                  <CopyIcon size={14} />{copied ? "✓ Copied" : "Copy"}
                 </button>
               </div>
             </div>

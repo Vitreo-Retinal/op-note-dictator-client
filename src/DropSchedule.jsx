@@ -1,20 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
+import { S, T, btn, btnSm, card, field, fieldLabel, secHead } from "./theme.js";
+import PageBar, { segWrap, segBtn, wrap } from "./PageBar.jsx";
+import { PrintIcon } from "./icons.jsx";
 
 // ── Styles (matches App.jsx theme) ─────────────────────────────────
-const S = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  muted: "#64748b",
-  text: "#e2e8f0",
-  bright: "#f1f5f9",
-  accent: "#6366f1",
-  accentLight: "#a5b4fc",
-  green: "#4ade80",
-  amber: "#f59e0b",
-  font: "Georgia, serif",
-  mono: "monospace",
-};
 
 // ── Drug database with trade/generic names and cap colors ──────────
 const DRUG_DB = [
@@ -385,39 +374,59 @@ export default function DropSchedule({ onBack, initialLang = "en", initialDrops 
 
   const weeks = meds.length > 0 ? buildWeeklySchedule() : [];
 
+  const ctl = { display: "block", width: "100%", height: 34, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box", outline: "none" };
+  const capDot = (color, size = 16) => ({ width: size, height: size, borderRadius: "50%", background: color, border: `1px solid ${color === "#FFFFFF" ? T.lineStrong : T.line}`, display: "inline-block", flexShrink: 0, boxSizing: "border-box" });
+  const ready = medName.trim() && medSchedule.trim();
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
+    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       {/* Header */}
-      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Back</button>
-        <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>Drop / Medication Schedule</span>
-      </div>
+      <PageBar onBack={onBack} backLabel="Back" title="Drop / Medication Schedule" />
 
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px" }}>
+      <div className="vra-wrap" style={wrap({ paddingTop: 4, paddingBottom: 40 })}>
         {/* Input form */}
-        <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 12, padding: "20px", marginBottom: 20 }}>
-          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: S.bright, marginBottom: 14 }}>Add medication</div>
+        <h2 style={secHead({ marginTop: 22 })}>Add medication</h2>
 
-          {/* Row 1: Name + Type */}
-          <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
+        {/* Row 1: Name + Type */}
+        <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={field({ gridColumn: "1 / -1" })}>
+            <label style={fieldLabel()}>Medication</label>
             <input
+              className="vra-input"
               value={medName}
               onChange={(e) => setMedName(e.target.value)}
               placeholder="Medication name (e.g., Prednisolone, Cosopt, Maxitrol)"
-              style={{ flex: 2, minWidth: 200, background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", color: S.text, fontFamily: S.font, fontSize: "0.85rem" }}
+              style={ctl}
             />
+            {/* Auto-detected cap color */}
+            {detectedDrug && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+                <span style={capDot(detectedDrug.cap)}></span>
+                <span style={{ fontSize: 12.5, color: T.ink2 }}>
+                  {detectedDrug.capName} cap — {detectedDrug.trade} ({detectedDrug.generic})
+                  {detectedDrug.isOintment ? " — ointment" : ""}
+                </span>
+              </div>
+            )}
+          </div>
+          <div style={field()}>
+            <label style={fieldLabel()}>Type</label>
             <select
+              className="vra-input"
               value={medType}
               onChange={(e) => setMedType(e.target.value)}
-              style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", color: S.text, fontFamily: S.font, fontSize: "0.85rem" }}
+              style={ctl}
             >
               <option value="drop">Drop</option>
               <option value="ointment">Ointment</option>
             </select>
+          </div>
+          <div style={field()}>
+            <label style={fieldLabel()}>Eye</label>
             <select
+              className="vra-input"
               value={medEye}
               onChange={(e) => setMedEye(e.target.value)}
-              style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", color: S.text, fontFamily: S.font, fontSize: "0.85rem" }}
+              style={ctl}
             >
               <option value="OU">Both eyes (OU)</option>
               <option value="OD">Right eye (OD)</option>
@@ -426,110 +435,104 @@ export default function DropSchedule({ onBack, initialLang = "en", initialDrops 
           </div>
 
           {/* Row 2: Schedule */}
-          <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-            <input
-              value={medSchedule}
-              onChange={(e) => setMedSchedule(e.target.value)}
-              placeholder="Schedule (e.g., QID x1wk, TID x1wk, BID x1wk, QD x1wk)"
-              style={{ flex: 1, minWidth: 300, background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", color: S.text, fontFamily: S.font, fontSize: "0.85rem" }}
-              onKeyDown={(e) => { if (e.key === "Enter") addMed(); }}
-            />
-          </div>
-
-          {/* Auto-detected cap color */}
-          {detectedDrug && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <span style={{ width: 18, height: 18, borderRadius: "50%", background: detectedDrug.cap, border: detectedDrug.cap === "#FFFFFF" ? "2px solid #999" : "2px solid rgba(0,0,0,0.2)", display: "inline-block" }}></span>
-              <span style={{ fontSize: "0.78rem", color: S.muted }}>
-                {detectedDrug.capName} cap — {detectedDrug.trade} ({detectedDrug.generic})
-                {detectedDrug.isOintment ? " — ointment" : ""}
-              </span>
+          <div style={field({ gridColumn: "1 / -1" })}>
+            <label style={fieldLabel()}>Schedule</label>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+              <input
+                className="vra-input"
+                value={medSchedule}
+                onChange={(e) => setMedSchedule(e.target.value)}
+                placeholder="Schedule (e.g., QID x1wk, TID x1wk, BID x1wk, QD x1wk)"
+                style={{ ...ctl, flex: "1 1 260px", width: "auto", minWidth: 0 }}
+                onKeyDown={(e) => { if (e.key === "Enter") addMed(); }}
+              />
+              <button
+                onClick={addMed}
+                disabled={!medName.trim() || !medSchedule.trim()}
+                style={btn("primary", {
+                  background: ready ? T.accent : T.accentSoft,
+                  borderColor: ready ? T.accent : T.line,
+                  color: ready ? T.onAccent : T.muted,
+                  fontSize: 13.5, cursor: medName.trim() && medSchedule.trim() ? "pointer" : "default",
+                })}
+              >
+                + Add Medication
+              </button>
             </div>
-          )}
-
-          <button
-            onClick={addMed}
-            disabled={!medName.trim() || !medSchedule.trim()}
-            style={{
-              background: medName.trim() && medSchedule.trim() ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : S.border,
-              color: medName.trim() && medSchedule.trim() ? "#fff" : S.muted,
-              border: "none", borderRadius: 8, padding: "10px 24px", fontSize: "0.82rem", fontFamily: S.font, fontWeight: 600, cursor: medName.trim() && medSchedule.trim() ? "pointer" : "default"
-            }}
-          >
-            + Add Medication
-          </button>
+          </div>
         </div>
 
         {/* Added medications list */}
         {meds.length > 0 && (
-          <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 12, padding: "20px", marginBottom: 20 }}>
-            <div style={{ fontSize: "0.85rem", fontWeight: 600, color: S.bright, marginBottom: 12 }}>Medications added ({meds.length})</div>
-            {meds.map((m) => (
-              <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, padding: "8px 12px", background: S.bg, borderRadius: 8 }}>
-                <span style={{ width: 18, height: 18, borderRadius: "50%", background: m.cap, border: m.cap === "#FFFFFF" ? "2px solid #999" : "2px solid rgba(0,0,0,0.2)", flexShrink: 0 }}></span>
-                <span style={{ flex: 1, fontSize: "0.82rem", color: S.text }}>
-                  <strong>{m.trade}</strong>
-                  {m.generic && <span style={{ color: S.muted }}> ({m.generic})</span>}
+          <>
+          <h2 style={secHead()}>Medications added ({meds.length})</h2>
+          <div style={card({ overflow: "hidden" })}>
+            {meds.map((m, idx) => (
+              <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px 10px 16px", borderTop: idx === 0 ? "none" : `1px solid ${T.line}` }}>
+                <span style={capDot(m.cap)}></span>
+                <span style={{ flex: 1, fontSize: 13.5, color: T.ink, lineHeight: 1.5, minWidth: 0 }}>
+                  <strong style={{ fontWeight: 600 }}>{m.trade}</strong>
+                  {m.generic && <span style={{ color: T.muted }}> ({m.generic})</span>}
                   {" — "}{m.eye}{" — "}
                   {m.type === "ointment" ? "ointment" : "drop"}{" — "}
-                  {m.schedule.map((seg, i) => `${["QD","BID","TID","QID"][seg.freq-1]}${seg.isQhs ? " QHS" : ""} x${seg.weeks}wk`).join(" → ")}
+                  <span style={{ fontFamily: T.mono, fontSize: 12.5, color: T.ink2 }}>{m.schedule.map((seg, i) => `${["QD","BID","TID","QID"][seg.freq-1]}${seg.isQhs ? " QHS" : ""} x${seg.weeks}wk`).join(" → ")}</span>
                 </span>
-                <button onClick={() => removeMed(m.id)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", fontSize: "1rem", padding: "2px 6px" }}>✕</button>
+                <button onClick={() => removeMed(m.id)} title="Remove" style={btnSm("ghost", { color: T.red, padding: "0 8px" })}>✕</button>
               </div>
             ))}
 
-            {/* Language selector for print output */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16, marginBottom: 10 }}>
-              <span style={{ fontSize: "0.75rem", color: S.muted }}>Print language:</span>
-              {["en", "es", "vi", "pt"].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setPrintLang(l)}
-                  style={{
-                    background: printLang === l ? S.green : "transparent",
-                    color: printLang === l ? "#000" : S.muted,
-                    border: `1px solid ${printLang === l ? S.green : S.border}`,
-                    borderRadius: 6, padding: "4px 10px", fontSize: "0.7rem",
-                    fontFamily: S.mono, fontWeight: 700, cursor: "pointer",
-                  }}
-                >
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
+            {/* Language selector + actions */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "10px 12px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
+              <span style={{ fontSize: 12.5, color: T.muted }}>Print language:</span>
+              <div role="group" aria-label="Print language" style={segWrap}>
+                {["en", "es", "vi", "pt"].map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => setPrintLang(l)}
+                    aria-pressed={printLang === l}
+                    style={segBtn(printLang === l, { padding: "3px 10px", fontSize: 12.5 })}
+                  >
+                    {l.toUpperCase()}
+                  </button>
+                ))}
+              </div>
 
-            {/* Action buttons */}
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                onClick={() => setShowPreview(!showPreview)}
-                style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: "0.82rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
-              >
-                {showPreview ? "Hide Preview" : "Preview Schedule"}
-              </button>
-              <button
-                onClick={handlePrint}
-                style={{ background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: "0.82rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
-              >
-                Print ({printLang.toUpperCase()})
-              </button>
-              <button
-                onClick={handlePDF}
-                style={{ background: "linear-gradient(135deg,#d97706,#f59e0b)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: "0.82rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
-              >
-                PDF ({printLang.toUpperCase()})
-              </button>
+              {/* Action buttons */}
+              <div style={{ display: "flex", gap: 8, marginLeft: "auto", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => setShowPreview(!showPreview)}
+                  style={btnSm("secondary")}
+                >
+                  {showPreview ? "Hide Preview" : "Preview Schedule"}
+                </button>
+                <button
+                  onClick={handlePrint}
+                  style={btnSm("primary")}
+                >
+                  <PrintIcon size={14} />Print ({printLang.toUpperCase()})
+                </button>
+                <button
+                  onClick={handlePDF}
+                  style={btnSm("secondary")}
+                >
+                  PDF ({printLang.toUpperCase()})
+                </button>
+              </div>
             </div>
           </div>
+          </>
         )}
 
         {/* Preview */}
         {showPreview && weeks.length > 0 && (
-          <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 12, padding: "20px" }}>
-            <div style={{ fontSize: "0.85rem", fontWeight: 600, color: S.bright, marginBottom: 16 }}>Schedule Preview</div>
+          <>
+          <h2 style={secHead()}>Schedule Preview</h2>
+          <div style={card({ padding: "6px 16px 4px" })}>
             {weeks.map((week) => (
               <WeekPreview key={week.weekNum} week={week} />
             ))}
           </div>
+          </>
         )}
       </div>
     </div>
@@ -544,15 +547,15 @@ function WeekPreview({ week }) {
   if (!hasOD && !hasOS) return null;
 
   return (
-    <div style={{ marginBottom: 24 }}>
-      <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright, marginBottom: 10, borderBottom: `1px solid ${S.border}`, paddingBottom: 6 }}>
+    <div style={{ margin: "12px 0 16px" }}>
+      <div style={{ fontSize: 14, fontWeight: 600, color: T.ink, marginBottom: 10, borderBottom: `1px solid ${T.line}`, paddingBottom: 6 }}>
         Week {week.weekNum}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: hasOD && hasOS ? "1fr 1fr" : "1fr", gap: 16 }}>
+      <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: hasOD && hasOS ? "1fr 1fr" : "1fr", gap: 14 }}>
         {hasOD && (
           <div>
-            <div style={{ textAlign: "center", padding: "6px", background: "#1e3a5f", borderRadius: 8, marginBottom: 10 }}>
-              <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#93c5fd" }}>Right Eye (OD)</span>
+            <div style={{ textAlign: "center", padding: "5px", background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: T.r, marginBottom: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: T.accent }}>Right Eye (OD)</span>
             </div>
             {["morning", "lunch", "dinner", "bedtime"].map((slot) => (
               week.od[slot].length > 0 && (
@@ -563,8 +566,8 @@ function WeekPreview({ week }) {
         )}
         {hasOS && (
           <div>
-            <div style={{ textAlign: "center", padding: "6px", background: "#1e3b2e", borderRadius: 8, marginBottom: 10 }}>
-              <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#86efac" }}>Left Eye (OS)</span>
+            <div style={{ textAlign: "center", padding: "5px", background: T.greenSoft, border: `1px solid ${T.green}`, borderRadius: T.r, marginBottom: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: T.green }}>Left Eye (OS)</span>
             </div>
             {["morning", "lunch", "dinner", "bedtime"].map((slot) => (
               week.os[slot].length > 0 && (
@@ -582,14 +585,14 @@ function WeekPreview({ week }) {
 function SlotPreview({ slot, meds }) {
   const info = SLOT_LABELS[slot];
   return (
-    <div style={{ marginBottom: 8, padding: "8px 10px", border: `1px solid ${S.border}`, borderRadius: 8 }}>
-      <div style={{ fontSize: "0.78rem", fontWeight: 700, color: S.amber, marginBottom: 4 }}>{info.icon} {info.label}</div>
+    <div style={{ marginBottom: 8, padding: "8px 10px", border: `1px solid ${T.line}`, borderRadius: T.r, background: T.surface }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: T.ink2, marginBottom: 5 }}>{info.label}</div>
       {meds.map((m, i) => (
         <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-          <span style={{ width: 14, height: 14, borderRadius: "50%", background: m.cap, border: m.cap === "#FFFFFF" ? "1px solid #999" : "1px solid rgba(0,0,0,0.2)", flexShrink: 0 }}></span>
-          <span style={{ fontSize: "0.78rem", color: S.text }}>{m.trade}</span>
-          <span style={{ fontSize: "0.65rem", color: S.muted }}>({m.generic})</span>
-          <span style={{ fontSize: "0.65rem", color: S.muted, marginLeft: "auto" }}>{m.type === "ointment" ? "apply" : "1 drop"}</span>
+          <span style={{ width: 16, height: 16, borderRadius: "50%", background: m.cap, border: `1px solid ${m.cap === "#FFFFFF" ? T.lineStrong : T.line}`, flexShrink: 0, boxSizing: "border-box" }}></span>
+          <span style={{ fontSize: 13, color: T.ink }}>{m.trade}</span>
+          <span style={{ fontSize: 12, color: T.muted }}>({m.generic})</span>
+          <span style={{ fontSize: 12, color: T.muted, marginLeft: "auto" }}>{m.type === "ointment" ? "apply" : "1 drop"}</span>
         </div>
       ))}
     </div>

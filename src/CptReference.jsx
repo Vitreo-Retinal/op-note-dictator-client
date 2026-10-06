@@ -1,14 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { CPT_CATALOG, CPT_CATEGORIES } from "./cptCatalog";
+import { S, T, chip, btnSm, field, fieldLabel } from "./theme.js";
+import PageBar, { segWrap, segBtn, wrap, searchInput } from "./PageBar.jsx";
+import { SendIcon, ChevronDownIcon, SearchIcon } from "./icons.jsx";
 
 // ── Styles (shared palette with the rest of the app) ────────────────
-const S = {
-  bg: "#0f172a", card: "#1e293b", border: "#334155", muted: "#64748b",
-  text: "#e2e8f0", bright: "#f1f5f9", accent: "#6366f1", accentLight: "#a5b4fc",
-  green: "#22c55e", yellow: "#eab308", red: "#ef4444", orange: "#f97316",
-  font: "'Inter','SF Pro Display',-apple-system,sans-serif",
-  mono: "'SF Mono','Fira Code',monospace",
-};
 
 // ── Category metadata ───────────────────────────────────────────────
 const CATEGORIES = [
@@ -91,7 +87,7 @@ export function AICodingAssistant({ showReimbursement = false }) {
     const lines = text.split("\n");
     return lines.map((line, i) => {
       // Bold
-      let rendered = line.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#f1f5f9">$1</strong>');
+      let rendered = line.replace(/\*\*(.+?)\*\*/g, `<strong style="color:${T.ink};font-weight:600">$1</strong>`);
       // Bullet points
       const isBullet = /^\s*[-•]\s/.test(line);
       if (isBullet) {
@@ -108,14 +104,15 @@ export function AICodingAssistant({ showReimbursement = false }) {
     });
   };
 
+  const hasInput = !!input.trim();
   return (
-    <div ref={containerRef} style={{ display: "flex", flexDirection: "column", height: maxH, maxWidth: 800, margin: "0 auto" }}>
+    <div ref={containerRef} style={{ display: "flex", flexDirection: "column", height: maxH, maxWidth: 880, margin: "0 auto", fontFamily: T.sans }}>
       {/* Chat messages */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "18px 0 12px" }}>
         {messages.length === 0 && (
-          <div style={{ textAlign: "center", marginTop: 60, color: S.muted }}>
-            <div style={{ fontSize: "1.3rem", marginBottom: 12, color: S.accentLight }}>AI Coding Assistant</div>
-            <div style={{ fontSize: "0.85rem", lineHeight: 1.6, maxWidth: 500, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginTop: 48, color: T.muted, padding: "0 8px" }}>
+            <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 8, color: T.accent }}>AI Coding Assistant</div>
+            <div style={{ fontSize: 13.5, lineHeight: 1.6, maxWidth: 500, margin: "0 auto", color: T.ink2 }}>
               Ask any retina billing question — CPT codes, ICD-10 pairing, modifiers, bundling, E/M, global periods.
             </div>
             <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
@@ -130,12 +127,12 @@ export function AICodingAssistant({ showReimbursement = false }) {
                   key={q}
                   onClick={() => { setInput(q); }}
                   style={{
-                    padding: "8px 14px", borderRadius: 20, border: `1px solid ${S.border}`,
-                    background: S.card, color: S.text, fontSize: "0.75rem", cursor: "pointer",
-                    fontFamily: S.font, transition: "border-color 0.2s",
+                    padding: "6px 12px", borderRadius: 999, border: `1px solid ${T.line}`,
+                    background: T.surface, color: T.ink, fontSize: 12.5, cursor: "pointer",
+                    fontFamily: T.sans, transition: "border-color .15s",
                   }}
-                  onMouseOver={(e) => e.target.style.borderColor = S.accent}
-                  onMouseOut={(e) => e.target.style.borderColor = S.border}
+                  onMouseOver={(e) => e.target.style.borderColor = T.accentLine}
+                  onMouseOut={(e) => e.target.style.borderColor = T.line}
                 >{q}</button>
               ))}
             </div>
@@ -154,13 +151,14 @@ export function AICodingAssistant({ showReimbursement = false }) {
             <div style={{
               maxWidth: "85%",
               padding: "10px 14px",
-              borderRadius: msg.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-              background: msg.role === "user" ? S.accent : S.card,
-              color: msg.role === "user" ? "#fff" : S.text,
-              fontSize: "0.85rem",
-              lineHeight: 1.5,
-              fontFamily: S.font,
-              border: msg.role === "user" ? "none" : `1px solid ${S.border}`,
+              borderRadius: msg.role === "user" ? "10px 10px 3px 10px" : "10px 10px 10px 3px",
+              background: msg.role === "user" ? T.accentSoft : T.surface,
+              color: T.ink,
+              fontSize: 13.5,
+              lineHeight: 1.55,
+              fontFamily: T.sans,
+              border: `1px solid ${msg.role === "user" ? T.accentLine : T.line}`,
+              overflowWrap: "anywhere",
             }}>
               {msg.role === "user" ? msg.content : renderContent(msg.content)}
             </div>
@@ -170,9 +168,9 @@ export function AICodingAssistant({ showReimbursement = false }) {
         {loading && (
           <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}>
             <div style={{
-              padding: "10px 14px", borderRadius: "16px 16px 16px 4px",
-              background: S.card, border: `1px solid ${S.border}`,
-              fontSize: "0.85rem", color: S.muted,
+              padding: "10px 14px", borderRadius: "10px 10px 10px 3px",
+              background: T.surface, border: `1px solid ${T.line}`,
+              fontSize: 13.5, color: T.muted,
             }}>
               Thinking...
             </div>
@@ -182,22 +180,11 @@ export function AICodingAssistant({ showReimbursement = false }) {
         <div ref={(el) => { chatEndRef.current = el; }} />
       </div>
 
-      {/* Input area */}
-      <div style={{
-        padding: "12px 20px 16px", borderTop: `1px solid ${S.border}`,
-        display: "flex", gap: 8, alignItems: "flex-end",
+      {/* Input area — editor-footer style bar pinned to the bottom of the panel */}
+      <div className="vra-editor" style={{
+        background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg,
+        overflow: "hidden", marginBottom: 16, flexShrink: 0,
       }}>
-        {messages.length > 0 && (
-          <button
-            onClick={clearChat}
-            style={{
-              background: "none", border: `1px solid ${S.border}`, borderRadius: 8,
-              color: S.muted, cursor: "pointer", padding: "10px", fontSize: "0.75rem",
-              fontFamily: S.font, flexShrink: 0,
-            }}
-            title="Clear chat"
-          >Clear</button>
-        )}
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -205,26 +192,36 @@ export function AICodingAssistant({ showReimbursement = false }) {
           placeholder="Describe your case or ask a billing question..."
           rows={1}
           style={{
-            flex: 1, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`,
-            borderRadius: 12, color: S.bright, fontSize: "0.9rem", fontFamily: S.font,
-            outline: "none", resize: "none", lineHeight: 1.4,
-            minHeight: 42, maxHeight: 120,
+            display: "block", width: "100%", padding: "12px 14px", background: "transparent", border: 0,
+            color: T.ink, fontSize: 14, fontFamily: T.sans, boxSizing: "border-box",
+            outline: "none", resize: "none", lineHeight: 1.45,
+            minHeight: 44, maxHeight: 120,
           }}
           onInput={(e) => {
             e.target.style.height = "auto";
             e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
           }}
         />
-        <button
-          onClick={sendMessage}
-          disabled={loading || !input.trim()}
-          style={{
-            padding: "10px 18px", borderRadius: 12, border: "none",
-            background: loading || !input.trim() ? S.border : S.accent,
-            color: "#fff", cursor: loading || !input.trim() ? "default" : "pointer",
-            fontSize: "0.85rem", fontWeight: 600, fontFamily: S.font, flexShrink: 0,
-          }}
-        >Send</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
+          {messages.length > 0 && (
+            <button
+              onClick={clearChat}
+              style={btnSm("secondary", { color: T.ink2 })}
+              title="Clear chat"
+            >Clear</button>
+          )}
+          <span style={{ fontSize: 12, color: T.muted, flex: 1, minWidth: 0 }}>Enter to send · Shift+Enter for a new line</span>
+          <button
+            onClick={sendMessage}
+            disabled={loading || !input.trim()}
+            style={btnSm("primary", {
+              background: loading || !hasInput ? T.accentSoft : T.accent,
+              borderColor: loading || !hasInput ? T.line : T.accent,
+              color: loading || !hasInput ? T.muted : T.onAccent,
+              cursor: loading || !hasInput ? "default" : "pointer",
+            })}
+          >Send<SendIcon size={14} /></button>
+        </div>
       </div>
     </div>
   );
@@ -255,42 +252,42 @@ function SurgicalCodeMap({ onPick }) {
     const on = hover === leaf.code;
     return (
       <g style={{ cursor: "pointer" }} onMouseEnter={() => setHover(leaf.code)} onMouseLeave={() => setHover(null)} onClick={() => onPick(leaf.code)}>
-        <rect x={x} y={y} width="300" height="34" rx="8" fill={on ? "#273449" : "#1e293b"} stroke={on ? color : "#334155"} />
+        <rect x={x} y={y} width="300" height="34" rx="8" fill={on ? T.accentSoft : T.surface} stroke={on ? color : T.line} />
         <rect x={x} y={y} width="4" height="34" fill={color} />
-        <text x={x + 16} y={y + 22} fill="#e2e8f0" fontSize="11.5">{leaf.label}</text>
-        <rect x={x + 238} y={y + 6} width="52" height="22" rx="6" fill="#0b1220" stroke={color} />
-        <text x={x + 264} y={y + 21} textAnchor="middle" fill={light} fontSize="12" fontFamily="ui-monospace, monospace">{leaf.code}</text>
+        <text x={x + 16} y={y + 22} fill={T.ink} fontSize="11.5">{leaf.label}</text>
+        <rect x={x + 238} y={y + 6} width="52" height="22" rx="6" fill={T.paper} stroke={color} />
+        <text x={x + 264} y={y + 21} textAnchor="middle" fill={light} fontSize="12" fontFamily={T.mono}>{leaf.code}</text>
       </g>
     );
   };
   return (
-    <div style={{ padding: "20px", maxWidth: 820, margin: "0 auto" }}>
-      <svg viewBox="0 0 760 470" style={{ width: "100%", height: "auto" }} fontFamily="ui-sans-serif, system-ui, sans-serif">
-        <text x="24" y="30" fill={S.bright} fontSize="16" fontWeight="700">Surgical Code Selection</text>
+    <div style={{ padding: "16px 0 0" }}>
+      <svg viewBox="0 0 760 470" style={{ width: "100%", height: "auto" }} fontFamily={T.sans}>
+        <text x="24" y="30" fill={T.accent} fontSize="16" fontWeight="600">Surgical Code Selection</text>
         <text x="24" y="49" fill={S.muted} fontSize="12">Vitrectomy &amp; retinal detachment — which 67xxx code?</text>
-        <circle cx="566" cy="26" r="5" fill="#ef4444" /><text x="576" y="30" fill={S.muted} fontSize="11">RD repair</text>
-        <circle cx="566" cy="45" r="5" fill="#6366f1" /><text x="576" y="49" fill={S.muted} fontSize="11">PPV — other</text>
-        <rect x="300" y="70" width="160" height="40" rx="10" fill="#1e293b" stroke="#475569" />
-        <text x="380" y="95" textAnchor="middle" fill="#e2e8f0" fontSize="12.5" fontWeight="600">Reason for surgery?</text>
-        <path d="M340 110 C 280 124, 230 126, 190 144" fill="none" stroke="#475569" strokeWidth="1.5" />
-        <path d="M420 110 C 480 124, 530 126, 570 144" fill="none" stroke="#475569" strokeWidth="1.5" />
-        <rect x="90" y="144" width="200" height="30" rx="8" fill="#ef444422" stroke="#ef4444" />
-        <text x="190" y="164" textAnchor="middle" fill="#fca5a5" fontSize="12" fontWeight="700">RETINAL DETACHMENT</text>
-        <rect x="470" y="144" width="200" height="30" rx="8" fill="#6366f122" stroke="#6366f1" />
-        <text x="570" y="164" textAnchor="middle" fill="#a5b4fc" fontSize="12" fontWeight="700">PPV — NON-RD</text>
-        {RD_LEAVES.map((l, i) => <Leaf key={l.code} x={40} y={190 + i * 42} leaf={l} color="#ef4444" light="#fca5a5" />)}
-        {PPV_LEAVES.map((l, i) => <Leaf key={l.code} x={420} y={190 + i * 42} leaf={l} color="#6366f1" light="#a5b4fc" />)}
-        <line x1="40" y1="452" x2="720" y2="452" stroke="#334155" strokeWidth="1" />
+        <circle cx="566" cy="26" r="5" fill={T.red} /><text x="576" y="30" fill={S.muted} fontSize="11">RD repair</text>
+        <circle cx="566" cy="45" r="5" fill={T.accent} /><text x="576" y="49" fill={S.muted} fontSize="11">PPV — other</text>
+        <rect x="300" y="70" width="160" height="40" rx="10" fill={T.surface} stroke={T.lineStrong} />
+        <text x="380" y="95" textAnchor="middle" fill={T.ink} fontSize="12.5" fontWeight="600">Reason for surgery?</text>
+        <path d="M340 110 C 280 124, 230 126, 190 144" fill="none" stroke={T.lineStrong} strokeWidth="1.5" />
+        <path d="M420 110 C 480 124, 530 126, 570 144" fill="none" stroke={T.lineStrong} strokeWidth="1.5" />
+        <rect x="90" y="144" width="200" height="30" rx="8" fill={T.redSoft} stroke={T.red} />
+        <text x="190" y="164" textAnchor="middle" fill={T.red} fontSize="12" fontWeight="700">RETINAL DETACHMENT</text>
+        <rect x="470" y="144" width="200" height="30" rx="8" fill={T.accentSoft} stroke={T.accent} />
+        <text x="570" y="164" textAnchor="middle" fill={T.accent} fontSize="12" fontWeight="700">PPV — NON-RD</text>
+        {RD_LEAVES.map((l, i) => <Leaf key={l.code} x={40} y={190 + i * 42} leaf={l} color={T.red} light={T.red} />)}
+        {PPV_LEAVES.map((l, i) => <Leaf key={l.code} x={420} y={190 + i * 42} leaf={l} color={T.accent} light={T.accent} />)}
+        <line x1="40" y1="452" x2="720" y2="452" stroke={T.line} strokeWidth="1" />
       </svg>
-      <div style={{ marginTop: 4, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, minHeight: 22, fontSize: "0.8rem", color: S.text }}>
+      <div style={field({ marginTop: 4, padding: "10px 14px", minHeight: 22, fontSize: 13, color: T.ink, fontFamily: T.sans })}>
         {detail ? (
-          <span><span style={{ fontFamily: S.mono, fontWeight: 700, color: S.accentLight }}>{detail.code}</span> {"—"} {detail.desc} <span style={{ color: S.muted }}>({globalLabel(detail.global)})</span>{detail.note ? ` — ${detail.note}` : ""}</span>
+          <span><span style={{ fontFamily: T.mono, fontWeight: 500, color: T.accent }}>{detail.code}</span> {"—"} {detail.desc} <span style={{ color: S.muted }}>({globalLabel(detail.global)})</span>{detail.note ? ` — ${detail.note}` : ""}</span>
         ) : (
           <span style={{ color: S.muted, fontStyle: "italic" }}>Hover a code for its description · click to open it in Browse.</span>
         )}
       </div>
-      <div style={{ marginTop: 10, fontSize: "0.78rem", color: S.muted, lineHeight: 1.6 }}>
-        <span style={{ color: "#fbbf24", fontWeight: 600 }}>Key rules: </span>
+      <div style={{ marginTop: 10, fontSize: 13, color: T.ink2, lineHeight: 1.6, fontFamily: T.sans }}>
+        <span style={{ color: T.amber, fontWeight: 600 }}>Key rules: </span>
         Multiple techniques, same eye {"→"} bill the single highest code (not stacked). 67113 requires a membrane peel {"—"} without one, complex RD is still 67108.
       </div>
     </div>
@@ -317,46 +314,46 @@ function ModifierMap({ onPick }) {
     const on = hover === leaf.code;
     return (
       <g style={{ cursor: "pointer" }} onMouseEnter={() => setHover(leaf.code)} onMouseLeave={() => setHover(null)} onClick={() => onPick(leaf.code)}>
-        <rect x={x} y={y} width="300" height="32" rx="8" fill={on ? "#273449" : "#1e293b"} stroke={on ? color : "#334155"} />
+        <rect x={x} y={y} width="300" height="32" rx="8" fill={on ? T.accentSoft : T.surface} stroke={on ? color : T.line} />
         <rect x={x} y={y} width="4" height="32" fill={color} />
-        <text x={x + 16} y={y + 21} fill="#e2e8f0" fontSize="11.5">{leaf.label}</text>
-        <rect x={x + 238} y={y + 5} width="52" height="22" rx="6" fill="#0b1220" stroke={color} />
-        <text x={x + 264} y={y + 20} textAnchor="middle" fill={light} fontSize="12" fontFamily="ui-monospace, monospace">{leaf.code}</text>
+        <text x={x + 16} y={y + 21} fill={T.ink} fontSize="11.5">{leaf.label}</text>
+        <rect x={x + 238} y={y + 5} width="52" height="22" rx="6" fill={T.paper} stroke={color} />
+        <text x={x + 264} y={y + 20} textAnchor="middle" fill={light} fontSize="12" fontFamily={T.mono}>{leaf.code}</text>
       </g>
     );
   };
   return (
-    <div style={{ padding: "20px", maxWidth: 820, margin: "0 auto" }}>
-      <svg viewBox="0 0 760 480" style={{ width: "100%", height: "auto" }} fontFamily="ui-sans-serif, system-ui, sans-serif">
-        <text x="24" y="30" fill={S.bright} fontSize="16" fontWeight="700">-25 vs -57 — Which modifier goes on the E/M?</text>
+    <div style={{ padding: "16px 0 0" }}>
+      <svg viewBox="0 0 760 480" style={{ width: "100%", height: "auto" }} fontFamily={T.sans}>
+        <text x="24" y="30" fill={T.accent} fontSize="16" fontWeight="600">-25 vs -57 — Which modifier goes on the E/M?</text>
         <text x="24" y="49" fill={S.muted} fontSize="12">Decided ONLY by the global period of the procedure billed today — never by how urgent the visit was.</text>
-        <rect x="255" y="66" width="250" height="40" rx="10" fill="#1e293b" stroke="#475569" />
-        <text x="380" y="91" textAnchor="middle" fill="#e2e8f0" fontSize="12.5" fontWeight="600">Procedure performed at TODAY's visit?</text>
-        <path d="M310 106 C 250 118, 210 120, 175 138" fill="none" stroke="#475569" strokeWidth="1.5" />
-        <path d="M450 106 C 510 118, 550 120, 585 138" fill="none" stroke="#475569" strokeWidth="1.5" />
-        <rect x="80" y="138" width="190" height="30" rx="8" fill="#22c55e22" stroke="#22c55e" />
-        <text x="175" y="158" textAnchor="middle" fill="#86efac" fontSize="12" fontWeight="700">NO — E/M alone, no modifier</text>
-        <rect x="490" y="138" width="190" height="30" rx="8" fill="#f59e0b22" stroke="#f59e0b" />
-        <text x="585" y="158" textAnchor="middle" fill="#fcd34d" fontSize="12" fontWeight="700">YES — check its GLOBAL period</text>
-        <path d="M540 168 C 470 184, 330 186, 210 204" fill="none" stroke="#475569" strokeWidth="1.5" />
-        <path d="M630 168 C 660 184, 665 186, 640 204" fill="none" stroke="#475569" strokeWidth="1.5" />
-        <rect x="60" y="204" width="300" height="34" rx="8" fill="#eab30822" stroke="#eab308" />
-        <text x="210" y="226" textAnchor="middle" fill="#fde047" fontSize="13" fontWeight="800">0- or 10-day global → -25</text>
-        <rect x="420" y="204" width="300" height="34" rx="8" fill="#ef444422" stroke="#ef4444" />
-        <text x="570" y="226" textAnchor="middle" fill="#fca5a5" fontSize="13" fontWeight="800">90-day global → -57</text>
-        {MINOR_LEAVES.map((l, i) => <Leaf key={l.code} x={60} y={252 + i * 40} leaf={l} color="#eab308" light="#fde047" />)}
-        {MAJOR_LEAVES.map((l, i) => <Leaf key={l.code} x={420} y={252 + i * 40} leaf={l} color="#ef4444" light="#fca5a5" />)}
-        <line x1="40" y1="462" x2="720" y2="462" stroke="#334155" strokeWidth="1" />
+        <rect x="255" y="66" width="250" height="40" rx="10" fill={T.surface} stroke={T.lineStrong} />
+        <text x="380" y="91" textAnchor="middle" fill={T.ink} fontSize="12.5" fontWeight="600">Procedure performed at TODAY's visit?</text>
+        <path d="M310 106 C 250 118, 210 120, 175 138" fill="none" stroke={T.lineStrong} strokeWidth="1.5" />
+        <path d="M450 106 C 510 118, 550 120, 585 138" fill="none" stroke={T.lineStrong} strokeWidth="1.5" />
+        <rect x="80" y="138" width="190" height="30" rx="8" fill={T.greenSoft} stroke={T.green} />
+        <text x="175" y="158" textAnchor="middle" fill={T.green} fontSize="12" fontWeight="700">NO — E/M alone, no modifier</text>
+        <rect x="490" y="138" width="190" height="30" rx="8" fill={T.amberSoft} stroke={T.amber} />
+        <text x="585" y="158" textAnchor="middle" fill={T.amber} fontSize="12" fontWeight="700">YES — check its GLOBAL period</text>
+        <path d="M540 168 C 470 184, 330 186, 210 204" fill="none" stroke={T.lineStrong} strokeWidth="1.5" />
+        <path d="M630 168 C 660 184, 665 186, 640 204" fill="none" stroke={T.lineStrong} strokeWidth="1.5" />
+        <rect x="60" y="204" width="300" height="34" rx="8" fill={T.amberSoft} stroke={T.amber} />
+        <text x="210" y="226" textAnchor="middle" fill={T.amber} fontSize="13" fontWeight="800">0- or 10-day global → -25</text>
+        <rect x="420" y="204" width="300" height="34" rx="8" fill={T.redSoft} stroke={T.red} />
+        <text x="570" y="226" textAnchor="middle" fill={T.red} fontSize="13" fontWeight="800">90-day global → -57</text>
+        {MINOR_LEAVES.map((l, i) => <Leaf key={l.code} x={60} y={252 + i * 40} leaf={l} color={T.amber} light={T.amber} />)}
+        {MAJOR_LEAVES.map((l, i) => <Leaf key={l.code} x={420} y={252 + i * 40} leaf={l} color={T.red} light={T.red} />)}
+        <line x1="40" y1="462" x2="720" y2="462" stroke={T.line} strokeWidth="1" />
       </svg>
-      <div style={{ marginTop: 4, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, minHeight: 22, fontSize: "0.8rem", color: S.text }}>
+      <div style={field({ marginTop: 4, padding: "10px 14px", minHeight: 22, fontSize: 13, color: T.ink, fontFamily: T.sans })}>
         {detail ? (
-          <span><span style={{ fontFamily: S.mono, fontWeight: 700, color: S.accentLight }}>{detail.code}</span> {"—"} {detail.desc}{detail.note ? ` — ${detail.note}` : ""}</span>
+          <span><span style={{ fontFamily: T.mono, fontWeight: 500, color: T.accent }}>{detail.code}</span> {"—"} {detail.desc}{detail.note ? ` — ${detail.note}` : ""}</span>
         ) : (
           <span style={{ color: S.muted, fontStyle: "italic" }}>Hover a code for its description · click to open it in Browse.</span>
         )}
       </div>
-      <div style={{ marginTop: 10, fontSize: "0.78rem", color: S.muted, lineHeight: 1.6 }}>
-        <span style={{ color: "#fbbf24", fontWeight: 600 }}>Key rules: </span>
+      <div style={{ marginTop: 10, fontSize: 13, color: T.ink2, lineHeight: 1.6, fontFamily: T.sans }}>
+        <span style={{ color: T.amber, fontWeight: 600 }}>Key rules: </span>
         An emergency Level-5 visit does NOT change the modifier {"—"} endophthalmitis with only an AC tap (0-day) is still 99215-25.
         A dry vitreous tap is not billable {"—"} the modifier follows the code you actually bill.
         66821 YAG is the exception laser: 90-day {"→"} -57.
@@ -384,43 +381,43 @@ function ImagingMap({ onPick }) {
     const on = hover === leaf.code;
     return (
       <g style={{ cursor: "pointer" }} onMouseEnter={() => setHover(leaf.code)} onMouseLeave={() => setHover(null)} onClick={() => onPick(leaf.code)}>
-        <rect x={x} y={y} width={w} height="32" rx="8" fill={on ? "#273449" : "#1e293b"} stroke={on ? color : "#334155"} />
+        <rect x={x} y={y} width={w} height="32" rx="8" fill={on ? T.accentSoft : T.surface} stroke={on ? color : T.line} />
         <rect x={x} y={y} width="4" height="32" fill={color} />
-        <text x={x + 16} y={y + 21} fill="#e2e8f0" fontSize="11.5">{leaf.label}</text>
-        <rect x={x + w - 62} y={y + 5} width="52" height="22" rx="6" fill="#0b1220" stroke={color} />
-        <text x={x + w - 36} y={y + 20} textAnchor="middle" fill={light} fontSize="12" fontFamily="ui-monospace, monospace">{leaf.code}</text>
+        <text x={x + 16} y={y + 21} fill={T.ink} fontSize="11.5">{leaf.label}</text>
+        <rect x={x + w - 62} y={y + 5} width="52" height="22" rx="6" fill={T.paper} stroke={color} />
+        <text x={x + w - 36} y={y + 20} textAnchor="middle" fill={light} fontSize="12" fontFamily={T.mono}>{leaf.code}</text>
       </g>
     );
   };
   return (
-    <div style={{ padding: "20px", maxWidth: 820, margin: "0 auto" }}>
-      <svg viewBox="0 0 760 500" style={{ width: "100%", height: "auto" }} fontFamily="ui-sans-serif, system-ui, sans-serif">
-        <text x="24" y="30" fill={S.bright} fontSize="16" fontWeight="700">Imaging — what can share a visit?</text>
+    <div style={{ padding: "16px 0 0" }}>
+      <svg viewBox="0 0 760 500" style={{ width: "100%", height: "auto" }} fontFamily={T.sans}>
+        <text x="24" y="30" fill={T.accent} fontSize="16" fontWeight="600">Imaging — what can share a visit?</text>
         <text x="24" y="49" fill={S.muted} fontSize="12">All of these are inherently bilateral: ONE unit whether one or both eyes — never -RT/-LT/-50.</text>
-        <rect x="40" y="70" width="330" height="180" rx="10" fill="#ef444411" stroke="#ef4444" />
-        <text x="56" y="94" fill="#fca5a5" fontSize="12.5" fontWeight="700">OCT FAMILY — pick ONE per visit</text>
+        <rect x="40" y="70" width="330" height="180" rx="10" fill={T.redSoft} stroke={T.red} />
+        <text x="56" y="94" fill={T.red} fontSize="12.5" fontWeight="700">OCT FAMILY — pick ONE per visit</text>
         <text x="56" y="110" fill={S.muted} fontSize="10.5">92133 / 92134 / 92137 are mutually exclusive</text>
-        {OCT_LEAVES.map((l, i) => <Leaf key={l.code} x={56} y={120 + i * 40} leaf={l} color="#ef4444" light="#fca5a5" w={298} />)}
-        <rect x="400" y="70" width="330" height="180" rx="10" fill="#6366f111" stroke="#6366f1" />
-        <text x="416" y="94" fill="#a5b4fc" fontSize="12.5" fontWeight="700">ANGIOGRAPHY — combined code rule</text>
+        {OCT_LEAVES.map((l, i) => <Leaf key={l.code} x={56} y={120 + i * 40} leaf={l} color={T.red} light={T.red} w={298} />)}
+        <rect x="400" y="70" width="330" height="180" rx="10" fill={T.accentSoft} stroke={T.accent} />
+        <text x="416" y="94" fill={T.accent} fontSize="12.5" fontWeight="700">ANGIOGRAPHY — combined code rule</text>
         <text x="416" y="110" fill={S.muted} fontSize="10.5">Both dyes same session → bill 92242 ONLY, never 92235 + 92240</text>
-        {ANGIO_LEAVES.map((l, i) => <Leaf key={l.code} x={416} y={120 + i * 40} leaf={l} color="#6366f1" light="#a5b4fc" w={298} />)}
-        <rect x="40" y="270" width="690" height="200" rx="10" fill="#f59e0b11" stroke="#f59e0b" />
-        <text x="56" y="294" fill="#fcd34d" fontSize="12.5" fontWeight="700">SAME-DAY WATCH-OUTS</text>
-        <text x="70" y="322" fill="#ef4444" fontSize="14" fontWeight="800">✗</text>
-        <text x="90" y="322" fill="#e2e8f0" fontSize="11.5">92250 fundus photos + OCT (92133/92134) same eye — generally mutually exclusive (-59 on 92250 only if truly separate &amp; necessary)</text>
-        <text x="70" y="352" fill="#ef4444" fontSize="14" fontWeight="800">✗</text>
-        <text x="90" y="352" fill="#e2e8f0" fontSize="11.5">92083 visual field + 92133 RNFL OCT same day — LCDs call this not medically necessary. Alternate the visits.</text>
-        <text x="70" y="382" fill="#ef4444" fontSize="14" fontWeight="800">✗</text>
-        <text x="90" y="382" fill="#e2e8f0" fontSize="11.5">92250 photos with 92242 — photos are BUNDLED into the combined angiography code. Never bill separately.</text>
-        <text x="70" y="412" fill="#22c55e" fontSize="14" fontWeight="800">✓</text>
-        <text x="90" y="412" fill="#e2e8f0" fontSize="11.5">92083 visual field + 92134 macular OCT same day — both billable (e.g., Plaquenil screening: exam + 10-2 VF + OCT).</text>
-        <text x="70" y="442" fill="#22c55e" fontSize="14" fontWeight="800">✓</text>
-        <text x="90" y="442" fill="#e2e8f0" fontSize="11.5">One OCT + FA (or 92242) same day — different modality families, both billable when each is medically necessary.</text>
+        {ANGIO_LEAVES.map((l, i) => <Leaf key={l.code} x={416} y={120 + i * 40} leaf={l} color={T.accent} light={T.accent} w={298} />)}
+        <rect x="40" y="270" width="690" height="200" rx="10" fill={T.amberSoft} stroke={T.amber} />
+        <text x="56" y="294" fill={T.amber} fontSize="12.5" fontWeight="700">SAME-DAY WATCH-OUTS</text>
+        <text x="70" y="322" fill={T.red} fontSize="14" fontWeight="800">✗</text>
+        <text x="90" y="322" fill={T.ink} fontSize="11.5">92250 fundus photos + OCT (92133/92134) same eye — generally mutually exclusive (-59 on 92250 only if truly separate &amp; necessary)</text>
+        <text x="70" y="352" fill={T.red} fontSize="14" fontWeight="800">✗</text>
+        <text x="90" y="352" fill={T.ink} fontSize="11.5">92083 visual field + 92133 RNFL OCT same day — LCDs call this not medically necessary. Alternate the visits.</text>
+        <text x="70" y="382" fill={T.red} fontSize="14" fontWeight="800">✗</text>
+        <text x="90" y="382" fill={T.ink} fontSize="11.5">92250 photos with 92242 — photos are BUNDLED into the combined angiography code. Never bill separately.</text>
+        <text x="70" y="412" fill={T.green} fontSize="14" fontWeight="800">✓</text>
+        <text x="90" y="412" fill={T.ink} fontSize="11.5">92083 visual field + 92134 macular OCT same day — both billable (e.g., Plaquenil screening: exam + 10-2 VF + OCT).</text>
+        <text x="70" y="442" fill={T.green} fontSize="14" fontWeight="800">✓</text>
+        <text x="90" y="442" fill={T.ink} fontSize="11.5">One OCT + FA (or 92242) same day — different modality families, both billable when each is medically necessary.</text>
       </svg>
-      <div style={{ marginTop: 4, padding: "10px 14px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, minHeight: 22, fontSize: "0.8rem", color: S.text }}>
+      <div style={field({ marginTop: 4, padding: "10px 14px", minHeight: 22, fontSize: 13, color: T.ink, fontFamily: T.sans })}>
         {detail ? (
-          <span><span style={{ fontFamily: S.mono, fontWeight: 700, color: S.accentLight }}>{detail.code}</span> {"—"} {detail.desc}{detail.note ? ` — ${detail.note}` : ""}</span>
+          <span><span style={{ fontFamily: T.mono, fontWeight: 500, color: T.accent }}>{detail.code}</span> {"—"} {detail.desc}{detail.note ? ` — ${detail.note}` : ""}</span>
         ) : (
           <span style={{ color: S.muted, fontStyle: "italic" }}>Hover a code for its description · click to open it in Browse.</span>
         )}
@@ -453,49 +450,41 @@ export default function CptReference({ onBack }) {
 
   const globalColor = (g) => {
     if (!g) return S.muted;
-    if (g.includes("90")) return "#ef4444";
-    if (g.includes("10")) return "#eab308";
-    if (g.includes("0 day") || g.includes("XXX")) return "#22c55e";
+    if (g.includes("90")) return T.red;
+    if (g.includes("10")) return T.amber;
+    if (g.includes("0 day") || g.includes("XXX")) return T.green;
     return S.muted;
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
+    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       {/* Header */}
-      <div style={{ padding: "16px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12 }}>
-        <button
-          onClick={onBack}
-          style={{ background: "none", border: "none", color: S.accentLight, cursor: "pointer", fontSize: "0.9rem", fontFamily: S.font }}
-        >
-          &larr; Back
-        </button>
-        <div style={{ fontSize: "1.15rem", fontWeight: 700, color: S.bright }}>Retina Surgery CPT Reference</div>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 3, background: S.bg, borderRadius: 8, padding: 3 }}>
+      <PageBar onBack={onBack} title="Retina Surgery CPT Reference" />
+
+      {/* View switch — segmented control */}
+      <div className="vra-wrap" style={wrap({ paddingTop: 20 })}>
+        <div className="vra-seg" role="group" aria-label="View" style={segWrap}>
           {[
             { id: "search", label: "Browse", bg: S.accent },
-            { id: "ai", label: "Ask AI", bg: "#8b5cf6" },
-            { id: "diagram", label: "Visual", bg: "#f59e0b" },
+            { id: "ai", label: "Ask AI", bg: S.accent },
+            { id: "diagram", label: "Visual", bg: S.accent },
           ].map((v) => (
             <button
               key={v.id}
               onClick={() => setView(v.id)}
-              style={{
-                padding: "6px 12px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: "0.73rem",
-                fontFamily: S.font, fontWeight: 600,
-                background: view === v.id ? v.bg : "transparent",
-                color: view === v.id ? "#fff" : S.muted,
-              }}
+              aria-pressed={view === v.id}
+              style={segBtn(view === v.id, { background: view === v.id ? v.bg : "transparent" })}
             >{v.label}</button>
           ))}
         </div>
       </div>
 
-      {view === "ai" && <AICodingAssistant showReimbursement={false} />}
+      {view === "ai" && <div className="vra-wrap" style={wrap()}><AICodingAssistant showReimbursement={false} /></div>}
       {view === "diagram" && (() => {
         const pick = (code) => { setSearch(code); setCategory("all"); setExpanded(code); setView("search"); };
         return (
-          <div>
-            <div style={{ display: "flex", gap: 6, justifyContent: "center", paddingTop: 16 }}>
+          <div className="vra-wrap" style={wrap({ paddingBottom: 40 })}>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingTop: 16 }}>
               {[
                 { id: "surgery", label: "Surgery codes" },
                 { id: "modifiers", label: "-25 vs -57" },
@@ -504,13 +493,11 @@ export default function CptReference({ onBack }) {
                 <button
                   key={m.id}
                   onClick={() => setMapView(m.id)}
-                  style={{
-                    padding: "6px 14px", borderRadius: 20, cursor: "pointer", fontSize: "0.75rem",
-                    fontFamily: S.font, fontWeight: 600,
-                    border: mapView === m.id ? "1px solid #f59e0b" : `1px solid ${S.border}`,
-                    background: mapView === m.id ? "#f59e0b22" : "transparent",
-                    color: mapView === m.id ? "#fcd34d" : S.muted,
-                  }}
+                  aria-pressed={mapView === m.id}
+                  style={chip(mapView === m.id ? "accent" : "muted", {
+                    padding: "5px 12px", fontSize: 12.5, cursor: "pointer",
+                    ...(mapView === m.id ? { background: T.accent, color: T.onAccent, borderColor: T.accent } : { background: T.surface, color: T.ink2 }),
+                  })}
                 >{m.label}</button>
               ))}
             </div>
@@ -523,47 +510,36 @@ export default function CptReference({ onBack }) {
 
       {view === "search" && <>
       {/* Search */}
-      <div style={{ padding: "16px 20px 8px", maxWidth: 800, margin: "0 auto" }}>
-        <input
-          type="text"
-          placeholder="Search by code, name, or keyword — e.g. 67042, ILM peel, injection, OCT"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "14px 18px",
-            background: S.card,
-            border: `1px solid ${S.border}`,
-            borderRadius: 12,
-            color: S.bright,
-            fontSize: "1.05rem",
-            fontFamily: S.font,
-            outline: "none",
-            boxSizing: "border-box",
-          }}
-        />
-        <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 6, fontFamily: S.mono }}>
+      <div className="vra-wrap" style={wrap({ paddingTop: 16 })}>
+        <div style={{ position: "relative" }}>
+          <span style={{ position: "absolute", left: 13, top: 13, color: T.muted, pointerEvents: "none" }}><SearchIcon /></span>
+          <input
+            type="text"
+            className="vra-input"
+            placeholder="Search by code, name, or keyword — e.g. 67042, ILM peel, injection, OCT"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={searchInput({ paddingLeft: 38, textOverflow: "ellipsis" })}
+          />
+        </div>
+        <div style={{ fontSize: 12, color: T.muted, marginTop: 6, fontFamily: T.sans }}>
           Search any retina code by number, description, or note — or browse by category below.
         </div>
       </div>
 
-      {/* Category pills */}
-      <div style={{ padding: "8px 20px 12px", display: "flex", flexWrap: "wrap", gap: 6, maxWidth: 800, margin: "0 auto" }}>
+      {/* Category chips */}
+      <div className="vra-wrap" style={wrap({ paddingTop: 12, paddingBottom: 14, display: "flex", flexWrap: "wrap", gap: 6 })}>
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setCategory(cat.id)}
-            style={{
-              padding: "5px 12px",
-              borderRadius: 20,
-              border: category === cat.id ? `1px solid ${S.accent}` : `1px solid ${S.border}`,
-              background: category === cat.id ? S.accent + "22" : "transparent",
-              color: category === cat.id ? S.accentLight : S.muted,
-              fontSize: "0.75rem",
-              fontFamily: S.font,
-              cursor: "pointer",
-              fontWeight: category === cat.id ? 600 : 400,
-            }}
+            aria-pressed={category === cat.id}
+            style={chip(category === cat.id ? "accent" : "muted", {
+              padding: "4px 11px", fontSize: 12.5, cursor: "pointer",
+              ...(category === cat.id
+                ? { background: T.accent, color: T.onAccent, borderColor: T.accent }
+                : { background: T.surface, color: T.ink2, fontWeight: 400 }),
+            })}
           >
             {cat.label}
           </button>
@@ -571,9 +547,9 @@ export default function CptReference({ onBack }) {
       </div>
 
       {/* Results */}
-      <div style={{ padding: "0 20px 48px", maxWidth: 800, margin: "0 auto" }}>
+      <div className="vra-wrap" style={wrap({ paddingBottom: 48 })}>
         {filtered.length === 0 && (
-          <div style={{ textAlign: "center", color: S.muted, padding: "40px 0", fontSize: "0.9rem" }}>
+          <div style={{ textAlign: "center", color: T.muted, padding: "40px 0", fontSize: 14 }}>
             No codes found. Try a different search or category.
           </div>
         )}
@@ -583,36 +559,38 @@ export default function CptReference({ onBack }) {
             <div
               key={cpt.code}
               style={{
-                background: S.card,
-                border: `1px solid ${isOpen ? S.accent + "66" : S.border}`,
-                borderRadius: 10,
+                background: T.surface,
+                border: `1px solid ${isOpen ? T.accentLine : T.line}`,
+                borderRadius: T.rLg,
                 marginBottom: 8,
                 overflow: "hidden",
-                transition: "border-color 0.2s",
+                transition: "border-color .15s",
               }}
             >
               {/* Summary row */}
               <button
                 onClick={() => setExpanded(isOpen ? null : cpt.code)}
+                aria-expanded={isOpen}
                 style={{
                   width: "100%",
-                  padding: "14px 16px",
+                  padding: "12px 14px 12px 16px",
                   background: "none",
                   border: "none",
                   cursor: "pointer",
                   textAlign: "left",
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: 12,
+                  gap: 14,
+                  fontFamily: T.sans,
                 }}
               >
                 <div
                   style={{
-                    fontFamily: S.mono,
-                    fontSize: "0.85rem",
-                    fontWeight: 700,
-                    color: S.accentLight,
-                    minWidth: 58,
+                    fontFamily: T.mono,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: T.accent,
+                    minWidth: 52,
                     flexShrink: 0,
                     paddingTop: 1,
                   }}
@@ -620,68 +598,48 @@ export default function CptReference({ onBack }) {
                   {cpt.code}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: S.bright, fontSize: "0.88rem", lineHeight: 1.4 }}>
+                  <div style={{ color: T.ink, fontSize: 14, lineHeight: 1.45 }}>
                     {cpt.desc}
                   </div>
-                  <div style={{ display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
-                    <span
-                      style={{
-                        fontSize: "0.68rem",
-                        padding: "2px 8px",
-                        borderRadius: 10,
-                        background: S.accent + "22",
-                        color: S.accentLight,
-                        fontFamily: S.mono,
-                      }}
-                    >
+                  <div style={{ display: "flex", gap: 6, marginTop: 7, flexWrap: "wrap" }}>
+                    <span style={chip("accent")}>
                       {cpt.cat}
                     </span>
                     {cpt.global && cpt.global !== "N/A" && (
                       <span
-                        style={{
-                          fontSize: "0.68rem",
-                          padding: "2px 8px",
-                          borderRadius: 10,
-                          background: globalColor(cpt.global) + "22",
-                          color: globalColor(cpt.global),
-                          fontFamily: S.mono,
-                        }}
+                        style={chip(({ [T.red]: "red", [T.amber]: "amber", [T.green]: "green" }[globalColor(cpt.global)] || "muted"), { fontFamily: T.mono, fontWeight: 500 })}
                       >
                         {cpt.global}
                       </span>
                     )}
                   </div>
                 </div>
-                <div style={{ color: S.muted, fontSize: "1rem", flexShrink: 0, paddingTop: 2 }}>
-                  {isOpen ? "▲" : "▼"}
+                <div style={{ color: T.muted, flexShrink: 0, paddingTop: 2, transform: isOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }}>
+                  <ChevronDownIcon />
                 </div>
               </button>
 
-              {/* Expanded details */}
+              {/* Expanded details — field-style sub-card */}
               {isOpen && (
-                <div
-                  style={{
-                    padding: "0 16px 16px",
-                    borderTop: `1px solid ${S.border}`,
-                    marginTop: 0,
-                  }}
-                >
-                  {cpt.global && (
-                    <DetailSection label="Global Period" text={
-                      cpt.global === "XXX" ? "N/A — global concept does not apply" :
-                      cpt.global === "ZZZ" ? "Add-on code (no separate global)" :
-                      cpt.global === "YYY" ? "Carrier-determined" :
-                      cpt.global + "-day global"
-                    } />
-                  )}
-                  {cpt.note && (
-                    <DetailSection label="Notes" text={cpt.note} color="#eab308" />
-                  )}
-                  {!cpt.note && !cpt.global && (
-                    <div style={{ fontSize: "0.8rem", color: S.muted, marginTop: 12 }}>
-                      No additional notes. Ask the AI Coding Assistant for bundling, modifiers, or reimbursement.
-                    </div>
-                  )}
+                <div style={{ padding: "0 14px 14px 16px" }}>
+                  <div style={field({ background: T.paper, padding: "4px 14px 12px" })}>
+                    {cpt.global && (
+                      <DetailSection label="Global period" text={
+                        cpt.global === "XXX" ? "N/A — global concept does not apply" :
+                        cpt.global === "ZZZ" ? "Add-on code (no separate global)" :
+                        cpt.global === "YYY" ? "Carrier-determined" :
+                        cpt.global + "-day global"
+                      } />
+                    )}
+                    {cpt.note && (
+                      <DetailSection label="Notes" text={cpt.note} color={T.amber} />
+                    )}
+                    {!cpt.note && !cpt.global && (
+                      <div style={{ fontSize: 13, color: T.muted, marginTop: 10 }}>
+                        No additional notes. Ask the AI Coding Assistant for bundling, modifiers, or reimbursement.
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -695,20 +653,18 @@ export default function CptReference({ onBack }) {
 
 function DetailSection({ label, text, color }) {
   return (
-    <div style={{ marginTop: 12 }}>
+    <div style={{ marginTop: 10, fontFamily: T.sans }}>
       <div
         style={{
-          fontSize: "0.7rem",
-          fontWeight: 600,
-          color: color || S.muted,
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          marginBottom: 4,
+          fontSize: 12.5,
+          fontWeight: color ? 600 : 400,
+          color: color || T.muted,
+          marginBottom: 3,
         }}
       >
         {label}
       </div>
-      <div style={{ fontSize: "0.82rem", color: S.text, lineHeight: 1.55 }}>{text}</div>
+      <div style={{ fontSize: 13.5, color: T.ink, lineHeight: 1.55 }}>{text}</div>
     </div>
   );
 }

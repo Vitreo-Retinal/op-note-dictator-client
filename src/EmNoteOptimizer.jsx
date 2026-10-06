@@ -1,4 +1,7 @@
 import { useState, useCallback } from "react";
+import { S, T, btn, btnSm, card, field, fieldLabel, secHead, tabStyle } from "./theme.js";
+import PageBar, { wrap } from "./PageBar.jsx";
+import { AlertIcon, CopyIcon, EyeIcon, CodingIcon, EditLinesIcon } from "./icons.jsx";
 
 // ── Default expansion rules ─────────────────────────────────────────
 const DEFAULT_INLINE_RULES = [
@@ -207,12 +210,6 @@ function parse(text) {
 const isEyeCode = (code) => ["92014", "92004", "92012", "92002"].includes(code);
 
 // ── Styles ──────────────────────────────────────────────────────────
-const S = {
-  bg: "#0f172a", card: "#1e293b", border: "#334155", muted: "#64748b",
-  text: "#e2e8f0", bright: "#f1f5f9", accent: "#6366f1", accentLight: "#a5b4fc",
-  green: "#4ade80", greenDark: "#166534", amber: "#f59e0b",
-  font: "Georgia, serif", mono: "monospace",
-};
 
 // ── Component ───────────────────────────────────────────────────────
 export default function EmNoteOptimizer({ onBack }) {
@@ -324,114 +321,115 @@ export default function EmNoteOptimizer({ onBack }) {
     if (!text) return null;
     return text.split("[+]").map((part, i) => (
       <span key={i}>
-        {i > 0 && <span style={{ background: "#fef08a", color: "#713f12", fontWeight: 700, fontSize: "0.6rem", padding: "1px 4px", borderRadius: 3, marginRight: 3, border: "1px solid #eab308", verticalAlign: "middle" }}>+</span>}
+        {i > 0 && <span style={{ background: T.goldSoft, color: T.ink, fontWeight: 600, padding: "0 4px", borderRadius: 3, marginRight: 3 }}>+</span>}
         {part}
       </span>
     ));
   }
 
   const getCodeStyle = (code) => {
-    if (code === "99215") return { bg: "#d1fae5", color: "#059669", border: "#059669" };
-    if (code === "99214") return { bg: "#dbeafe", color: "#1d4ed8", border: "#1d4ed8" };
-    if (code === "99213") return { bg: "#f1f5f9", color: "#475569", border: "#94a3b8" };
-    if (isEyeCode(code)) return { bg: "#fdf4ff", color: "#7e22ce", border: "#a855f7" };
-    return { bg: "#f1f5f9", color: "#475569", border: "#94a3b8" };
+    if (code === "99215") return { bg: T.greenSoft, color: T.green, border: T.green };
+    if (code === "99214") return { bg: T.accentSoft, color: T.accent, border: T.accent };
+    if (code === "99213") return { bg: T.paper, color: T.muted, border: T.lineStrong };
+    if (isEyeCode(code)) return { bg: T.accentSoft, color: T.accent, border: T.accent };
+    return { bg: T.paper, color: T.muted, border: T.lineStrong };
   };
 
   const cc = result ? getCodeStyle(result.code) : {};
 
   const inputStyle = (extra = {}) => ({
-    background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6,
-    padding: "7px 10px", color: S.text, fontFamily: S.mono, fontSize: "0.82rem",
-    width: "100%", boxSizing: "border-box", ...extra,
+    background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r,
+    padding: "6px 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5,
+    width: "100%", boxSizing: "border-box", outline: "none", ...extra,
   });
 
-  const btnStyle = (bg, color, extra = {}) => ({
-    background: bg, color, border: "none", borderRadius: 6,
-    padding: "6px 14px", fontSize: "0.78rem", fontFamily: S.font,
-    fontWeight: 600, cursor: "pointer", ...extra,
-  });
+  // Small button in the Phase 2 style; solid when bg is a fill color, else secondary.
+  const btnStyle = (bg, color, extra = {}) => {
+    const solid = bg && bg !== "none" && bg !== "transparent" && bg !== T.paper && bg !== T.surface;
+    return btnSm(solid ? "primary" : "secondary", {
+      background: solid ? bg : T.surface, borderColor: solid ? bg : T.line, color, ...extra,
+    });
+  };
+
+  const flagBox = (tone) => {
+    const m = {
+      amber: [T.amberSoft, T.goldSoft, T.amber],
+      accent: [T.accentSoft, T.accentLine, T.accent],
+      green: [T.greenSoft, T.green, T.green],
+      muted: [T.surface, T.line, T.ink2],
+    }[tone];
+    return { display: "flex", gap: 10, alignItems: "flex-start", background: m[0], border: `1px solid ${m[1]}`, borderRadius: T.r, padding: "10px 14px", fontSize: 13, color: m[2], lineHeight: 1.5 };
+  };
 
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, color: S.text, fontFamily: S.font }}>
+    <div style={{ minHeight: "100vh", background: T.paper, color: T.ink, fontFamily: T.sans }}>
 
       {/* Header */}
-      <div style={{ background: S.card, borderBottom: `1px solid ${S.border}`, padding: "14px 24px", display: "flex", alignItems: "center", gap: 12 }}>
-        {onBack && (
-          <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 6, color: S.muted, padding: "5px 10px", cursor: "pointer", fontFamily: S.font, fontSize: "0.78rem", marginRight: 4 }}>
-            &#8592; Back
-          </button>
-        )}
-        <div style={{ width: 38, height: 38, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>&#9877;</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>E/M Note Optimizer</div>
-          <div style={{ fontSize: "0.68rem", color: S.muted, fontFamily: S.mono }}>99213-99215 | G2211 | Eye Codes | Modifiers | Imaging</div>
-        </div>
-      </div>
+      <PageBar onBack={onBack} backLabel="Back" title="E/M Note Optimizer" sub="99213-99215 | G2211 | Eye Codes | Modifiers | Imaging" />
 
       {/* Tabs */}
-      <div style={{ display: "flex", borderBottom: `1px solid ${S.card}`, paddingLeft: 24 }}>
+      <nav style={{ background: T.surface, borderBottom: `1px solid ${T.line}` }}>
+        <div className="vra-wrap" style={wrap({ display: "flex", gap: 2, overflowX: "auto" })}>
         {[["input", "Your Note"], ["output", "Optimized"], ["rules", "Expansion Rules"]].map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} style={{
-            padding: "9px 16px", background: "none", border: "none",
-            borderBottom: tab === id ? `2px solid ${S.accent}` : "2px solid transparent",
-            color: tab === id ? S.accentLight : S.muted,
-            fontFamily: S.font, fontSize: "0.83rem", cursor: "pointer", fontWeight: tab === id ? 600 : 400,
-          }}>
+          <button key={id} onClick={() => setTab(id)} style={tabStyle(tab === id, { fontSize: 13, marginBottom: -1 })}>
             {label}
           </button>
         ))}
-      </div>
+        </div>
+      </nav>
 
-      <div style={{ padding: "20px 24px", maxWidth: 800, margin: "0 auto" }}>
+      <div className="vra-wrap" style={wrap({ paddingTop: 20, paddingBottom: 40 })}>
 
         {/* INPUT TAB */}
         {tab === "input" && (
           <div>
-            <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 4 }}>Anthropic API Key</label>
-              <div style={{ display: "flex", gap: 6 }}>
+            <div style={field({ marginBottom: 12 })}>
+              <label style={fieldLabel()}>Anthropic API Key</label>
+              <div style={{ display: "flex", gap: 8 }}>
                 <input
                   type={showApiKey ? "text" : "password"}
+                  className="vra-input"
                   value={apiKey}
                   onChange={e => setApiKey(e.target.value)}
                   placeholder="sk-ant-..."
-                  style={inputStyle({ flex: 1 })}
+                  style={inputStyle({ flex: 1, height: 32, padding: "0 10px", fontFamily: T.mono, fontSize: 13 })}
                 />
-                <button onClick={() => setShowApiKey(!showApiKey)} style={btnStyle("transparent", S.muted, { border: `1px solid ${S.border}`, fontSize: "0.7rem", padding: "6px 10px" })}>
+                <button onClick={() => setShowApiKey(!showApiKey)} style={btnStyle("transparent", T.ink2, { height: 32 })}>
                   {showApiKey ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
 
-            <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", fontSize: "0.76rem", color: "#94a3b8", lineHeight: 1.6, marginBottom: 14 }}>
-              <span style={{ color: S.amber, fontWeight: 700 }}>No PHI.</span> Paste your note as-is. The tool picks the right code — E/M or eye exam — and makes minimum additions only.
+            <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5, margin: "14px 0 12px" }}>
+              <span style={{ color: T.amber, fontWeight: 600 }}>No PHI.</span> Paste your note as-is. The tool picks the right code — E/M or eye exam — and makes minimum additions only.
+            </p>
+
+            <div className="vra-editor" style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden" }}>
+              <textarea
+                value={note}
+                onChange={e => setNote(e.target.value)}
+                placeholder="Paste your note here..."
+                rows={12}
+                style={{ display: "block", width: "100%", minHeight: 250, border: 0, background: "transparent", padding: "16px 18px", color: T.ink, fontFamily: T.mono, fontSize: 14, lineHeight: 1.65, resize: "vertical", boxSizing: "border-box", outline: "none" }}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
+                <span style={{ fontSize: 12, color: T.muted, flex: 1, minWidth: 0 }}>Expansion rules are applied before the AI coding pass.</span>
+                <button onClick={run} disabled={loading || !note.trim()} style={btn("primary", {
+                  background: loading || !note.trim() ? T.accentSoft : T.accent,
+                  borderColor: loading || !note.trim() ? T.line : T.accent,
+                  color: loading || !note.trim() ? T.muted : T.onAccent,
+                  fontSize: 13.5, cursor: loading || !note.trim() ? "not-allowed" : "pointer",
+                })}>
+                  {loading ? "Analyzing..." : "Optimize →"}
+                </button>
+              </div>
             </div>
 
-            <textarea
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder="Paste your note here..."
-              rows={12}
-              style={{ display: "block", width: "100%", background: S.card, border: `1px solid #475569`, borderRadius: 10, padding: 14, color: S.bright, fontFamily: S.mono, fontSize: "0.88rem", lineHeight: 1.8, resize: "vertical", boxSizing: "border-box" }}
-            />
-
             {error && (
-              <div style={{ color: "#f87171", fontSize: "0.72rem", background: "#1a0808", padding: "8px 12px", borderRadius: 6, border: "1px solid #7f1d1d", marginTop: 10, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-start", color: T.red, fontSize: 13, background: T.redSoft, padding: "10px 14px", borderRadius: T.r, border: "1px solid #F0C4BF", marginTop: 12, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
                 {error}
               </div>
             )}
-
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-              <button onClick={run} disabled={loading || !note.trim()} style={{
-                background: loading || !note.trim() ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)",
-                color: loading || !note.trim() ? "#475569" : "#fff",
-                border: "none", borderRadius: 8, padding: "10px 24px", fontSize: "0.9rem",
-                fontFamily: S.font, fontWeight: 600, cursor: loading || !note.trim() ? "not-allowed" : "pointer",
-              }}>
-                {loading ? "Analyzing..." : "Optimize →"}
-              </button>
-            </div>
           </div>
         )}
 
@@ -439,107 +437,120 @@ export default function EmNoteOptimizer({ onBack }) {
         {tab === "output" && (
           <div>
             {loading && (
-              <div style={{ textAlign: "center", padding: "60px 0", color: S.muted }}>
-                <div style={{ width: 34, height: 34, border: `3px solid ${S.border}`, borderTopColor: S.accent, borderRadius: "50%", animation: "spin .8s linear infinite", margin: "0 auto 12px" }} />
+              <div style={{ textAlign: "center", padding: "60px 0", color: T.muted, fontSize: 13.5 }}>
+                <div style={{ width: 30, height: 30, border: `3px solid ${T.line}`, borderTopColor: T.accent, borderRadius: "50%", animation: "spin .8s linear infinite", margin: "0 auto 12px" }} />
                 <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
                 Analyzing...
               </div>
             )}
-            {!loading && !result && <div style={{ textAlign: "center", padding: "60px 0", color: "#475569" }}>Optimize a note first.</div>}
+            {!loading && !result && <div style={{ textAlign: "center", padding: "60px 0", color: T.muted, fontSize: 13.5 }}>Optimize a note first.</div>}
             {result && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                  <span style={{ background: cc.bg, color: cc.color, border: `1.5px solid ${cc.border}`, borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>
-                    {result.code}
-                  </span>
-                  {result.g2211 && (
-                    <span style={{ background: "#fef3c7", color: "#92400e", border: "1.5px solid #f59e0b", borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>+ G2211</span>
-                  )}
+                {/* Codes */}
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 12px", borderRadius: T.r, background: cc.bg, border: `1px solid ${cc.border}`, fontFamily: T.mono, fontWeight: 500, fontSize: 14, color: cc.color }}>
+                      {result.code}
+                    </span>
+                    {result.g2211 && (
+                      <span style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 12px", borderRadius: T.r, background: T.goldSoft, border: `1px solid ${T.gold}`, fontFamily: T.mono, fontWeight: 500, fontSize: 14, color: T.ink }}>+ G2211</span>
+                    )}
                 </div>
 
                 {isEyeCode(result.code) && result.eyeCodeNote && result.eyeCodeNote !== "NONE" && (
-                  <div style={{ background: "#2e1065", border: "1px solid #a855f7", borderRadius: 8, padding: "12px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    <span style={{ fontSize: "1.2rem", flexShrink: 0 }}>&#128065;</span>
+                  <div style={flagBox("accent")}>
+                    <span style={{ marginTop: 1 }}><EyeIcon size={16} /></span>
                     <div>
-                      <div style={{ fontSize: "0.72rem", color: "#d8b4fe", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 4 }}>Eye Exam Code Recommended</div>
-                      <div style={{ fontSize: "0.83rem", color: "#e9d5ff", lineHeight: 1.5 }}>{result.eyeCodeNote}</div>
-                      <div style={{ fontSize: "0.75rem", color: "#a855f7", marginTop: 6 }}>No MDM documentation needed — exam elements justify this code.</div>
+                      <div style={{ fontWeight: 600, marginBottom: 2 }}>Eye Exam Code Recommended</div>
+                      <div style={{ color: T.ink2 }}>{result.eyeCodeNote}</div>
+                      <div style={{ fontSize: 12.5, marginTop: 4 }}>No MDM documentation needed — exam elements justify this code.</div>
                     </div>
                   </div>
                 )}
 
                 {result.modifiers?.filter(m => m && m !== "NONE" && m !== "None").length > 0 && (
-                  <div style={{ background: "#1a1a2e", border: "1px solid #f59e0b", borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ fontSize: "0.66rem", color: "#f59e0b", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Modifier Alert</div>
+                  <div style={flagBox("amber")}>
+                    <span style={{ marginTop: 1 }}><AlertIcon /></span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>Modifier Alert</div>
                     {result.modifiers.filter(m => m && m !== "NONE" && m !== "None").map((m, i) => (
-                      <div key={i} style={{ fontSize: "0.82rem", color: "#fcd34d", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
-                        <span style={{ position: "absolute", left: 0, color: "#f59e0b" }}>&#9888;</span>{m}
+                      <div key={i} style={{ paddingLeft: 12, position: "relative", marginBottom: 2 }}>
+                        <span style={{ position: "absolute", left: 0 }}>•</span>{m}
                       </div>
                     ))}
+                    </div>
                   </div>
                 )}
 
                 {result.imaging?.filter(m => m && m !== "NONE" && m !== "None").length > 0 && (
-                  <div style={{ background: "#0c1222", border: "1px solid #3b82f6", borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ fontSize: "0.66rem", color: "#60a5fa", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Imaging / CPT</div>
+                  <div style={flagBox("accent")}>
+                    <span style={{ marginTop: 1 }}><CodingIcon size={16} /></span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>Imaging / CPT</div>
                     {result.imaging.filter(m => m && m !== "NONE" && m !== "None").map((m, i) => (
-                      <div key={i} style={{ fontSize: "0.82rem", color: "#93c5fd", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
-                        <span style={{ position: "absolute", left: 0, color: "#3b82f6" }}>&#128247;</span>{m}
+                      <div key={i} style={{ paddingLeft: 12, position: "relative", marginBottom: 2, color: T.ink2 }}>
+                        <span style={{ position: "absolute", left: 0, color: T.accent }}>•</span>{m}
                       </div>
                     ))}
+                    </div>
                   </div>
                 )}
 
                 {result.docTips?.filter(m => m && m !== "NONE" && m !== "None").length > 0 && (
-                  <div style={{ background: "#0f1a14", border: "1px solid #10b981", borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ fontSize: "0.66rem", color: "#34d399", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Documentation Tips</div>
+                  <div style={flagBox("accent")}>
+                    <span style={{ marginTop: 1 }}><EditLinesIcon size={16} /></span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>Documentation Tips</div>
                     {result.docTips.filter(m => m && m !== "NONE" && m !== "None").map((m, i) => (
-                      <div key={i} style={{ fontSize: "0.82rem", color: "#6ee7b7", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
-                        <span style={{ position: "absolute", left: 0, color: "#10b981" }}>&#128161;</span>{m}
+                      <div key={i} style={{ paddingLeft: 12, position: "relative", marginBottom: 2, color: T.ink2 }}>
+                        <span style={{ position: "absolute", left: 0, color: T.accent }}>•</span>{m}
                       </div>
                     ))}
+                    </div>
                   </div>
                 )}
 
+                <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 {result.expansionsApplied?.length > 0 && (
-                  <div style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ fontSize: "0.66rem", color: "#94a3b8", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 5 }}>Auto-expanded</div>
-                    <div style={{ fontSize: "0.8rem", color: "#cbd5e1" }}>{result.expansionsApplied.join(", ")} — standard language inserted</div>
+                  <div style={field()}>
+                    <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 4 }}>Auto-expanded</div>
+                    <div style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>{result.expansionsApplied.join(", ")} — standard language inserted</div>
                   </div>
                 )}
 
                 {result.changes?.filter(c => c && c !== "None needed").length > 0 && (
-                  <div style={{ background: "#0f1f14", border: `1px solid ${S.greenDark}`, borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ fontSize: "0.66rem", color: S.green, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Coding additions</div>
+                  <div style={field()}>
+                    <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 6 }}>Coding additions</div>
                     {result.changes.filter(c => c && c !== "None needed").map((c, i) => (
-                      <div key={i} style={{ fontSize: "0.82rem", color: "#86efac", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
-                        <span style={{ position: "absolute", left: 0, color: "#16a34a" }}>&#10003;</span>{c}
+                      <div key={i} style={{ fontSize: 13, color: T.ink2, paddingLeft: 16, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
+                        <span style={{ position: "absolute", left: 0, color: T.green }}>&#10003;</span>{c}
                       </div>
                     ))}
                   </div>
                 )}
+                </div>
 
-                <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: 18 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <div style={{ fontSize: "0.66rem", color: S.accent, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>Your note with additions</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ fontSize: "0.6rem", color: "#94a3b8", fontFamily: S.mono, background: S.bg, padding: "2px 6px", borderRadius: 3 }}>
-                        <span style={{ background: "#fef08a", color: "#713f12", padding: "0 3px", borderRadius: 2, fontWeight: 700, marginRight: 3 }}>+</span>= added
-                      </div>
-                      <button onClick={copyNote} style={btnStyle(copied ? "#059669" : S.bg, copied ? "#fff" : "#94a3b8", { border: `1px solid ${copied ? "#059669" : S.border}`, padding: "3px 10px", fontSize: "0.68rem", transition: "all 0.2s" })}>
-                        {copied ? "Copied!" : "Copy note"}
+                {/* The note */}
+                <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>Your note with additions</div>
+                    <div style={{ fontSize: 12, color: T.muted, fontFamily: T.sans }}>
+                      <span style={{ background: T.goldSoft, color: T.ink, padding: "0 4px", borderRadius: 3, fontWeight: 600, marginRight: 4 }}>+</span>= added
+                    </div>
+                    <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+                      <button onClick={() => { setTab("input"); setResult(null); setNote(""); }} style={btnStyle("none", T.ink, {})}>
+                        &#8592; New note
+                      </button>
+                      <button onClick={copyNote} style={btnStyle(copied ? T.green : T.accent, T.onAccent, { transition: "all .2s" })}>
+                        <CopyIcon size={14} />{copied ? "Copied!" : "Copy note"}
                       </button>
                     </div>
                   </div>
-                  <div style={{ fontFamily: S.mono, fontSize: "0.88rem", lineHeight: 1.9, color: S.text, whiteSpace: "pre-wrap" }}>
+                  <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: "16px 18px" }}>
                     {renderNote(result.note)}
                   </div>
                 </div>
 
-                <button onClick={() => { setTab("input"); setResult(null); setNote(""); }} style={btnStyle("none", S.muted, { border: `1px solid ${S.border}`, alignSelf: "flex-start" })}>
-                  &#8592; New note
-                </button>
               </div>
             )}
           </div>
@@ -548,110 +559,114 @@ export default function EmNoteOptimizer({ onBack }) {
         {/* RULES TAB */}
         {tab === "rules" && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 14 }}>
               <div>
-                <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Expansion Rules</div>
-                <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 2 }}>Auto-applied before the AI coding pass. No API call needed.</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: T.accent }}>Expansion Rules</div>
+                <div style={{ fontSize: 13, color: T.muted, marginTop: 2 }}>Auto-applied before the AI coding pass. No API call needed.</div>
               </div>
-              <button onClick={() => { setShowAddForm(!showAddForm); setNewRule({ trigger: "", expansion: "", type: "inline" }); }} style={btnStyle("linear-gradient(135deg,#6366f1,#8b5cf6)", "#fff", { padding: "7px 16px" })}>
+              <button onClick={() => { setShowAddForm(!showAddForm); setNewRule({ trigger: "", expansion: "", type: "inline" }); }} style={btnStyle(showAddForm ? "transparent" : T.accent, showAddForm ? T.ink : T.onAccent, {})}>
                 {showAddForm ? "Cancel" : "+ Add Rule"}
               </button>
             </div>
 
             {showAddForm && (
-              <div style={{ background: S.card, border: `1px solid ${S.accent}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
-                <div style={{ fontSize: "0.72rem", color: S.accentLight, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>New Rule</div>
-                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.76rem", color: S.text, cursor: "pointer" }}>
-                    <input type="radio" name="newRuleType" checked={newRule.type === "inline"} onChange={() => setNewRule(p => ({ ...p, type: "inline" }))} /> Inline
+              <div style={field({ borderColor: T.accentLine, marginBottom: 16, padding: 16 })}>
+                <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 10 }}>New Rule</div>
+                <div style={{ display: "flex", gap: 14, marginBottom: 10 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: T.ink, cursor: "pointer" }}>
+                    <input type="radio" name="newRuleType" style={{ accentColor: T.accent, margin: 0 }} checked={newRule.type === "inline"} onChange={() => setNewRule(p => ({ ...p, type: "inline" }))} /> Inline
                   </label>
-                  <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.76rem", color: S.text, cursor: "pointer" }}>
-                    <input type="radio" name="newRuleType" checked={newRule.type === "plan"} onChange={() => setNewRule(p => ({ ...p, type: "plan" }))} /> Plan-appended
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: T.ink, cursor: "pointer" }}>
+                    <input type="radio" name="newRuleType" style={{ accentColor: T.accent, margin: 0 }} checked={newRule.type === "plan"} onChange={() => setNewRule(p => ({ ...p, type: "plan" }))} /> Plan-appended
                   </label>
                 </div>
-                <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                   <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: "0.66rem", color: S.muted, display: "block", marginBottom: 3 }}>
+                    <label style={fieldLabel()}>
                       {newRule.type === "inline" ? "Trigger term" : "Trigger terms (comma-separated)"}
                     </label>
-                    <input value={newRule.trigger} onChange={e => setNewRule(p => ({ ...p, trigger: e.target.value }))} placeholder={newRule.type === "inline" ? "e.g. DME" : "e.g. RD, PVD"} style={inputStyle()} />
+                    <input className="vra-input" value={newRule.trigger} onChange={e => setNewRule(p => ({ ...p, trigger: e.target.value }))} placeholder={newRule.type === "inline" ? "e.g. DME" : "e.g. RD, PVD"} style={inputStyle({ fontFamily: T.mono })} />
                   </div>
                 </div>
-                <div style={{ marginBottom: 10 }}>
-                  <label style={{ fontSize: "0.66rem", color: S.muted, display: "block", marginBottom: 3 }}>Expansion text</label>
-                  <textarea value={newRule.expansion} onChange={e => setNewRule(p => ({ ...p, expansion: e.target.value }))} rows={2} placeholder="The text that replaces or is appended..." style={inputStyle({ resize: "vertical", lineHeight: 1.5 })} />
+                <div style={{ marginBottom: 12 }}>
+                  <label style={fieldLabel()}>Expansion text</label>
+                  <textarea className="vra-input" value={newRule.expansion} onChange={e => setNewRule(p => ({ ...p, expansion: e.target.value }))} rows={2} placeholder="The text that replaces or is appended..." style={inputStyle({ resize: "vertical", lineHeight: 1.5 })} />
                 </div>
-                <button onClick={addRule} disabled={!newRule.trigger.trim() || !newRule.expansion.trim()} style={btnStyle(!newRule.trigger.trim() || !newRule.expansion.trim() ? S.card : "#059669", !newRule.trigger.trim() || !newRule.expansion.trim() ? "#475569" : "#fff")}>
+                <button onClick={addRule} disabled={!newRule.trigger.trim() || !newRule.expansion.trim()} style={btnStyle(!newRule.trigger.trim() || !newRule.expansion.trim() ? T.accentSoft : T.accent, !newRule.trigger.trim() || !newRule.expansion.trim() ? T.muted : T.onAccent, !newRule.trigger.trim() || !newRule.expansion.trim() ? { borderColor: T.line } : {})}>
                   Save Rule
                 </button>
               </div>
             )}
 
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: "0.7rem", color: S.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
+              <h2 style={secHead({ marginTop: 6, fontSize: 13.5, color: T.ink })}>
                 Inline Replacements ({inlineRules.length})
-              </div>
-              {inlineRules.map(rule => (
-                <div key={rule.id} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 6, padding: "10px 12px", marginBottom: 6 }}>
+              </h2>
+              <div style={card({ overflow: "hidden" })}>
+              {inlineRules.map((rule, idx) => (
+                <div key={rule.id} style={{ padding: "10px 12px 10px 16px", borderTop: idx === 0 ? "none" : `1px solid ${T.line}` }}>
                   {editingRule?.id === rule.id ? (
                     <div>
-                      <div style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-                        <input value={editingRule.trigger} onChange={e => setEditingRule(p => ({ ...p, trigger: e.target.value }))} style={inputStyle({ flex: "0 0 120px" })} />
-                        <input value={editingRule.expansion} onChange={e => setEditingRule(p => ({ ...p, expansion: e.target.value }))} style={inputStyle({ flex: 1 })} />
+                      <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+                        <input className="vra-input" value={editingRule.trigger} onChange={e => setEditingRule(p => ({ ...p, trigger: e.target.value }))} style={inputStyle({ flex: "0 0 120px", fontFamily: T.mono })} />
+                        <input className="vra-input" value={editingRule.expansion} onChange={e => setEditingRule(p => ({ ...p, expansion: e.target.value }))} style={inputStyle({ flex: "1 1 200px", width: "auto" })} />
                       </div>
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button onClick={saveEditingRule} style={btnStyle("#059669", "#fff", { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
-                        <button onClick={() => setEditingRule(null)} style={btnStyle("transparent", S.muted, { fontSize: "0.68rem", padding: "4px 10px", border: `1px solid ${S.border}` })}>Cancel</button>
+                        <button onClick={saveEditingRule} style={btnStyle(T.accent, T.onAccent, {})}>Save</button>
+                        <button onClick={() => setEditingRule(null)} style={btnStyle("transparent", T.ink2, {})}>Cancel</button>
                       </div>
                     </div>
                   ) : (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ background: "#312e81", color: S.accentLight, padding: "2px 8px", borderRadius: 4, fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700 }}>{rule.trigger}</span>
-                        <div style={{ fontSize: "0.78rem", color: "#94a3b8", marginTop: 4, lineHeight: 1.4, wordBreak: "break-word" }}>{rule.expansion}</div>
+                        <span style={{ fontFamily: T.mono, fontWeight: 500, fontSize: 13, color: T.accent }}>{rule.trigger}</span>
+                        <div style={{ fontSize: 13, color: T.ink2, marginTop: 3, lineHeight: 1.45, wordBreak: "break-word" }}>{rule.expansion}</div>
                       </div>
-                      <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                        <button onClick={() => setEditingRule({ ...rule })} style={btnStyle("transparent", S.muted, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${S.border}` })}>Edit</button>
-                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "inline")} style={btnStyle("transparent", "#f87171", { fontSize: "0.64rem", padding: "3px 8px", border: "1px solid #7f1d1d" })}>Del</button>}
+                      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                        <button onClick={() => setEditingRule({ ...rule })} style={btnStyle("transparent", T.ink2, {})}>Edit</button>
+                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "inline")} style={btnStyle("transparent", T.red, {})}>Del</button>}
                       </div>
                     </div>
                   )}
                 </div>
               ))}
+              </div>
             </div>
 
             <div>
-              <div style={{ fontSize: "0.7rem", color: S.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
+              <h2 style={secHead({ marginTop: 6, fontSize: 13.5, color: T.ink })}>
                 Plan-Appended ({planRules.length})
-              </div>
-              {planRules.map(rule => (
-                <div key={rule.id} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 6, padding: "10px 12px", marginBottom: 6 }}>
+              </h2>
+              <div style={card({ overflow: "hidden" })}>
+              {planRules.map((rule, idx) => (
+                <div key={rule.id} style={{ padding: "10px 12px 10px 16px", borderTop: idx === 0 ? "none" : `1px solid ${T.line}` }}>
                   {editingRule?.id === rule.id ? (
                     <div>
-                      <div style={{ display: "flex", gap: 8, marginBottom: 6 }}>
-                        <input value={editingRule.triggers} onChange={e => setEditingRule(p => ({ ...p, triggers: e.target.value }))} style={inputStyle({ flex: "0 0 160px" })} placeholder="RD, PVD, HST" />
-                        <input value={editingRule.expansion} onChange={e => setEditingRule(p => ({ ...p, expansion: e.target.value }))} style={inputStyle({ flex: 1 })} />
+                      <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+                        <input className="vra-input" value={editingRule.triggers} onChange={e => setEditingRule(p => ({ ...p, triggers: e.target.value }))} style={inputStyle({ flex: "0 0 160px", fontFamily: T.mono })} placeholder="RD, PVD, HST" />
+                        <input className="vra-input" value={editingRule.expansion} onChange={e => setEditingRule(p => ({ ...p, expansion: e.target.value }))} style={inputStyle({ flex: "1 1 200px", width: "auto" })} />
                       </div>
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button onClick={saveEditingRule} style={btnStyle("#059669", "#fff", { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
-                        <button onClick={() => setEditingRule(null)} style={btnStyle("transparent", S.muted, { fontSize: "0.68rem", padding: "4px 10px", border: `1px solid ${S.border}` })}>Cancel</button>
+                        <button onClick={saveEditingRule} style={btnStyle(T.accent, T.onAccent, {})}>Save</button>
+                        <button onClick={() => setEditingRule(null)} style={btnStyle("transparent", T.ink2, {})}>Cancel</button>
                       </div>
                     </div>
                   ) : (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ background: "#312e81", color: S.accentLight, padding: "2px 8px", borderRadius: 4, fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700 }}>{rule.triggers}</span>
-                        <span style={{ fontSize: "0.64rem", color: S.muted, marginLeft: 6 }}>&#8594; appended under Plan</span>
-                        <div style={{ fontSize: "0.78rem", color: "#94a3b8", marginTop: 4, lineHeight: 1.4, wordBreak: "break-word" }}>{rule.expansion}</div>
+                        <span style={{ fontFamily: T.mono, fontWeight: 500, fontSize: 13, color: T.accent }}>{rule.triggers}</span>
+                        <span style={{ fontSize: 12, color: T.muted, marginLeft: 6 }}>&#8594; appended under Plan</span>
+                        <div style={{ fontSize: 13, color: T.ink2, marginTop: 3, lineHeight: 1.45, wordBreak: "break-word" }}>{rule.expansion}</div>
                       </div>
-                      <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                        <button onClick={() => setEditingRule({ ...rule })} style={btnStyle("transparent", S.muted, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${S.border}` })}>Edit</button>
-                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "plan")} style={btnStyle("transparent", "#f87171", { fontSize: "0.64rem", padding: "3px 8px", border: "1px solid #7f1d1d" })}>Del</button>}
+                      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                        <button onClick={() => setEditingRule({ ...rule })} style={btnStyle("transparent", T.ink2, {})}>Edit</button>
+                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "plan")} style={btnStyle("transparent", T.red, {})}>Del</button>}
                       </div>
                     </div>
                   )}
                 </div>
               ))}
+              </div>
             </div>
           </div>
         )}

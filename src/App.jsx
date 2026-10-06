@@ -7,35 +7,23 @@ import Documents from "./Documents.jsx";
 import RateComparison from "./RateComparison.jsx";
 import IntakeHpi from "./IntakeHpi.jsx";
 import CallBoard from "./CallBoard.jsx";
+import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS } from "./theme.js";
+import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon } from "./icons.jsx";
+import logo from "./vra-logo.png";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
   "https://op-note-dictator-server-production.up.railway.app";
 
 // ── Shared styles ───────────────────────────────────────────────────
-const S = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  muted: "#64748b",
-  text: "#e2e8f0",
-  bright: "#f1f5f9",
-  accent: "#6366f1",
-  accentLight: "#a5b4fc",
-  green: "#4ade80",
-  greenDark: "#166534",
-  amber: "#f59e0b",
-  font: "Georgia, serif",
-  mono: "monospace",
-};
 
 // ── Surgeon roster ──────────────────────────────────────────────────
 const SURGEONS = [
-  { id: "MR", name: "MR", surgeonId: "998eae6c-1516-43d5-8bc7-6905074cd8e3", hasRobocall: true },
-  { id: "BKH", name: "BKH", surgeonId: null },
-  { id: "FJM", name: "FJM", surgeonId: null },
-  { id: "BJB", name: "BJB", surgeonId: null },
-  { id: "WSF", name: "WSF", surgeonId: null },
+  { id: "MR", name: "MR", surname: "Rodriguez", surgeonId: "998eae6c-1516-43d5-8bc7-6905074cd8e3", hasRobocall: true },
+  { id: "BKH", name: "BKH", surname: "Hong", surgeonId: null },
+  { id: "FJM", name: "FJM", surname: "McCabe", surgeonId: null },
+  { id: "BJB", name: "BJB", surname: "Baker", surgeonId: null },
+  { id: "WSF", name: "WSF", surname: "Foulsham", surgeonId: null },
 ];
 
 // ── Password Gate ───────────────────────────────────────────────────
@@ -72,15 +60,15 @@ function PasswordGate({ onSuccess }) {
 
   return (
     <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
-      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: "40px 36px", width: "100%", maxWidth: 380, textAlign: "center" }}>
-        <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, margin: "0 auto 16px" }}>&#9877;</div>
-        <div style={{ fontSize: "1.2rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>VRA Practice Hub</div>
-        <div style={{ fontSize: "0.78rem", color: S.muted, marginBottom: 24 }}>Clinical Workflow Tools</div>
+      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: T.rLg, padding: "36px 32px", width: "100%", maxWidth: 380, textAlign: "center", boxSizing: "border-box", margin: "0 16px", fontFamily: T.sans }}>
+        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", margin: "0 auto 18px", mixBlendMode: "multiply" }} />
+        <div style={{ fontSize: 17, fontWeight: 600, color: T.ink, marginBottom: 4, letterSpacing: "-0.01em" }}>VRA Practice Hub</div>
+        <div style={{ fontSize: 13, color: T.muted, marginBottom: 22 }}>Clinical Workflow Tools</div>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" autoFocus
-          style={{ display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px", color: S.text, fontFamily: S.mono, fontSize: "0.9rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center" }} />
-        {error && <div style={{ color: "#f87171", fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
+          style={{ display: "block", width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "10px 14px", color: T.ink, fontFamily: T.sans, outline: "none", fontSize: "0.9rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center" }} />
+        {error && <div style={{ color: T.red, fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
         <button type="submit" disabled={loading || !password.trim()}
-          style={{ width: "100%", background: loading || !password.trim() ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)", color: loading || !password.trim() ? "#475569" : "#fff", border: "none", borderRadius: 8, padding: "12px 0", fontSize: "0.92rem", fontFamily: S.font, fontWeight: 600, cursor: loading || !password.trim() ? "not-allowed" : "pointer" }}>
+          style={{ width: "100%", background: loading || !password.trim() ? T.accentSoft : T.accent, color: loading || !password.trim() ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: 40, padding: 0, fontSize: 14, fontFamily: T.sans, fontWeight: 600, cursor: loading || !password.trim() ? "not-allowed" : "pointer" }}>
           {loading ? "Verifying..." : "Enter"}
         </button>
       </form>
@@ -89,30 +77,30 @@ function PasswordGate({ onSuccess }) {
 }
 
 // ── Homepage ────────────────────────────────────────────────────────
-function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
+export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
   const sharedTools = [
     {
       id: "inject",
       title: "Can We Inject?",
-      icon: "💉",
+      icon: InjectIcon,
       description: "Check PA requirements, step therapy, and billing alerts by drug + insurance plan.",
-      gradient: "linear-gradient(135deg,#10b981,#059669)",
+      gradient: T.accent,
       tags: ["PA Lookup", "Step Therapy", "288 Plans"],
     },
     {
       id: "coding",
       title: "Coding",
-      icon: "🤖",
+      icon: CodingIcon,
       description: "CPT tree by diagnosis, AI Coding Assistant for ICD-10, E/M, modifiers, and billing questions.",
-      gradient: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+      gradient: T.accent,
       tags: ["CPT", "ICD-10", "E/M", "AI Assistant"],
     },
     {
       id: "education",
       title: "Patient Education",
-      icon: "📄",
+      icon: EducationIcon,
       description: "Searchable handout library for conditions, procedures, and post-injection instructions. Printable.",
-      gradient: "linear-gradient(135deg,#f59e0b,#d97706)",
+      gradient: T.accent,
       tags: ["EN", "ES", "VI", "PT"],
     },
     // Sep 2026, per Mari — added after the OCB modifier-25 FCA settlement.
@@ -121,99 +109,99 @@ function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
     {
       id: "intakehpi",
       title: "Intake CC/HPI",
-      icon: "📝",
+      icon: IntakeIcon,
       description: "Audit-safe chief complaint & HPI",
-      gradient: "linear-gradient(135deg,#8b5cf6,#6d28d9)",
+      gradient: T.accent,
       tags: ["Injection day", "Techs"],
     },
     {
       id: "documents",
       title: "Workflow Documents",
-      icon: "📁",
+      icon: DocumentsIcon,
       description: "Branded VRA packets and forms for staff: surgical package, post-pneumatic info, registration, consents. Each with language picker.",
-      gradient: "linear-gradient(135deg,#06b6d4,#0891b2)",
+      gradient: T.accent,
       tags: ["EN", "ES", "VI", "PT", "Fillable"],
     },
   ];
 
-  return (
-    <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
-      {/* Header */}
-      <div style={{ textAlign: "center", padding: "40px 24px 28px" }}>
-        <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, margin: "0 auto 14px" }}>&#9877;</div>
-        <div style={{ fontSize: "1.5rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>VRA Practice Hub</div>
-        <div style={{ fontSize: "0.82rem", color: S.muted, fontFamily: S.mono }}>Clinical Workflow Tools</div>
-      </div>
+  // "Monday, October 5"
+  const todayWords = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
 
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 20px 48px" }}>
+  const hoverOn = (e) => { e.currentTarget.style.borderColor = T.accentLine; };
+  const hoverOff = (e) => { e.currentTarget.style.borderColor = T.line; };
+
+  return (
+    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
+      <style>{RESPONSIVE_CSS}</style>
+      {/* Top bar */}
+      <header className="vra-bar" style={appBar}>
+        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 36, width: "auto", display: "block", mixBlendMode: "multiply" }} />
+        <span style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
+        <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Practice Hub</div>
+        <div style={{ flex: 1 }} />
+        <div className="vra-bar-hide" style={{ fontSize: 13, color: T.ink2, whiteSpace: "nowrap" }}>{todayWords}</div>
+      </header>
+
+      <div className="vra-wrap" style={{ maxWidth: 880, padding: "0 24px" }}>
         {/* Call board — practice-wide date + on-call + F/U counter. Sep 2026, per
             Mari: everyone (techs, managers, doctors) sees it, no PIN. */}
         <CallBoard />
 
         {/* Shared tools */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, marginBottom: 32 }}>
-          {sharedTools.map((tool) => (
-            <button key={tool.id} onClick={() => onSelectTool(tool.id)}
-              style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: 0, cursor: "pointer", textAlign: "left", overflow: "hidden", transition: "border-color 0.2s, transform 0.15s" }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = S.accent; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = S.border; e.currentTarget.style.transform = "translateY(0)"; }}>
-              {/* Gradient banner */}
-              <div style={{ background: tool.gradient, padding: "14px 16px", display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: "1.5rem" }}>{tool.icon}</span>
-                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#fff", fontFamily: S.font }}>{tool.title}</div>
-              </div>
-              {/* Body */}
-              <div style={{ padding: "12px 16px" }}>
-                <div style={{ fontSize: "0.78rem", color: "#94a3b8", lineHeight: 1.5, marginBottom: 10, fontFamily: S.font }}>{tool.description}</div>
-                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                  {tool.tags.map((tag) => (
-                    <span key={tag} style={{ background: "#312e81", color: S.accentLight, padding: "2px 8px", borderRadius: 20, fontSize: "0.62rem", fontFamily: S.mono, fontWeight: 600 }}>{tag}</span>
-                  ))}
-                </div>
-              </div>
-            </button>
-          ))}
+        <h2 style={secHead()}>Tools for everyone</h2>
+        <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
+          {sharedTools.map((tool, i) => {
+            const Icon = tool.icon;
+            return (
+              <button key={tool.id} className="vra-tile" onClick={() => onSelectTool(tool.id)}
+                style={tile({ gridColumn: i < 3 ? "span 2" : "span 3", borderTop: `3px solid ${tool.gradient}` })}
+                onMouseEnter={hoverOn}
+                onMouseLeave={hoverOff}>
+                <span style={iconBox()}><Icon /></span>
+                <span style={{ fontSize: 15, fontWeight: 600, color: T.ink, letterSpacing: "-0.01em" }}>{tool.title}</span>
+                <span style={{ fontSize: 13, color: T.muted, lineHeight: 1.45 }}>{tool.description}</span>
+                <span style={{ fontSize: 12, color: T.muted, marginTop: "auto" }}>{tool.tags.join(" · ")}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Doctor spaces divider */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-          <div style={{ height: 1, flex: 1, background: S.border }} />
-          <span style={{ fontSize: "0.75rem", color: S.muted, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 1 }}>Doctor Notes</span>
-          <div style={{ height: 1, flex: 1, background: S.border }} />
-        </div>
-
-        {/* Doctor buttons */}
-        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+        {/* Doctor spaces */}
+        <h2 style={secHead()}>Doctor notes</h2>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {SURGEONS.map((doc) => (
-            <button key={doc.id} onClick={() => onSelectDoctor(doc)}
-              style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 12, padding: "16px 28px", cursor: "pointer", transition: "border-color 0.2s, transform 0.15s", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 90 }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = S.green; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = S.border; e.currentTarget.style.transform = "translateY(0)"; }}>
-              <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", fontWeight: 700, color: "#fff", fontFamily: S.mono }}>{doc.name}</div>
+            <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)}
+              style={{ display: "flex", alignItems: "center", gap: 10, background: T.surface, border: `1px solid ${T.line}`, borderRadius: 999, padding: "6px 16px 6px 6px", cursor: "pointer", fontFamily: T.sans, fontSize: 14, fontWeight: 500, color: T.ink, transition: "border-color .15s" }}
+              onMouseEnter={hoverOn}
+              onMouseLeave={hoverOff}>
+              <span style={avatar(30)}>{doc.name}</span>
+              {doc.surname || doc.name}
             </button>
           ))}
         </div>
 
-        {/* Practice management divider */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "32px 0 18px" }}>
-          <div style={{ height: 1, flex: 1, background: S.border }} />
-          <span style={{ fontSize: "0.75rem", color: S.muted, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 1 }}>Practice Management</span>
-          <div style={{ height: 1, flex: 1, background: S.border }} />
-        </div>
-
-        {/* Manager's Hub (PIN-gated) */}
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <button onClick={onSelectManager}
-            style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 12, padding: "16px 28px", cursor: "pointer", transition: "border-color 0.2s, transform 0.15s", display: "flex", alignItems: "center", gap: 12, minWidth: 240 }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#06b6d4"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = S.border; e.currentTarget.style.transform = "translateY(0)"; }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg,#0891b2,#0e7490)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>📊</div>
-            <div style={{ textAlign: "left" }}>
-              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Manager's Hub</div>
-              <div style={{ fontSize: "0.7rem", color: S.muted, fontFamily: S.mono }}>Rate comparison · PIN required</div>
-            </div>
+        {/* Practice management */}
+        <h2 style={secHead()}>Practice management</h2>
+        <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
+          {/* Manager's Hub (PIN-gated) */}
+          <button className="vra-tile-wide" onClick={onSelectManager}
+            style={tile({ gridColumn: "span 6", borderTop: `3px solid ${T.gold}`, flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14 })}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.accentLine; e.currentTarget.style.borderTopColor = T.gold; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.line; e.currentTarget.style.borderTopColor = T.gold; }}>
+            <span style={iconBox()}><ManagerIcon /></span>
+            <span style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: T.ink }}>Manager's Hub</span>
+              <span style={{ fontSize: 13, color: T.muted }}>Rate comparison</span>
+            </span>
+            <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, display: "flex", gap: 6, alignItems: "center", whiteSpace: "nowrap" }}>
+              <LockIcon />PIN required
+            </span>
           </button>
         </div>
+
+        <p style={{ color: T.muted, fontSize: 12, margin: "44px 0 32px" }}>
+          Vitreo-Retinal Associates · No patient information is stored by these tools.
+        </p>
       </div>
     </div>
   );
@@ -286,18 +274,18 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
 
   return (
     <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
-      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: "36px 32px", width: "100%", maxWidth: 340, textAlign: "center" }}>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", fontWeight: 700, color: "#fff", fontFamily: S.mono, margin: "0 auto 14px" }}>{surgeon.name}</div>
-        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>Doctor Space</div>
-        <div style={{ fontSize: "0.76rem", color: S.muted, marginBottom: 20 }}>Enter PIN to continue</div>
+      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: T.rLg, padding: "32px 28px", width: "100%", maxWidth: 340, textAlign: "center", boxSizing: "border-box", margin: "0 16px", fontFamily: T.sans }}>
+        <div style={avatar(48, { fontSize: 14, margin: "0 auto 14px" })}>{surgeon.name}</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, marginBottom: 4 }}>Doctor Space</div>
+        <div style={{ fontSize: 13, color: T.muted, marginBottom: 20 }}>Enter PIN to continue</div>
         <input type="password" inputMode="numeric" pattern="[0-9]*" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="PIN" autoFocus
-          style={{ display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px", color: S.text, fontFamily: S.mono, fontSize: "1.1rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center", letterSpacing: 6 }} />
-        {error && <div style={{ color: "#f87171", fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
+          style={{ display: "block", width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "10px 14px", color: T.ink, fontFamily: T.sans, outline: "none", fontSize: "1.1rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center", letterSpacing: 6 }} />
+        {error && <div style={{ color: T.red, fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
         <div style={{ display: "flex", gap: 10 }}>
           <button type="button" onClick={onCancel}
-            style={{ flex: 1, background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 0", color: S.muted, fontFamily: S.font, fontSize: "0.85rem", cursor: "pointer" }}>Cancel</button>
+            style={{ flex: 1, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, height: 38, padding: 0, color: T.ink2, fontFamily: T.sans, fontSize: 13.5, fontWeight: 500, cursor: "pointer" }}>Cancel</button>
           <button type="submit" disabled={loading || !pin.trim()}
-            style={{ flex: 1, background: loading || !pin.trim() ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)", color: loading || !pin.trim() ? "#475569" : "#fff", border: "none", borderRadius: 8, padding: "10px 0", fontSize: "0.85rem", fontFamily: S.font, fontWeight: 600, cursor: loading || !pin.trim() ? "not-allowed" : "pointer" }}>
+            style={{ flex: 1, background: loading || !pin.trim() ? T.accentSoft : T.accent, color: loading || !pin.trim() ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: 38, padding: 0, fontSize: 13.5, fontFamily: T.sans, fontWeight: 600, cursor: loading || !pin.trim() ? "not-allowed" : "pointer" }}>
             {loading ? "..." : "Enter"}
           </button>
         </div>
@@ -340,18 +328,18 @@ function ManagerPinGate({ onSuccess, onCancel }) {
 
   return (
     <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
-      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, padding: "36px 32px", width: "100%", maxWidth: 340, textAlign: "center" }}>
-        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#0891b2,#0e7490)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.3rem", margin: "0 auto 14px" }}>📊</div>
-        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>Manager's Hub</div>
-        <div style={{ fontSize: "0.76rem", color: S.muted, marginBottom: 20 }}>Enter manager PIN to continue</div>
+      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: T.rLg, padding: "32px 28px", width: "100%", maxWidth: 340, textAlign: "center", boxSizing: "border-box", margin: "0 16px", fontFamily: T.sans }}>
+        <div style={iconBox("gold", { width: 48, height: 48, borderRadius: 10, margin: "0 auto 14px" })}><ManagerIcon size={24} /></div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, marginBottom: 4 }}>Manager's Hub</div>
+        <div style={{ fontSize: 13, color: T.muted, marginBottom: 20 }}>Enter manager PIN to continue</div>
         <input type="password" inputMode="numeric" pattern="[0-9]*" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="PIN" autoFocus
-          style={{ display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px", color: S.text, fontFamily: S.mono, fontSize: "1.1rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center", letterSpacing: 6 }} />
-        {error && <div style={{ color: "#f87171", fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
+          style={{ display: "block", width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "10px 14px", color: T.ink, fontFamily: T.sans, outline: "none", fontSize: "1.1rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center", letterSpacing: 6 }} />
+        {error && <div style={{ color: T.red, fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
         <div style={{ display: "flex", gap: 10 }}>
           <button type="button" onClick={onCancel}
-            style={{ flex: 1, background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 0", color: S.muted, fontFamily: S.font, fontSize: "0.85rem", cursor: "pointer" }}>Cancel</button>
+            style={{ flex: 1, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, height: 38, padding: 0, color: T.ink2, fontFamily: T.sans, fontSize: 13.5, fontWeight: 500, cursor: "pointer" }}>Cancel</button>
           <button type="submit" disabled={!pin.trim()}
-            style={{ flex: 1, background: !pin.trim() ? S.card : "linear-gradient(135deg,#0891b2,#0e7490)", color: !pin.trim() ? "#475569" : "#fff", border: "none", borderRadius: 8, padding: "10px 0", fontSize: "0.85rem", fontFamily: S.font, fontWeight: 600, cursor: !pin.trim() ? "not-allowed" : "pointer" }}>Enter</button>
+            style={{ flex: 1, background: !pin.trim() ? T.accentSoft : T.accent, color: !pin.trim() ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: 38, padding: 0, fontSize: 13.5, fontFamily: T.sans, fontWeight: 600, cursor: !pin.trim() ? "not-allowed" : "pointer" }}>Enter</button>
         </div>
       </form>
     </div>

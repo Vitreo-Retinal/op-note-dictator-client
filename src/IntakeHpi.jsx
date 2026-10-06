@@ -1,4 +1,7 @@
 import { useState, useCallback } from "react";
+import { S, T, btn, btnSm, chip, field, secHead } from "./theme.js";
+import PageBar, { wrap } from "./PageBar.jsx";
+import { AlertIcon, CopyIcon, ChevronRightIcon, ChevronDownIcon } from "./icons.jsx";
 
 // ── Intake CC/HPI — tech-facing tool (Sep 2026, per Mari) ────────────
 // WHY: the OCB $3.9M FCA settlement (DOJ, Jul 31 2026) turned modifier-25 on
@@ -13,20 +16,6 @@ import { useState, useCallback } from "react";
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
 // ── Styles (matches App.jsx theme) ─────────────────────────────────
-const S = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  muted: "#64748b",
-  text: "#e2e8f0",
-  bright: "#f1f5f9",
-  accent: "#6366f1",
-  accentLight: "#a5b4fc",
-  green: "#4ade80",
-  amber: "#f59e0b",
-  font: "Georgia, serif",
-  mono: "monospace",
-};
 
 // ── Do / Don't cheat sheet (Sep 2026, per Mari) ──────────────────────
 // Mirrors the phrase list in server/lib/modifier25-lint.js and the printed
@@ -57,7 +46,7 @@ function renderWithPlaceholders(text) {
   const parts = String(text).split(/(\[DOCUMENT:[^\]]*\])/g);
   return parts.map((p, i) =>
     /^\[DOCUMENT:/.test(p)
-      ? <span key={i} style={{ background: "#451a03", color: "#fcd34d", border: "1px solid #f59e0b", borderRadius: 4, padding: "0 4px", fontWeight: 700 }}>{p}</span>
+      ? <span key={i} style={{ background: T.amberSoft, color: T.amber, border: `1px solid ${T.amber}`, borderRadius: 4, padding: "0 4px", fontWeight: 500 }}>{p}</span>
       : <span key={i}>{p}</span>
   );
 }
@@ -124,132 +113,130 @@ export default function IntakeHpi({ onBack }) {
 
   const blockCount = flags.filter(f => f.severity === "block").length;
 
+  const canRun = !(loading || !intakeText.trim());
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
+    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       {/* Header */}
-      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Home</button>
-        <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>Intake CC/HPI</span>
-        <span style={{ fontSize: "0.74rem", color: S.muted, fontFamily: S.mono }}>Audit-safe chief complaint &amp; HPI for injection-day visits</span>
-      </div>
+      <PageBar onBack={onBack} title="Intake CC/HPI" sub={<>Audit-safe chief complaint &amp; HPI for injection-day visits</>} />
 
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "20px 20px 56px" }}>
+      <div className="vra-wrap" style={wrap({ paddingTop: 4, paddingBottom: 56 })}>
 
         {/* Input */}
-        <div style={{ fontSize: "0.72rem", color: S.muted, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>
+        <h2 style={secHead({ marginTop: 22, marginBottom: 4 })}>
           Intake notes
-        </div>
-        <div style={{ fontSize: "0.74rem", color: "#94a3b8", lineHeight: 1.6, marginBottom: 8 }}>
+        </h2>
+        <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.55, margin: "0 0 12px" }}>
           What you have: age and gender, the condition and which eye, what the patient tells you, and the other eye.
           Describe the <em>problem</em>, never the appointment.
-        </div>
-        <textarea
-          value={intakeText}
-          onChange={e => setIntakeText(e.target.value)}
-          placeholder="87 yo M wet AMD OD, mild distortion OD, no complaints OS; dry AMD OS"
-          rows={7}
-          style={{ display: "block", width: "100%", background: S.card, border: "1px solid #475569", borderRadius: 10, padding: 14, color: S.bright, fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.8, resize: "vertical", boxSizing: "border-box" }}
-        />
+        </p>
+        <div className="vra-editor" style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden" }}>
+          <textarea
+            value={intakeText}
+            onChange={e => setIntakeText(e.target.value)}
+            placeholder="87 yo M wet AMD OD, mild distortion OD, no complaints OS; dry AMD OS"
+            rows={7}
+            style={{ display: "block", width: "100%", minHeight: 170, border: 0, background: "transparent", padding: "16px 18px", color: T.ink, fontFamily: T.mono, fontSize: 14, lineHeight: 1.65, resize: "vertical", boxSizing: "border-box", outline: "none" }}
+          />
 
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginTop: 12 }}>
-          <button
-            onClick={() => run(false)}
-            disabled={loading || !intakeText.trim()}
-            style={{
-              background: loading || !intakeText.trim() ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)",
-              color: loading || !intakeText.trim() ? "#475569" : "#fff",
-              border: "none", borderRadius: 8, padding: "10px 24px", fontSize: "0.9rem",
-              fontFamily: S.font, fontWeight: 600, cursor: loading || !intakeText.trim() ? "not-allowed" : "pointer",
-            }}
-          >
-            {loading ? "Working..." : "Generate CC/HPI →"}
-          </button>
-          <button
-            onClick={() => run(true)}
-            disabled={loading || !intakeText.trim()}
-            title="Paste an HPI you already wrote in NextGen — this checks the wording without rewriting it."
-            style={{
-              background: S.card,
-              color: loading || !intakeText.trim() ? "#475569" : S.text,
-              border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 20px", fontSize: "0.85rem",
-              fontFamily: S.font, fontWeight: 600, cursor: loading || !intakeText.trim() ? "not-allowed" : "pointer",
-            }}
-          >
-            Check wording only
-          </button>
-          {intakeText.trim() && !loading && (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", padding: "10px 12px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
             <button
-              onClick={() => { setIntakeText(""); setHpi(null); setFlags([]); setRan(false); setError(""); }}
-              style={{ marginLeft: "auto", padding: "9px 14px", borderRadius: 8, border: `1px solid ${S.border}`, background: S.card, color: S.muted, fontFamily: S.mono, fontSize: "0.78rem", fontWeight: 600, cursor: "pointer" }}
-            >✕ Clear</button>
-          )}
+              onClick={() => run(true)}
+              disabled={loading || !intakeText.trim()}
+              title="Paste an HPI you already wrote in NextGen — this checks the wording without rewriting it."
+              style={btnSm("secondary", {
+                color: loading || !intakeText.trim() ? T.muted : T.ink,
+                cursor: loading || !intakeText.trim() ? "not-allowed" : "pointer",
+              })}
+            >
+              Check wording only
+            </button>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+              {intakeText.trim() && !loading && (
+                <button
+                  onClick={() => { setIntakeText(""); setHpi(null); setFlags([]); setRan(false); setError(""); }}
+                  style={btnSm("secondary", { color: T.ink2 })}
+                >✕ Clear</button>
+              )}
+              <button
+                onClick={() => run(false)}
+                disabled={loading || !intakeText.trim()}
+                style={btn("primary", {
+                  background: canRun ? T.accent : T.accentSoft,
+                  borderColor: canRun ? T.accent : T.line,
+                  color: canRun ? T.onAccent : T.muted,
+                  fontSize: 13.5, cursor: loading || !intakeText.trim() ? "not-allowed" : "pointer",
+                })}
+              >
+                {loading ? "Working..." : "Generate CC/HPI →"}
+              </button>
+            </div>
+          </div>
         </div>
 
         {error && (
-          <div style={{ color: "#f87171", fontSize: "0.74rem", background: "#1a0808", padding: "8px 12px", borderRadius: 6, border: "1px solid #7f1d1d", marginTop: 12, wordBreak: "break-word" }}>
-            {error}
+          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", color: T.red, fontSize: 13, background: T.redSoft, padding: "10px 14px", borderRadius: T.r, border: "1px solid #F0C4BF", marginTop: 12, wordBreak: "break-word" }}>
+            <span style={{ marginTop: 1 }}><AlertIcon /></span>{error}
           </div>
         )}
 
         {/* Result */}
         {hpi && (
-          <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: 18, marginTop: 18 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-              <div style={{ fontSize: "0.66rem", color: S.accent, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+          <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
+              <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>
                 CC / HPI (audit-safe)
               </div>
               <button
                 onClick={copyHpi}
-                style={{ background: copied ? "#059669" : S.bg, color: copied ? "#fff" : "#94a3b8", border: `1px solid ${copied ? "#059669" : S.border}`, borderRadius: 6, padding: "3px 10px", fontSize: "0.68rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
+                style={btnSm("primary", { marginLeft: "auto", transition: "all .2s", ...(copied ? { background: T.green, borderColor: T.green } : {}) })}
               >
-                {copied ? "Copied!" : "Copy CC/HPI"}
+                <CopyIcon size={14} />{copied ? "Copied!" : "Copy CC/HPI"}
               </button>
             </div>
-            <div style={{ fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.9, color: S.text, whiteSpace: "pre-wrap" }}>
+            <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: "16px 18px" }}>
               {renderWithPlaceholders(hpi)}
             </div>
-            {/\[DOCUMENT:/.test(hpi) && (
-              <div style={{ fontSize: "0.68rem", color: "#fcd34d", marginTop: 10, lineHeight: 1.5 }}>
-                Fill in every amber <span style={{ fontFamily: S.mono }}>[DOCUMENT: …]</span> before pasting — ask the patient, or leave it for the doctor.
+            <div style={{ padding: "10px 16px", borderTop: `1px solid ${T.line}`, background: T.paper, borderRadius: `0 0 ${T.rLg}px ${T.rLg}px`, fontSize: 12.5, lineHeight: 1.5 }}>
+              {/\[DOCUMENT:/.test(hpi) && (
+                <div style={{ color: T.amber, marginBottom: 4 }}>
+                  Fill in every amber <span style={{ fontFamily: T.mono }}>[DOCUMENT: …]</span> before pasting — ask the patient, or leave it for the doctor.
+                </div>
+              )}
+              <div style={{ color: T.muted }}>
+                Paste this into the CC/HPI fields in NextGen.
               </div>
-            )}
-            <div style={{ fontSize: "0.68rem", color: S.muted, marginTop: 10, lineHeight: 1.5 }}>
-              Paste this into the CC/HPI fields in NextGen.
             </div>
           </div>
         )}
 
         {/* Flags */}
         {flags.length > 0 && (
-          <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: "14px 18px", marginTop: 14 }}>
-            <div style={{ fontSize: "0.66rem", color: S.muted, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
+          <div style={{ marginTop: 18 }}>
+            <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 8 }}>
               Wording to fix{blockCount > 0 ? ` — ${blockCount} must be removed` : ""}
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {flags.map((f, i) => {
                 const isBlock = f.severity === "block";
                 return (
-                  <div key={i} style={{ background: isBlock ? "#1a0808" : "#1c1206", border: `1px solid ${isBlock ? "#7f1d1d" : "#f59e0b"}`, borderRadius: 8, padding: "10px 12px" }}>
+                  <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", background: isBlock ? T.redSoft : T.amberSoft, border: `1px solid ${isBlock ? "#F0C4BF" : T.goldSoft}`, borderRadius: T.r, padding: "10px 14px", color: isBlock ? T.red : T.amber }}>
+                    <span style={{ marginTop: 2 }}><AlertIcon /></span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                      <span style={{
-                        background: isBlock ? "#7f1d1d" : "#451a03",
-                        color: isBlock ? "#fca5a5" : "#fcd34d",
-                        border: `1px solid ${isBlock ? "#ef4444" : "#f59e0b"}`,
-                        borderRadius: 20, padding: "1px 9px", fontSize: "0.6rem",
-                        fontFamily: S.mono, fontWeight: 700, letterSpacing: "0.06em", flexShrink: 0,
-                      }}>
+                      <span style={chip(isBlock ? "red" : "amber", { flexShrink: 0, fontSize: 10.5 })}>
                         {isBlock ? "REMOVE" : "REVIEW"}
                       </span>
-                      <span style={{ fontFamily: S.mono, fontSize: "0.8rem", color: S.bright, fontWeight: 700 }}>
+                      <span style={{ fontFamily: T.mono, fontSize: 13, color: T.ink, fontWeight: 500 }}>
                         &ldquo;{f.phrase}&rdquo;
                       </span>
                     </div>
-                    {f.why && <div style={{ fontSize: "0.76rem", color: "#94a3b8", lineHeight: 1.5 }}>{f.why}</div>}
+                    {f.why && <div style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>{f.why}</div>}
                     {f.suggest && (
-                      <div style={{ fontSize: "0.76rem", color: isBlock ? "#fca5a5" : "#fde68a", lineHeight: 1.5, marginTop: 4 }}>
+                      <div style={{ fontSize: 13, color: isBlock ? T.red : T.amber, lineHeight: 1.5, marginTop: 4 }}>
                         Write instead: {f.suggest}
                       </div>
                     )}
+                    </div>
                   </div>
                 );
               })}
@@ -259,55 +246,63 @@ export default function IntakeHpi({ onBack }) {
 
         {/* Clean result for a check-only run */}
         {ran && checkedOnly && flags.length === 0 && !error && (
-          <div style={{ background: "#0f1f14", border: "1px solid #166534", borderRadius: 10, padding: "12px 16px", marginTop: 14, fontSize: "0.8rem", color: "#86efac" }}>
+          <div style={{ background: T.greenSoft, border: `1px solid ${T.green}`, borderRadius: T.r, padding: "10px 14px", marginTop: 14, fontSize: 13, color: T.green }}>
             ✓ Nothing flagged — this wording is audit-safe.
           </div>
         )}
 
         {/* ── Do / Don't cheat sheet (collapsed by default) ─────────── */}
-        <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, marginTop: 22, overflow: "hidden" }}>
+        <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 24, overflow: "hidden" }}>
           <button
             onClick={() => setShowSheet(v => !v)}
-            style={{ width: "100%", background: "none", border: "none", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", color: S.bright, fontFamily: S.font, fontSize: "0.86rem", fontWeight: 700, textAlign: "left" }}
+            aria-expanded={showSheet}
+            style={{ width: "100%", background: "none", border: "none", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", color: T.ink, fontFamily: T.sans, fontSize: 14, fontWeight: 600, textAlign: "left" }}
           >
-            <span style={{ color: S.accentLight, fontSize: "0.8rem", width: 12, flexShrink: 0 }}>{showSheet ? "▾" : "▸"}</span>
+            <span style={{ color: T.muted, display: "flex", flexShrink: 0 }}>{showSheet ? <ChevronDownIcon size={15} /> : <ChevronRightIcon size={15} />}</span>
             Do / Don&rsquo;t cheat sheet
-            <span style={{ marginLeft: "auto", fontSize: "0.68rem", color: S.muted, fontFamily: S.mono, fontWeight: 400 }}>
+            <span style={{ marginLeft: "auto", fontSize: 12.5, color: T.muted, fontFamily: T.sans, fontWeight: 400 }}>
               {showSheet ? "hide" : "show"}
             </span>
           </button>
 
           {showSheet && (
-            <div style={{ borderTop: `1px solid ${S.border}`, padding: "14px 16px" }}>
-              {/* DON'T */}
-              <div style={{ fontSize: "0.66rem", color: "#fca5a5", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>
-                Don&rsquo;t write
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                {DONT_LIST.map((d, i) => (
-                  <div key={i} style={{ fontSize: "0.8rem", color: "#fecaca", lineHeight: 1.6, paddingLeft: 16, position: "relative", marginBottom: 3 }}>
-                    <span style={{ position: "absolute", left: 0, color: "#ef4444", fontWeight: 700 }}>✕</span>
-                    {d}
+            <div style={{ borderTop: `1px solid ${T.line}`, padding: "12px 14px 14px", background: T.paper }}>
+              <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                {/* DON'T */}
+                <div style={field()}>
+                  <div style={{ fontSize: 13.5, color: T.red, fontWeight: 600, marginBottom: 8 }}>
+                    Don&rsquo;t write
                   </div>
-                ))}
-              </div>
+                  <div>
+                    {DONT_LIST.map((d, i) => (
+                      <div key={i} style={{ fontSize: 13, color: T.ink2, lineHeight: 1.55, paddingLeft: 18, position: "relative", padding: "5px 0 5px 18px", borderTop: i === 0 ? "none" : `1px solid ${T.line}` }}>
+                        <span style={{ position: "absolute", left: 0, color: T.red, fontWeight: 600 }}>✕</span>
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-              {/* DO */}
-              <div style={{ fontSize: "0.66rem", color: S.green, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>
-                Do write
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                {DO_LIST.map((d, i) => (
-                  <div key={i} style={{ fontSize: "0.8rem", color: "#86efac", lineHeight: 1.6, paddingLeft: 16, position: "relative", marginBottom: 3 }}>
-                    <span style={{ position: "absolute", left: 0, color: "#16a34a", fontWeight: 700 }}>✓</span>
-                    {d}
+                {/* DO */}
+                <div style={field()}>
+                  <div style={{ fontSize: 13.5, color: T.green, fontWeight: 600, marginBottom: 8 }}>
+                    Do write
                   </div>
-                ))}
+                  <div>
+                    {DO_LIST.map((d, i) => (
+                      <div key={i} style={{ fontSize: 13, color: T.ink2, lineHeight: 1.55, position: "relative", padding: "5px 0 5px 18px", borderTop: i === 0 ? "none" : `1px solid ${T.line}` }}>
+                        <span style={{ position: "absolute", left: 0, color: T.green, fontWeight: 600 }}>✓</span>
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* The rule */}
-              <div style={{ background: "#451a03", border: `1px solid ${S.amber}`, borderRadius: 8, padding: "10px 14px", fontSize: "0.82rem", color: "#fde68a", lineHeight: 1.6, fontWeight: 700 }}>
-                Never write a symptom the patient did not report. If you don&rsquo;t know, leave it for the doctor.
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: T.r, padding: "10px 14px", fontSize: 13, color: T.amber, lineHeight: 1.55, fontWeight: 600, marginTop: 12 }}>
+                <span style={{ marginTop: 1 }}><AlertIcon /></span>
+                <span>Never write a symptom the patient did not report. If you don&rsquo;t know, leave it for the doctor.</span>
               </div>
             </div>
           )}

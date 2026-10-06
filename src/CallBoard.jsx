@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient.js";
 import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
+import { S, T } from "./theme.js";
+import { AlertIcon } from "./icons.jsx";
 
 // ── Call Board — practice-wide, homepage header card (Sep 2026, per Mari) ─
 // "Wire the call schedule somewhere in the front. Put the date on the site as
@@ -14,18 +16,6 @@ import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceC
 // doctor space. Fails silent: if the RPC dies the card still shows the date and
 // the F/U counter.
 
-const S = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  muted: "#64748b",
-  text: "#e2e8f0",
-  bright: "#f1f5f9",
-  green: "#4ade80",
-  amber: "#f59e0b",
-  font: "Georgia, serif",
-  mono: "monospace",
-};
 
 const DOW = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -71,70 +61,84 @@ export default function CallBoard() {
   // Injection blackout banner — shown when TODAY or the computed F/U date is Jan 1–14.
   const blackout = injectionBlackout(fuDate) || injectionBlackout(today);
 
+  // Display-only: the rotation row's last day, for the "through …" sub-line.
+  const callThrough = todayCall ? parseLocalNoon(todayCall.end_date) : null;
+
+  const cell = { padding: "14px 18px", borderRight: `1px solid ${T.line}`, minWidth: 0 };
+  const k = { fontSize: 12, color: T.muted, marginBottom: 2, fontFamily: T.sans };
+  const v = { fontSize: 17, fontWeight: 600, letterSpacing: "-0.01em", color: T.accent, fontFamily: T.sans };
+  const sub = { fontSize: 13, color: T.muted, marginTop: 1, fontFamily: T.sans };
+
   return (
-    <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: "14px 16px", marginBottom: 20 }}>
-      <div style={{ fontSize: "0.62rem", color: S.muted, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-        Call Board
-      </div>
+    <div style={{ marginTop: 24 }}>
+      <div className="vra-callband" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr 1fr", border: `1px solid ${T.line}`, borderRadius: T.rLg, background: T.surface, overflow: "hidden" }}>
+        {/* Cell 1 — who's on call this week */}
+        <div style={cell}>
+          <div style={k}>On call this week</div>
+          <div style={{ ...v, color: todayCall ? T.accent : T.muted }}>
+            {todayCall ? todayCall.surgeon_id : "—"}
+          </div>
+          {callThrough && <div style={sub}>Through {longDate(callThrough)}</div>}
+        </div>
 
-      {/* Line 1 — today's date + who's on call */}
-      <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
-        <span style={{ fontSize: "0.95rem", fontWeight: 700, color: S.bright, fontFamily: S.font }}>
-          {longDate(today)}
-        </span>
-        <span style={{ fontSize: "0.82rem", color: todayCall ? S.green : S.muted, fontFamily: S.mono, fontWeight: 700 }}>
-          On call: {todayCall ? todayCall.surgeon_id : "—"}
-        </span>
-        {todayHoliday && (
-          <span style={{ fontSize: "0.72rem", color: S.amber, fontFamily: S.mono }}>
-            · {todayHoliday} — office closed
-          </span>
-        )}
-      </div>
+        {/* Cell 2 — F/U week counter */}
+        <div style={cell}>
+          <div style={k}>Follow-up counter</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
+            <span style={{ fontSize: 13, color: T.muted, fontFamily: T.sans }}>F/U in</span>
+            <input
+              type="number"
+              min="1"
+              max="104"
+              value={fuWeeks}
+              onChange={(e) => setFuWeeks(e.target.value)}
+              placeholder="—"
+              className="vra-input"
+              style={{ width: 56, height: 30, boxSizing: "border-box", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, textAlign: "center", outline: "none" }}
+            />
+            <span style={{ fontSize: 13, color: T.muted, fontFamily: T.sans }}>weeks</span>
+          </div>
+          {fuDate && (
+            <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 1 }}>
+              <span style={{ fontSize: 15, color: fuHoliday ? T.amber : T.ink, fontFamily: T.sans, fontWeight: 600, letterSpacing: "-0.01em" }}>
+                {longDate(fuDate)}
+              </span>
+              {fuHoliday && (
+                <span style={{ fontSize: 12.5, color: T.amber, fontFamily: T.sans }}>
+                  ⚠ {fuHoliday} — office closed
+                </span>
+              )}
+              {fuCall ? (
+                <span style={{ fontSize: 12.5, color: T.muted, fontFamily: T.sans }}>
+                  (on call that week: {fuCall.surgeon_id})
+                </span>
+              ) : (
+                // Rotation is only posted through early Jan 2027 — this is the
+                // normal state for far-out dates. Keep it quiet, not alarming.
+                <span style={{ fontSize: 12, color: T.muted, fontFamily: T.sans, opacity: 0.8 }}>
+                  call schedule not posted for that week
+                </span>
+              )}
+            </div>
+          )}
+        </div>
 
-      {/* Line 2 — F/U week counter */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        <span style={{ fontSize: "0.78rem", color: S.muted, fontFamily: S.mono }}>F/U in</span>
-        <input
-          type="number"
-          min="1"
-          max="104"
-          value={fuWeeks}
-          onChange={(e) => setFuWeeks(e.target.value)}
-          placeholder="—"
-          style={{ width: 52, background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "4px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.82rem", textAlign: "center" }}
-        />
-        <span style={{ fontSize: "0.78rem", color: S.muted, fontFamily: S.mono }}>weeks</span>
-
-        {fuDate && (
-          <>
-            <span style={{ fontSize: "0.82rem", color: fuHoliday ? S.amber : S.green, fontFamily: S.mono, fontWeight: 700 }}>
-              {longDate(fuDate)}
-            </span>
-            {fuHoliday && (
-              <span style={{ fontSize: "0.72rem", color: S.amber, fontFamily: S.mono }}>
-                ⚠ {fuHoliday} — office closed
-              </span>
-            )}
-            {fuCall ? (
-              <span style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.mono }}>
-                (on call that week: {fuCall.surgeon_id})
-              </span>
-            ) : (
-              // Rotation is only posted through early Jan 2027 — this is the
-              // normal state for far-out dates. Keep it quiet, not alarming.
-              <span style={{ fontSize: "0.68rem", color: S.muted, fontFamily: S.mono, opacity: 0.8 }}>
-                call schedule not posted for that week
-              </span>
-            )}
-          </>
-        )}
+        {/* Cell 3 — today's date + closure, if today is a practice holiday */}
+        <div style={{ ...cell, borderRight: 0 }}>
+          <div style={k}>Call Board</div>
+          <div style={{ ...v, fontSize: 15, color: T.ink }}>{longDate(today)}</div>
+          {todayHoliday && (
+            <div style={{ ...sub, color: T.amber }}>
+              {todayHoliday} — office closed
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Injection blackout banner — first two weeks of January (per Mari, Sep 2026) */}
       {blackout && (
-        <div style={{ marginTop: 10, background: "#450a0a", border: "1px solid #ef4444", borderRadius: 8, padding: "8px 12px", fontSize: "0.78rem", color: "#fecaca", fontFamily: S.mono, fontWeight: 700 }}>
-          🚫 {blackout}
+        <div style={{ marginTop: 10, display: "flex", gap: 10, alignItems: "flex-start", background: T.redSoft, border: "1px solid #F0C4BF", borderRadius: T.r, padding: "10px 14px", fontSize: 13, color: T.red, fontFamily: T.sans, fontWeight: 600 }}>
+          <span style={{ marginTop: 1 }}><AlertIcon /></span><span>{blackout}</span>
         </div>
       )}
     </div>

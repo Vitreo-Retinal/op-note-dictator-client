@@ -1,19 +1,10 @@
 import { useState } from "react";
+import { S, T, card, chip, iconBox, btnSm } from "./theme.js";
+import PageBar, { wrap } from "./PageBar.jsx";
+import { PacketIcon, InjectIcon, EyeIcon, IntakeIcon, FormIcon, ChevronRightIcon } from "./icons.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
-const S = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  muted: "#64748b",
-  text: "#e2e8f0",
-  bright: "#f1f5f9",
-  accent: "#6366f1",
-  accentLight: "#a5b4fc",
-  font: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif',
-  mono: '"SF Mono", Menlo, Monaco, monospace',
-};
 
 const LANGS = [
   { code: "en", label: "English", short: "EN" },
@@ -29,10 +20,10 @@ const DOCUMENTS = [
   {
     id: "surgical-package",
     title: "Surgical Package",
-    icon: "📋",
+    icon: PacketIcon,
     description:
       "5-page (EN) / 6-page (ES, VI, PT) packet: pre-op instructions, face-down recovery, fillable scheduling form, vitrectomy discharge, and Worcester Surgical Center pre-admission.",
-    gradient: "linear-gradient(135deg,#10b981,#059669)",
+    gradient: T.accent,
     languages: ["en", "es", "vi", "pt"],
     urlBuilder: (lang) => `${API_BASE}/api/surgical-package-pdf?lang=${lang}`,
     tags: ["Fillable", "5-6 pages"],
@@ -40,9 +31,9 @@ const DOCUMENTS = [
   {
     id: "post-injection",
     title: "Post-Injection Instructions",
-    icon: "💉",
+    icon: InjectIcon,
     description: "After-care instructions for patients who just received an intravitreal injection. Currently lives in the Patient Education library — tap to open there.",
-    gradient: "linear-gradient(135deg,#f59e0b,#d97706)",
+    gradient: T.accent,
     languages: ["en", "es", "vi", "pt"],
     // For now this points to Patient Education; once Mari wants a standalone PDF we'll add one.
     linkToEducation: "inject-post",
@@ -51,9 +42,9 @@ const DOCUMENTS = [
   {
     id: "post-pneumatic",
     title: "Post-Pneumatic Retinopexy",
-    icon: "🫧",
+    icon: EyeIcon,
     description: "Single-page after-care instructions: 4-day positioning, Ofloxacin QID × 4 days, SF6 gas restrictions, next-day F/U for laser/cryo. Lives in the Patient Education library.",
-    gradient: "linear-gradient(135deg,#8b5cf6,#6366f1)",
+    gradient: T.accent,
     languages: ["en", "es", "vi", "pt"],
     linkToEducation: "proc-pneumatic-post",
     tags: ["EN", "ES", "VI", "PT", "Education library"],
@@ -61,9 +52,9 @@ const DOCUMENTS = [
   {
     id: "new-patient-package",
     title: "New Patient Package",
-    icon: "📝",
+    icon: IntakeIcon,
     description: "Branded 4-page intake packet for new patients arriving at the office: HIPAA acknowledgement, patient information, medical history, and authorization forms.",
-    gradient: "linear-gradient(135deg,#0ea5e9,#0284c7)",
+    gradient: T.accent,
     languages: ["en"],
     urlBuilder: () => `${API_BASE}/api/new-patient-package-pdf`,
     tags: ["4 pages", "Branded", "Print + bring"],
@@ -71,9 +62,9 @@ const DOCUMENTS = [
   {
     id: "consents",
     title: "Consent Forms",
-    icon: "✍️",
+    icon: FormIcon,
     description: "Coming soon — surgical and procedural consent forms (vitrectomy, intravitreal injection, IV sedation, photography, HIPAA).",
-    gradient: "linear-gradient(135deg,#ef4444,#dc2626)",
+    gradient: T.accent,
     comingSoon: true,
     tags: ["Coming soon"],
   },
@@ -83,75 +74,50 @@ function LanguageButton({ lang, onClick }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        background: "#1e293b",
-        border: `1px solid ${S.border}`,
-        borderRadius: 8,
-        padding: "8px 14px",
-        color: S.accentLight,
-        fontFamily: S.mono,
-        fontSize: "0.78rem",
-        fontWeight: 600,
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 2,
-        minWidth: 70,
-        transition: "border-color 0.2s, transform 0.15s",
-      }}
+      title={lang.label}
+      style={btnSm("secondary", { gap: 6, transition: "border-color .15s" })}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = S.accent;
-        e.currentTarget.style.transform = "translateY(-1px)";
+        e.currentTarget.style.borderColor = T.accentLine;
+        e.currentTarget.style.transform = "none";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = S.border;
-        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.borderColor = T.line;
+        e.currentTarget.style.transform = "none";
       }}
     >
-      <span style={{ fontSize: "0.95rem", fontWeight: 700 }}>{lang.short}</span>
-      <span style={{ fontSize: "0.65rem", color: S.muted, fontWeight: 500 }}>{lang.label}</span>
+      <span style={{ fontWeight: 600, color: T.accent }}>{lang.short}</span>
+      <span style={{ color: T.muted, fontWeight: 400 }}>{lang.label}</span>
     </button>
   );
 }
 
 function DocumentCard({ doc, onOpenEducation }) {
   const langs = LANGS.filter((l) => doc.languages && doc.languages.includes(l.code));
+  const Icon = doc.icon;
 
   return (
     <div
-      style={{
-        background: S.card,
-        border: `1px solid ${S.border}`,
-        borderRadius: 14,
-        overflow: "hidden",
-        opacity: doc.comingSoon ? 0.6 : 1,
-      }}
+      style={card({
+        padding: "14px 16px",
+        display: "flex",
+        gap: 14,
+        alignItems: "flex-start",
+        borderTop: `3px solid ${doc.comingSoon ? T.line : doc.gradient}`,
+      })}
     >
-      {/* Gradient banner */}
-      <div style={{ background: doc.gradient, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ fontSize: "1.6rem" }}>{doc.icon}</span>
-        <div style={{ fontSize: "1rem", fontWeight: 700, color: "#fff", fontFamily: S.font }}>{doc.title}</div>
-      </div>
+      <span style={iconBox(doc.comingSoon ? "muted" : "accent")}><Icon /></span>
 
       {/* Body */}
-      <div style={{ padding: "14px 18px" }}>
-        <div style={{ fontSize: "0.82rem", color: "#94a3b8", lineHeight: 1.55, marginBottom: 12 }}>{doc.description}</div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 15, fontWeight: 600, color: doc.comingSoon ? T.ink2 : T.ink, fontFamily: T.sans, letterSpacing: "-0.01em", marginBottom: 4 }}>{doc.title}</div>
+        <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.5, marginBottom: 10 }}>{doc.description}</div>
 
         {/* Tags */}
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: doc.comingSoon ? 0 : 12 }}>
           {doc.tags.map((tag) => (
             <span
               key={tag}
-              style={{
-                background: doc.comingSoon ? "#475569" : "#312e81",
-                color: doc.comingSoon ? "#cbd5e1" : S.accentLight,
-                padding: "3px 9px",
-                borderRadius: 20,
-                fontSize: "0.64rem",
-                fontFamily: S.mono,
-                fontWeight: 600,
-              }}
+              style={chip(doc.comingSoon ? "muted" : "accent", { fontWeight: 400 })}
             >
               {tag}
             </span>
@@ -160,30 +126,20 @@ function DocumentCard({ doc, onOpenEducation }) {
 
         {/* Action row */}
         {doc.comingSoon ? (
-          <div style={{ fontSize: "0.78rem", color: S.muted, fontStyle: "italic" }}>Not yet available</div>
+          <div style={{ fontSize: 12.5, color: T.muted, marginTop: 10 }}>Not yet available</div>
         ) : doc.linkToEducation ? (
           <button
             onClick={() => onOpenEducation(doc.linkToEducation)}
-            style={{
-              background: "#312e81",
-              border: `1px solid ${S.border}`,
-              borderRadius: 8,
-              padding: "10px 16px",
-              color: S.accentLight,
-              fontFamily: S.font,
-              fontSize: "0.82rem",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
+            style={btnSm("secondary", { color: T.accent })}
           >
-            Open in Patient Education →
+            Open in Patient Education<ChevronRightIcon size={14} />
           </button>
         ) : doc.urlBuilder ? (
           <div>
-            <div style={{ fontSize: "0.72rem", color: S.muted, marginBottom: 8, textTransform: "uppercase", letterSpacing: 0.5, fontFamily: S.mono }}>
+            <div style={{ fontSize: 12.5, color: T.muted, marginBottom: 6 }}>
               Open / Download (opens in new tab)
             </div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {langs.map((lang) => (
                 <LanguageButton
                   key={lang.code}
@@ -201,42 +157,17 @@ function DocumentCard({ doc, onOpenEducation }) {
 
 export default function Documents({ onBack, onOpenEducation }) {
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text, paddingBottom: 60 }}>
+    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink, paddingBottom: 60 }}>
       {/* Header */}
-      <div
-        style={{
-          padding: "10px 20px",
-          borderBottom: `1px solid ${S.border}`,
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <button
-          onClick={onBack}
-          style={{
-            background: "none",
-            border: `1px solid ${S.border}`,
-            borderRadius: 8,
-            padding: "6px 14px",
-            color: S.muted,
-            fontFamily: S.font,
-            fontSize: "0.78rem",
-            cursor: "pointer",
-          }}
-        >
-          ← Home
-        </button>
-        <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>📁 Workflow Documents</span>
-      </div>
+      <PageBar onBack={onBack} title="Workflow Documents" />
 
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "28px 20px 0" }}>
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: "1.45rem", fontWeight: 700, color: S.bright, marginBottom: 4 }}>Quick-Access Documents</div>
-          <div style={{ fontSize: "0.82rem", color: S.muted }}>Branded VRA forms and packets for staff to download, print, or share with patients. Pick a language per document.</div>
+      <div className="vra-wrap" style={wrap()}>
+        <div style={{ margin: "26px 0 16px" }}>
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: T.accent, margin: "0 0 4px" }}>Quick-Access Documents</h2>
+          <div style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>Branded VRA forms and packets for staff to download, print, or share with patients. Pick a language per document.</div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
           {DOCUMENTS.map((doc) => (
             <DocumentCard key={doc.id} doc={doc} onOpenEducation={onOpenEducation} />
           ))}

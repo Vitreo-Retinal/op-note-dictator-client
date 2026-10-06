@@ -2,23 +2,12 @@ import { useState, useMemo } from "react";
 import DropSchedule from "./DropSchedule.jsx";
 import { CATEGORIES, LANGUAGES, HANDOUTS } from "./data/educationContent.js";
 import { downloadHandoutPDF } from "./lib/educationHelpers.js";
+import { S, T, chip, btnSm } from "./theme.js";
+import PageBar, { segWrap, segBtn, wrap, searchInput } from "./PageBar.jsx";
+import { ChevronRightIcon, ChevronDownIcon, SearchIcon, PrintIcon } from "./icons.jsx";
 export { HANDOUTS };
 
 // ── Styles (matches App.jsx theme) ─────────────────────────────────
-const S = {
-  bg: "#0f172a",
-  card: "#1e293b",
-  border: "#334155",
-  muted: "#64748b",
-  text: "#e2e8f0",
-  bright: "#f1f5f9",
-  accent: "#6366f1",
-  accentLight: "#a5b4fc",
-  green: "#4ade80",
-  amber: "#f59e0b",
-  font: "Georgia, serif",
-  mono: "monospace",
-};
 
 
 
@@ -51,35 +40,27 @@ export default function PatientEducation({ onBack }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text }}>
+    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       {/* Header */}
-      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0, flexWrap: "wrap" }}>
-        <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Home</button>
-        <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>Patient Education Library</span>
+      <PageBar onBack={onBack} backLabel="Back" title="Patient Education Library" />
+
+      {/* Toolbar: Drop Schedule + language picker */}
+      <div className="vra-wrap" style={wrap({ paddingTop: 20, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" })}>
         {/* Drop Schedule button */}
         <button
           onClick={() => setView("drops")}
-          style={{ background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", borderRadius: 8, padding: "6px 16px", fontFamily: S.font, fontSize: "0.78rem", fontWeight: 600, cursor: "pointer" }}
+          style={btnSm("secondary")}
         >
-          Drop Schedule Builder
+          Drop Schedule Builder<ChevronRightIcon size={14} />
         </button>
-        {/* Language toggle */}
-        <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+        {/* Language toggle — segmented control */}
+        <div role="group" aria-label="Language" style={{ ...segWrap, marginLeft: "auto" }}>
           {LANGUAGES.map((l) => (
             <button
               key={l.id}
               onClick={() => setLang(l.id)}
-              style={{
-                background: lang === l.id ? S.green : "transparent",
-                color: lang === l.id ? "#000" : S.muted,
-                border: `1px solid ${lang === l.id ? S.green : S.border}`,
-                borderRadius: 6,
-                padding: "4px 10px",
-                fontSize: "0.7rem",
-                fontFamily: S.mono,
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
+              aria-pressed={lang === l.id}
+              style={segBtn(lang === l.id, { padding: "5px 12px", fontSize: 13 })}
             >
               {l.label}
             </button>
@@ -88,42 +69,42 @@ export default function PatientEducation({ onBack }) {
       </div>
 
       {/* Search + Filters */}
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "16px 20px 0" }}>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search handouts... (e.g. AMD, injection, diabetic, floaters)"
-          style={{ display: "block", width: "100%", background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: "12px 16px", color: S.text, fontFamily: S.font, fontSize: "0.88rem", boxSizing: "border-box", marginBottom: 12 }}
-        />
-        <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+      <div className="vra-wrap" style={wrap({ paddingTop: 14 })}>
+        <div style={{ position: "relative", marginBottom: 12 }}>
+          <span style={{ position: "absolute", left: 13, top: 13, color: T.muted, pointerEvents: "none" }}><SearchIcon /></span>
+          <input
+            type="text"
+            className="vra-input"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search handouts... (e.g. AMD, injection, diabetic, floaters)"
+            style={searchInput({ paddingLeft: 38, textOverflow: "ellipsis" })}
+          />
+        </div>
+        <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap", alignItems: "center" }}>
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setCategory(cat.id)}
-              style={{
-                background: category === cat.id ? S.accent : "transparent",
-                color: category === cat.id ? "#fff" : S.muted,
-                border: `1px solid ${category === cat.id ? S.accent : S.border}`,
-                borderRadius: 20,
-                padding: "5px 14px",
-                fontSize: "0.76rem",
-                fontFamily: S.mono,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              aria-pressed={category === cat.id}
+              style={chip(category === cat.id ? "accent" : "muted", {
+                padding: "4px 11px", fontSize: 12.5, cursor: "pointer",
+                ...(category === cat.id
+                  ? { background: T.accent, color: T.onAccent, borderColor: T.accent }
+                  : { background: T.surface, color: T.ink2, fontWeight: 400 }),
+              })}
             >
               {cat.label}
             </button>
           ))}
-          <span style={{ fontSize: "0.72rem", color: S.muted, fontFamily: S.mono, marginLeft: "auto" }}>{filtered.length} handout{filtered.length !== 1 ? "s" : ""}</span>
+          <span style={{ fontSize: 12, color: T.muted, fontFamily: T.sans, marginLeft: "auto" }}>{filtered.length} handout{filtered.length !== 1 ? "s" : ""}</span>
         </div>
       </div>
 
       {/* Handout list */}
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "0 20px 48px" }}>
+      <div className="vra-wrap" style={wrap({ paddingBottom: 48 })}>
         {filtered.length === 0 && (
-          <div style={{ textAlign: "center", padding: 40, color: S.muted, fontSize: "0.88rem" }}>
+          <div style={{ textAlign: "center", padding: 40, color: T.muted, fontSize: 14 }}>
             No handouts match your search.
           </div>
         )}
@@ -132,36 +113,37 @@ export default function PatientEducation({ onBack }) {
           const title = h.title[lang] || h.title.en;
           const content = h.content[lang] || h.content.en;
           return (
-            <div key={h.id} style={{ background: S.card, border: `1px solid ${isOpen ? S.accent : S.border}`, borderRadius: 12, marginBottom: 10, overflow: "hidden", transition: "border-color 0.2s" }}>
+            <div key={h.id} style={{ background: T.surface, border: `1px solid ${isOpen ? T.accentLine : T.line}`, borderRadius: T.rLg, marginBottom: 8, overflow: "hidden", transition: "border-color .15s" }}>
               {/* Title row */}
               <button
                 onClick={() => setExpanded(isOpen ? null : h.id)}
-                style={{ width: "100%", background: "none", border: "none", padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", textAlign: "left" }}
+                aria-expanded={isOpen}
+                style={{ width: "100%", background: "none", border: "none", padding: "12px 14px 12px 16px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", textAlign: "left", fontFamily: T.sans }}
               >
-                <span style={{ fontSize: "0.72rem", fontFamily: S.mono, color: S.amber, fontWeight: 700, textTransform: "uppercase", minWidth: 75 }}>
+                <span style={{ fontSize: 14, color: T.ink, fontFamily: T.sans, fontWeight: 500, flex: 1, minWidth: 0 }}>{title}</span>
+                <span style={chip(h.category === "injection" ? "accent" : h.category === "procedure" ? "gold" : "muted", { flexShrink: 0 })}>
                   {h.category === "injection" ? "Injection" : h.category === "procedure" ? "Procedure" : "Condition"}
                 </span>
-                <span style={{ fontSize: "0.88rem", color: S.bright, fontFamily: S.font, fontWeight: 600, flex: 1 }}>{title}</span>
-                <span style={{ color: S.muted, fontSize: "0.8rem", transform: isOpen ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s" }}>&#9660;</span>
+                <span style={{ color: T.muted, display: "flex", flexShrink: 0 }}>{isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}</span>
               </button>
 
               {/* Expanded content */}
               {isOpen && (
-                <div style={{ padding: "0 18px 16px" }}>
+                <div style={{ padding: "0 16px 16px" }}>
                   <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 12 }}>
                     {h.tags.map((t) => (
-                      <span key={t} style={{ background: "#312e81", color: S.accentLight, padding: "2px 8px", borderRadius: 20, fontSize: "0.62rem", fontFamily: S.mono, fontWeight: 600 }}>{t}</span>
+                      <span key={t} style={chip("muted", { fontWeight: 400 })}>{t}</span>
                     ))}
                   </div>
-                  <pre style={{ whiteSpace: "pre-wrap", fontFamily: S.font, fontSize: "0.82rem", color: S.text, lineHeight: 1.65, margin: 0, maxHeight: 500, overflowY: "auto", paddingRight: 8 }}>
+                  <pre style={{ whiteSpace: "pre-wrap", fontFamily: T.sans, fontSize: 13.5, color: T.ink, lineHeight: 1.65, margin: 0, maxHeight: 500, overflowY: "auto", padding: "12px 14px", background: T.paper, border: `1px solid ${T.line}`, borderRadius: T.r }}>
                     {content.replace(/\[PAGE_BREAK\]\n?/g, "").replace(/\[IMAGE[^\]]*\]\n?/g, "")}
                   </pre>
-                  <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
+                  <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
                     <button
                       onClick={() => downloadHandoutPDF(h, lang)}
-                      style={{ background: "linear-gradient(135deg,#2563eb,#3b82f6)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 20px", fontSize: "0.8rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
+                      style={btnSm("primary")}
                     >
-                      Download PDF ({lang.toUpperCase()})
+                      <PrintIcon size={14} />Download PDF ({lang.toUpperCase()})
                     </button>
                   </div>
                 </div>

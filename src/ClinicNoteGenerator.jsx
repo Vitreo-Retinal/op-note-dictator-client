@@ -9,17 +9,14 @@ import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./da
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
 import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
+import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS } from "./theme.js";
+import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
+import logo from "./vra-logo.png";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
 
 // ── Styles ──────────────────────────────────────────────────────────
-const S = {
-  bg: "#0f172a", card: "#1e293b", border: "#334155", muted: "#64748b",
-  text: "#e2e8f0", bright: "#f1f5f9", accent: "#6366f1", accentLight: "#a5b4fc",
-  green: "#4ade80", greenDark: "#166534", amber: "#f59e0b",
-  font: "Georgia, serif", mono: "monospace",
-};
 
 // ── PRE-FLIGHT UNKNOWN-DRUG CHECK (July 2026) ── START (do not move markers;
 // the node unit test extracts everything between START/END and evals it) ─────
@@ -612,6 +609,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       const parsed = parseResponse(text);
       parsed.safetyFlags = Array.isArray(data.safetyFlags) ? data.safetyFlags : [];
       parsed.hpi = data.hpi || null; // Sep 2026, per Mari — only present when intakeText was sent
+      parsed.coverage = Array.isArray(data.coverage) ? data.coverage : null; // Oct 2026 — structured coverage (older servers omit it)
       setResult(parsed);
       setTab("output");
       if (edit) setPendingEdit(""); // spoken edit applied — clear the banner
@@ -662,7 +660,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     if (!text) return null;
     return text.split("[+]").map((part, i) => (
       <span key={i}>
-        {i > 0 && <span style={{ background: "#fef08a", color: "#713f12", fontWeight: 700, fontSize: "0.6rem", padding: "1px 4px", borderRadius: 3, marginRight: 3, border: "1px solid #eab308", verticalAlign: "middle" }}>+</span>}
+        {i > 0 && <span style={{ background: T.goldSoft, color: T.ink, fontWeight: 600, fontSize: "0.72em", padding: "0 4px", borderRadius: 3, marginRight: 3, verticalAlign: "1px" }}>+</span>}
         {renderBold(part, i)}
       </span>
     ));
@@ -675,25 +673,171 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     if (!text) return null;
     return String(text).split(/(\[DOCUMENT:[^\]]*\])/g).map((p, i) =>
       /^\[DOCUMENT:/.test(p)
-        ? <span key={i} style={{ background: "#451a03", color: "#fcd34d", border: `1px solid ${S.amber}`, borderRadius: 4, padding: "0 4px", fontWeight: 700 }}>{p}</span>
+        ? <span key={i} style={{ background: T.amberSoft, color: T.amber, border: `1px solid ${S.amber}`, borderRadius: 4, padding: "0 4px", fontWeight: 700 }}>{p}</span>
         : <span key={i}>{p}</span>
     );
   }
 
+  // ── Coverage reference display (Phase 2 redesign, display only) ──────
+  // The server (routes/notes.js renderCoverageBlock / renderBiosimilarBlock /
+  // renderAmbiguousInsuranceBlock) appends each coverage block to the END of the
+  // note text, fenced by a line of "─" characters. Here we only split it out to
+  // render as a card; result.note itself (and copyNote) are untouched. If the
+  // fence isn't found, the whole note renders exactly as before.
+  function splitCoverage(text) {
+    if (!text) return { body: text, blocks: [] };
+    const rx = /\n*─{10,}\n([\s\S]*?)\n─{10,}/g;
+    const blocks = [];
+    const body = text.replace(rx, (_, inner) => { blocks.push(inner); return ""; });
+    if (blocks.length === 0) return { body: text, blocks: [] };
+    return { body: body.replace(/\s+$/, ""), blocks };
+  }
+
+  const statusTone = (v) => /\bGREEN\b/i.test(v) ? "green" : /\b(YELLOW|ORANGE)\b/i.test(v) ? "amber" : /\bRED\b/i.test(v) ? "red" : "muted";
+
+  function renderCoverageCard(block, key) {
+    const lines = String(block).split("\n").map(l => l.trim()).filter(Boolean);
+    let meta = "";
+    const rows = [];   // [label, value]
+    const plain = [];  // lines that aren't "Label: value"
+    for (const line of lines) {
+      const head = line.match(/^📋\s*COVERAGE REFERENCE\s*—\s*(.*)$/);
+      if (head) { meta = head[1]; continue; }
+      const kv = line.match(/^(?:⚡\s*)?([A-Z][A-Za-z ]{1,24}):\s+(.*)$/);
+      if (kv) rows.push([kv[1], kv[2]]);
+      else plain.push(line.replace(/^ℹ️\s*/, ""));
+    }
+    return (
+      <div key={key} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 12 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", padding: "10px 16px", borderBottom: `1px solid ${T.line}` }}>
+          <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>Coverage check</div>
+          {meta && <div style={{ fontSize: 12, color: T.muted, minWidth: 0 }}>{meta}</div>}
+        </div>
+        <div style={{ padding: "12px 16px", display: "grid", gridTemplateColumns: "max-content 1fr", gap: "8px 16px", alignItems: "baseline" }}>
+          {rows.map(([k, v], i) => {
+            const label = <div key={`k${i}`} style={{ fontSize: 12.5, color: T.muted, whiteSpace: "nowrap" }}>{k}</div>;
+            let value;
+            if (/^status$/i.test(k)) {
+              const word = v.replace(/^[^A-Za-z]+/, "");
+              value = <span style={chip(statusTone(word), { fontSize: 12, padding: "2px 10px" })}>{word}</span>;
+            } else if (/^requirements$/i.test(k)) {
+              const items = v.split(/,\s+(?=[A-Z])/);
+              value = (
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {items.map((it, j) => (
+                    <span key={j} style={chip(/not required|^no\b/i.test(it) ? "green" : "accent", { fontSize: 12, padding: "2px 10px", borderRadius: T.r })}>{it}</span>
+                  ))}
+                </div>
+              );
+            } else {
+              value = <span style={{ color: /billing alert/i.test(k) ? T.amber : T.ink, fontWeight: /billing alert/i.test(k) ? 500 : 400 }}>{v}</span>;
+            }
+            return [label, <div key={`v${i}`} style={{ fontSize: 13.5, lineHeight: 1.5, minWidth: 0 }}>{value}</div>];
+          })}
+          {plain.map((l, i) => (
+            <div key={`p${i}`} style={{ gridColumn: "1 / -1", fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>{l}</div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Structured coverage card (Oct 2026) — renders one entry of the server's
+  // data.coverage array (routes/notes.js ruleCard / biosimilarCard / ambiguousCard).
+  // Strings are shown verbatim; when result.coverage is absent the text parser
+  // above (renderCoverageCard) is used instead.
+  const COV_STATUS = { green: ["Green", "green"], yellow: ["Yellow", "amber"], orange: ["Orange", "amber"], red: ["Red", "red"] };
+  const reqTag = (r) => /prior auth/i.test(r) || /\bPA required\b/i.test(r) ? "Prior auth"
+    : /step therapy|step [0-9]|first-line|trial of|must try|before/i.test(r) ? "Step therapy" : null;
+
+  function renderCoverageJsonCard(c, key) {
+    const muted = { fontSize: 12, color: T.muted, minWidth: 0 };
+    let sub = null;
+    if (c.kind === "rule") {
+      if (c.carrierLevel && c.ambiguousAlias) sub = `("${c.ambiguousAlias}" matches ${c.planCount} ${c.carrier} plans — merged; specify the plan for exact rules)`;
+      else if (c.carrierLevel) sub = `(plan not specified — merged across ${c.planCount} plans)`;
+      else if (c.isCombinedRule) sub = `Primary: ${c.insurance} / Secondary: ${c.secondaryInsurance}`;
+      else if (c.secondaryInsurance) sub = `(Secondary: ${c.secondaryInsurance} — no combined rule found, showing primary only)`;
+    } else if (c.kind === "biosimilar" && c.primary && c.secondary) {
+      sub = `Primary: ${c.primary} / Secondary: ${c.secondary}`;
+    }
+    const meta = c.kind === "rule"
+      ? `${c.drug} · ${(c.carrierLevel ? c.carrier : c.insurance) || c.carrier || ""}`
+      : c.kind === "biosimilar" ? `${c.drug} (biosimilar) · ${c.label || ""}`
+      : `${c.drug} · "${c.alias || ""}"`;
+    const [statusWord, statusTone] = COV_STATUS[c.status] || ["Unknown", "muted"];
+    const reqs = Array.isArray(c.requirements) ? c.requirements : [];
+    return (
+      <div key={key} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 12 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", padding: "10px 16px", borderBottom: `1px solid ${T.line}` }}>
+          <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>Coverage check</div>
+          <div style={muted}>{meta}</div>
+          {sub && <div style={muted}>{sub}</div>}
+          {c.kind === "rule" && (
+            <span style={chip(statusTone, { fontSize: 12, padding: "2px 10px", marginLeft: "auto", alignSelf: "center" })}>{statusWord}</span>
+          )}
+        </div>
+        <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+          {c.kind === "rule" && reqs.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ fontSize: 12.5, color: T.muted }}>Requirements</div>
+              {reqs.map((r, i) => {
+                const tag = reqTag(String(r));
+                return (
+                  <div key={i} style={tag ? { borderLeft: `3px solid ${T.accent}`, paddingLeft: 10 } : { paddingLeft: 13 }}>
+                    {tag && <div style={{ fontSize: 11.5, fontWeight: 600, color: T.accent, marginBottom: 1 }}>{tag}</div>}
+                    <div style={{ display: "flex", gap: 8, alignItems: "baseline", fontSize: 13.5, lineHeight: 1.5, color: T.ink }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.accent, flexShrink: 0, transform: "translateY(-2px)" }} />
+                      <span style={{ minWidth: 0 }}>{String(r)}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {c.kind === "rule" && c.notes && (
+            <p style={{ margin: 0, fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>{c.notes}</p>
+          )}
+          {c.kind === "rule" && c.billing_alert && (
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "8px 12px", borderRadius: T.r, fontSize: 13, lineHeight: 1.5, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, color: T.amber }}>
+              <span style={{ marginTop: 1, flexShrink: 0 }}><AlertIcon /></span>
+              <div style={{ minWidth: 0 }}><b style={{ fontWeight: 600 }}>Billing alert:</b> {c.billing_alert}</div>
+            </div>
+          )}
+          {c.kind !== "rule" && c.message && (
+            <div style={{ fontSize: 13.5, color: T.ink, lineHeight: 1.5 }}>{c.message}</div>
+          )}
+          {c.kind === "ambiguous" && Array.isArray(c.plans) && c.plans.length > 0 && (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {c.plans.map((pl, i) => <span key={i} style={chip("muted", { fontSize: 12, padding: "2px 10px" })}>{pl}</span>)}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Code chip in the note's codes strip (mockup .code)
+  const codeChip = (extra = {}) => ({
+    display: "inline-flex", alignItems: "center", gap: 7, minHeight: 28, padding: "3px 10px",
+    borderRadius: T.r, background: T.surface, border: `1px solid ${T.line}`, fontSize: 12.5,
+    fontFamily: T.sans, boxSizing: "border-box", ...extra,
+  });
+
   const getCodeStyle = (code) => {
     const base = (code || "").replace(/[-+\s].*/g, "").trim();
-    if (base === "99215" || base === "99205") return { bg: "#d1fae5", color: "#059669", border: "#059669" };
-    if (base === "99214" || base === "99204") return { bg: "#dbeafe", color: "#1d4ed8", border: "#1d4ed8" };
-    if (base === "99213" || base === "99203") return { bg: "#f1f5f9", color: "#475569", border: "#94a3b8" };
-    if (base === "92014" || base === "92004") return { bg: "#fdf4ff", color: "#7e22ce", border: "#a855f7" };
-    return { bg: "#f1f5f9", color: "#475569", border: "#94a3b8" };
+    if (base === "99215" || base === "99205") return { bg: T.greenSoft, color: T.green, border: T.green };
+    if (base === "99214" || base === "99204") return { bg: T.accentSoft, color: T.accent, border: T.accent };
+    if (base === "99213" || base === "99203") return { bg: T.paper, color: T.muted, border: T.lineStrong };
+    if (base === "92014" || base === "92004") return { bg: T.accentSoft, color: T.accent, border: T.accent };
+    return { bg: T.paper, color: T.muted, border: T.lineStrong };
   };
 
   const cc = result ? getCodeStyle(result.code) : {};
 
   const inputStyle = (extra = {}) => ({
     background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6,
-    padding: "7px 10px", color: S.text, fontFamily: S.mono, fontSize: "0.82rem",
+    padding: "7px 10px", color: S.text, fontFamily: S.font, fontSize: "0.82rem",
     width: "100%", boxSizing: "border-box", ...extra,
   });
 
@@ -706,22 +850,29 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   return (
     <div style={{ minHeight: "100vh", background: S.bg, color: S.text, fontFamily: S.font }}>
 
+      <style>{RESPONSIVE_CSS}</style>
       {/* Header */}
-      <div style={{ background: S.card, borderBottom: `1px solid ${S.border}`, padding: "14px 24px", display: "flex", alignItems: "center", gap: 12 }}>
+      <header className="vra-bar" style={appBar}>
         {onBack && (
-          <button onClick={onBack} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 6, color: S.muted, padding: "5px 10px", cursor: "pointer", fontFamily: S.font, fontSize: "0.78rem", marginRight: 4 }}>
-            &#8592; Back
+          <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${T.line}`, borderRadius: T.r, color: T.ink2, padding: "6px 10px 6px 6px", cursor: "pointer", fontFamily: T.sans, fontSize: 13, flexShrink: 0 }}>
+            <BackIcon />Hub
           </button>
         )}
-        <div style={{ width: 38, height: 38, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>&#9877;</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>Clinic Note Generator{surgeon ? ` — ${surgeon.name}` : ""}</div>
-          <div style={{ fontSize: "0.68rem", color: S.muted, fontFamily: S.mono }}>A/P Notes | Billing Codes | Shorthand Expansion</div>
-        </div>
-      </div>
+        <img className="vra-bar-hide" src={logo} alt="Vitreo-Retinal Associates" style={{ height: 36, width: "auto", display: "block", flexShrink: 0, mixBlendMode: "multiply" }} />
+        <span className="vra-bar-hide" style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
+        <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>Clinic Note Generator</div>
+        <div style={{ flex: 1 }} />
+        {surgeon && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: T.ink2, fontFamily: T.sans, whiteSpace: "nowrap" }}>
+            <span style={avatar(26)}>{surgeon.name}</span>
+            {surgeon.surname ? `Dr. ${surgeon.surname}` : surgeon.name}
+          </div>
+        )}
+      </header>
 
       {/* Tabs */}
-      <div style={{ display: "flex", borderBottom: `1px solid ${S.card}`, paddingLeft: 24, overflowX: "auto" }}>
+      <nav style={{ background: T.surface, borderBottom: `1px solid ${T.line}` }}>
+        <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", display: "flex", gap: 2, overflowX: "auto" }}>
         {[
           ["input", "Input"],
           ["output", "Output"],
@@ -736,101 +887,108 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           ...(surgeon && surgeon.hasRobocall ? [["robocall", "Robocall"]] : []),
         ].map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} style={{
-            padding: "9px 14px", background: "none", border: "none",
-            borderBottom: tab === id ? `2px solid ${S.accent}` : "2px solid transparent",
-            color: tab === id ? S.accentLight : S.muted,
-            fontFamily: S.font, fontSize: "0.8rem", cursor: "pointer", fontWeight: tab === id ? 600 : 400,
+            padding: "11px 10px 9px", background: "none", border: "none", marginBottom: -1,
+            borderBottom: tab === id ? `2px solid ${T.accent}` : "2px solid transparent",
+            color: tab === id ? T.accentInk : T.muted,
+            fontFamily: T.sans, fontSize: 13, cursor: "pointer", fontWeight: tab === id ? 500 : 400,
             whiteSpace: "nowrap",
           }}>
             {label}
           </button>
         ))}
-      </div>
+        </div>
+      </nav>
 
       {/* Injection / F/U Calculator — always visible */}
-      <div style={{ padding: "10px 24px 0", maxWidth: 800, margin: "0 auto" }}>
-        <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px" }}>
-          <div style={{ fontSize: "0.72rem", color: S.muted, fontWeight: 700, marginBottom: 8 }}>Injection & F/U Calculator</div>
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-            {/* Last injection column */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Last inj:</label>
-                <input
-                  type="date"
-                  value={lastInjDate}
-                  onChange={e => setLastInjDate(e.target.value)}
-                  style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", boxSizing: "border-box" }}
-                />
-              </div>
-              {injCalc && injCalc.weeksSince !== null && (
-                <span style={{ fontSize: "0.82rem", color: S.accentLight, fontFamily: S.mono, fontWeight: 700 }}>
-                  {injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""} since last inj
-                </span>
-              )}
-            </div>
-            {/* F/U weeks column */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>F/u in:</label>
-                <input
-                  type="number"
-                  value={fuWeeks}
-                  onChange={e => setFuWeeks(e.target.value)}
-                  placeholder="wks"
-                  style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.78rem", width: 60, boxSizing: "border-box" }}
-                />
-                <span style={{ fontSize: "0.72rem", color: S.muted }}>weeks</span>
-              </div>
-              {injCalc && injCalc.nextDate && (
-                <span style={{ fontSize: "0.82rem", color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) ? "#f59e0b" : S.green, fontFamily: S.mono, fontWeight: 700 }}>
-                  Next appt: {formatDate(injCalc.nextDate)}
-                  {injCalc.holiday && (
-                    <span style={{ marginLeft: 8, color: "#fbbf24" }}>
-                      ⚠ {injCalc.holiday} — office closed, pick an adjacent day
-                    </span>
-                  )}
-                  {/* Holiday wins; otherwise the schedule conflict, if any. MR only. */}
-                  {!injCalc.holiday && injCalc.sched && injCalc.sched.block && (
-                    <span style={{ marginLeft: 8, color: "#fbbf24" }}>
-                      {injCalc.sched.block.type === "vacation"
-                        ? `⚠ You're away: ${injCalc.sched.block.title}`
-                        : injCalc.sched.block.type === "no_clinic"
-                        ? `⚠ No clinic that day (${injCalc.sched.block.title})`
-                        : `⚠ OR day: ${injCalc.sched.block.title}`}
-                    </span>
-                  )}
-                  {/* Independent of the above — call week is a note, not a conflict. */}
-                  {injCalc.sched && injCalc.sched.call && (
-                    <span style={{ marginLeft: 8, color: S.muted, fontWeight: 400 }}>
-                      {injCalc.sched.call.surgeon_id === "MR" ? "(your call week)" : `(on call that week: ${injCalc.sched.call.surgeon_id})`}
-                    </span>
-                  )}
-                  {/* Injection blackout — independent of holiday/schedule (per Mari, Sep 2026) */}
-                  {injCalc.blackout && (
-                    <span style={{ marginLeft: 8, color: "#fca5a5", fontWeight: 700 }}>
-                      🚫 {injCalc.blackout}
-                    </span>
-                  )}
-                </span>
-              )}
-            </div>
+      <div className="vra-wrap" style={{ padding: "18px 24px 0", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
+        <div style={{ display: "flex", gap: "10px 22px", alignItems: "center", flexWrap: "wrap", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "10px 16px", fontSize: 13, fontFamily: T.sans }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Injection & F/U Calculator</span>
+          {/* Last injection */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <label style={{ color: T.muted, marginRight: 6, whiteSpace: "nowrap" }}>Last inj:</label>
+            <input
+              type="date"
+              value={lastInjDate}
+              onChange={e => setLastInjDate(e.target.value)}
+              style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, boxSizing: "border-box" }}
+            />
           </div>
+          {/* F/U weeks */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <label style={{ color: T.muted, marginRight: 6, whiteSpace: "nowrap" }}>F/u in:</label>
+            <input
+              type="number"
+              value={fuWeeks}
+              onChange={e => setFuWeeks(e.target.value)}
+              placeholder="wks"
+              style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, width: 60, boxSizing: "border-box" }}
+            />
+            <span style={{ color: T.muted, marginLeft: 6 }}>weeks</span>
+          </div>
+          {/* Results — right-aligned */}
+          {injCalc && (
+            <div className="vra-calc-out" style={{ marginLeft: "auto", display: "flex", gap: 18, flexWrap: "wrap" }}>
+              {injCalc.weeksSince !== null && (
+                <div style={{ whiteSpace: "nowrap" }}>
+                  <b style={{ fontWeight: 600, color: T.ink }}>{injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""}</b>
+                  <span style={{ color: T.muted }}> since last inj</span>
+                </div>
+              )}
+              {injCalc.nextDate && (
+                <div style={{ whiteSpace: "nowrap" }}>
+                  <span style={{ color: T.muted }}>Next appt: </span>
+                  <b style={{ fontWeight: 600, color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
+                </div>
+              )}
+            </div>
+          )}
+          {/* Warnings / notes about the computed date — own line under the strip row */}
+          {injCalc && injCalc.nextDate && (injCalc.holiday || (injCalc.sched && (injCalc.sched.block || injCalc.sched.call)) || injCalc.blackout) && (
+            <div style={{ flexBasis: "100%", display: "flex", gap: "4px 14px", flexWrap: "wrap", fontSize: 12.5, justifyContent: "flex-end" }}>
+              {injCalc.holiday && (
+                <span style={{ color: T.amber, fontWeight: 600 }}>
+                  ⚠ {injCalc.holiday} — office closed, pick an adjacent day
+                </span>
+              )}
+              {/* Holiday wins; otherwise the schedule conflict, if any. MR only. */}
+              {!injCalc.holiday && injCalc.sched && injCalc.sched.block && (
+                <span style={{ color: T.amber, fontWeight: 600 }}>
+                  {injCalc.sched.block.type === "vacation"
+                    ? `⚠ You're away: ${injCalc.sched.block.title}`
+                    : injCalc.sched.block.type === "no_clinic"
+                    ? `⚠ No clinic that day (${injCalc.sched.block.title})`
+                    : `⚠ OR day: ${injCalc.sched.block.title}`}
+                </span>
+              )}
+              {/* Independent of the above — call week is a note, not a conflict. */}
+              {injCalc.sched && injCalc.sched.call && (
+                <span style={{ color: T.muted }}>
+                  {injCalc.sched.call.surgeon_id === "MR" ? "(your call week)" : `(on call that week: ${injCalc.sched.call.surgeon_id})`}
+                </span>
+              )}
+              {/* Injection blackout — independent of holiday/schedule (per Mari, Sep 2026) */}
+              {injCalc.blackout && (
+                <span style={{ color: T.red, fontWeight: 600 }}>
+                  🚫 {injCalc.blackout}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      <div style={{ padding: "20px 24px", maxWidth: 800, margin: "0 auto" }}>
+      <div className="vra-wrap" style={{ padding: "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
 
         {/* ── INPUT TAB ──────────────────────────────────────────── */}
         {tab === "input" && (
           <div>
-            {/* Mode toggle */}
-            <div style={{ display: "flex", gap: 0, marginBottom: 16, borderRadius: 8, overflow: "hidden", border: `1px solid ${S.border}` }}>
-              {[["generate", "Generate from Shorthand"], ["optimize", "Optimize Existing Note"], ["pbm", "PBM Session"]].map(([m, label]) => (
-                <button key={m} onClick={() => setMode(m)} style={{
-                  flex: 1, padding: "10px 12px", background: mode === m ? S.accent : S.card,
-                  color: mode === m ? "#fff" : S.muted, border: "none",
-                  fontFamily: S.font, fontSize: "0.82rem", fontWeight: 600, cursor: "pointer",
+            {/* Mode toggle — segmented control */}
+            <div className="vra-seg" role="group" aria-label="Mode" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 3, marginTop: 4, boxSizing: "border-box" }}>
+              {[["generate", "Generate from shorthand"], ["optimize", "Optimize existing note"], ["pbm", "PBM session"]].map(([m, label]) => (
+                <button key={m} onClick={() => setMode(m)} aria-pressed={mode === m} style={{
+                  padding: "6px 14px", borderRadius: 4, background: mode === m ? T.accent : "transparent",
+                  color: mode === m ? T.onAccent : T.ink2, border: "none",
+                  fontFamily: T.sans, fontSize: 13.5, fontWeight: mode === m ? 500 : 400, cursor: "pointer",
                 }}>
                   {label}
                 </button>
@@ -839,178 +997,163 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
             {mode !== "pbm" && (<>
             {/* Hint */}
-            <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", fontSize: "0.76rem", color: "#94a3b8", lineHeight: 1.6, marginBottom: 14 }}>
-              <span style={{ color: S.amber, fontWeight: 700 }}>No PHI.</span>{" "}
+            <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5, margin: "14px 0 12px", fontFamily: T.sans }}>
+              <b style={{ color: T.amber, fontWeight: 600 }}>No PHI.</b>{" "}
               {mode === "generate"
                 ? "Type your shorthand — the tool expands it into a formatted A/P note with billing language."
                 : "Paste your structured A/P note — the tool inserts minimum billing-compliant language."}
-            </div>
+            </p>
 
-            {/* Dictation mic buttons */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-              <button
-                onClick={isRecording ? stopRecording : () => startRecording("insert")}
-                disabled={isTranscribing}
-                style={{
-                  display: "flex", alignItems: "center", gap: 6,
-                  padding: "8px 16px", borderRadius: 8,
-                  border: isRecording ? "2px solid #ef4444" : `1px solid ${S.border}`,
-                  background: isRecording ? "#7f1d1d" : S.card,
-                  color: isRecording ? "#fca5a5" : S.text,
-                  fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600,
-                  cursor: isTranscribing ? "wait" : "pointer",
-                  transition: "all 0.2s",
-                }}
-              >
-                {isRecording ? (
-                  <>
-                    <span style={{ width: 10, height: 10, borderRadius: 2, background: "#ef4444", display: "inline-block" }} />
-                    Stop ({Math.floor(recordingTime / 60)}:{String(recordingTime % 60).padStart(2, "0")})
-                  </>
-                ) : isTranscribing ? (
-                  <>
-                    <span style={{ fontSize: "0.9rem" }}>⏳</span>
-                    Transcribing...
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="9" y="1" width="6" height="12" rx="3" />
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                      <line x1="12" y1="19" x2="12" y2="23" />
-                      <line x1="8" y1="23" x2="16" y2="23" />
-                    </svg>
-                    Dictate
-                  </>
-                )}
-              </button>
-              {!isRecording && (
-                <button
-                  onClick={() => startRecording("edit")}
-                  disabled={isTranscribing || loading || !note.trim()}
-                  title={!note.trim() ? "Enter or dictate a note first" : "Speak a change — it will be applied and the note regenerated"}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 6,
-                    padding: "8px 16px", borderRadius: 8,
-                    border: `1px solid ${!note.trim() || loading ? S.border : "#8b5cf6"}`,
-                    background: S.card,
-                    color: !note.trim() || loading ? "#475569" : "#c4b5fd",
-                    fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600,
-                    cursor: isTranscribing || loading || !note.trim() ? "not-allowed" : "pointer",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="9" y="1" width="6" height="12" rx="3" />
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                    <line x1="12" y1="19" x2="12" y2="23" />
-                    <line x1="8" y1="23" x2="16" y2="23" />
-                  </svg>
-                  Dictate an Edit
-                </button>
-              )}
-              {isRecording && (
-                <span style={{ fontSize: "0.72rem", color: "#ef4444", fontWeight: 600 }}>
-                  ● Recording — {recordingPurposeRef.current === "edit" ? "speak the change you want (e.g. “change follow-up to 2 weeks”)" : "speak now"}
-                </span>
-              )}
-              {!isRecording && note.trim() && (
-                <button
-                  onClick={() => { setNote(""); setIntakeText(""); setError(""); setPendingEdit(""); if (noteRef.current) noteRef.current.focus(); }}
-                  title="Clear the input box"
-                  style={{
-                    marginLeft: "auto", padding: "8px 14px", borderRadius: 8,
-                    border: `1px solid ${S.border}`, background: S.card, color: S.muted,
-                    fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600, cursor: "pointer",
-                  }}
-                >✕ Clear</button>
-              )}
-            </div>
-
-            {/* Dictation tips + pending edit banner */}
-            {!isRecording && !pendingEdit && (
-              <div style={{ fontSize: "0.66rem", color: "#475569", marginBottom: 8 }}>
-                Tip: click a spot in the note, then Dictate — your words are inserted right there. Or use Dictate an Edit to speak a change and regenerate hands-free.
-              </div>
-            )}
             {pendingEdit && (
-              <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#2e1065", border: "1px solid #8b5cf6", borderRadius: 8, padding: "8px 12px", marginBottom: 10, fontSize: "0.76rem", color: "#ddd6fe" }}>
-                <span style={{ fontWeight: 700, flexShrink: 0 }}>{loading ? "Applying edit:" : "Edit heard:"}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: T.r, padding: "8px 12px", marginBottom: 10, fontSize: 13, color: T.accent }}>
+                <span style={{ fontWeight: 600, flexShrink: 0 }}>{loading ? "Applying edit:" : "Edit heard:"}</span>
                 <span style={{ flex: 1, fontStyle: "italic" }}>&ldquo;{pendingEdit}&rdquo;</span>
-                <button onClick={() => setPendingEdit("")} style={{ background: "none", border: "none", color: "#a78bfa", cursor: "pointer", fontSize: "0.9rem", flexShrink: 0 }}>✕</button>
+                <button onClick={() => setPendingEdit("")} style={{ background: "none", border: "none", color: T.accent, cursor: "pointer", fontSize: "0.9rem", flexShrink: 0 }}>✕</button>
               </div>
             )}
 
-            <textarea
-              ref={noteRef}
-              value={note}
-              onChange={e => { setNote(e.target.value); lastCursorRef.current = e.target.selectionStart; }}
-              onSelect={e => { lastCursorRef.current = e.target.selectionStart; }}
-              onKeyUp={e => { lastCursorRef.current = e.target.selectionStart; }}
-              placeholder={mode === "generate"
-                ? "67 yo W, AMD denies Fhx, non-smoker, OD I dry, OS wet AMD failed A and E, on V q8..."
-                : "Paste your structured A/P note here..."}
-              rows={14}
-              style={{ display: "block", width: "100%", background: S.card, border: `1px solid #475569`, borderRadius: 10, padding: 14, color: S.bright, fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.8, resize: "vertical", boxSizing: "border-box" }}
-            />
-
-            {/* Optional time field */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-              <label style={{ fontSize: "0.72rem", color: S.muted, whiteSpace: "nowrap" }}>Time with patient (optional):</label>
-              <input
-                type="number"
-                value={timeSpent}
-                onChange={e => setTimeSpent(e.target.value)}
-                placeholder="min"
-                style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 6, padding: "5px 8px", color: S.text, fontFamily: S.mono, fontSize: "0.82rem", width: 70, boxSizing: "border-box" }}
-              />
-              <span style={{ fontSize: "0.66rem", color: "#475569" }}>99213=20 min · 99214=30 min · 99215=40 min</span>
-            </div>
-
-            {/* ── Optional CC/HPI intake (Sep 2026, per Mari) ──────────
-                Audit-proofing for injection-day modifier-25 after the OCB FCA
-                settlement: paste what the tech wrote and the same API call
-                returns a purpose-neutral CC/HPI alongside the A/P. */}
-            <div style={{ marginTop: 12 }}>
-              <label style={{ display: "block", fontSize: "0.72rem", color: S.muted, marginBottom: 6 }}>
-                CC/HPI intake (optional) — paste the tech&rsquo;s line or type your own
-              </label>
+            {/* Editor card: textarea + footer bar */}
+            <div className="vra-editor" style={{ background: T.surface, border: `1px solid ${isRecording ? T.red : T.line}`, borderRadius: T.rLg, overflow: "hidden" }}>
               <textarea
-                value={intakeText}
-                onChange={e => setIntakeText(e.target.value)}
-                placeholder="87 yo M wet AMD OD, mild distortion OD, no complaints OS; dry AMD OS"
-                rows={3}
-                style={{ display: "block", width: "100%", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: 12, color: S.bright, fontFamily: S.mono, fontSize: "0.8rem", lineHeight: 1.7, resize: "vertical", boxSizing: "border-box" }}
+                ref={noteRef}
+                value={note}
+                onChange={e => { setNote(e.target.value); lastCursorRef.current = e.target.selectionStart; }}
+                onSelect={e => { lastCursorRef.current = e.target.selectionStart; }}
+                onKeyUp={e => { lastCursorRef.current = e.target.selectionStart; }}
+                placeholder={mode === "generate"
+                  ? "67 yo W, AMD denies Fhx, non-smoker, OD I dry, OS wet AMD failed A and E, on V q8..."
+                  : "Paste your structured A/P note here..."}
+                rows={14}
+                style={{ display: "block", width: "100%", minHeight: 250, border: 0, background: "transparent", padding: "16px 18px", color: T.ink, fontFamily: T.mono, fontSize: 14, lineHeight: 1.65, resize: "vertical", boxSizing: "border-box", outline: "none" }}
               />
-              <div style={{ fontSize: "0.66rem", color: "#475569", marginTop: 5 }}>
-                Leave blank to skip. Dates and treatment history stay in the A/P — never in the CC/HPI.
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "10px 12px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
+                {/* Dictation mic buttons */}
+                <button
+                  onClick={isRecording ? stopRecording : () => startRecording("insert")}
+                  disabled={isTranscribing}
+                  style={btnSm("secondary", {
+                    border: `1px solid ${isRecording ? T.red : T.line}`,
+                    background: isRecording ? T.redSoft : T.surface,
+                    color: isRecording ? T.red : T.ink,
+                    cursor: isTranscribing ? "wait" : "pointer",
+                    transition: "all 0.2s",
+                  })}
+                >
+                  {isRecording ? (
+                    <>
+                      <span style={{ width: 10, height: 10, borderRadius: 2, background: T.red, display: "inline-block" }} />
+                      Stop ({Math.floor(recordingTime / 60)}:{String(recordingTime % 60).padStart(2, "0")})
+                    </>
+                  ) : isTranscribing ? (
+                    <>
+                      <span style={{ fontSize: "0.9rem" }}>⏳</span>
+                      Transcribing...
+                    </>
+                  ) : (
+                    <>
+                      <MicIcon />
+                      Dictate
+                    </>
+                  )}
+                </button>
+                {!isRecording && (
+                  <button
+                    onClick={() => startRecording("edit")}
+                    disabled={isTranscribing || loading || !note.trim()}
+                    title={!note.trim() ? "Enter or dictate a note first" : "Speak a change — it will be applied and the note regenerated"}
+                    style={btnSm("secondary", {
+                      color: !note.trim() || loading ? T.muted : T.accent,
+                      cursor: isTranscribing || loading || !note.trim() ? "not-allowed" : "pointer",
+                      transition: "all 0.2s",
+                    })}
+                  >
+                    <EditLinesIcon />
+                    Dictate an Edit
+                  </button>
+                )}
+                {isRecording && (
+                  <span style={{ fontSize: 12, color: T.red, fontWeight: 600, flex: "1 1 180px", minWidth: 0 }}>
+                    ● Recording — {recordingPurposeRef.current === "edit" ? "speak the change you want (e.g. “change follow-up to 2 weeks”)" : "speak now"}
+                  </span>
+                )}
+                {/* Dictation tip */}
+                {!isRecording && !pendingEdit && (
+                  <span style={{ fontSize: 12, color: T.muted, flex: "1 1 220px", minWidth: 0, lineHeight: 1.4 }}>
+                    Tip: click a spot in the note, then Dictate — your words are inserted right there. Or use Dictate an Edit to speak a change and regenerate hands-free.
+                  </span>
+                )}
+                <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+                  {!isRecording && note.trim() && (
+                    <button
+                      onClick={() => { setNote(""); setIntakeText(""); setError(""); setPendingEdit(""); if (noteRef.current) noteRef.current.focus(); }}
+                      title="Clear the input box"
+                      style={btnSm("secondary", { color: T.ink2 })}
+                    >✕ Clear</button>
+                  )}
+                  <button onClick={handleGenerate} disabled={loading || !note.trim()} style={btn("primary", {
+                    background: loading || !note.trim() ? T.accentSoft : pendingUnknown ? T.amber : T.accent,
+                    borderColor: loading || !note.trim() ? T.line : pendingUnknown ? T.amber : T.accent,
+                    color: loading || !note.trim() ? T.muted : T.onAccent,
+                    fontSize: 13.5, cursor: loading || !note.trim() ? "not-allowed" : "pointer",
+                  })}>
+                    {loading ? "Working..." : pendingUnknown ? "Generate anyway →" : mode === "generate" ? "Generate Note →" : "Optimize →"}
+                  </button>
+                </div>
               </div>
             </div>
-
 
             {error && (
-              <div style={{ color: "#f87171", fontSize: "0.72rem", background: "#1a0808", padding: "8px 12px", borderRadius: 6, border: "1px solid #7f1d1d", marginTop: 10, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-start", color: T.red, fontSize: 13, background: T.redSoft, padding: "10px 14px", borderRadius: T.r, border: "1px solid #F0C4BF", marginTop: 12, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
                 {error}
               </div>
             )}
 
             {/* Pre-flight unknown-drug warning — no API call was made */}
             {pendingUnknown && (
-              <div style={{ background: "#451a03", border: "1px solid #f59e0b", borderRadius: 8, padding: "10px 14px", marginTop: 10, fontSize: "0.78rem", color: "#fde68a", lineHeight: 1.5 }}>
-                <span style={{ fontWeight: 700, color: "#fcd34d" }}>⚠ Unknown drug &ldquo;{pendingUnknown}&rdquo;</span>{" "}
-                — not a recognized drug or abbreviation. Fix the input, or generate anyway.
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: T.r, padding: "10px 14px", marginTop: 12, fontSize: 13, color: T.amber, lineHeight: 1.5 }}>
+                <span style={{ marginTop: 1 }}><AlertIcon /></span>
+                <div>
+                  <b style={{ fontWeight: 600, color: T.amber }}>Unknown drug &ldquo;{pendingUnknown}&rdquo;</b>{" "}
+                  — not a recognized drug or abbreviation. Fix the input, or generate anyway.
+                </div>
               </div>
             )}
 
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-              <button onClick={handleGenerate} disabled={loading || !note.trim()} style={{
-                background: loading || !note.trim() ? S.card : pendingUnknown ? "linear-gradient(135deg,#b45309,#f59e0b)" : "linear-gradient(135deg,#6366f1,#8b5cf6)",
-                color: loading || !note.trim() ? "#475569" : "#fff",
-                border: "none", borderRadius: 8, padding: "10px 24px", fontSize: "0.9rem",
-                fontFamily: S.font, fontWeight: 600, cursor: loading || !note.trim() ? "not-allowed" : "pointer",
-              }}>
-                {loading ? "Working..." : pendingUnknown ? "Generate anyway →" : mode === "generate" ? "Generate Note →" : "Optimize →"}
-              </button>
+            {/* Optional time field */}
+            <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
+              <div style={field({ gridColumn: "1 / -1" })}>
+                <label style={fieldLabel()}>Time with patient (optional):</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                  <input
+                    type="number"
+                    value={timeSpent}
+                    onChange={e => setTimeSpent(e.target.value)}
+                    placeholder="min"
+                    style={{ height: 32, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, width: 90, boxSizing: "border-box" }}
+                  />
+                  <span style={{ fontSize: 12, color: T.muted }}>99213=20 min · 99214=30 min · 99215=40 min</span>
+                </div>
+              </div>
+
+              {/* ── Optional CC/HPI intake (Sep 2026, per Mari) ──────────
+                  Audit-proofing for injection-day modifier-25 after the OCB FCA
+                  settlement: paste what the tech wrote and the same API call
+                  returns a purpose-neutral CC/HPI alongside the A/P. */}
+              <div style={field({ gridColumn: "1 / -1" })}>
+                <label style={fieldLabel()}>
+                  CC/HPI intake (optional) — paste the tech&rsquo;s line or type your own
+                </label>
+                <textarea
+                  value={intakeText}
+                  onChange={e => setIntakeText(e.target.value)}
+                  placeholder="87 yo M wet AMD OD, mild distortion OD, no complaints OS; dry AMD OS"
+                  rows={3}
+                  style={{ display: "block", width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "10px 12px", color: T.ink, fontFamily: T.mono, fontSize: 13, lineHeight: 1.6, resize: "vertical", boxSizing: "border-box" }}
+                />
+                <div style={{ fontSize: 12, color: T.muted, marginTop: 6 }}>
+                  Leave blank to skip. Dates and treatment history stay in the A/P — never in the CC/HPI.
+                </div>
+              </div>
             </div>
             </>)}
 
@@ -1018,15 +1161,15 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
             {mode === "pbm" && (
               <div>
                 {/* Hint */}
-                <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px", fontSize: "0.76rem", color: "#94a3b8", lineHeight: 1.6, marginBottom: 14 }}>
-                  <span style={{ color: S.amber, fontWeight: 700 }}>No PHI.</span>{" "}
+                <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5, margin: "14px 0 12px", fontFamily: T.sans }}>
+                  <b style={{ color: T.amber, fontWeight: 600 }}>No PHI.</b>{" "}
                   Dictate the session details or fill the form — the note is assembled deterministically (no AI call). Review the checklist, then click Generate.
-                </div>
+                </p>
 
                 {/* Say these points checklist + Dictate button */}
-                <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 16 }}>
-                  <div style={{ flex: "1 1 280px", background: S.card, border: `1px solid ${S.border}`, borderRadius: 8, padding: "12px 14px" }}>
-                    <div style={{ fontSize: "0.66rem", color: S.muted, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8 }}>
+                <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div style={field()}>
+                    <div style={fieldLabel({ fontWeight: 500 })}>
                       Say these points
                     </div>
                     {[
@@ -1040,42 +1183,34 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       const captured = !!item.value;
                       return (
                         <div key={item.key} style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 5 }}>
-                          <span style={{ color: captured ? S.green : "#475569", fontWeight: 700, fontSize: "0.82rem", flexShrink: 0, width: 14 }}>
+                          <span style={{ color: captured ? T.green : T.muted, fontWeight: 700, fontSize: 13, flexShrink: 0, width: 14 }}>
                             {captured ? "✓" : "○"}
                           </span>
-                          <span style={{ fontSize: "0.76rem", color: captured ? S.text : "#64748b" }}>
+                          <span style={{ fontSize: 13, color: captured ? T.ink : T.muted }}>
                             {item.label}{item.required && !captured ? " (required)" : ""}
                             {captured && item.key !== "tolerance" ? ` — ${item.value}` : ""}
                           </span>
                         </div>
                       );
                     })}
-                    <div style={{ fontSize: "0.68rem", color: "#64748b", fontStyle: "italic", marginTop: 4, paddingLeft: 22 }}>
+                    <div style={{ fontSize: 12, color: T.muted, fontStyle: "italic", marginTop: 4, paddingLeft: 22 }}>
                       &ldquo;{pbmTolerance}&rdquo;
                     </div>
                   </div>
 
-                  <div style={{ flex: "1 1 220px", display: "flex", flexDirection: "column", gap: 8, justifyContent: "flex-start" }}>
+                  <div style={field({ display: "flex", flexDirection: "column", gap: 8, justifyContent: "flex-start" })}>
                     <button
                       onClick={isRecording ? stopRecording : () => startRecording("pbm")}
                       disabled={isTranscribing || pbmExtracting}
-                      style={{
-                        display: "flex", alignItems: "center", gap: 6, justifyContent: "center",
-                        padding: "10px 16px", borderRadius: 8,
-                        border: isRecording ? "2px solid #ef4444" : `1px solid ${S.border}`,
-                        background: isRecording ? "#7f1d1d" : S.card,
-                        color: isRecording ? "#fca5a5" : S.text,
-                        fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 600,
+                      style={btn("secondary", {
+                        border: `1px solid ${isRecording ? T.red : T.line}`,
+                        background: isRecording ? T.redSoft : T.surface,
+                        color: isRecording ? T.red : T.ink,
                         cursor: isTranscribing || pbmExtracting ? "wait" : "pointer",
                         transition: "all 0.2s",
-                      }}
+                      })}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="9" y="1" width="6" height="12" rx="3" />
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                        <line x1="12" y1="19" x2="12" y2="23" />
-                        <line x1="8" y1="23" x2="16" y2="23" />
-                      </svg>
+                      <MicIcon />
                       {isRecording
                         ? `Stop (${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, "0")})`
                         : isTranscribing ? "Transcribing..."
@@ -1083,26 +1218,26 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         : "Dictate Session"}
                     </button>
                     {isRecording && recordingPurposeRef.current === "pbm" && (
-                      <span style={{ fontSize: "0.7rem", color: "#ef4444", fontWeight: 600 }}>
+                      <span style={{ fontSize: 12, color: T.red, fontWeight: 600 }}>
                         ● Recording — speak eye, session number, ABN status, and anything different from the defaults
                       </span>
                     )}
                     {pbmExtractError && (
-                      <span style={{ fontSize: "0.7rem", color: "#f87171" }}>{pbmExtractError}</span>
+                      <span style={{ fontSize: 12, color: T.red }}>{pbmExtractError}</span>
                     )}
                   </div>
                 </div>
 
                 {/* Form fields */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <div>
-                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Eye (required)</label>
-                    <div style={{ display: "flex", gap: 0, borderRadius: 8, overflow: "hidden", border: `1px solid ${S.border}`, width: "fit-content" }}>
+                <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
+                  <div style={field()}>
+                    <label style={fieldLabel()}>Eye (required)</label>
+                    <div style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 3 }}>
                       {["OD", "OS", "OU"].map(e => (
                         <button key={e} onClick={() => setPbmEye(e)} style={{
-                          padding: "7px 18px", background: pbmEye === e ? S.accent : S.card,
-                          color: pbmEye === e ? "#fff" : S.muted, border: "none",
-                          fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
+                          padding: "5px 16px", borderRadius: 4, background: pbmEye === e ? T.accent : "transparent",
+                          color: pbmEye === e ? T.onAccent : T.ink2, border: "none",
+                          fontFamily: T.sans, fontSize: 13, fontWeight: 600, cursor: "pointer",
                         }}>
                           {e}
                         </button>
@@ -1110,39 +1245,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                    <div>
-                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Session # of 9 (required)</label>
-                      <input type="number" min={1} max={9} value={pbmSession} onChange={e => setPbmSession(e.target.value)} style={inputStyle({ width: 80 })} />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Cumulative for this eye (optional)</label>
-                      <input type="number" min={1} value={pbmCumulative} onChange={e => setPbmCumulative(e.target.value)} style={inputStyle({ width: 110 })} />
-                      {pbmCumulative && Number(pbmCumulative) > 54 && (
-                        <div style={{ color: S.amber, fontSize: "0.68rem", marginTop: 4, fontWeight: 600, maxWidth: 220 }}>
-                          ⚠ Exceeds the 54-treatment evidence cap for this eye
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Date of service</label>
-                      <input type="date" value={pbmDate} onChange={e => setPbmDate(e.target.value)} style={inputStyle({ width: 160 })} />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Proceduralist</label>
-                    <input type="text" value={pbmProceduralist} onChange={e => setPbmProceduralist(e.target.value)} style={inputStyle({ maxWidth: 260 })} />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>ABN on file (required — drives -GA)</label>
-                    <div style={{ display: "flex", gap: 0, borderRadius: 8, overflow: "hidden", border: `1px solid ${S.border}`, width: "fit-content" }}>
+                  <div style={field()}>
+                    <label style={fieldLabel()}>ABN on file (required — drives -GA)</label>
+                    <div style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 3 }}>
                       {["Y", "N"].map(v => (
                         <button key={v} onClick={() => setPbmAbn(v)} style={{
-                          padding: "7px 18px", background: pbmAbn === v ? S.accent : S.card,
-                          color: pbmAbn === v ? "#fff" : S.muted, border: "none",
-                          fontFamily: S.mono, fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
+                          padding: "5px 16px", borderRadius: 4, background: pbmAbn === v ? T.accent : "transparent",
+                          color: pbmAbn === v ? T.onAccent : T.ink2, border: "none",
+                          fontFamily: T.sans, fontSize: 13, fontWeight: 600, cursor: "pointer",
                         }}>
                           {v === "Y" ? "Yes" : "No"}
                         </button>
@@ -1150,20 +1260,44 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     </div>
                   </div>
 
-                  <div>
-                    <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Tolerance</label>
-                    <input type="text" value={pbmTolerance} onChange={e => setPbmTolerance(e.target.value)} style={inputStyle({})} />
+                  <div style={field()}>
+                    <label style={fieldLabel()}>Session # of 9 (required)</label>
+                    <input type="number" min={1} max={9} value={pbmSession} onChange={e => setPbmSession(e.target.value)} style={{ height: 32, width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box" }} />
                   </div>
 
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                    <div>
-                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Baseline BCVA (optional — from initiation exam)</label>
-                      <input type="text" placeholder="e.g. 20/50" value={pbmVA} onChange={e => setPbmVA(e.target.value)} style={inputStyle({ width: 130 })} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 200 }}>
-                      <label style={{ fontSize: "0.72rem", color: S.muted, display: "block", marginBottom: 5 }}>Next session (optional)</label>
-                      <input type="text" placeholder="e.g. in 2 weeks" value={pbmNext} onChange={e => setPbmNext(e.target.value)} style={inputStyle({})} />
-                    </div>
+                  <div style={field()}>
+                    <label style={fieldLabel()}>Cumulative for this eye (optional)</label>
+                    <input type="number" min={1} value={pbmCumulative} onChange={e => setPbmCumulative(e.target.value)} style={{ height: 32, width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box" }} />
+                    {pbmCumulative && Number(pbmCumulative) > 54 && (
+                      <div style={{ color: T.amber, fontSize: 12, marginTop: 4, fontWeight: 600 }}>
+                        ⚠ Exceeds the 54-treatment evidence cap for this eye
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={field()}>
+                    <label style={fieldLabel()}>Date of service</label>
+                    <input type="date" value={pbmDate} onChange={e => setPbmDate(e.target.value)} style={{ height: 32, width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box" }} />
+                  </div>
+
+                  <div style={field()}>
+                    <label style={fieldLabel()}>Proceduralist</label>
+                    <input type="text" value={pbmProceduralist} onChange={e => setPbmProceduralist(e.target.value)} style={{ height: 32, width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box" }} />
+                  </div>
+
+                  <div style={field({ gridColumn: "1 / -1" })}>
+                    <label style={fieldLabel()}>Tolerance</label>
+                    <input type="text" value={pbmTolerance} onChange={e => setPbmTolerance(e.target.value)} style={{ height: 32, width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box" }} />
+                  </div>
+
+                  <div style={field()}>
+                    <label style={fieldLabel()}>Baseline BCVA (optional — from initiation exam)</label>
+                    <input type="text" placeholder="e.g. 20/50" value={pbmVA} onChange={e => setPbmVA(e.target.value)} style={{ height: 32, width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box" }} />
+                  </div>
+
+                  <div style={field()}>
+                    <label style={fieldLabel()}>Next session (optional)</label>
+                    <input type="text" placeholder="e.g. in 2 weeks" value={pbmNext} onChange={e => setPbmNext(e.target.value)} style={{ height: 32, width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 10px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box" }} />
                   </div>
                 </div>
 
@@ -1186,12 +1320,12 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       setTab("output");
                     }}
                     disabled={!pbmEye || !pbmSession}
-                    style={{
-                      background: !pbmEye || !pbmSession ? S.card : "linear-gradient(135deg,#6366f1,#8b5cf6)",
-                      color: !pbmEye || !pbmSession ? "#475569" : "#fff",
-                      border: "none", borderRadius: 8, padding: "10px 24px", fontSize: "0.9rem",
-                      fontFamily: S.font, fontWeight: 600, cursor: !pbmEye || !pbmSession ? "not-allowed" : "pointer",
-                    }}
+                    style={btn("primary", {
+                      background: !pbmEye || !pbmSession ? T.accentSoft : T.accent,
+                      borderColor: !pbmEye || !pbmSession ? T.line : T.accent,
+                      color: !pbmEye || !pbmSession ? T.muted : T.onAccent,
+                      cursor: !pbmEye || !pbmSession ? "not-allowed" : "pointer",
+                    })}
                   >
                     Generate Session Note →
                   </button>
@@ -1206,14 +1340,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           <div>
             {mode === "pbm" ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {!pbmNote && <div style={{ textAlign: "center", padding: "60px 0", color: "#475569" }}>Fill out the PBM Session form and click Generate first.</div>}
+                {!pbmNote && <div style={{ textAlign: "center", padding: "60px 0", color: T.muted }}>Fill out the PBM Session form and click Generate first.</div>}
                 {pbmNote && (
-                  <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: 18 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                      <div style={{ fontSize: "0.66rem", color: S.accent, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
+                      <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>
                         PBM / Valeda Session Note
                       </div>
-                      <button onClick={async () => {
+                      <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+                        <button onClick={() => setTab("input")} style={btnSm("secondary")}>
+                          &#8592; Back to PBM form
+                        </button>
+                        <button onClick={async () => {
                         try {
                           await navigator.clipboard.writeText(pbmNote);
                           setPbmCopied(true);
@@ -1230,175 +1368,158 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                           setPbmCopied(true);
                           setTimeout(() => setPbmCopied(false), 2000);
                         }
-                      }} style={btnStyle(pbmCopied ? "#059669" : S.bg, pbmCopied ? "#fff" : "#94a3b8", { border: `1px solid ${pbmCopied ? "#059669" : S.border}`, padding: "3px 10px", fontSize: "0.68rem", transition: "all 0.2s" })}>
-                        {pbmCopied ? "Copied!" : "Copy note"}
-                      </button>
+                      }} style={btnSm("primary", pbmCopied ? { background: T.green, borderColor: T.green } : {})}>
+                          <CopyIcon />{pbmCopied ? "Copied!" : "Copy note"}
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.9, color: S.text, whiteSpace: "pre-wrap" }}>
+                    <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: "16px 18px" }}>
                       {pbmNote}
                     </div>
                   </div>
                 )}
-                {pbmNote && (
-                  <button onClick={() => setTab("input")} style={btnStyle("none", S.muted, { border: `1px solid ${S.border}`, alignSelf: "flex-start" })}>
-                    &#8592; Back to PBM form
-                  </button>
-                )}
               </div>
             ) : (<>
             {loading && (
-              <div style={{ textAlign: "center", padding: "60px 0", color: S.muted }}>
-                <div style={{ width: 34, height: 34, border: `3px solid ${S.border}`, borderTopColor: S.accent, borderRadius: "50%", animation: "spin .8s linear infinite", margin: "0 auto 12px" }} />
+              <div style={{ textAlign: "center", padding: "60px 0", color: T.muted }}>
+                <div style={{ width: 34, height: 34, border: `3px solid ${T.line}`, borderTopColor: T.accent, borderRadius: "50%", animation: "spin .8s linear infinite", margin: "0 auto 12px" }} />
                 <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
                 Working...
               </div>
             )}
-            {!loading && !result && <div style={{ textAlign: "center", padding: "60px 0", color: "#475569" }}>Generate or optimize a note first.</div>}
-            {result && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {!loading && !result && <div style={{ textAlign: "center", padding: "60px 0", color: T.muted }}>Generate or optimize a note first.</div>}
+            {result && (() => {
+              const { body: noteBody, blocks: coverageBlocks } = splitCoverage(result.note);
+              return (
+              <div style={{ display: "flex", flexDirection: "column" }}>
 
                 {/* Safety flags — deterministic warnings from the server; never part of the copied note */}
                 {result.safetyFlags?.length > 0 && (
-                  <div style={{ background: "#451a03", border: "1px solid #f59e0b", borderRadius: 10, padding: "12px 16px" }}>
-                    <div style={{ fontSize: "0.7rem", color: "#fcd34d", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>
-                      ⚠ Safety flags — review before signing (not included in the copied note)
-                    </div>
-                    {result.safetyFlags.map((f, i) => {
-                      // Sep 2026, per Mari — modifier-25 audit flags (CC/HPI lint,
-                      // header lint, truth check, -25 defensibility) arrive prefixed
-                      // "AUDIT: ". They get their own badge so they read as an
-                      // audit-exposure note, not a clinical safety guard.
-                      const isAudit = typeof f === "string" && f.startsWith("AUDIT: ");
-                      const body = isAudit ? f.slice(7) : f;
-                      return (
-                        <div key={i} style={{ fontSize: "0.8rem", color: "#fde68a", lineHeight: 1.5, marginBottom: 4, display: "flex", gap: 8 }}>
-                          {isAudit ? (
-                            <span style={{ flexShrink: 0, background: "#78350f", color: "#fcd34d", border: `1px solid ${S.amber}`, borderRadius: 20, padding: "1px 8px", fontSize: "0.58rem", fontFamily: S.mono, fontWeight: 700, letterSpacing: "0.06em", alignSelf: "flex-start", marginTop: 2 }}>AUDIT</span>
-                          ) : (
-                            <span style={{ flexShrink: 0 }}>•</span>
-                          )}
-                          <span>{body}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Code badges */}
-                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-                  <span style={{ background: cc.bg, color: cc.color, border: `1.5px solid ${cc.border}`, borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>
-                    {result.code}
-                  </span>
-                  {getEmLabel(result.code) && (
-                    <span style={{ fontSize: "0.82rem", color: cc.color, fontWeight: 600, fontFamily: S.font }}>{getEmLabel(result.code)}</span>
-                  )}
-                  {result.procedure && result.procedure !== "None" && (
-                    <span style={{ background: "#dbeafe", color: "#1e40af", border: "1.5px solid #3b82f6", borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>+ {result.procedure}</span>
-                  )}
-                  {result.g2211 && (
-                    <span style={{ background: "#fef3c7", color: "#92400e", border: "1.5px solid #f59e0b", borderRadius: 8, padding: "6px 16px", fontWeight: 700, fontSize: "1rem", fontFamily: S.mono }}>+ G2211</span>
-                  )}
-                  {isEyeCode(result.code) && (
-                    <span style={{ fontSize: "0.76rem", color: "#a855f7", fontStyle: "italic" }}>— no MDM documentation needed</span>
-                  )}
-                </div>
-
-                {/* Coding additions */}
-                {result.changes?.filter(c => c && c !== "None needed").length > 0 && (
-                  <div style={{ background: "#0f1f14", border: `1px solid ${S.greenDark}`, borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ fontSize: "0.66rem", color: S.green, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 7 }}>Billing additions</div>
-                    {result.changes.filter(c => c && c !== "None needed").map((c, i) => (
-                      <div key={i} style={{ fontSize: "0.82rem", color: "#86efac", paddingLeft: 12, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
-                        <span style={{ position: "absolute", left: 0, color: "#16a34a" }}>&#10003;</span>{c}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* ICD-10 Codes */}
-                {icd10Codes.length > 0 && (
-                  <div style={{ background: "#0c0f1a", border: "1px solid #4f46e5", borderRadius: 8, padding: "10px 14px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-                      <div style={{ fontSize: "0.66rem", color: "#818cf8", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        ICD-10 Codes
-                      </div>
-                      <button onClick={async () => {
-                        const text = icd10Codes.map(c => `${c.code} — ${c.description}`).join("\n");
-                        try { await navigator.clipboard.writeText(text); setCopiedCodes(true); setTimeout(() => setCopiedCodes(false), 2000); }
-                        catch { setCopiedCodes(false); }
-                      }} style={{
-                        background: copiedCodes ? "#059669" : S.bg, color: copiedCodes ? "#fff" : "#94a3b8",
-                        border: `1px solid ${copiedCodes ? "#059669" : S.border}`, borderRadius: 6,
-                        padding: "3px 10px", fontSize: "0.68rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
-                      }}>
-                        {copiedCodes ? "Copied!" : "Copy codes"}
-                      </button>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      {icd10Codes.map((c, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                          <span style={{
-                            background: c.primary ? "#312e81" : S.bg, color: c.primary ? "#a5b4fc" : "#94a3b8",
-                            border: `1px solid ${c.primary ? "#4f46e5" : S.border}`, borderRadius: 4,
-                            padding: "2px 8px", fontSize: "0.76rem", fontFamily: S.mono, fontWeight: 700, flexShrink: 0,
-                          }}>
-                            {c.code}
-                          </span>
-                          <span style={{ fontSize: "0.78rem", color: c.primary ? "#c7d2fe" : "#94a3b8", lineHeight: 1.4 }}>
-                            {c.description}
-                          </span>
-                          {c.primary && <span style={{ fontSize: "0.58rem", color: "#6366f1", fontWeight: 700, flexShrink: 0 }}>PRIMARY</span>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── CC/HPI card (Sep 2026, per Mari) ────────────────
-                    Only rendered when an intake line was supplied. Sits ABOVE
-                    the A/P because that is the paste order in NextGen. */}
-                {result.hpi && (
-                  <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: 18 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-                      <div style={{ fontSize: "0.66rem", color: S.accent, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                        CC / HPI (audit-safe)
-                      </div>
-                      <button onClick={copyHpi} style={btnStyle(hpiCopied ? "#059669" : S.bg, hpiCopied ? "#fff" : "#94a3b8", { border: `1px solid ${hpiCopied ? "#059669" : S.border}`, padding: "3px 10px", fontSize: "0.68rem", transition: "all 0.2s" })}>
-                        {hpiCopied ? "Copied!" : "Copy CC/HPI"}
-                      </button>
-                    </div>
-                    <div style={{ fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.9, color: S.text, whiteSpace: "pre-wrap" }}>
-                      {renderHpi(result.hpi)}
-                    </div>
-                    <div style={{ fontSize: "0.66rem", color: S.muted, marginTop: 10, lineHeight: 1.5 }}>
-                      Paste over the intake HPI in NextGen. Dates and treatment history stay in the A/P.
+                  <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 14px", borderRadius: T.r, fontSize: 13, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, color: T.amber, marginBottom: 14 }}>
+                    <span style={{ marginTop: 1 }}><AlertIcon /></span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <b style={{ fontWeight: 600, display: "block", marginBottom: 4 }}>
+                        Safety flags — review before signing (not included in the copied note)
+                      </b>
+                      {result.safetyFlags.map((f, i) => {
+                        // Sep 2026, per Mari — modifier-25 audit flags (CC/HPI lint,
+                        // header lint, truth check, -25 defensibility) arrive prefixed
+                        // "AUDIT: ". They get their own badge so they read as an
+                        // audit-exposure note, not a clinical safety guard.
+                        const isAudit = typeof f === "string" && f.startsWith("AUDIT: ");
+                        const body = isAudit ? f.slice(7) : f;
+                        return (
+                          <div key={i} style={{ lineHeight: 1.5, marginBottom: 4, display: "flex", gap: 8 }}>
+                            {isAudit ? (
+                              <span style={chip("amber", { flexShrink: 0, fontSize: 10.5, alignSelf: "flex-start", marginTop: 2 })}>AUDIT</span>
+                            ) : (
+                              <span style={{ flexShrink: 0 }}>•</span>
+                            )}
+                            <span>{body}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
 
                 {/* The note */}
-                <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 10, padding: 18 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <div style={{ fontSize: "0.66rem", color: S.accent, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>
                       {mode === "generate" ? "Generated A/P Note" : "Optimized A/P Note"}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ fontSize: "0.6rem", color: "#94a3b8", fontFamily: S.mono, background: S.bg, padding: "2px 6px", borderRadius: 3 }}>
-                        <span style={{ background: "#fef08a", color: "#713f12", padding: "0 3px", borderRadius: 2, fontWeight: 700, marginRight: 3 }}>+</span>= billing language
-                      </div>
-                      <button onClick={copyNote} style={btnStyle(copied ? "#059669" : S.bg, copied ? "#fff" : "#94a3b8", { border: `1px solid ${copied ? "#059669" : S.border}`, padding: "3px 10px", fontSize: "0.68rem", transition: "all 0.2s" })}>
-                        {copied ? "Copied!" : "Copy note"}
+                    <div style={{ fontSize: 12, color: T.muted, fontFamily: T.sans }}>
+                      <span style={{ background: T.goldSoft, color: T.ink, padding: "0 4px", borderRadius: 3, fontWeight: 600, marginRight: 4 }}>+</span>= billing language
+                    </div>
+                    <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+                      <button onClick={() => { setTab("input"); setResult(null); }} style={btnSm("secondary")}>
+                        &#8592; New note
+                      </button>
+                      <button onClick={copyNote} style={btnSm("primary", copied ? { background: T.green, borderColor: T.green } : {})}>
+                        <CopyIcon />{copied ? "Copied!" : "Copy note"}
                       </button>
                     </div>
                   </div>
-                  <div style={{ fontFamily: S.mono, fontSize: "0.85rem", lineHeight: 1.9, color: S.text, whiteSpace: "pre-wrap" }}>
-                    {renderNote(result.note)}
+                  <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: "16px 18px" }}>
+                    {renderNote(noteBody)}
+                  </div>
+
+                  {/* Codes strip — E/M, procedure, G2211, ICD-10 */}
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", padding: "12px 16px", borderTop: `1px solid ${T.line}`, background: T.paper, borderRadius: `0 0 ${T.rLg}px ${T.rLg}px` }}>
+                    <span style={codeChip({ background: cc.bg, borderColor: cc.border })}>
+                      <b style={{ fontFamily: T.mono, fontWeight: 500, color: cc.color }}>{result.code}</b>
+                      {getEmLabel(result.code) && <span style={{ color: T.muted }}>{getEmLabel(result.code)}</span>}
+                    </span>
+                    {result.procedure && result.procedure !== "None" && (
+                      <span style={codeChip({ background: T.accentSoft, borderColor: T.accentLine })}>
+                        <b style={{ fontFamily: T.mono, fontWeight: 500, color: T.accent }}>+ {result.procedure}</b>
+                      </span>
+                    )}
+                    {result.g2211 && (
+                      <span style={codeChip({ background: T.goldSoft, borderColor: T.gold })}>
+                        <b style={{ fontFamily: T.mono, fontWeight: 500, color: T.ink }}>+ G2211</b>
+                      </span>
+                    )}
+                    {isEyeCode(result.code) && (
+                      <span style={{ fontSize: 12.5, color: T.accent, fontStyle: "italic" }}>— no MDM documentation needed</span>
+                    )}
+                    {/* ICD-10 Codes */}
+                    {icd10Codes.map((c, i) => (
+                      <span key={i} style={codeChip(c.primary ? { background: T.accentSoft, borderColor: T.accentLine } : {})}>
+                        <b style={{ fontFamily: T.mono, fontWeight: 500, color: c.primary ? T.accent : T.ink }}>{c.code}</b>
+                        <span style={{ color: T.muted }}>{c.description}</span>
+                        {c.primary && <span style={{ fontSize: 10.5, color: T.accent, fontWeight: 700 }}>PRIMARY</span>}
+                      </span>
+                    ))}
+                    {icd10Codes.length > 0 && (
+                      <button onClick={async () => {
+                        const text = icd10Codes.map(c => `${c.code} — ${c.description}`).join("\n");
+                        try { await navigator.clipboard.writeText(text); setCopiedCodes(true); setTimeout(() => setCopiedCodes(false), 2000); }
+                        catch { setCopiedCodes(false); }
+                      }} style={btnSm("secondary", { marginLeft: "auto", ...(copiedCodes ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
+                        {copiedCodes ? "Copied!" : "Copy codes"}
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                <button onClick={() => { setTab("input"); setResult(null); }} style={btnStyle("none", S.muted, { border: `1px solid ${S.border}`, alignSelf: "flex-start" })}>
-                  &#8592; New note
-                </button>
+                {/* Coverage reference(s) — server appends these to the note text */}
+                {Array.isArray(result.coverage) && result.coverage.length > 0
+                  ? result.coverage.map((c, i) => renderCoverageJsonCard(c, i))
+                  : coverageBlocks.map((blk, i) => renderCoverageCard(blk, i))}
+
+                {/* Coding additions */}
+                {result.changes?.filter(c => c && c !== "None needed").length > 0 && (
+                  <div style={field({ marginTop: 12 })}>
+                    <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 6 }}>Billing additions</div>
+                    {result.changes.filter(c => c && c !== "None needed").map((c, i) => (
+                      <div key={i} style={{ fontSize: 13, color: T.ink2, paddingLeft: 16, position: "relative", marginBottom: 3, lineHeight: 1.5 }}>
+                        <span style={{ position: "absolute", left: 0, color: T.green }}>&#10003;</span>{c}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
+                {/* ── CC/HPI card (Sep 2026, per Mari) ────────────────
+                    Only rendered when an intake line was supplied. */}
+                {result.hpi && (
+                  <div style={field()}>
+                    <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 6 }}>
+                      CC / HPI (audit-safe)
+                    </div>
+                    <div style={{ fontSize: 13, lineHeight: 1.6, color: T.ink2, whiteSpace: "pre-wrap" }}>
+                      {renderHpi(result.hpi)}
+                    </div>
+                    <div style={{ fontSize: 12, color: T.muted, marginTop: 8, lineHeight: 1.5 }}>
+                      Paste over the intake HPI in NextGen. Dates and treatment history stay in the A/P.
+                    </div>
+                    <button onClick={copyHpi} style={btnSm("secondary", { marginTop: 10, ...(hpiCopied ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
+                      <CopyIcon />{hpiCopied ? "Copied!" : "Copy CC/HPI"}
+                    </button>
+                  </div>
+                )}
 
                 {/* ── Auto-generated Patient Education ──────────────── */}
                 {(() => {
@@ -1412,22 +1533,22 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   const detectedDrops = detectDropsFromPlan(result.note || "");
                   if (matched.length === 0 && detectedDrops.length === 0) return null;
                   return (
-                    <div style={{ background: "#0f1f2e", border: "1px solid #1d4ed8", borderRadius: 10, padding: "14px 18px", marginTop: 8 }}>
+                    <div style={field({ gridColumn: result.hpi ? "auto" : "1 / -1" })}>
                       {(() => { const eduLang = eduLangOverride || detectedLang; return (<>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
-                        <div style={{ fontSize: "0.72rem", color: "#60a5fa", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                        <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600 }}>
                           Patient Education — auto-matched from this note
                         </div>
                         <div style={{ display: "flex", gap: 3 }}>
                           {[{id:"en",label:"EN"},{id:"es",label:"ES"},{id:"vi",label:"VI"},{id:"pt",label:"PT"}].map(l => (
                             <button key={l.id} onClick={() => setEduLangOverride(l.id === detectedLang ? null : l.id)}
-                              style={{ background: (eduLangOverride || detectedLang) === l.id ? "#3b82f6" : "transparent", color: (eduLangOverride || detectedLang) === l.id ? "#fff" : "#64748b", border: `1px solid ${(eduLangOverride || detectedLang) === l.id ? "#3b82f6" : "#334155"}`, borderRadius: 5, padding: "2px 8px", fontSize: "0.65rem", fontFamily: "monospace", fontWeight: 700, cursor: "pointer" }}>
+                              style={{ background: (eduLangOverride || detectedLang) === l.id ? T.accent : "transparent", color: (eduLangOverride || detectedLang) === l.id ? T.onAccent : T.muted, border: `1px solid ${(eduLangOverride || detectedLang) === l.id ? T.accent : T.line}`, borderRadius: 4, padding: "2px 7px", fontSize: 11, fontFamily: T.mono, fontWeight: 700, cursor: "pointer" }}>
                               {l.label}
                             </button>
                           ))}
                         </div>
                       </div>
-                      <div style={{ fontSize: "0.78rem", color: S.text, marginBottom: 10 }}>
+                      <div style={{ fontSize: 13, color: T.ink2, marginBottom: 10, lineHeight: 1.5 }}>
                         {matched.length > 0 && <span>{matched.length} handout{matched.length !== 1 ? "s" : ""} matched — select which to include:</span>}
                         {matched.length > 0 && detectedDrops.length > 0 && <span> &bull; </span>}
                         {detectedDrops.length > 0 && <span>{detectedDrops.length} drop{detectedDrops.length !== 1 ? "s" : ""} detected</span>}
@@ -1437,14 +1558,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                           {matched.map(h => {
                             const isChecked = !uncheckedHandouts.has(h.id);
                             return (
-                              <label key={h.id} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: isChecked ? "#1e293b" : "#0f172a", border: `1px solid ${isChecked ? "#334155" : "#1e293b"}`, borderRadius: 6, padding: "4px 10px", fontSize: "0.7rem", color: isChecked ? "#94a3b8" : "#475569", marginRight: 6, marginBottom: 4, cursor: "pointer", opacity: isChecked ? 1 : 0.6 }}>
+                              <label key={h.id} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: isChecked ? T.surface : T.paper, border: `1px solid ${isChecked ? T.line : T.line}`, borderRadius: 6, padding: "4px 10px", fontSize: 12.5, color: isChecked ? T.ink : T.muted, marginRight: 6, marginBottom: 4, cursor: "pointer", opacity: isChecked ? 1 : 0.6 }}>
                                 <input type="checkbox" checked={isChecked} onChange={() => {
                                   setUncheckedHandouts(prev => {
                                     const next = new Set(prev);
                                     if (next.has(h.id)) next.delete(h.id); else next.add(h.id);
                                     return next;
                                   });
-                                }} style={{ accentColor: "#3b82f6" }} />
+                                }} style={{ accentColor: T.accent }} />
                                 {h.title[eduLang] || h.title.en}
                               </label>
                             );
@@ -1453,9 +1574,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       )}
                       {detectedDrops.length > 0 && (
                         <div style={{ marginBottom: 10 }}>
-                          <div style={{ fontSize: "0.7rem", color: S.muted, marginBottom: 4 }}>Detected drops:</div>
+                          <div style={{ fontSize: 12.5, color: T.muted, marginBottom: 4 }}>Detected drops:</div>
                           {detectedDrops.map((d, i) => (
-                            <span key={i} style={{ display: "inline-block", background: "#1e293b", border: "1px solid #334155", borderRadius: 6, padding: "3px 10px", fontSize: "0.7rem", color: "#86efac", marginRight: 6, marginBottom: 4 }}>
+                            <span key={i} style={{ display: "inline-block", background: T.surface, border: `1px solid ${T.line}`, borderRadius: 6, padding: "3px 10px", fontSize: 12.5, color: T.green, marginRight: 6, marginBottom: 4 }}>
                               {d.name} {d.schedule} {d.eye}
                             </span>
                           ))}
@@ -1498,7 +1619,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                                 setTimeout(() => win.print(), 400);
                               }
                             }}
-                            style={{ background: "linear-gradient(135deg,#2563eb,#3b82f6)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
+                            style={btnSm("primary")}
                           >
                             Download {selected.length === 1 ? "1 Handout" : `${selected.length} Handouts`} PDF ({(eduLang || "en").toUpperCase()})
                           </button>
@@ -1507,7 +1628,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         {detectedDrops.length > 0 && (
                           <button
                             onClick={() => { setAutoDrops(detectedDrops); setAutoLang(detectedLang); setTab("drops"); }}
-                            style={{ background: "linear-gradient(135deg,#059669,#10b981)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontSize: "0.78rem", fontFamily: S.font, fontWeight: 600, cursor: "pointer" }}
+                            style={btnSm("secondary", { color: T.green })}
                           >
                             Print Drop Schedule ({(detectedLang || "en").toUpperCase()})
                           </button>
@@ -1518,8 +1639,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   );
                   } catch (e) { console.error("Education matcher error:", e); return null; }
                 })()}
+                </div>
               </div>
-            )}
+              );
+            })()}
             </>)}
           </div>
         )}
@@ -1532,7 +1655,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Reference Examples</div>
                 <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 2 }}>These teach the AI your note style. More examples = better output.</div>
               </div>
-              <button onClick={() => { setShowAddExample(!showAddExample); setNewExample({ label: "", shorthand: "" }); }} style={btnStyle("linear-gradient(135deg,#6366f1,#8b5cf6)", "#fff", { padding: "7px 16px" })}>
+              <button onClick={() => { setShowAddExample(!showAddExample); setNewExample({ label: "", shorthand: "" }); }} style={btnStyle(T.accent, T.onAccent, { padding: "7px 16px" })}>
                 {showAddExample ? "Cancel" : "+ Add Example"}
               </button>
             </div>
@@ -1540,7 +1663,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
             {/* Add form */}
             {showAddExample && (
               <div style={{ background: S.card, border: `1px solid ${S.accent}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
-                <div style={{ fontSize: "0.72rem", color: S.accentLight, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>New Example</div>
+                <div style={{ fontSize: "0.8rem", color: S.accentLight, fontWeight: 600, marginBottom: 10 }}>New Example</div>
                 <div style={{ marginBottom: 8 }}>
                   <label style={{ fontSize: "0.66rem", color: S.muted, display: "block", marginBottom: 3 }}>Label (e.g. "DME — injection visit")</label>
                   <input value={newExample.label} onChange={e => setNewExample(p => ({ ...p, label: e.target.value }))} style={inputStyle()} placeholder="Visit type description" />
@@ -1549,7 +1672,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   <label style={{ fontSize: "0.66rem", color: S.muted, display: "block", marginBottom: 3 }}>Full note (the way you want the output to look)</label>
                   <textarea value={newExample.shorthand} onChange={e => setNewExample(p => ({ ...p, shorthand: e.target.value }))} rows={8} placeholder="Paste a complete A/P note example..." style={inputStyle({ resize: "vertical", lineHeight: 1.5 })} />
                 </div>
-                <button onClick={addExample} disabled={!newExample.label.trim() || !newExample.shorthand.trim()} style={btnStyle(!newExample.label.trim() || !newExample.shorthand.trim() ? S.card : "#059669", !newExample.label.trim() || !newExample.shorthand.trim() ? "#475569" : "#fff")}>
+                <button onClick={addExample} disabled={!newExample.label.trim() || !newExample.shorthand.trim()} style={btnStyle(!newExample.label.trim() || !newExample.shorthand.trim() ? T.accentSoft : T.green, !newExample.label.trim() || !newExample.shorthand.trim() ? T.muted : T.onAccent)}>
                   Save Example
                 </button>
               </div>
@@ -1563,20 +1686,20 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     <input value={editingExample.label} onChange={e => setEditingExample(p => ({ ...p, label: e.target.value }))} style={inputStyle({ marginBottom: 8 })} />
                     <textarea value={editingExample.shorthand} onChange={e => setEditingExample(p => ({ ...p, shorthand: e.target.value }))} rows={6} style={inputStyle({ resize: "vertical", lineHeight: 1.5, marginBottom: 8 })} />
                     <div style={{ display: "flex", gap: 6 }}>
-                      <button onClick={saveEditingExample} style={btnStyle("#059669", "#fff", { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
+                      <button onClick={saveEditingExample} style={btnStyle(T.green, T.onAccent, { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
                       <button onClick={() => setEditingExample(null)} style={btnStyle("transparent", S.muted, { fontSize: "0.68rem", padding: "4px 10px", border: `1px solid ${S.border}` })}>Cancel</button>
                     </div>
                   </div>
                 ) : (
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <span style={{ background: "#312e81", color: S.accentLight, padding: "3px 10px", borderRadius: 4, fontSize: "0.76rem", fontWeight: 700 }}>{ex.label}</span>
+                      <span style={{ background: T.accentSoft, color: S.accentLight, padding: "3px 10px", borderRadius: 4, fontSize: "0.76rem", fontWeight: 700 }}>{ex.label}</span>
                       <div style={{ display: "flex", gap: 4 }}>
                         <button onClick={() => setEditingExample({ ...ex })} style={btnStyle("transparent", S.muted, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${S.border}` })}>Edit</button>
-                        {!ex.builtin && <button onClick={() => deleteExample(ex.id)} style={btnStyle("transparent", "#f87171", { fontSize: "0.64rem", padding: "3px 8px", border: "1px solid #7f1d1d" })}>Del</button>}
+                        {!ex.builtin && <button onClick={() => deleteExample(ex.id)} style={btnStyle("transparent", T.red, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${T.red}` })}>Del</button>}
                       </div>
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#94a3b8", lineHeight: 1.5, whiteSpace: "pre-wrap", maxHeight: 120, overflowY: "auto", fontFamily: S.mono }}>
+                    <div style={{ fontSize: "0.75rem", color: T.muted, lineHeight: 1.5, whiteSpace: "pre-wrap", maxHeight: 120, overflowY: "auto", fontFamily: S.mono }}>
                       {ex.shorthand}
                     </div>
                   </div>
@@ -1594,14 +1717,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Expansion Rules</div>
                 <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 2 }}>Auto-applied to counseling language. No API call needed.</div>
               </div>
-              <button onClick={() => { setShowAddRule(!showAddRule); setNewRule({ trigger: "", expansion: "", type: "inline" }); }} style={btnStyle("linear-gradient(135deg,#6366f1,#8b5cf6)", "#fff", { padding: "7px 16px" })}>
+              <button onClick={() => { setShowAddRule(!showAddRule); setNewRule({ trigger: "", expansion: "", type: "inline" }); }} style={btnStyle(T.accent, T.onAccent, { padding: "7px 16px" })}>
                 {showAddRule ? "Cancel" : "+ Add Rule"}
               </button>
             </div>
 
             {showAddRule && (
               <div style={{ background: S.card, border: `1px solid ${S.accent}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
-                <div style={{ fontSize: "0.72rem", color: S.accentLight, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>New Rule</div>
+                <div style={{ fontSize: "0.8rem", color: S.accentLight, fontWeight: 600, marginBottom: 10 }}>New Rule</div>
                 <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                   <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.76rem", color: S.text, cursor: "pointer" }}>
                     <input type="radio" name="newRuleType" checked={newRule.type === "inline"} onChange={() => setNewRule(p => ({ ...p, type: "inline" }))} /> Inline
@@ -1620,7 +1743,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   <label style={{ fontSize: "0.66rem", color: S.muted, display: "block", marginBottom: 3 }}>Expansion text</label>
                   <textarea value={newRule.expansion} onChange={e => setNewRule(p => ({ ...p, expansion: e.target.value }))} rows={2} placeholder="The text that replaces or is appended..." style={inputStyle({ resize: "vertical", lineHeight: 1.5 })} />
                 </div>
-                <button onClick={addRule} disabled={!newRule.trigger.trim() || !newRule.expansion.trim()} style={btnStyle(!newRule.trigger.trim() || !newRule.expansion.trim() ? S.card : "#059669", !newRule.trigger.trim() || !newRule.expansion.trim() ? "#475569" : "#fff")}>
+                <button onClick={addRule} disabled={!newRule.trigger.trim() || !newRule.expansion.trim()} style={btnStyle(!newRule.trigger.trim() || !newRule.expansion.trim() ? T.accentSoft : T.green, !newRule.trigger.trim() || !newRule.expansion.trim() ? T.muted : T.onAccent)}>
                   Save Rule
                 </button>
               </div>
@@ -1628,7 +1751,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
             {/* Inline rules */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: "0.7rem", color: S.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
+              <div style={{ fontSize: "0.7rem", color: S.muted, fontWeight: 600, marginBottom: 8, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
                 Inline Replacements ({inlineRules.length})
               </div>
               {inlineRules.map(rule => (
@@ -1640,19 +1763,19 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         <input value={editingRule.expansion} onChange={e => setEditingRule(p => ({ ...p, expansion: e.target.value }))} style={inputStyle({ flex: 1 })} />
                       </div>
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button onClick={saveEditingRule} style={btnStyle("#059669", "#fff", { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
+                        <button onClick={saveEditingRule} style={btnStyle(T.green, T.onAccent, { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
                         <button onClick={() => setEditingRule(null)} style={btnStyle("transparent", S.muted, { fontSize: "0.68rem", padding: "4px 10px", border: `1px solid ${S.border}` })}>Cancel</button>
                       </div>
                     </div>
                   ) : (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ background: "#312e81", color: S.accentLight, padding: "2px 8px", borderRadius: 4, fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700 }}>{rule.trigger}</span>
-                        <div style={{ fontSize: "0.78rem", color: "#94a3b8", marginTop: 4, lineHeight: 1.4, wordBreak: "break-word" }}>{rule.expansion}</div>
+                        <span style={{ background: T.accentSoft, color: S.accentLight, padding: "2px 8px", borderRadius: 4, fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700 }}>{rule.trigger}</span>
+                        <div style={{ fontSize: "0.78rem", color: T.muted, marginTop: 4, lineHeight: 1.4, wordBreak: "break-word" }}>{rule.expansion}</div>
                       </div>
                       <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                         <button onClick={() => setEditingRule({ ...rule })} style={btnStyle("transparent", S.muted, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${S.border}` })}>Edit</button>
-                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "inline")} style={btnStyle("transparent", "#f87171", { fontSize: "0.64rem", padding: "3px 8px", border: "1px solid #7f1d1d" })}>Del</button>}
+                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "inline")} style={btnStyle("transparent", T.red, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${T.red}` })}>Del</button>}
                       </div>
                     </div>
                   )}
@@ -1662,7 +1785,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
             {/* Plan rules */}
             <div>
-              <div style={{ fontSize: "0.7rem", color: S.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
+              <div style={{ fontSize: "0.7rem", color: S.muted, fontWeight: 600, marginBottom: 8, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
                 Plan-Appended ({planRules.length})
               </div>
               {planRules.map(rule => (
@@ -1674,20 +1797,20 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         <input value={editingRule.expansion} onChange={e => setEditingRule(p => ({ ...p, expansion: e.target.value }))} style={inputStyle({ flex: 1 })} />
                       </div>
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button onClick={saveEditingRule} style={btnStyle("#059669", "#fff", { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
+                        <button onClick={saveEditingRule} style={btnStyle(T.green, T.onAccent, { fontSize: "0.68rem", padding: "4px 10px" })}>Save</button>
                         <button onClick={() => setEditingRule(null)} style={btnStyle("transparent", S.muted, { fontSize: "0.68rem", padding: "4px 10px", border: `1px solid ${S.border}` })}>Cancel</button>
                       </div>
                     </div>
                   ) : (
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ background: "#312e81", color: S.accentLight, padding: "2px 8px", borderRadius: 4, fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700 }}>{rule.triggers}</span>
+                        <span style={{ background: T.accentSoft, color: S.accentLight, padding: "2px 8px", borderRadius: 4, fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700 }}>{rule.triggers}</span>
                         <span style={{ fontSize: "0.64rem", color: S.muted, marginLeft: 6 }}>&#8594; appended under Plan</span>
-                        <div style={{ fontSize: "0.78rem", color: "#94a3b8", marginTop: 4, lineHeight: 1.4, wordBreak: "break-word" }}>{rule.expansion}</div>
+                        <div style={{ fontSize: "0.78rem", color: T.muted, marginTop: 4, lineHeight: 1.4, wordBreak: "break-word" }}>{rule.expansion}</div>
                       </div>
                       <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                         <button onClick={() => setEditingRule({ ...rule })} style={btnStyle("transparent", S.muted, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${S.border}` })}>Edit</button>
-                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "plan")} style={btnStyle("transparent", "#f87171", { fontSize: "0.64rem", padding: "3px 8px", border: "1px solid #7f1d1d" })}>Del</button>}
+                        {!rule.builtin && <button onClick={() => deleteRule(rule.id, "plan")} style={btnStyle("transparent", T.red, { fontSize: "0.64rem", padding: "3px 8px", border: `1px solid ${T.red}` })}>Del</button>}
                       </div>
                     </div>
                   )}
@@ -1724,14 +1847,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
         {/* ── AI CODING TAB ────────────────────────────────────── */}
         {tab === "coding" && (
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ maxWidth: 880, margin: "0 auto" }}>
             <AICodingAssistant showReimbursement={true} />
           </div>
         )}
 
         {/* ── RATE COMPARISON TAB ──────────────────────────────── */}
         {tab === "rates" && (
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ maxWidth: 880, margin: "0 auto" }}>
             <RateComparison embedded />
           </div>
         )}
@@ -1759,12 +1882,12 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         {tab === "evidence" && (
           <div style={{ padding: "24px", maxWidth: 720, margin: "0 auto" }}>
             <div style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: 14, overflow: "hidden" }}>
-              <div style={{ background: "linear-gradient(135deg,#0ea5e9,#0284c7)", padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ background: T.accent, padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: "1.6rem" }}>📚</span>
-                <div style={{ fontSize: "1rem", fontWeight: 700, color: "#fff", fontFamily: S.font }}>OpenEvidence — AI Clinical Literature Search</div>
+                <div style={{ fontSize: "1rem", fontWeight: 700, color: T.onAccent, fontFamily: S.font }}>OpenEvidence — AI Clinical Literature Search</div>
               </div>
               <div style={{ padding: "18px 22px" }}>
-                <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: 1.55, marginBottom: 14 }}>
+                <div style={{ fontSize: "0.85rem", color: T.ink2, lineHeight: 1.55, marginBottom: 14 }}>
                   Evidence-based, peer-reviewed answers to clinical questions. Useful for quick lookups during a visit, complex case workups, and reviewing the latest literature on treatments and outcomes. Free for verified clinicians.
                 </div>
                 <div style={{ fontSize: "0.78rem", color: S.muted, marginBottom: 16, lineHeight: 1.5 }}>
@@ -1776,8 +1899,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   rel="noopener noreferrer"
                   style={{
                     display: "inline-block",
-                    background: "linear-gradient(135deg,#0ea5e9,#0284c7)",
-                    color: "#fff",
+                    background: T.accent,
+                    color: T.onAccent,
                     padding: "10px 22px",
                     borderRadius: 8,
                     textDecoration: "none",
@@ -1792,8 +1915,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
             </div>
 
             <div style={{ marginTop: 18, padding: "12px 16px", background: S.card, border: `1px dashed ${S.border}`, borderRadius: 10 }}>
-              <div style={{ fontSize: "0.75rem", color: S.muted, fontWeight: 600, marginBottom: 6, fontFamily: S.mono, textTransform: "uppercase", letterSpacing: 0.5 }}>Examples to try</div>
-              <div style={{ fontSize: "0.78rem", color: "#cbd5e1", lineHeight: 1.6 }}>
+              <div style={{ fontSize: "0.75rem", color: S.muted, fontWeight: 600, marginBottom: 6 }}>Examples to try</div>
+              <div style={{ fontSize: "0.78rem", color: T.ink2, lineHeight: 1.6 }}>
                 "Latest evidence for Vabysmo dosing intervals in nAMD" &middot; "PRP vs anti-VEGF for PDR — long-term outcomes" &middot; "Best management of post-vitrectomy hypotony" &middot; "Pneumatic retinopexy success rates by detachment configuration"
               </div>
             </div>
@@ -2807,7 +2930,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 placeholder="Search codes... (e.g., wet amd left eye, BRVO, diabetic macular edema, floaters)"
                 style={{
                   display: "block", width: "100%", background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8,
-                  padding: "10px 14px", color: S.text, fontFamily: S.mono, fontSize: "0.84rem", boxSizing: "border-box", marginBottom: 14,
+                  padding: "10px 14px", color: S.text, fontFamily: S.font, fontSize: "0.84rem", boxSizing: "border-box", marginBottom: 14,
                 }}
               />
               <div style={{ fontSize: "0.68rem", color: S.muted, marginBottom: 10 }}>
@@ -2815,7 +2938,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               </div>
               {cats.map(cat => (
                 <div key={cat} style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: "0.7rem", color: S.accent, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
+                  <div style={{ fontSize: "0.7rem", color: S.accent, fontWeight: 600, marginBottom: 6, borderBottom: `1px solid ${S.border}`, paddingBottom: 4 }}>
                     {cat}
                   </div>
                   {filtered.filter(c => c.cat === cat).map((c, i) => (
@@ -2823,13 +2946,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       <span style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 4, padding: "1px 7px", fontSize: "0.74rem", fontFamily: S.mono, fontWeight: 700, color: S.accentLight, flexShrink: 0, minWidth: 90 }}>
                         {c.code}
                       </span>
-                      <span style={{ fontSize: "0.78rem", color: "#94a3b8", lineHeight: 1.4 }}>{c.desc}</span>
+                      <span style={{ fontSize: "0.78rem", color: T.muted, lineHeight: 1.4 }}>{c.desc}</span>
                     </div>
                   ))}
                 </div>
               ))}
               {filtered.length === 0 && (
-                <div style={{ textAlign: "center", padding: "40px 0", color: "#475569" }}>No codes match "{codeSearch}"</div>
+                <div style={{ textAlign: "center", padding: "40px 0", color: T.muted }}>No codes match "{codeSearch}"</div>
               )}
             </div>
           );
