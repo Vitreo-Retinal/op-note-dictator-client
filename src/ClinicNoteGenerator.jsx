@@ -1423,6 +1423,26 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   </div>
                 )}
 
+                {/* ── CC/HPI card (Sep 2026, per Mari) ────────────────
+                    Only rendered when an intake line was supplied. Sits ABOVE the
+                    A/P on purpose: that is the order it is pasted into NextGen. */}
+                {result.hpi && (
+                  <div style={field({ marginBottom: 14 })}>
+                    <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 6 }}>
+                      CC / HPI (audit-safe)
+                    </div>
+                    <div style={{ fontSize: 13, lineHeight: 1.6, color: T.ink2, whiteSpace: "pre-wrap" }}>
+                      {renderHpi(result.hpi)}
+                    </div>
+                    <div style={{ fontSize: 12, color: T.muted, marginTop: 8, lineHeight: 1.5 }}>
+                      Paste over the intake HPI in NextGen. Dates and treatment history stay in the A/P.
+                    </div>
+                    <button onClick={copyHpi} style={btnSm("secondary", { marginTop: 10, ...(hpiCopied ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
+                      <CopyIcon />{hpiCopied ? "Copied!" : "Copy CC/HPI"}
+                    </button>
+                  </div>
+                )}
+
                 {/* The note */}
                 <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
@@ -1502,25 +1522,6 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 )}
 
                 <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
-                {/* ── CC/HPI card (Sep 2026, per Mari) ────────────────
-                    Only rendered when an intake line was supplied. */}
-                {result.hpi && (
-                  <div style={field()}>
-                    <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, marginBottom: 6 }}>
-                      CC / HPI (audit-safe)
-                    </div>
-                    <div style={{ fontSize: 13, lineHeight: 1.6, color: T.ink2, whiteSpace: "pre-wrap" }}>
-                      {renderHpi(result.hpi)}
-                    </div>
-                    <div style={{ fontSize: 12, color: T.muted, marginTop: 8, lineHeight: 1.5 }}>
-                      Paste over the intake HPI in NextGen. Dates and treatment history stay in the A/P.
-                    </div>
-                    <button onClick={copyHpi} style={btnSm("secondary", { marginTop: 10, ...(hpiCopied ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
-                      <CopyIcon />{hpiCopied ? "Copied!" : "Copy CC/HPI"}
-                    </button>
-                  </div>
-                )}
-
                 {/* ── Auto-generated Patient Education ──────────────── */}
                 {(() => {
                   try {
@@ -1533,7 +1534,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   const detectedDrops = detectDropsFromPlan(result.note || "");
                   if (matched.length === 0 && detectedDrops.length === 0) return null;
                   return (
-                    <div style={field({ gridColumn: result.hpi ? "auto" : "1 / -1" })}>
+                    <div style={field({ gridColumn: "1 / -1" })}>
                       {(() => { const eduLang = eduLangOverride || detectedLang; return (<>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
                         <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600 }}>
