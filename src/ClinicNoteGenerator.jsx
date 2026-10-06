@@ -872,18 +872,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
       {/* Tabs */}
       <nav style={{ background: T.surface, borderBottom: `1px solid ${T.line}` }}>
-        <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", display: "flex", gap: 2, overflowX: "auto" }}>
+        <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", display: "flex", gap: 2, flexWrap: "wrap" }}>
         {[
           ["input", "Input"],
           ["output", "Output"],
           ["examples", "Examples"],
-          ["rules", "Expansion Rules"],
-          ["instructions", "My Instructions"],
-          ["coding", "AI Coding"],
-          ["rates", "Rate Comparison"],
-          ["inject", "Can We Inject?"],
-          ["education", "Patient Ed"],
-          ["drops", "Drop schedule"],
+          ["rules", "Rules"],
+          ["instructions", "Instructions"],
+          ["coding", "Coding"],
+          ["rates", "Rates"],
+          ["inject", "Can we inject?"],
+          ["education", "Patient ed"],
+          ["drops", "Drops"],
           ["evidence", "Evidence"],
           ...(surgeon && surgeon.hasRobocall ? [["robocall", "Robocall"]] : []),
         ].map(([id, label]) => (
