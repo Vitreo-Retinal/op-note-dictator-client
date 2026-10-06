@@ -135,7 +135,7 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
       <style>{RESPONSIVE_CSS}</style>
       {/* Top bar */}
       <header className="vra-bar" style={appBar}>
-        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 36, width: "auto", display: "block", mixBlendMode: "multiply" }} />
+        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", mixBlendMode: "multiply" }} />
         <span style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Practice Hub</div>
         <div style={{ flex: 1 }} />

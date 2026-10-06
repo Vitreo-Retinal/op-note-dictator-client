@@ -162,8 +162,10 @@ export function avatar(size = 26, extra = {}) {
 
 // 58px app bar (mockup .bar)
 export const appBar = {
-  background: T.surface, borderBottom: `1px solid ${T.line}`, height: 58, display: "flex",
-  alignItems: "center", gap: 14, padding: "0 24px", fontFamily: T.sans, boxSizing: "border-box",
+  background: T.surface, borderBottom: `1px solid ${T.line}`, height: 64, display: "flex",
+  alignItems: "center", gap: 14, fontFamily: T.sans, boxSizing: "border-box",
+  // Align the bar's contents with the centered 880px content column (24px inner padding)
+  padding: "0 max(24px, calc(50% - 416px))",
 };
 
 // Phone-width overrides for the class hooks used alongside inline styles

@@ -52,7 +52,7 @@ export default function PageBar({ onBack, title, sub, right, backLabel = "Hub", 
             <BackIcon />{backLabel}
           </button>
         )}
-        <img className="vra-bar-hide" src={logo} alt="Vitreo-Retinal Associates" style={{ height: 36, width: "auto", display: "block", flexShrink: 0, mixBlendMode: "multiply" }} />
+        <img className="vra-bar-hide" src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", flexShrink: 0, mixBlendMode: "multiply" }} />
         <span className="vra-bar-hide" style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{title}</div>
         {sub && <div className="vra-bar-hide" style={{ fontSize: 13, color: T.muted, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>{sub}</div>}
