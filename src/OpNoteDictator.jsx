@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { S, T, btn, btnSm, card, chip, field, fieldLabel, secHead } from "./theme.js";
-import PageBar from "./PageBar.jsx";
+import PageBar, { EmbedBar } from "./PageBar.jsx";
 import { MicIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
@@ -750,7 +750,7 @@ const styles = {
 };
 
 /* ── Component ────────────────────────────────────────────────── */
-export default function OpNoteDictator({ onBack }) {
+export default function OpNoteDictator({ onBack, embedded = false, backLabel = "Back" }) {
   const [selectedProc, setSelectedProc] = useState("ppv_erm");
   const [copied, setCopied] = useState(false);
   const [fields, setFields] = useState({
@@ -901,9 +901,11 @@ export default function OpNoteDictator({ onBack }) {
   );
 
   return (
-    <div style={styles.root}>
-      <PageBar onBack={onBack} backLabel="Back" title="Op Note Dictator — Retina-Rx" />
-      <div className="vra-side vra-wrap" style={styles.body}>
+    <div style={embedded ? { color: T.ink, fontFamily: T.sans } : styles.root}>
+      {embedded
+        ? <EmbedBar onBack={onBack} backLabel={backLabel} title="Op Note Dictator — Retina-Rx" />
+        : <PageBar onBack={onBack} backLabel={backLabel} title="Op Note Dictator — Retina-Rx" />}
+      <div className={embedded ? "vra-side" : "vra-side vra-wrap"} style={embedded ? { ...styles.body, maxWidth: "none", padding: 0 } : styles.body}>
         {/* Procedure selector */}
         <div className="vra-oplist" style={styles.sidebar}>
           <div style={styles.sidebarHead}>Procedure</div>

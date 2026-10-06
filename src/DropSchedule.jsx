@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { S, T, btn, btnSm, card, field, fieldLabel, secHead } from "./theme.js";
-import PageBar, { segWrap, segBtn, wrap } from "./PageBar.jsx";
+import PageBar, { segWrap, segBtn, wrap, EmbedBar } from "./PageBar.jsx";
 import { PrintIcon } from "./icons.jsx";
 
 // ── Styles (matches App.jsx theme) ─────────────────────────────────
@@ -238,7 +238,10 @@ function lookupDrug(name) {
 }
 
 // ── Component ──────────────────────────────────────────────────────
-export default function DropSchedule({ onBack, initialLang = "en", initialDrops = [] }) {
+export default function DropSchedule({ onBack, initialLang = "en", initialDrops = [], embedded = false, backLabel = "Back" }) {
+  // Defensive: tolerate null/undefined from callers opening a blank builder.
+  initialLang = initialLang || "en";
+  initialDrops = Array.isArray(initialDrops) ? initialDrops : [];
   const [meds, setMeds] = useState([]);
   const [medName, setMedName] = useState("");
   const [medType, setMedType] = useState("drop"); // drop or ointment
@@ -378,13 +381,15 @@ export default function DropSchedule({ onBack, initialLang = "en", initialDrops 
   const capDot = (color, size = 16) => ({ width: size, height: size, borderRadius: "50%", background: color, border: `1px solid ${color === "#FFFFFF" ? T.lineStrong : T.line}`, display: "inline-block", flexShrink: 0, boxSizing: "border-box" });
   const ready = medName.trim() && medSchedule.trim();
   return (
-    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
-      {/* Header */}
-      <PageBar onBack={onBack} backLabel="Back" title="Drop / Medication Schedule" />
+    <div style={embedded ? { fontFamily: T.sans, color: T.ink } : { minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
+      {/* Header — slim in-page toolbar when embedded in another page's tabs */}
+      {embedded
+        ? <EmbedBar onBack={onBack} backLabel={backLabel} title="Drop / Medication Schedule" />
+        : <PageBar onBack={onBack} backLabel={backLabel} title="Drop / Medication Schedule" />}
 
-      <div className="vra-wrap" style={wrap({ paddingTop: 4, paddingBottom: 40 })}>
+      <div className={embedded ? undefined : "vra-wrap"} style={embedded ? {} : wrap({ paddingTop: 4, paddingBottom: 40 })}>
         {/* Input form */}
-        <h2 style={secHead({ marginTop: 22 })}>Add medication</h2>
+        <h2 style={secHead({ marginTop: embedded ? 4 : 22 })}>Add medication</h2>
 
         {/* Row 1: Name + Type */}
         <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>

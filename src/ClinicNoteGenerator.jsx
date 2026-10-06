@@ -883,6 +883,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           ["rates", "Rate Comparison"],
           ["inject", "Can We Inject?"],
           ["education", "Patient Ed"],
+          ["drops", "Drop schedule"],
           ["evidence", "Evidence"],
           ...(surgeon && surgeon.hasRobocall ? [["robocall", "Robocall"]] : []),
         ].map(([id, label]) => (
@@ -1874,9 +1875,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
         {/* ── PATIENT EDUCATION TAB ──────────────────────────── */}
         {tab === "education" && (
-          <div style={{ margin: "-20px", minHeight: "80vh" }}>
-            <PatientEducation onBack={() => setTab("input")} />
-          </div>
+          <PatientEducation embedded backLabel="Back to note" onBack={() => setTab("input")} />
         )}
 
         {/* ── EVIDENCE (OpenEvidence) TAB ──────────────────── */}
@@ -1926,16 +1925,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
         {/* ── AUTO DROP SCHEDULE (pre-populated from note) ────── */}
         {tab === "drops" && (
-          <div style={{ margin: "-20px", minHeight: "80vh" }}>
-            <DropSchedule onBack={() => setTab("output")} initialDrops={autoDrops} initialLang={autoLang} />
-          </div>
+          <DropSchedule
+            embedded
+            backLabel={result ? "Output" : "Back to note"}
+            onBack={() => setTab(result ? "output" : "input")}
+            initialDrops={autoDrops}
+            initialLang={autoLang}
+          />
         )}
 
         {/* ── ROBOCALL TAB (MR only) ─────────────────────────── */}
         {tab === "robocall" && surgeon && surgeon.hasRobocall && (
-          <div style={{ margin: "-20px", minHeight: "80vh" }}>
-            <OpNoteDictator onBack={() => setTab("output")} />
-          </div>
+          <OpNoteDictator embedded backLabel="Output" onBack={() => setTab("output")} />
         )}
 
         {/* ── LEGACY CODES TAB (hidden, kept for reference) ─── */}

@@ -63,3 +63,19 @@ export default function PageBar({ onBack, title, sub, right, backLabel = "Hub", 
     </>
   );
 }
+
+// Slim in-page toolbar used instead of PageBar when a tool page is embedded
+// inside another page that already has an app bar (e.g. Note Generator tabs).
+export function EmbedBar({ onBack, backLabel = "Back", title, right }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
+      {onBack && (
+        <button onClick={onBack} style={backBtnStyle()}>
+          <BackIcon />{backLabel}
+        </button>
+      )}
+      <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, fontFamily: T.sans, minWidth: 0 }}>{title}</div>
+      {right && <><div style={{ flex: 1 }} />{right}</>}
+    </div>
+  );
+}

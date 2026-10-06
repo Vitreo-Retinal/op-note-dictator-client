@@ -3,7 +3,7 @@ import DropSchedule from "./DropSchedule.jsx";
 import { CATEGORIES, LANGUAGES, HANDOUTS } from "./data/educationContent.js";
 import { downloadHandoutPDF } from "./lib/educationHelpers.js";
 import { S, T, chip, btnSm } from "./theme.js";
-import PageBar, { segWrap, segBtn, wrap, searchInput } from "./PageBar.jsx";
+import PageBar, { segWrap, segBtn, wrap, searchInput, EmbedBar } from "./PageBar.jsx";
 import { ChevronRightIcon, ChevronDownIcon, SearchIcon, PrintIcon } from "./icons.jsx";
 export { HANDOUTS };
 
@@ -12,7 +12,7 @@ export { HANDOUTS };
 
 
 // ── Component ──────────────────────────────────────────────────────
-export default function PatientEducation({ onBack }) {
+export default function PatientEducation({ onBack, embedded = false, backLabel = "Back" }) {
   const [view, setView] = useState("handouts"); // "handouts" or "drops"
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -36,16 +36,23 @@ export default function PatientEducation({ onBack }) {
 
   // If viewing Drop Schedule, render that component
   if (view === "drops") {
-    return <DropSchedule onBack={() => setView("handouts")} />;
+    return <DropSchedule onBack={() => setView("handouts")} embedded={embedded} />;
   }
 
+  // Embedded inside another page (Note Generator tab): no app bar, no own
+  // content column — the host page supplies both.
+  const col = (extra = {}) => (embedded ? { ...extra } : wrap(extra));
+  const colClass = embedded ? undefined : "vra-wrap";
+
   return (
-    <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
+    <div style={embedded ? { fontFamily: T.sans, color: T.ink } : { minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       {/* Header */}
-      <PageBar onBack={onBack} backLabel="Back" title="Patient Education Library" />
+      {embedded
+        ? <EmbedBar onBack={onBack} backLabel={backLabel} title="Patient Education Library" />
+        : <PageBar onBack={onBack} backLabel={backLabel} title="Patient Education Library" />}
 
       {/* Toolbar: Drop Schedule + language picker */}
-      <div className="vra-wrap" style={wrap({ paddingTop: 20, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" })}>
+      <div className={colClass} style={col({ paddingTop: embedded ? 0 : 20, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" })}>
         {/* Drop Schedule button */}
         <button
           onClick={() => setView("drops")}
@@ -69,7 +76,7 @@ export default function PatientEducation({ onBack }) {
       </div>
 
       {/* Search + Filters */}
-      <div className="vra-wrap" style={wrap({ paddingTop: 14 })}>
+      <div className={colClass} style={col({ paddingTop: 14 })}>
         <div style={{ position: "relative", marginBottom: 12 }}>
           <span style={{ position: "absolute", left: 13, top: 13, color: T.muted, pointerEvents: "none" }}><SearchIcon /></span>
           <input
@@ -102,7 +109,7 @@ export default function PatientEducation({ onBack }) {
       </div>
 
       {/* Handout list */}
-      <div className="vra-wrap" style={wrap({ paddingBottom: 48 })}>
+      <div className={colClass} style={col({ paddingBottom: embedded ? 0 : 48 })}>
         {filtered.length === 0 && (
           <div style={{ textAlign: "center", padding: 40, color: T.muted, fontSize: 14 }}>
             No handouts match your search.

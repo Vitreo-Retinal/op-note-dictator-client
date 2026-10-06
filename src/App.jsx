@@ -7,8 +7,10 @@ import Documents from "./Documents.jsx";
 import RateComparison from "./RateComparison.jsx";
 import IntakeHpi from "./IntakeHpi.jsx";
 import CallBoard from "./CallBoard.jsx";
+import DropSchedule from "./DropSchedule.jsx";
+import SchedulePage from "./SchedulePage.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS } from "./theme.js";
-import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon } from "./icons.jsx";
+import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 
 const API_BASE =
@@ -78,6 +80,17 @@ function PasswordGate({ onSuccess }) {
 
 // ── Homepage ────────────────────────────────────────────────────────
 export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
+  // Oct 2026 — shared VRA Google Calendar view. Rendered as a full-width wide
+  // tile at the top of "Tools for everyone"; the six tiles below stay 3 + 3.
+  const scheduleTool = {
+    id: "schedule",
+    title: "Schedule",
+    icon: CalendarIcon,
+    description: "Who is where, on call, and out — doctors, techs, closures. From the VRA calendar.",
+    tags: ["2 weeks", "On call", "Techs"],
+  };
+  const ScheduleIcon = scheduleTool.icon;
+
   const sharedTools = [
     {
       id: "inject",
@@ -122,6 +135,14 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
       gradient: T.accent,
       tags: ["EN", "ES", "VI", "PT", "Fillable"],
     },
+    {
+      id: "drops",
+      title: "Drop Schedule",
+      icon: DropBottleIcon,
+      description: "Build and print a drop schedule for a patient — post-op or post-injection, in EN / ES / VI / PT.",
+      gradient: T.accent,
+      tags: ["Printable", "EN", "ES", "VI", "PT"],
+    },
   ];
 
   // "Monday, October 5"
@@ -145,16 +166,28 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
       <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", boxSizing: "border-box" }}>
         {/* Call board — practice-wide date + on-call + F/U counter. Sep 2026, per
             Mari: everyone (techs, managers, doctors) sees it, no PIN. */}
-        <CallBoard />
+        <CallBoard onOpenSchedule={() => onSelectTool("schedule")} />
 
         {/* Shared tools */}
         <h2 style={secHead()}>Tools for everyone</h2>
         <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
+          {/* Schedule — wide row tile, first in the shared grid */}
+          <button className="vra-tile-wide" onClick={() => onSelectTool(scheduleTool.id)}
+            style={tile({ gridColumn: "span 6", flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14 })}
+            onMouseEnter={hoverOn}
+            onMouseLeave={hoverOff}>
+            <span style={iconBox()}><ScheduleIcon /></span>
+            <span style={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
+              <span style={{ fontSize: 15, fontWeight: 600, color: T.ink, letterSpacing: "-0.01em" }}>{scheduleTool.title}</span>
+              <span style={{ fontSize: 13, color: T.muted, lineHeight: 1.45 }}>{scheduleTool.description}</span>
+            </span>
+            <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>Next 2 weeks</span>
+          </button>
           {sharedTools.map((tool, i) => {
             const Icon = tool.icon;
             return (
               <button key={tool.id} className="vra-tile" onClick={() => onSelectTool(tool.id)}
-                style={tile({ gridColumn: i < 3 ? "span 2" : "span 3", borderTop: `3px solid ${tool.gradient}` })}
+                style={tile({ gridColumn: "span 2", borderTop: `3px solid ${tool.gradient}` })}
                 onMouseEnter={hoverOn}
                 onMouseLeave={hoverOff}>
                 <span style={iconBox()}><Icon /></span>
@@ -350,7 +383,7 @@ function ManagerPinGate({ onSuccess, onCancel }) {
 export default function App() {
   const [authed, setAuthed] = useState(false);
   const [page, setPage] = useState("home");
-  // page: home | inject | coding | education | intakehpi | documents | dictator | doctor | pin
+  // page: home | schedule | inject | coding | education | intakehpi | documents | dictator | doctor | pin
   const [activeSurgeon, setActiveSurgeon] = useState(null);
 
   if (!authed) {
@@ -393,7 +426,16 @@ export default function App() {
     return <Documents onBack={() => setPage("home")} onOpenEducation={() => setPage("education")} />;
   }
 
+  // Oct 2026 — 2-week schedule from the shared VRA Google Calendar. No PIN.
+  if (page === "schedule") {
+    return <SchedulePage onBack={() => setPage("home")} />;
+  }
+
   // ── Legacy: Op Note Dictator (still accessible from Robocall tab) ──
+  if (page === "drops") {
+    return <DropSchedule onBack={() => setPage("home")} backLabel="Hub" />;
+  }
+
   if (page === "dictator") {
     return <OpNoteDictator onBack={() => setPage("home")} />;
   }

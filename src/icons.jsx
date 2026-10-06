@@ -66,3 +66,11 @@ export function SearchIcon({ size = 16 }) {
 export function PrintIcon({ size = 15 }) {
   return (<svg {...base(size, 2)}><path d="M7 9V3h10v6" /><rect x="3" y="9" width="18" height="8" rx="2" /><path d="M7 14h10v7H7z" /></svg>);
 }
+// Calendar: page with two binder rings, header rule, and a 2×3 dot grid.
+export function CalendarIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 9.5h17" /><path d="M8 3v4M16 3v4" /><path d="M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 17h.01M12 17h.01" strokeWidth="2.5" /></svg>);
+}
+// Eye-drop bottle: cap, tapered nozzle, rounded body, one drop below the tip.
+export function DropBottleIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><path d="M10.5 2h3v3h-3z" /><path d="M10.5 5L9 7.5h6L13.5 5" /><rect x="7" y="7.5" width="10" height="9" rx="2.5" /><path d="M12 18.5c-.9 1.1-1.3 1.8-1.3 2.3a1.3 1.3 0 002.6 0c0-.5-.4-1.2-1.3-2.3z" /></svg>);
+}
