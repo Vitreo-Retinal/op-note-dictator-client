@@ -9,7 +9,7 @@ import IntakeHpi from "./IntakeHpi.jsx";
 import CallBoard from "./CallBoard.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon } from "./icons.jsx";
-import logo from "./vra-logo.png";
+import logo from "./vra-logo-flat.png";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -61,7 +61,7 @@ function PasswordGate({ onSuccess }) {
   return (
     <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
       <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: T.rLg, padding: "36px 32px", width: "100%", maxWidth: 380, textAlign: "center", boxSizing: "border-box", margin: "0 16px", fontFamily: T.sans }}>
-        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", margin: "0 auto 18px", mixBlendMode: "multiply" }} />
+        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", margin: "0 auto 18px" }} />
         <div style={{ fontSize: 17, fontWeight: 600, color: T.ink, marginBottom: 4, letterSpacing: "-0.01em" }}>VRA Practice Hub</div>
         <div style={{ fontSize: 13, color: T.muted, marginBottom: 22 }}>Clinical Workflow Tools</div>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" autoFocus
@@ -135,7 +135,7 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
       <style>{RESPONSIVE_CSS}</style>
       {/* Top bar */}
       <header className="vra-bar" style={appBar}>
-        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", mixBlendMode: "multiply" }} />
+        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block" }} />
         <span style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Practice Hub</div>
         <div style={{ flex: 1 }} />

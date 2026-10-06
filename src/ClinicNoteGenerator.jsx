@@ -11,7 +11,7 @@ import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceC
 import { supabase } from "./supabaseClient.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
-import logo from "./vra-logo.png";
+import logo from "./vra-logo-flat.png";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -858,7 +858,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
             <BackIcon />Hub
           </button>
         )}
-        <img className="vra-bar-hide" src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", flexShrink: 0, mixBlendMode: "multiply" }} />
+        <img className="vra-bar-hide" src={logo} alt="Vitreo-Retinal Associates" style={{ height: 44, width: "auto", display: "block", flexShrink: 0 }} />
         <span className="vra-bar-hide" style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 }}>Clinic Note Generator</div>
         <div style={{ flex: 1 }} />
