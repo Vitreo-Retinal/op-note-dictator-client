@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { majorHoliday, injectionBlackout } from "./lib/practiceCalendar.js";
-import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite } from "./lib/vraSchedule.js";
-import { S, T } from "./theme.js";
+import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf } from "./lib/vraSchedule.js";
+import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 
 // ── Call Board — practice-wide, homepage header card (Sep 2026, per Mari) ─
@@ -23,6 +23,18 @@ const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct
 
 // "Wednesday, Sep 16, 2026"
 const longDate = (d) => `${DOW[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+
+// Doctor chip — soft background, doctor-colored initials, tiny AM/PM when half-day.
+export function DocChip({ doctor, half, size = "sm" }) {
+  const c = doctorColor(doctor);
+  const sm = size === "sm";
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", height: sm ? 20 : 22, padding: sm ? "0 6px" : "0 8px", borderRadius: 5, background: c.soft, color: c.fg, fontSize: sm ? 11.5 : 12, fontWeight: 600, fontFamily: T.sans, whiteSpace: "nowrap", flex: "none" }}>
+      {doctor}
+      {half && <small style={{ fontSize: sm ? 9.5 : 10.5, fontWeight: 500, opacity: 0.75, marginLeft: sm ? 2 : 3 }}>{half}</small>}
+    </span>
+  );
+}
 
 export default function CallBoard({ onOpenSchedule }) {
   const [sched, setSched] = useState(null); // null = loading
@@ -61,36 +73,94 @@ export default function CallBoard({ onOpenSchedule }) {
   // Injection blackout banner — shown when TODAY or the computed F/U date is Jan 1–14.
   const blackout = injectionBlackout(fuDate) || injectionBlackout(today);
 
-  const cell = { padding: "14px 18px", borderRight: `1px solid ${T.line}`, minWidth: 0 };
-  const k = { fontSize: 12, color: T.muted, marginBottom: 2, fontFamily: T.sans };
-  const v = { fontSize: 17, fontWeight: 600, letterSpacing: "-0.01em", color: T.accent, fontFamily: T.sans };
-  const sub = { fontSize: 13, color: T.muted, marginTop: 1, fontFamily: T.sans };
-  const line = { fontSize: 12.5, color: T.ink2, fontFamily: T.sans, lineHeight: 1.45, marginTop: 1 };
-  const unavailable = <div style={{ ...sub, marginTop: 2 }}>{loading ? "Loading…" : "Schedule unavailable"}</div>;
-
   const sites = todayDay ? sessionsBySite(todayDay.sessions) : [];
   const techs = todayDay ? todayDay.techs : null;
-  const names = (arr) => (arr && arr.length ? arr.join(", ") : "—");
+
+  // Mockup .band styles
+  const cell = { padding: "12px 16px", borderRight: `1px solid ${T.line}`, minWidth: 0, overflow: "hidden" };
+  const k = { fontSize: 12, color: T.muted, marginBottom: 3, fontFamily: T.sans, display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 };
+  const sub = { fontSize: 12.5, color: T.muted, marginTop: 2, fontFamily: T.sans };
+  const unavailable = <div style={sub}>{loading ? "Loading…" : "Schedule unavailable"}</div>;
+  const rowS = { display: "flex", alignItems: "center", gap: 3, margin: "1px 0", flexWrap: "nowrap", whiteSpace: "nowrap", minWidth: 0 };
+  const stS = { fontSize: 11.5, color: T.muted, width: 48, fontWeight: 500, flex: "none", fontFamily: T.sans };
+
+  // Techs grid (site | role | names): AM / PM with a slash separator.
+  const sep = <span style={{ color: T.lineStrong }}> / </span>;
+  const nm = (arr) => <b style={{ fontWeight: 600, color: T.accent }}>{arr && arr.length ? arr.join(" · ") : "—"}</b>;
+  const tCell = (bg, first, last, extra = {}) => ({
+    background: bg, padding: "2px 6px", whiteSpace: "nowrap", lineHeight: "18px", fontSize: 12.5, color: T.ink2, fontFamily: T.sans,
+    borderRadius: first ? "4px 0 0 4px" : last ? "0 4px 4px 0" : 0, ...extra,
+  });
+  const tLine = (key, bg, siteLabel, role, names, labelColor) => (
+    <Fragment key={key}>
+      <span style={tCell(bg, true, false, { fontSize: 11.5, fontWeight: 600, color: labelColor || T.muted, minWidth: 44 })}>{siteLabel}</span>
+      <span style={tCell(bg, false, false, { color: T.muted })}>{role}</span>
+      <span style={tCell(bg, false, true, { overflow: "hidden", textOverflow: "ellipsis", minWidth: 0 })}>{names}</span>
+    </Fragment>
+  );
+  const techLines = [];
+  if (techs) {
+    for (const site of ["WORC", "LEOM"]) {
+      const am = techBack(techs, site, "AM"), pm = techBack(techs, site, "PM");
+      if (!am.length && !pm.length) continue;
+      techLines.push(tLine(site, SITE_TINTS[site].bg, site, "Back", <>{nm(am)}{sep}{nm(pm)}</>));
+    }
+    const tr = translatorOf(techs);
+    if (tr) {
+      techLines.push(tLine("tr", TRANSLATOR.bg, "Translator", "",
+        tr.raw ? tr.raw : tr.same ? `${tr.am} all day` : <>{tr.am}{sep}{tr.pm}</>, TRANSLATOR.fg));
+    }
+  }
 
   return (
     <div style={{ marginTop: 24 }}>
       <div style={{ border: `1px solid ${T.line}`, borderRadius: T.rLg, background: T.surface, overflow: "hidden" }}>
-        {/* Header row — today's date + practice holiday */}
-        <div style={{ display: "flex", alignItems: "baseline", gap: "4px 12px", flexWrap: "wrap", padding: "10px 18px", borderBottom: `1px solid ${T.line}`, fontFamily: T.sans }}>
-          <span style={{ fontSize: 12, color: T.muted }}>Call Board</span>
-          <span style={{ fontSize: 15, fontWeight: 600, color: T.ink, letterSpacing: "-0.01em" }}>{longDate(today)}</span>
+        {/* Header row — today's date + practice holiday · F/U counter on the right */}
+        <div style={{ display: "flex", alignItems: "center", gap: "4px 10px", flexWrap: "wrap", padding: "8px 16px", borderBottom: `1px solid ${T.line}`, fontFamily: T.sans, fontSize: 12.5, color: T.muted }}>
+          <span>Call Board</span>
+          <span style={{ fontSize: 13.5, fontWeight: 600, color: T.ink }}>{longDate(today)}</span>
           {todayHoliday && (
-            <span style={{ fontSize: 13, color: T.amber }}>{todayHoliday} — office closed</span>
+            <span style={{ color: T.amber }}>{todayHoliday} — office closed</span>
           )}
+          <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px 6px", flexWrap: "wrap", color: T.ink2 }}>
+            <span style={{ marginRight: 4 }}>Follow-up counter</span>
+            <span>F/U in</span>
+            <input
+              type="number"
+              min="1"
+              max="104"
+              value={fuWeeks}
+              onChange={(e) => setFuWeeks(e.target.value)}
+              placeholder="—"
+              aria-label="Follow-up in weeks"
+              className="vra-input"
+              style={{ width: 52, height: 26, boxSizing: "border-box", background: T.surface, border: `1px solid ${T.line}`, borderRadius: 5, padding: "0 6px", color: T.ink, fontFamily: T.sans, fontSize: 12.5, textAlign: "center", outline: "none" }}
+            />
+            <span>weeks</span>
+            {fuDate && (
+              <>
+                <span style={{ fontWeight: 600, color: fuHoliday ? T.amber : T.ink, whiteSpace: "nowrap" }}>→ {longDate(fuDate)}</span>
+                {fuHoliday && <span style={{ color: T.amber }}>⚠ {fuHoliday} — office closed</span>}
+                {fuCall ? (
+                  <span style={{ color: T.muted }}>(on call that week: {fuCall.doctor})</span>
+                ) : (
+                  // The calendar's call rotation is only posted a few months
+                  // out — this is the normal state for far-out dates. Keep it
+                  // quiet, not alarming.
+                  <span style={{ fontSize: 12, color: T.muted, opacity: 0.8 }}>call schedule not posted for that week</span>
+                )}
+              </>
+            )}
+          </span>
         </div>
 
-        <div className="vra-callband" style={{ display: "grid", gridTemplateColumns: "minmax(160px, 0.8fr) 1.2fr 1.25fr minmax(200px, 1fr)" }}>
-          {/* Cell 1 — who's on call this week */}
+        <div className="vra-callband" style={{ display: "grid", gridTemplateColumns: ".7fr 1.6fr 2fr" }}>
+          {/* Cell 1 — who's on call */}
           <div style={cell}>
-            <div style={k}>On call this week</div>
+            <div style={k}><span>On call</span></div>
             {ok ? (
               <>
-                <div style={{ ...v, color: onCall && onCall.doctor ? T.accent : T.muted }}>
+                <div style={{ fontSize: 17, fontWeight: 600, fontFamily: T.sans, color: onCall && onCall.doctor ? doctorColor(onCall.doctor).fg : T.muted }}>
                   {onCall && onCall.doctor ? onCall.doctor : "—"}
                 </div>
                 {onCall && onCall.tech && <div style={sub}>Tech: {onCall.tech}</div>}
@@ -99,106 +169,56 @@ export default function CallBoard({ onOpenSchedule }) {
             ) : unavailable}
           </div>
 
-          {/* Cell 2 — where each doctor is today */}
+          {/* Cell 2 — where each doctor is today; one row per site, never wraps */}
           <div style={cell}>
-            <div style={k}>Today</div>
+            <div style={k}><span>Today</span></div>
             {!ok ? unavailable : (
-              <div style={{ marginTop: 2 }}>
+              <div>
                 {todayDay && todayDay.closed && (
-                  <div style={{ fontSize: 13.5, fontWeight: 600, color: T.amber, fontFamily: T.sans }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: T.amber, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     Closed{todayDay.closureName ? ` — ${todayDay.closureName}` : ""}
                   </div>
                 )}
-                {sites.map(({ site, docs }) => {
-                  const who = docs.map((d) => d.doctor + (d.half ? `(${d.half})` : "")).join(" · ");
-                  return (
-                    <div key={site} style={{ ...line, display: "flex", gap: 8 }}>
-                      <span style={{ width: 52, flexShrink: 0, color: T.muted, fontWeight: 500 }}>{site}</span>
-                      <span style={{ color: T.ink, fontWeight: 500, minWidth: 0 }}>{who}</span>
-                    </div>
-                  );
-                })}
+                {sites.map(({ site, docs }) => (
+                  <div key={site} style={rowS}>
+                    <span style={stS}>{site}</span>
+                    {docs.map((d) => <DocChip key={d.doctor} doctor={d.doctor} half={d.half} />)}
+                  </div>
+                ))}
                 {!sites.length && !(todayDay && todayDay.closed) && (
-                  <div style={{ ...sub, marginTop: 0 }}>No clinic sessions</div>
+                  <div style={sub}>No clinic sessions</div>
                 )}
                 {todayDay && todayDay.vacations.length > 0 && (
-                  <div style={{ ...line, color: T.muted }}>Out: {todayDay.vacations.join(", ")}</div>
+                  <div style={{ ...sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Out: {todayDay.vacations.join(", ")}</div>
                 )}
               </div>
             )}
           </div>
 
           {/* Cell 3 — techs today (from the daily tech sheet) */}
-          <div style={cell}>
-            <div style={{ ...k, display: "flex", alignItems: "baseline", gap: 8 }}>
+          <div style={{ ...cell, borderRight: 0 }}>
+            <div style={k}>
               <span>Techs today</span>
               {ok && onOpenSchedule && (
                 <button onClick={onOpenSchedule}
-                  style={{ marginLeft: "auto", background: "none", border: "none", padding: 0, cursor: "pointer", color: T.accent, fontFamily: T.sans, fontSize: 12, fontWeight: 500 }}>
-                  Full sheet
+                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: T.accent, fontFamily: T.sans, fontSize: 12, fontWeight: 500, whiteSpace: "nowrap" }}>
+                  Full board ›
                 </button>
               )}
             </div>
             {!ok ? unavailable : techs ? (
-              <div style={{ marginTop: 2 }}>
-                <div style={{ fontSize: 13.5, fontWeight: 600, color: T.ink, fontFamily: T.sans, marginBottom: 1 }}>{techs.headline}</div>
-                <div style={line}>
-                  Back AM: {names(techs.worcesterBackAM)} / Back PM: {names(techs.worcesterBackPM)}
-                </div>
-                {((techs.leominsterBackAM || []).length > 0 || (techs.leominsterBackPM || []).length > 0) && (
-                  <div style={line}>
-                    Leominster: AM {names(techs.leominsterBackAM)}{(techs.leominsterBackPM || []).length > 0 ? ` / PM ${names(techs.leominsterBackPM)}` : ""}
+              <>
+                {techLines.length > 0 && (
+                  <div style={{ display: "grid", gridTemplateColumns: "auto auto minmax(0, 1fr)", marginLeft: -6, rowGap: 3, marginTop: 2 }}>
+                    {techLines}
                   </div>
                 )}
-                {techs.off && techs.off.length > 0 && (
-                  <div style={{ ...line, color: T.muted }}>Off: {techs.off.join(", ")}</div>
-                )}
-              </div>
+                <div style={{ ...sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {techs.headline ? `${techs.headline} · ` : ""}AM / PM
+                </div>
+              </>
             ) : (
-              <div style={{ ...sub, marginTop: 2 }}>No tech sheet today</div>
-            )}
-          </div>
-
-          {/* Cell 4 — F/U week counter */}
-          <div style={{ ...cell, borderRight: 0 }}>
-            <div style={k}>Follow-up counter</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
-              <span style={{ fontSize: 13, color: T.muted, fontFamily: T.sans }}>F/U in</span>
-              <input
-                type="number"
-                min="1"
-                max="104"
-                value={fuWeeks}
-                onChange={(e) => setFuWeeks(e.target.value)}
-                placeholder="—"
-                className="vra-input"
-                style={{ width: 56, height: 30, boxSizing: "border-box", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, textAlign: "center", outline: "none" }}
-              />
-              <span style={{ fontSize: 13, color: T.muted, fontFamily: T.sans }}>weeks</span>
-            </div>
-            {fuDate && (
-              <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 1 }}>
-                <span style={{ fontSize: 15, color: fuHoliday ? T.amber : T.ink, fontFamily: T.sans, fontWeight: 600, letterSpacing: "-0.01em" }}>
-                  {longDate(fuDate)}
-                </span>
-                {fuHoliday && (
-                  <span style={{ fontSize: 12.5, color: T.amber, fontFamily: T.sans }}>
-                    ⚠ {fuHoliday} — office closed
-                  </span>
-                )}
-                {fuCall ? (
-                  <span style={{ fontSize: 12.5, color: T.muted, fontFamily: T.sans }}>
-                    (on call that week: {fuCall.doctor})
-                  </span>
-                ) : (
-                  // The calendar's call rotation is only posted a few months
-                  // out — this is the normal state for far-out dates. Keep it
-                  // quiet, not alarming.
-                  <span style={{ fontSize: 12, color: T.muted, fontFamily: T.sans, opacity: 0.8 }}>
-                    call schedule not posted for that week
-                  </span>
-                )}
-              </div>
+              <div style={sub}>No tech sheet today</div>
             )}
           </div>
         </div>

@@ -77,3 +77,35 @@ export function sessionsBySite(sessions) {
     return { site, docs };
   });
 }
+
+/**
+ * One doctor's day: { AM: [sites], PM: [sites] } (site order). Empty arrays
+ * when the doctor has no session in that half.
+ */
+export function doctorHalves(sessions, doctor) {
+  const res = { AM: [], PM: [] };
+  for (const s of sessions || []) {
+    if (s.doctor !== doctor || !res[s.part] || res[s.part].includes(s.site)) continue;
+    res[s.part].push(s.site);
+  }
+  res.AM.sort(bySiteOrder);
+  res.PM.sort(bySiteOrder);
+  return res;
+}
+
+/** Tech sheet: Back names for a site/half — structured roles when present, else the older flat fields. */
+export function techBack(techs, site, half) {
+  if (!techs) return [];
+  if (techs.roles && techs.roles[site] && techs.roles[site][half]) return techs.roles[site][half].back || [];
+  const key = `${site === "WORC" ? "worcester" : "leominster"}Back${half}`;
+  return techs[key] || [];
+}
+
+/** Translator → "Katherine / Yarelis" parts: { am, pm, same } or { raw } for older servers. */
+export function translatorOf(techs) {
+  const t = techs && techs.translator;
+  if (!t) return null;
+  if (typeof t === "string") return { raw: t };
+  if (!t.AM && !t.PM) return null;
+  return { am: t.AM || "—", pm: t.PM || "—", same: t.AM && t.AM === t.PM };
+}

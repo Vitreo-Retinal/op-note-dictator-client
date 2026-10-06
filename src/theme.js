@@ -31,6 +31,27 @@ export const T = {
   focusRing: "0 0 0 3px #EDF3F7",
 };
 
+// Doctor colors — from the VRA Google calendar / Brittany's master schedule.
+// Key order = display row order everywhere (Brittany's order).
+export const DOCTOR_COLORS = {
+  FJM: { fg: "#C62828", soft: "#FBE9E7" },
+  BJB: { fg: "#2E7D32", soft: "#E8F5E9" },
+  BKH: { fg: "#3949AB", soft: "#E8EAF6" },
+  MR: { fg: "#7B1FA2", soft: "#F3E5F5" },
+  WSF: { fg: "#0288D1", soft: "#E1F5FE" },
+};
+export const DOCTOR_ORDER = Object.keys(DOCTOR_COLORS);
+// Unknown initials fall back to the accent pair.
+export const doctorColor = (d) => DOCTOR_COLORS[d] || { fg: T.accent, soft: T.accentSoft };
+
+// Tech-site tints — Nana's sheet: yellow = Leominster.
+export const SITE_TINTS = {
+  WORC: { bg: T.accentSoft, line: T.line, head: T.paper, text: T.muted },
+  LEOM: { bg: "#FFF8DC", line: "#EADFA3", head: "#FBF2C8", text: T.amber },
+};
+// On-call translator (green).
+export const TRANSLATOR = { bg: "#E8F5E9", fg: "#2E7D32" };
+
 // Backward-compatible alias object: the old dark-theme key names, mapped to light values.
 export const S = {
   bg: T.paper,
@@ -195,6 +216,10 @@ export const RESPONSIVE_CSS = `
   .vra-callband{grid-template-columns:1fr!important}
   .vra-callband>div{border-right:0!important;border-bottom:1px solid ${T.line}}
   .vra-callband>div:last-child{border-bottom:0}
+  .vra-sites{grid-template-columns:1fr!important}
+  .vra-sites>div{border-right:0!important;border-bottom:1px solid ${T.line}}
+  .vra-sites>div:last-child{border-bottom:0}
+  .vra-legend{display:none!important}
   .vra-row2{grid-template-columns:1fr!important}
   .vra-calc-out{margin-left:0!important}
   .vra-seg{display:flex!important;width:100%}
