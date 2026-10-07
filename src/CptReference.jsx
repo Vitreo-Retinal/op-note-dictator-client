@@ -18,7 +18,35 @@ const AI_API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-s
 
 // phoneLayout (Oct 2026): chat-first phone screen — conversation in the page,
 // input bar fixed on top of the hub tab bar. Desktop keeps the chat panel.
-export function AICodingAssistant({ showReimbursement = false, phoneLayout = false }) {
+// The front desk "Ask" page reuses this chat with its own endpoint, examples
+// and wording (props below); defaults = the coding assistant.
+const CODING_SUGGESTIONS = [
+  "PPV ILM peel gas for mac hole",
+  "Can I bill E/M with injection?",
+  "PPV + buckle for macula-off RD",
+  "How do I code Yamane?",
+  "67041 vs 67042 — when to use each?",
+];
+const CODING_PHONE_EXAMPLES = [
+  "Can I bill E/M with injection?",
+  "PPV + buckle for macula-off RD",
+  "67041 vs 67042 — when to use each?",
+];
+// Escape model text before the light markdown (bold / bullets) is applied.
+const escHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+export function AICodingAssistant({
+  showReimbursement = false, phoneLayout = false,
+  endpoint = "/api/cpt-assist",
+  examples = CODING_PHONE_EXAMPLES,
+  suggestions = CODING_SUGGESTIONS,
+  emptyText = "Ask any retina coding question",
+  placeholder = "Ask a coding question...",
+  desktopTitle = "AI Coding Assistant",
+  desktopIntro = "Ask any retina billing question — CPT codes, ICD-10 pairing, modifiers, bundling, E/M, global periods.",
+  desktopPlaceholder = "Describe your case or ask a billing question...",
+  sendSuggestions = false,
+}) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -57,7 +85,7 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
     setLoading(true);
 
     try {
-      const res = await fetch(`${AI_API_BASE}/api/cpt-assist`, {
+      const res = await fetch(`${AI_API_BASE}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updated, showReimbursement }),
@@ -92,7 +120,7 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
     const lines = text.split("\n");
     return lines.map((line, i) => {
       // Bold
-      let rendered = line.replace(/\*\*(.+?)\*\*/g, `<strong style="color:${T.ink};font-weight:600">$1</strong>`);
+      let rendered = escHtml(line).replace(/\*\*(.+?)\*\*/g, `<strong style="color:${T.ink};font-weight:600">$1</strong>`);
       // Bullet points
       const isBullet = /^\s*[-•]\s/.test(line);
       if (isBullet) {
@@ -136,27 +164,17 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
   // Reset the one-line textarea after sending.
   useEffect(() => { if (phoneLayout && !input && taRef.current) taRef.current.style.height = ""; }, [input, phoneLayout]);
 
-  const SUGGESTIONS = [
-    "PPV ILM peel gas for mac hole",
-    "Can I bill E/M with injection?",
-    "PPV + buckle for macula-off RD",
-    "How do I code Yamane?",
-    "67041 vs 67042 — when to use each?",
-  ];
+  const SUGGESTIONS = suggestions;
 
   if (phoneLayout) {
-    const PHONE_EXAMPLES = [
-      "Can I bill E/M with injection?",
-      "PPV + buckle for macula-off RD",
-      "67041 vs 67042 — when to use each?",
-    ];
+    const PHONE_EXAMPLES = examples;
     const lastAnswerIdx = messages.map((m) => m.role).lastIndexOf("assistant");
     const canSend = hasInput && !loading;
     return (
       <div style={{ fontFamily: T.sans }}>
         {messages.length === 0 && !loading ? (
           <div style={{ paddingTop: 22 }}>
-            <div style={{ fontSize: 14, color: T.muted, marginBottom: 12 }}>Ask any retina coding question</div>
+            <div style={{ fontSize: 14, color: T.muted, marginBottom: 12 }}>{emptyText}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {PHONE_EXAMPLES.map((q) => (
                 <button key={q} onClick={() => sendMessage(q)}
@@ -207,7 +225,7 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             onInput={(e) => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight + 2, 132) + "px"; }}
-            placeholder="Ask a coding question..."
+            placeholder={placeholder}
             rows={1}
             enterKeyHint="send"
             style={{
@@ -234,15 +252,15 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
       <div style={{ flex: 1, overflowY: "auto", padding: "18px 0 12px" }}>
         {messages.length === 0 && (
           <div style={{ textAlign: "center", marginTop: 48, color: T.muted, padding: "0 8px" }}>
-            <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 8, color: T.accent }}>AI Coding Assistant</div>
+            <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 8, color: T.accent }}>{desktopTitle}</div>
             <div style={{ fontSize: 13.5, lineHeight: 1.6, maxWidth: 500, margin: "0 auto", color: T.ink2 }}>
-              Ask any retina billing question — CPT codes, ICD-10 pairing, modifiers, bundling, E/M, global periods.
+              {desktopIntro}
             </div>
             <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
               {SUGGESTIONS.map((q) => (
                 <button
                   key={q}
-                  onClick={() => { setInput(q); }}
+                  onClick={() => { if (sendSuggestions) sendMessage(q); else setInput(q); }}
                   style={{
                     padding: "6px 12px", borderRadius: 999, border: `1px solid ${T.line}`,
                     background: T.surface, color: T.ink, fontSize: 12.5, cursor: "pointer",
@@ -306,7 +324,7 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Describe your case or ask a billing question..."
+          placeholder={desktopPlaceholder}
           rows={1}
           style={{
             display: "block", width: "100%", padding: "12px 14px", background: "transparent", border: 0,

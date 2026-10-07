@@ -2,7 +2,7 @@ import { useState, useEffect, Fragment } from "react";
 import PageBar, { wrap, segWrap, segBtn } from "./PageBar.jsx";
 import { DocChip, ManagersLine, StaffLine } from "./CallBoard.jsx";
 import { T, card, DOCTOR_ORDER, SITE_TINTS, doctorColor } from "./theme.js";
-import { AlertIcon } from "./icons.jsx";
+import { AlertIcon, PhoneIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
 import SchedulePhone, { nextTiles } from "./SchedulePhone.jsx";
 import {
@@ -57,10 +57,10 @@ const TECH_ROWS = [
 // Date picker: reloads the schedule starting on the picked date. "Today" resets.
 function DatePick({ from, todayYmd, onChange, phone }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: phone ? 6 : 8 }}>
       <input type="date" value={from} aria-label="Schedule start date" className="vra-input"
         onChange={(e) => { if (/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) onChange(e.target.value); }}
-        style={{ height: phone ? 38 : 32, padding: "0 8px", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, color: T.ink, fontFamily: T.sans, fontSize: phone ? 16 : 13, outline: "none", boxSizing: "border-box", minWidth: 0 }} />
+        style={{ height: phone ? 38 : 32, padding: "0 8px", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, color: T.ink, fontFamily: T.sans, fontSize: phone ? 16 : 13, outline: "none", boxSizing: "border-box", minWidth: 0, ...(phone ? { width: 138, padding: "0 6px" } : {}) }} />
       <button onClick={() => onChange(todayYmd)} disabled={from === todayYmd}
         style={{ height: phone ? 38 : 32, padding: "0 12px", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, color: from === todayYmd ? T.muted : T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: from === todayYmd ? "default" : "pointer", whiteSpace: "nowrap" }}>
         Today
@@ -70,7 +70,8 @@ function DatePick({ from, todayYmd, onChange, phone }) {
 }
 
 // initialDay (phone, Front desk Home "Next days" tile): open on that day.
-export default function SchedulePage({ onBack, initialDay }) {
+// onOpenExtensions (Oct 2026): "Extensions" link in the header → Phone extensions page.
+export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   const { phone } = usePhone();
   const todayYmd = ymdOf(new Date());
   const [from, setFrom] = useState(initialDay || todayYmd); // first day shown (date picker)
@@ -332,6 +333,12 @@ export default function SchedulePage({ onBack, initialDay }) {
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px 8px" }}>
           <b style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 600, color: T.ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{shortDate(day ? day.date : from)}</b>
           <DatePick from={from} todayYmd={todayYmd} onChange={pickDate} phone />
+          {onOpenExtensions && (
+            <button type="button" onClick={onOpenExtensions} aria-label="Phone extensions"
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 38, height: 38, padding: 0, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, color: T.accent, cursor: "pointer", flex: "none", boxSizing: "border-box" }}>
+              <PhoneIcon size={18} />
+            </button>
+          )}
         </div>
         {(sched === null || !ok) && <div style={{ padding: "12px 16px" }}>{statusBlock}</div>}
         {ok && day && <SchedulePhone day={day} tiles={tiles} selected={from} onPick={setFrom} open={openFolds} onToggle={toggleFold} />}
@@ -342,7 +349,13 @@ export default function SchedulePage({ onBack, initialDay }) {
 
   return (
     <div style={{ minHeight: "100vh", background: T.paper, color: T.ink, fontFamily: T.sans }}>
-      <PageBar onBack={onBack} backLabel="Hub" title="Schedule" sub="VRA calendar · next 2 weeks" />
+      <PageBar onBack={onBack} backLabel="Hub" title="Schedule" sub="VRA calendar · next 2 weeks"
+        right={onOpenExtensions && (
+          <button type="button" onClick={onOpenExtensions}
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: 0, padding: "4px 0", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>
+            <PhoneIcon size={15} />Phone extensions ›
+          </button>
+        )} />
 
       <div className="vra-wrap" style={wrap({ paddingTop: 20, paddingBottom: 40 })}>
         {/* View switch · start-date picker · doctor legend */}

@@ -3,7 +3,7 @@ import { T, doctorColor } from "./theme.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine, StaffLine } from "./CallBoard.jsx";
-import { BriefcaseIcon, LockIcon, ChevronRightIcon } from "./icons.jsx";
+import { BriefcaseIcon, LockIcon, ChevronRightIcon, ChatIcon, PhoneIcon } from "./icons.jsx";
 
 // ── Phone Home (Oct 2026, approved mockup "home-compact" A + B) ──────
 // One screen, no scrolling at 390×844: header, (doctor only) "your day" card,
@@ -108,7 +108,10 @@ function alertsOf(days, todayYmd) {
  * with up to three alerts; if it ever overflows, fold the alerts to one
  * "N alerts ›" line that calls onOpenSchedule.
  */
-export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch, onOpenSchedule, onOpenDay }) {
+// Oct 2026: every role gets a "Phone extensions ›" row (doctor: under the
+// Manager hub row; others: under Check coverage). Manager also gets an "Ask"
+// row (front desk assistant) above it; Front desk has Ask as a tab instead.
+export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch, onOpenSchedule, onOpenDay, onExtensions, onAsk }) {
   const [sched, setSched] = useState(null); // null = loading
 
   useEffect(() => {
@@ -182,6 +185,21 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       <span style={{ color: T.muted, display: "flex", flex: "none" }}><ChevronRightIcon /></span>
     </button>
   );
+  // Compact link row (same card look as the Manager hub row, a bit shorter).
+  const linkRow = (key, Icon, title, sub, onClick) => (
+    <button key={key} type="button" onClick={onClick}
+      style={{ ...card, display: "flex", alignItems: "center", gap: 12, width: "100%", height: 46, padding: "0 12px", fontFamily: T.sans, color: T.ink, cursor: "pointer", textAlign: "left", boxSizing: "border-box" }}>
+      <span style={{ color: T.accent, display: "flex", flex: "none" }}><Icon size={20} /></span>
+      <span style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "baseline", gap: 8, overflow: "hidden" }}>
+        <span style={{ fontSize: 14, fontWeight: 600, whiteSpace: "nowrap" }}>{title}</span>
+        <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sub}</span>
+      </span>
+      <span style={{ color: T.muted, display: "flex", flex: "none" }}><ChevronRightIcon /></span>
+    </button>
+  );
+  const askRow = onAsk && linkRow("ask", ChatIcon, "Ask", "Scheduling, triage, fax, ext.", onAsk);
+  const extRow = onExtensions && linkRow("ext", PhoneIcon, "Phone extensions", "Offices, fax, ext.", onExtensions);
+
   const linkBtn = { display: "flex", alignItems: "center", gap: 5, minHeight: 32, padding: "0 4px", background: "none", border: 0, color: T.muted, fontFamily: T.sans, fontSize: 12.5, cursor: "pointer", whiteSpace: "nowrap" };
 
   return (
@@ -244,7 +262,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       {/* Front desk roster — Front desk and Manager views only */}
       {(isFrontDesk || isManager) && frontDesk.length > 0 && (
         <div style={card}>
-          <StaffLine label="Front desk" people={frontDesk} stacked labelStyle={{ width: 68 }}
+          <StaffLine label="Front desk" people={frontDesk} stacked flow labelStyle={{ width: 68 }}
             style={{ ...rowS(true), fontSize: 13, gap: 8 }} />
         </div>
       )}
@@ -286,6 +304,10 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
 
       {/* Doctor: Manager hub row last */}
       {isDoctor && managerRow}
+
+      {/* Manager: Ask row. Everyone: Phone extensions row last. */}
+      {isManager && askRow}
+      {extRow}
     </div>
   );
 }

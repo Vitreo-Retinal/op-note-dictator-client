@@ -45,7 +45,9 @@ export function ManagersLine({ managers, ...rest }) {
   return <StaffLine label="Managers" people={managers} {...rest} />;
 }
 
-export function StaffLine({ label, people, extra, style, labelStyle, stacked = false }) {
+// `flow` (with stacked, Front desk): working people share wrapping lines
+// ("Sandy 6:30–3:00 · Lisa 8:00–close"); off / out / vacation get a line each.
+export function StaffLine({ label, people, extra, style, labelStyle, stacked = false, flow = false }) {
   const managers = people;
   if (!managers || !managers.length) return null;
   const tone = { in: T.ink2, vacation: T.amber, out: T.muted };
@@ -55,6 +57,28 @@ export function StaffLine({ label, people, extra, style, labelStyle, stacked = f
       {extra && extra[m.name] && <span style={{ color: T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
     </Fragment>
   );
+  if (stacked && flow) {
+    const working = managers.filter((m) => m.tone === "in");
+    const rest = managers.filter((m) => m.tone !== "in");
+    return (
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 8, fontFamily: T.sans, fontSize: 13, minWidth: 0, ...style }}>
+        <span style={{ fontSize: 12, color: T.muted, flex: "none", paddingTop: 1, ...labelStyle }}>{label}</span>
+        <span style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          {working.length > 0 && (
+            <span>
+              {working.map((m, i) => (
+                <Fragment key={m.name}>
+                  {i > 0 && <span style={{ color: T.lineStrong }}> · </span>}
+                  <span style={{ whiteSpace: "nowrap" }}>{item(m)}</span>
+                </Fragment>
+              ))}
+            </span>
+          )}
+          {rest.map((m) => <span key={m.name} style={{ overflowWrap: "anywhere" }}>{item(m)}</span>)}
+        </span>
+      </div>
+    );
+  }
   if (stacked) {
     return (
       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, fontFamily: T.sans, fontSize: 13, minWidth: 0, ...style }}>

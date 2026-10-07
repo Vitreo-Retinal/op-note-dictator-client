@@ -158,20 +158,29 @@ export function managersOf(day) {
  * text as managersOf: "Sandy", "Lisa · LEOM ext. 12",
  * "Kim — vacation through Fri, Oct 9", "Matt — out".
  */
+// Oct 2026: with the daily sheet → "Sandy 6:30–3:00", "Lisa 8:00–close",
+// "Kim — off" (muted). WORC is everyone's default site, so it is not shown;
+// another site is ("Lisa · LEOM 8:00–close").
 export function frontDeskOf(day) {
-  return staffOf(day && day.frontDesk);
+  return staffOf(day && day.frontDesk, { hideSite: "WORC" });
 }
 
-function staffOf(raw) {
+/** "6:30-3:00" → "6:30–3:00", "8:00-close" → "8:00–close". */
+export const hoursText = (h) => String(h || "").replace(/\s*-\s*/, "–");
+
+function staffOf(raw, { hideSite = null } = {}) {
   const list = Array.isArray(raw) ? raw : [];
   return list.map((m) => {
     const ext = m.ext ? ` ext. ${m.ext}` : "";
+    const site = m.site && m.site !== hideSite ? ` · ${m.site}` : "";
+    const hours = m.hours ? ` ${hoursText(m.hours)}` : "";
     const part = m.part ? ` ${m.part}` : "";
     const note = m.note ? ` (${m.note})` : "";
     if (m.status === "vacation") {
       return { name: m.name, tone: "vacation", text: `${m.name} — vacation${m.through ? ` through ${shortDate(m.through)}` : ""}` };
     }
     if (m.status === "out") return { name: m.name, tone: "out", text: `${m.name} — out${part}${note}` };
-    return { name: m.name, tone: "in", text: `${m.name}${m.site ? ` · ${m.site}` : ""}${ext}${part}${note}` };
+    if (m.status === "off") return { name: m.name, tone: "out", text: `${m.name} — off` };
+    return { name: m.name, tone: "in", text: `${m.name}${site}${hours}${ext}${part}${note}` };
   });
 }

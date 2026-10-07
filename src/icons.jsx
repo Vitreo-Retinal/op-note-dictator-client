@@ -88,3 +88,12 @@ export function ReceiptIcon({ size = 22 }) {
 export function NotesIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z" /><path d="M14 3v5h5M8 13h8M8 17h6" /></svg>);
 }
+// ── Front desk (Oct 2026) ──
+// Speech bubble — phone tab bar "Ask"
+export function ChatIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><path d="M4 5.5A1.5 1.5 0 015.5 4h13A1.5 1.5 0 0120 5.5v9a1.5 1.5 0 01-1.5 1.5H10l-4.5 4v-4h0A1.5 1.5 0 014 14.5z" /><path d="M8.5 9h7M8.5 12h4.5" /></svg>);
+}
+// Handset — phone extensions
+export function PhoneIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><path d="M6.6 3.5h2.6l1.4 4-2 1.3a11 11 0 006.6 6.6l1.3-2 4 1.4v2.6a2 2 0 01-2.2 2A16.5 16.5 0 014.6 5.7a2 2 0 012-2.2z" /></svg>);
+}

@@ -10,9 +10,11 @@ import CallBoard from "./CallBoard.jsx";
 import DropSchedule from "./DropSchedule.jsx";
 import SchedulePage from "./SchedulePage.jsx";
 import HomePhone from "./HomePhone.jsx";
+import Extensions from "./Extensions.jsx";
+import DeskAssist from "./DeskAssist.jsx";
 import RolePicker from "./RolePicker.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
-import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon } from "./icons.jsx";
+import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
 
@@ -177,6 +179,24 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
     </button>
   );
   const roleDoc = SURGEONS.find((d) => d.id === roleDoctorId) || null;
+  // Oct 2026 — wide row tiles: Ask (front desk assistant; first for Front desk
+  // and Manager) and Phone extensions (last, every role).
+  const wideTile = (id, Icon, title, description, right) => (
+    <button key={id} className="vra-tile-wide" onClick={() => onSelectTool(id)}
+      style={tile({ gridColumn: "span 6", flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14 })}
+      onMouseEnter={hoverOn}
+      onMouseLeave={hoverOff}>
+      <span style={iconBox()}><Icon /></span>
+      <span style={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
+        <span style={{ fontSize: 15, fontWeight: 600, color: T.ink, letterSpacing: "-0.01em" }}>{title}</span>
+        <span style={{ fontSize: 13, color: T.muted, lineHeight: 1.45 }}>{description}</span>
+      </span>
+      {right && <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{right}</span>}
+    </button>
+  );
+  const askTile = (role === "frontdesk" || role === "manager") &&
+    wideTile("ask", ChatIcon, "Ask", "When to book a referral, triage questions, fax numbers, extensions — from the practice's sheet.", "No PHI — symptoms only");
+  const extensionsTile = wideTile("extensions", PhoneIcon, "Phone extensions", "Office phone and fax numbers, every extension, searchable.", "Oct 2026");
   const FRONTDESK_TOOLS = ["inject", "education", "documents"];
   const tools = role === "frontdesk" ? FRONTDESK_TOOLS.map((id) => sharedTools.find((t) => t.id === id)) : sharedTools;
 
@@ -185,6 +205,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
     return (
       <HomePhone role={role} doctor={role === "doctor" ? unlockedDoctor || null : null} managerOpen={managerOpen}
         onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
+        onExtensions={() => onSelectTool("extensions")} onAsk={() => onSelectTool("ask")}
         onSelectManager={onSelectManager} onLock={onLock} onSwitch={onSwitch}
         onOpenSchedule={() => onSelectTool("schedule")} onOpenDay={onOpenDay} />
     );
@@ -270,6 +291,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
         {/* Shared tools */}
         <h2 style={secHead()}>Tools for everyone</h2>
         <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
+          {askTile}
           {/* Schedule — wide row tile, first in the shared grid */}
           <button className="vra-tile-wide" onClick={() => onSelectTool(scheduleTool.id)}
             style={tile({ gridColumn: "span 6", flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14, ...(phone ? { flexWrap: "nowrap", borderTop: `3px solid ${T.accent}` } : {}) })}
@@ -307,6 +329,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
               </button>
             );
           })}
+          {extensionsTile}
         </div>
 
         {/* Practice management — doctor view keeps it at the bottom; techs never see it */}
@@ -507,7 +530,7 @@ function DoctorPicker({ onSelectDoctor }) {
 // gate: doctor space → that surgeon's PIN prompt, Manager's Hub → manager PIN.
 const PAGE_KEY = "vra-hub-page";
 const SURGEON_KEY = "vra-hub-surgeon";
-const PAGES = ["home", "schedule", "inject", "coding", "education", "intakehpi", "documents", "drops", "dictator", "notes", "pin", "doctor", "managerpin", "manager"];
+const PAGES = ["home", "schedule", "inject", "coding", "education", "intakehpi", "documents", "drops", "dictator", "notes", "pin", "doctor", "managerpin", "manager", "extensions", "ask"];
 
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* private mode */ } }
@@ -564,8 +587,8 @@ function restoredState() {
   return { page, surgeon: unlockedDoc, unlocked };
 }
 // Which tab is lit for each page.
-const TAB_OF = { home: "home", schedule: "schedule", inject: "inject", coding: "coding", notes: "notes", pin: "notes", doctor: "notes" };
-const TAB_ROOTS = new Set(["home", "schedule", "inject", "coding", "notes", "doctor"]);
+const TAB_OF = { home: "home", schedule: "schedule", inject: "inject", coding: "coding", notes: "notes", pin: "notes", doctor: "notes", ask: "ask" };
+const TAB_ROOTS = new Set(["home", "schedule", "inject", "coding", "notes", "doctor", "ask"]);
 
 // ── App Router ──────────────────────────────────────────────────────
 export default function App() {
@@ -687,7 +710,13 @@ export default function App() {
     content = <Documents onBack={goHome} onOpenEducation={() => setPage("education")} />;
   } else if (page === "schedule") {
     // Oct 2026 — 2-week schedule from the shared VRA Google Calendar. No PIN.
-    content = <SchedulePage key={schedDay || "today"} initialDay={schedDay} onBack={goHome} />;
+    content = <SchedulePage key={schedDay || "today"} initialDay={schedDay} onBack={goHome} onOpenExtensions={() => setPage("extensions")} />;
+  } else if (page === "extensions") {
+    // Oct 2026 — offices, fax numbers, phone extensions (GET /api/directory). No PIN.
+    content = <Extensions onBack={goHome} backLabel={phone ? "Home" : "Hub"} />;
+  } else if (page === "ask") {
+    // Oct 2026 — front desk assistant (POST /api/desk-assist). No PIN, no PHI.
+    content = <DeskAssist onBack={goHome} />;
   } else if (page === "drops") {
     content = <DropSchedule onBack={goHome} backLabel="Hub" />;
   } else if (page === "dictator") {

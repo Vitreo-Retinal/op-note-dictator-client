@@ -6,7 +6,7 @@
 // an in-page heading.
 import { createContext, useContext, useEffect, useState } from "react";
 import { T } from "./theme.js";
-import { HomeIcon, CalendarIcon, InjectIcon, ReceiptIcon, NotesIcon } from "./icons.jsx";
+import { HomeIcon, CalendarIcon, InjectIcon, ReceiptIcon, NotesIcon, ChatIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 
 export const PHONE_MQ = "(max-width: 600px)";
@@ -39,6 +39,7 @@ export const TABS = [
   { id: "inject", label: "Inject", Icon: InjectIcon },
   { id: "coding", label: "Coding", Icon: ReceiptIcon },
   { id: "notes", label: "Notes", Icon: NotesIcon },
+  { id: "ask", label: "Ask", Icon: ChatIcon }, // front desk assistant (Oct 2026)
 ];
 
 // Phone tabs per role (Oct 2026). Adding a tab for a role is one line here.
@@ -48,7 +49,7 @@ export const ROLE_TABS = {
   manager: ["home", "schedule", "inject", "coding"],
   // TODO(referrals): add "referrals" after "inject" once the Referrals page and
   // its data source exist (also add it to TABS with an icon, and to TAB_OF in App.jsx).
-  frontdesk: ["home", "schedule", "inject"],
+  frontdesk: ["home", "schedule", "inject", "ask"],
 };
 export const tabsFor = (role) => ROLE_TABS[role] || ROLE_TABS.doctor;
 
@@ -71,7 +72,7 @@ const shortToday = () => new Date().toLocaleDateString("en-US", { weekday: "shor
 
 // Small line under the date in the app bar (mockup). Inject has no in-page
 // heading, so its bar carries the page name instead of the date.
-const BAR_SUB = { schedule: "Schedule", coding: "Coding", notes: "Notes" };
+const BAR_SUB = { schedule: "Schedule", coding: "Coding", notes: "Notes", ask: "Front desk assistant" };
 
 // `role`: which tabs show (ROLE_TABS).
 export function PhoneShell({ active, onTab, role, children }) {
