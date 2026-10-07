@@ -6,7 +6,7 @@
 // an in-page heading.
 import { createContext, useContext, useEffect, useState } from "react";
 import { T } from "./theme.js";
-import { HomeIcon, CalendarIcon, InjectIcon, CodingIcon, NotesIcon } from "./icons.jsx";
+import { HomeIcon, CalendarIcon, InjectIcon, ReceiptIcon, NotesIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 
 export const PHONE_MQ = "(max-width: 600px)";
@@ -37,7 +37,7 @@ export const TABS = [
   { id: "home", label: "Home", Icon: HomeIcon },
   { id: "schedule", label: "Schedule", Icon: CalendarIcon },
   { id: "inject", label: "Inject", Icon: InjectIcon },
-  { id: "coding", label: "Coding", Icon: CodingIcon },
+  { id: "coding", label: "Coding", Icon: ReceiptIcon },
   { id: "notes", label: "Notes", Icon: NotesIcon },
 ];
 
@@ -57,7 +57,13 @@ const PHONE_CSS = `
 // "Wed, Oct 7"
 const shortToday = () => new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
+// Small line under the date in the app bar (mockup). Inject has no in-page
+// heading, so its bar carries the page name instead of the date.
+const BAR_SUB = { schedule: "Schedule", coding: "Coding", notes: "Notes" };
+
 export function PhoneShell({ active, onTab, children }) {
+  const inject = active === "inject";
+  const sub = inject ? "Coverage lookup" : BAR_SUB[active];
   return (
     <div style={{ minHeight: "100dvh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       <style>{PHONE_CSS}</style>
@@ -69,7 +75,10 @@ export function PhoneShell({ active, onTab, children }) {
       }}>
         <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 34, width: "auto", display: "block", flexShrink: 0 }} />
         <div style={{ flex: 1 }} />
-        <div style={{ fontSize: 13, color: T.ink2, whiteSpace: "nowrap" }}>{shortToday()}</div>
+        <div style={{ textAlign: "right", lineHeight: 1.25, whiteSpace: "nowrap" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{inject ? "Can we inject?" : shortToday()}</div>
+          {sub && <div style={{ fontSize: 11.5, color: T.muted }}>{sub}</div>}
+        </div>
       </header>
 
       <main className="vra-phone-main" style={{ paddingBottom: `calc(${TABBAR_H}px + env(safe-area-inset-bottom, 0px))` }}>

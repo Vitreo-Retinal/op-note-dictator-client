@@ -78,6 +78,10 @@ export function DropBottleIcon({ size = 22 }) {
 export function HomeIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z" /></svg>);
 }
+// Receipt / itemized list — phone tab bar "Coding" (Oct 2026 mockup)
+export function ReceiptIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" /></svg>);
+}
 export function NotesIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z" /><path d="M14 3v5h5M8 13h8M8 17h6" /></svg>);
 }
