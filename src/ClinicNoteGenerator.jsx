@@ -598,7 +598,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           // Sep 29 2026: low effort + no up-front thinking — ~3–5 s/note, cheaper than 4.6.
           // Passed the full 16-scenario suite live; the server's -24/-79 guard and the
           // code ladder in the prompt cover what low effort used to miss.
-          effort: "low",
+          // Oct 6 2026 (Mari): medium effort — low took the global rules too literally (same-eye complication coded POST-OP).
+          effort: "medium",
           thinking: "between_tools",
         }),
       });
