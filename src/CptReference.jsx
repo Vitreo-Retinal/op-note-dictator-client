@@ -614,7 +614,8 @@ const codeRange = (codes) => {
 const phoneSec = { fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted, margin: "18px 0 8px", fontFamily: T.sans };
 
 // ── Component ───────────────────────────────────────────────────────
-export default function CptReference({ onBack }) {
+// showReimbursement: true when an unlocked doctor is using it (RVU/$ in the assistant), false for staff.
+export default function CptReference({ onBack, showReimbursement = false }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [expanded, setExpanded] = useState(null);
@@ -651,7 +652,7 @@ export default function CptReference({ onBack }) {
         <PhoneHeading title="Coding" />
         <div style={{ padding: "0 16px 28px" }}>
           <div style={{ ...phoneSec, marginTop: 4 }}>AI Coding Assistant</div>
-          <AICodingAssistant showReimbursement={false} phoneLayout />
+          <AICodingAssistant showReimbursement={showReimbursement} phoneLayout />
 
           <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden", marginTop: 18 }}>
             <div style={{ padding: "12px 14px", fontSize: 14.5, fontWeight: 600, color: T.ink }}>CPT reference by diagnosis</div>
@@ -739,7 +740,7 @@ export default function CptReference({ onBack }) {
         </div>
       </div>
 
-      {view === "ai" && <div className="vra-wrap" style={wrap()}><AICodingAssistant showReimbursement={false} /></div>}
+      {view === "ai" && <div className="vra-wrap" style={wrap()}><AICodingAssistant showReimbursement={showReimbursement} /></div>}
       {view === "diagram" && (() => {
         const pick = (code) => { setSearch(code); setCategory("all"); setExpanded(code); setView("search"); };
         return (

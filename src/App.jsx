@@ -676,7 +676,8 @@ export default function App() {
     );
   } else if (page === "coding") {
     // CptReference already has the tree + AI assistant
-    content = <CptReference onBack={goHome} />;
+    // Doctors (unlocked with their PIN) get the assistant with reimbursement; staff do not.
+    content = <CptReference onBack={goHome} showReimbursement={!!unlockedDoc} />;
   } else if (page === "education") {
     content = <PatientEducation onBack={goHome} />;
   } else if (page === "intakehpi") {
