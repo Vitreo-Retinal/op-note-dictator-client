@@ -1,8 +1,9 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { CPT_CATALOG, CPT_CATEGORIES } from "./cptCatalog";
-import { S, T, chip, btnSm, field, fieldLabel } from "./theme.js";
+import { S, T, chip, btnSm, field, fieldLabel, RESPONSIVE_CSS } from "./theme.js";
 import PageBar, { segWrap, segBtn, wrap, searchInput } from "./PageBar.jsx";
-import { SendIcon, ChevronDownIcon, SearchIcon } from "./icons.jsx";
+import { SendIcon, ChevronDownIcon, ChevronRightIcon, SearchIcon } from "./icons.jsx";
+import { usePhone, PhoneHeading } from "./phone.jsx";
 
 // ── Styles (shared palette with the rest of the app) ────────────────
 
@@ -15,7 +16,9 @@ const CATEGORIES = [
 // ── AI Coding Assistant ─────────────────────────────────────────────
 const AI_API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
-export function AICodingAssistant({ showReimbursement = false }) {
+// phoneLayout (Oct 2026): question box + Send on top, answers below it, no
+// fixed panel height — the page scrolls. Desktop keeps the chat panel.
+export function AICodingAssistant({ showReimbursement = false, phoneLayout = false }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -105,6 +108,80 @@ export function AICodingAssistant({ showReimbursement = false }) {
   };
 
   const hasInput = !!input.trim();
+  const SUGGESTIONS = [
+    "PPV ILM peel gas for mac hole",
+    "Can I bill E/M with injection?",
+    "PPV + buckle for macula-off RD",
+    "How do I code Yamane?",
+    "67041 vs 67042 — when to use each?",
+  ];
+
+  if (phoneLayout) {
+    return (
+      <div style={{ fontFamily: T.sans }}>
+        <div className="vra-editor" style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden" }}>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about codes, modifiers, bundling..."
+            rows={3}
+            style={{
+              display: "block", width: "100%", padding: "12px 14px", background: "transparent", border: 0,
+              color: T.ink, fontSize: 16, fontFamily: T.sans, boxSizing: "border-box",
+              outline: "none", resize: "none", lineHeight: 1.45, minHeight: 72,
+            }}
+          />
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
+            <span style={{ fontSize: 12, color: T.muted, flex: 1, minWidth: 0 }}>Retina billing questions</span>
+            {messages.length > 0 && (
+              <button onClick={clearChat} style={btnSm("secondary", { height: 36, color: T.ink2 })}>Clear</button>
+            )}
+            <button
+              onClick={sendMessage}
+              disabled={loading || !hasInput}
+              style={btnSm("primary", {
+                height: 36, padding: "0 16px", fontSize: 14,
+                background: loading || !hasInput ? T.accentSoft : T.accent,
+                borderColor: loading || !hasInput ? T.line : T.accent,
+                color: loading || !hasInput ? T.muted : T.onAccent,
+                cursor: loading || !hasInput ? "default" : "pointer",
+              })}
+            >Send<SendIcon size={14} /></button>
+          </div>
+        </div>
+
+        {messages.length === 0 && !loading && (
+          <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {SUGGESTIONS.map((q) => (
+              <button key={q} onClick={() => setInput(q)}
+                style={{ padding: "6px 11px", borderRadius: 999, border: `1px solid ${T.line}`, background: T.surface, color: T.ink2, fontSize: 12.5, cursor: "pointer", fontFamily: T.sans, maxWidth: "100%", textAlign: "left" }}
+              >{q}</button>
+            ))}
+          </div>
+        )}
+
+        {(messages.length > 0 || loading) && (
+          <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+            {messages.map((msg, i) => msg.role === "user" ? (
+              <div key={i} style={{ alignSelf: "flex-end", maxWidth: "85%", background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: "10px 10px 3px 10px", padding: "8px 12px", fontSize: 13.5, color: T.ink, overflowWrap: "anywhere" }}>
+                {msg.content}
+              </div>
+            ) : (
+              <div key={i} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 13.5, lineHeight: 1.55, color: T.ink, overflowWrap: "anywhere" }}>
+                {renderContent(msg.content)}
+              </div>
+            ))}
+            {loading && (
+              <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 13.5, color: T.muted }}>Thinking...</div>
+            )}
+            <div ref={(el) => { chatEndRef.current = el; }} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} style={{ display: "flex", flexDirection: "column", height: maxH, maxWidth: 880, margin: "0 auto", fontFamily: T.sans }}>
       {/* Chat messages */}
@@ -116,13 +193,7 @@ export function AICodingAssistant({ showReimbursement = false }) {
               Ask any retina billing question — CPT codes, ICD-10 pairing, modifiers, bundling, E/M, global periods.
             </div>
             <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
-              {[
-                "PPV ILM peel gas for mac hole",
-                "Can I bill E/M with injection?",
-                "PPV + buckle for macula-off RD",
-                "How do I code Yamane?",
-                "67041 vs 67042 — when to use each?",
-              ].map((q) => (
+              {SUGGESTIONS.map((q) => (
                 <button
                   key={q}
                   onClick={() => { setInput(q); }}
@@ -426,6 +497,122 @@ function ImagingMap({ onPick }) {
   );
 }
 
+function globalColor(g) {
+  if (!g) return S.muted;
+  if (g.includes("90")) return T.red;
+  if (g.includes("10")) return T.amber;
+  if (g.includes("0 day") || g.includes("XXX")) return T.green;
+  return S.muted;
+}
+
+// One code row: summary button + expandable details (Browse list and phone groups).
+function CodeCard({ cpt, isOpen, onToggle }) {
+  return (
+    <div
+      style={{
+        background: T.surface,
+        border: `1px solid ${isOpen ? T.accentLine : T.line}`,
+        borderRadius: T.rLg,
+        marginBottom: 8,
+        overflow: "hidden",
+        transition: "border-color .15s",
+      }}
+    >
+      {/* Summary row */}
+      <button
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        style={{
+          width: "100%",
+          padding: "12px 14px 12px 16px",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          textAlign: "left",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 14,
+          fontFamily: T.sans,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: T.mono,
+            fontSize: 14,
+            fontWeight: 500,
+            color: T.accent,
+            minWidth: 52,
+            flexShrink: 0,
+            paddingTop: 1,
+          }}
+        >
+          {cpt.code}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ color: T.ink, fontSize: 14, lineHeight: 1.45 }}>
+            {cpt.desc}
+          </div>
+          <div style={{ display: "flex", gap: 6, marginTop: 7, flexWrap: "wrap" }}>
+            <span style={chip("accent")}>
+              {cpt.cat}
+            </span>
+            {cpt.global && cpt.global !== "N/A" && (
+              <span
+                style={chip(({ [T.red]: "red", [T.amber]: "amber", [T.green]: "green" }[globalColor(cpt.global)] || "muted"), { fontFamily: T.mono, fontWeight: 500 })}
+              >
+                {cpt.global}
+              </span>
+            )}
+          </div>
+        </div>
+        <div style={{ color: T.muted, flexShrink: 0, paddingTop: 2, transform: isOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }}>
+          <ChevronDownIcon />
+        </div>
+      </button>
+
+      {/* Expanded details — field-style sub-card */}
+      {isOpen && (
+        <div style={{ padding: "0 14px 14px 16px" }}>
+          <div style={field({ background: T.paper, padding: "4px 14px 12px" })}>
+            {cpt.global && (
+              <DetailSection label="Global period" text={
+                cpt.global === "XXX" ? "N/A — global concept does not apply" :
+                cpt.global === "ZZZ" ? "Add-on code (no separate global)" :
+                cpt.global === "YYY" ? "Carrier-determined" :
+                cpt.global + "-day global"
+              } />
+            )}
+            {cpt.note && (
+              <DetailSection label="Notes" text={cpt.note} color={T.amber} />
+            )}
+            {!cpt.note && !cpt.global && (
+              <div style={{ fontSize: 13, color: T.muted, marginTop: 10 }}>
+                No additional notes. Ask the AI Coding Assistant for bundling, modifiers, or reimbursement.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Phone: CPT reference by diagnosis (Oct 2026) ────────────────────
+// Groups built from the catalog descriptions and the desktop Visual maps;
+// every code listed here exists in CPT_CATALOG. "All codes" opens the full
+// Browse list (search + categories).
+const DX_GROUPS = [
+  { id: "rd", label: "Retinal detachment", color: T.red, codes: ["67110", "67107", "67108", "67113", "67101", "67105"] },
+  { id: "tear", label: "Retinal tear / lattice", color: T.amber, codes: ["67145", "67141"] },
+  { id: "vh", label: "Vitreous hemorrhage / floaters", color: T.accent, codes: ["67036", "67039", "67040"] },
+  { id: "mh", label: "Macular hole / ERM", color: T.accent, codes: ["67041", "67042"] },
+];
+const codeRange = (codes) => {
+  const sorted = [...codes].sort();
+  return sorted.length > 1 ? `${sorted[0]} – ${sorted[sorted.length - 1]}` : sorted[0];
+};
+const phoneSec = { fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted, margin: "18px 0 8px", fontFamily: T.sans };
+
 // ── Component ───────────────────────────────────────────────────────
 export default function CptReference({ onBack }) {
   const [search, setSearch] = useState("");
@@ -448,13 +635,86 @@ export default function CptReference({ onBack }) {
     return list;
   }, [search, category]);
 
-  const globalColor = (g) => {
-    if (!g) return S.muted;
-    if (g.includes("90")) return T.red;
-    if (g.includes("10")) return T.amber;
-    if (g.includes("0 day") || g.includes("XXX")) return T.green;
-    return S.muted;
-  };
+  const { phone } = usePhone();
+  const [dxOpen, setDxOpen] = useState(null); // phone: open diagnosis group id, or "all"
+
+  if (phone) {
+    const rowBtn = (open) => ({
+      width: "100%", display: "flex", alignItems: "center", gap: 12, minHeight: 52, padding: "8px 14px",
+      background: open ? T.accentSoft : "none", border: "none", borderTop: `1px solid ${T.line}`,
+      cursor: "pointer", textAlign: "left", fontFamily: T.sans, color: T.ink,
+    });
+    const chev = (open) => <span style={{ color: T.muted, flexShrink: 0, transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }}><ChevronRightIcon /></span>;
+    return (
+      <div style={{ background: T.paper, fontFamily: T.sans, color: T.ink }}>
+        <style>{RESPONSIVE_CSS}</style>
+        <PhoneHeading title="Coding" />
+        <div style={{ padding: "0 16px 28px" }}>
+          <div style={{ ...phoneSec, marginTop: 4 }}>AI Coding Assistant</div>
+          <AICodingAssistant showReimbursement={false} phoneLayout />
+
+          <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden", marginTop: 18 }}>
+            <div style={{ padding: "12px 14px", fontSize: 14.5, fontWeight: 600, color: T.ink }}>CPT reference by diagnosis</div>
+            {DX_GROUPS.map((g) => {
+              const open = dxOpen === g.id;
+              return (
+                <div key={g.id}>
+                  <button onClick={() => { setDxOpen(open ? null : g.id); setExpanded(null); }} aria-expanded={open} style={rowBtn(open)}>
+                    <span style={{ width: 3, alignSelf: "stretch", minHeight: 30, borderRadius: 2, background: g.color, flexShrink: 0 }} />
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ display: "block", fontSize: 14.5 }}>{g.label}</span>
+                      <span style={{ display: "block", fontSize: 12, color: T.muted, fontFamily: T.mono }}>{codeRange(g.codes)}</span>
+                    </span>
+                    {chev(open)}
+                  </button>
+                  {open && (
+                    <div style={{ padding: "4px 10px 6px", background: T.paper, borderTop: `1px solid ${T.line}` }}>
+                      {g.codes.map((c) => CPT_CATALOG.find((x) => x.code === c)).filter(Boolean).map((cpt) => (
+                        <CodeCard key={cpt.code} cpt={cpt} isOpen={expanded === cpt.code}
+                          onToggle={() => setExpanded(expanded === cpt.code ? null : cpt.code)} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            <button onClick={() => { setDxOpen(dxOpen === "all" ? null : "all"); setExpanded(null); }} aria-expanded={dxOpen === "all"} style={rowBtn(dxOpen === "all")}>
+              <span style={{ width: 3, alignSelf: "stretch", minHeight: 30, borderRadius: 2, background: T.lineStrong, flexShrink: 0 }} />
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ display: "block", fontSize: 14.5 }}>All codes</span>
+                <span style={{ display: "block", fontSize: 12, color: T.muted }}>Search by code or keyword, browse by category</span>
+              </span>
+              {chev(dxOpen === "all")}
+            </button>
+          </div>
+
+          {dxOpen === "all" && (
+            <div style={{ marginTop: 12 }}>
+              <div style={{ position: "relative" }}>
+                <span style={{ position: "absolute", left: 13, top: 13, color: T.muted, pointerEvents: "none" }}><SearchIcon /></span>
+                <input type="text" className="vra-input" placeholder="Search — e.g. 67042, ILM peel, OCT" value={search}
+                  onChange={(e) => setSearch(e.target.value)} style={searchInput({ paddingLeft: 38, fontSize: 16, textOverflow: "ellipsis" })} />
+              </div>
+              <div style={{ display: "flex", gap: 6, overflowX: "auto", padding: "10px 0 12px", WebkitOverflowScrolling: "touch" }}>
+                {CATEGORIES.map((cat) => (
+                  <button key={cat.id} onClick={() => setCategory(cat.id)} aria-pressed={category === cat.id}
+                    style={chip(category === cat.id ? "accent" : "muted", {
+                      padding: "5px 11px", fontSize: 12.5, cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
+                      ...(category === cat.id ? { background: T.accent, color: T.onAccent, borderColor: T.accent } : { background: T.surface, color: T.ink2, fontWeight: 400 }),
+                    })}>{cat.label}</button>
+                ))}
+              </div>
+              {filtered.length === 0 && <div style={{ textAlign: "center", color: T.muted, padding: "28px 0", fontSize: 14 }}>No codes found.</div>}
+              {filtered.map((cpt) => (
+                <CodeCard key={cpt.code} cpt={cpt} isOpen={expanded === cpt.code}
+                  onToggle={() => setExpanded(expanded === cpt.code ? null : cpt.code)} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
@@ -553,98 +813,10 @@ export default function CptReference({ onBack }) {
             No codes found. Try a different search or category.
           </div>
         )}
-        {filtered.map((cpt) => {
-          const isOpen = expanded === cpt.code;
-          return (
-            <div
-              key={cpt.code}
-              style={{
-                background: T.surface,
-                border: `1px solid ${isOpen ? T.accentLine : T.line}`,
-                borderRadius: T.rLg,
-                marginBottom: 8,
-                overflow: "hidden",
-                transition: "border-color .15s",
-              }}
-            >
-              {/* Summary row */}
-              <button
-                onClick={() => setExpanded(isOpen ? null : cpt.code)}
-                aria-expanded={isOpen}
-                style={{
-                  width: "100%",
-                  padding: "12px 14px 12px 16px",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 14,
-                  fontFamily: T.sans,
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: T.mono,
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: T.accent,
-                    minWidth: 52,
-                    flexShrink: 0,
-                    paddingTop: 1,
-                  }}
-                >
-                  {cpt.code}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: T.ink, fontSize: 14, lineHeight: 1.45 }}>
-                    {cpt.desc}
-                  </div>
-                  <div style={{ display: "flex", gap: 6, marginTop: 7, flexWrap: "wrap" }}>
-                    <span style={chip("accent")}>
-                      {cpt.cat}
-                    </span>
-                    {cpt.global && cpt.global !== "N/A" && (
-                      <span
-                        style={chip(({ [T.red]: "red", [T.amber]: "amber", [T.green]: "green" }[globalColor(cpt.global)] || "muted"), { fontFamily: T.mono, fontWeight: 500 })}
-                      >
-                        {cpt.global}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div style={{ color: T.muted, flexShrink: 0, paddingTop: 2, transform: isOpen ? "rotate(180deg)" : "none", transition: "transform .15s" }}>
-                  <ChevronDownIcon />
-                </div>
-              </button>
-
-              {/* Expanded details — field-style sub-card */}
-              {isOpen && (
-                <div style={{ padding: "0 14px 14px 16px" }}>
-                  <div style={field({ background: T.paper, padding: "4px 14px 12px" })}>
-                    {cpt.global && (
-                      <DetailSection label="Global period" text={
-                        cpt.global === "XXX" ? "N/A — global concept does not apply" :
-                        cpt.global === "ZZZ" ? "Add-on code (no separate global)" :
-                        cpt.global === "YYY" ? "Carrier-determined" :
-                        cpt.global + "-day global"
-                      } />
-                    )}
-                    {cpt.note && (
-                      <DetailSection label="Notes" text={cpt.note} color={T.amber} />
-                    )}
-                    {!cpt.note && !cpt.global && (
-                      <div style={{ fontSize: 13, color: T.muted, marginTop: 10 }}>
-                        No additional notes. Ask the AI Coding Assistant for bundling, modifiers, or reimbursement.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {filtered.map((cpt) => (
+          <CodeCard key={cpt.code} cpt={cpt} isOpen={expanded === cpt.code}
+            onToggle={() => setExpanded(expanded === cpt.code ? null : cpt.code)} />
+        ))}
       </div>
       </>}
     </div>
