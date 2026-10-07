@@ -53,7 +53,8 @@ function roleCount(half, key) {
  * "Out" row for vacations). Shared by the phone Schedule and the phone Home.
  */
 export function DoctorsCard({ day, style }) {
-  const sites = sessionsBySite(day.sessions).filter((x) => x.site !== "VALEDA");
+  // VALEDA stays in this card as its own row (per Mari, Oct 7): it is part of the doctor's day.
+  const sites = sessionsBySite(day.sessions);
   return (
     <div style={{ ...cardS, ...style }}>
       {sites.map(({ site, docs }, i) => (
@@ -135,10 +136,11 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
   };
 
   // Third fold: translator, Valeda, off.
-  const extraTitle = [tr && "Translator", valeda && "Valeda", off.length && "Off"].filter(Boolean).join(" · ");
+  const valedaTechs = valeda && valeda.techs.length ? valeda : null; // doctors' Valeda sessions live in the Doctors card
+  const extraTitle = [tr && "Translator", valedaTechs && "Valeda", off.length && "Off"].filter(Boolean).join(" · ");
   const extraSummary = [
     tr && (tr.raw ? tr.raw : tr.same ? tr.am : `${tr.am} / ${tr.pm}`),
-    valeda && [...valeda.docs.map((d) => d.doctor), ...valeda.techs.map((x) => x.name)].join(", "),
+    valedaTechs && valedaTechs.techs.map((x) => x.name).join(", "),
     off.length && `Off ${off.join(", ")}`,
   ].filter(Boolean).join(" · ");
 
@@ -208,11 +210,10 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
               <span style={{ flex: 1, minWidth: 0, color: TRANSLATOR.fg }}>{tr.raw ? tr.raw : tr.same ? tr.am : `${tr.am} / ${tr.pm}`}</span>
             </div>
           )}
-          {valeda && (
+          {valedaTechs && (
             <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px 6px", padding: "3px 12px", fontSize: 12.5, color: T.ink2 }}>
               <b style={{ width: 62, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5 }}>Valeda</b>
-              {valeda.docs.map((d) => <Pill key={d.doctor} doctor={d.doctor} half={d.half} />)}
-              {valeda.techs.map((x) => <span key={x.name}>{x.name}{x.half ? <small style={{ fontSize: 10, color: T.muted }}> {x.half}</small> : null}</span>)}
+              {valedaTechs.techs.map((x) => <span key={x.name}>{x.name}{x.half ? <small style={{ fontSize: 10, color: T.muted }}> {x.half}</small> : null}</span>)}
             </div>
           )}
           {off.length > 0 && (
