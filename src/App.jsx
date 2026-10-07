@@ -608,7 +608,8 @@ export default function App() {
       setRole(r); storeSet(ROLE_KEY, r);
       setActiveSurgeon(null);
       if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
-      else if (r === "manager") { setOnboarding(!managerOpen); setPage(managerOpen ? "home" : "managerpin"); }
+      // Picking Manager always asks for the PIN (same rule as picking a doctor's name).
+      else if (r === "manager") { setMgrDay(null); storeSet(MGR_UNLOCK_KEY, null); setOnboarding(true); setPage("managerpin"); }
       else { setOnboarding(false); setPage("home"); }
     };
     return <RolePicker phone={phone} onPick={pickRole} />;
