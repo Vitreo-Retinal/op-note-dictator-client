@@ -3,6 +3,8 @@ import PageBar, { wrap, segWrap, segBtn } from "./PageBar.jsx";
 import { DocChip } from "./CallBoard.jsx";
 import { T, card, DOCTOR_ORDER, SITE_TINTS, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
+import { usePhone, PhoneHeading } from "./phone.jsx";
+import SchedulePhone from "./SchedulePhone.jsx";
 import {
   fetchSchedule, scheduleOk, ymdOf, dateOfYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
   doctorHalves, translatorOf,
@@ -52,7 +54,30 @@ const TECH_ROWS = [
   { key: "other", label: "Other" },
 ];
 
+// Long heading date: "Wednesday, Oct 7"
+const DOW_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const longDay = (ymd) => { const d = dateOfYmd(ymd); return `${DOW_LONG[d.getDay()]}, ${MON3[d.getMonth()]} ${d.getDate()}`; };
+
+// Date picker: reloads the schedule starting on the picked date. "Today" resets.
+function DatePick({ from, todayYmd, onChange, phone }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <input type="date" value={from} aria-label="Schedule start date" className="vra-input"
+        onChange={(e) => { if (/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) onChange(e.target.value); }}
+        style={{ height: phone ? 38 : 32, padding: "0 8px", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, color: T.ink, fontFamily: T.sans, fontSize: phone ? 16 : 13, outline: "none", boxSizing: "border-box", minWidth: 0 }} />
+      <button onClick={() => onChange(todayYmd)} disabled={from === todayYmd}
+        style={{ height: phone ? 38 : 32, padding: "0 12px", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, color: from === todayYmd ? T.muted : T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: from === todayYmd ? "default" : "pointer", whiteSpace: "nowrap" }}>
+        Today
+      </button>
+    </div>
+  );
+}
+
 export default function SchedulePage({ onBack }) {
+  const { phone } = usePhone();
+  const todayYmd = ymdOf(new Date());
+  const [from, setFrom] = useState(todayYmd); // first day shown (date picker)
   const [sched, setSched] = useState(null); // null = loading
   const [view, setView] = useState("doctors"); // "doctors" | "site"
   const [techDay, setTechDay] = useState(null); // YYYY-MM-DD picked on the tech board (null = default)
@@ -60,12 +85,14 @@ export default function SchedulePage({ onBack }) {
 
   useEffect(() => {
     let alive = true;
-    fetchSchedule(14).then((data) => { if (alive) setSched(data); });
+    setSched(null);
+    setTechDay(null);
+    setShowSheet(false);
+    fetchSchedule(14, from === todayYmd ? null : from).then((data) => { if (alive) setSched(data); });
     return () => { alive = false; };
-  }, []);
+  }, [from]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ok = scheduleOk(sched);
-  const todayYmd = ymdOf(new Date());
 
   // Weekends only when they carry sessions or a closure.
   const shown = ok
@@ -231,41 +258,65 @@ export default function SchedulePage({ onBack }) {
   );
   const names = (arr) => (arr && arr.length ? arr.join(", ") : "—");
 
+  const statusBlock = (
+    <>
+      {/* Loading — 3 skeleton rows */}
+      {sched === null && (
+        <div style={card({ padding: 14, display: "flex", flexDirection: "column", gap: 10 })}>
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{ height: 36, borderRadius: T.r, background: T.paper }} />
+          ))}
+        </div>
+      )}
+
+      {/* Error / not configured */}
+      {sched !== null && !ok && (
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 14px", borderRadius: T.r, fontSize: 13, border: `1px solid ${T.goldSoft}`, background: T.amberSoft, color: T.amber }}>
+          <span style={{ marginTop: 1 }}><AlertIcon /></span>
+          <span>Schedule unavailable — check the calendar link on the server.</span>
+        </div>
+      )}
+    </>
+  );
+
+  // ── Phone: one day at a time (the picked date) ──
+  if (phone) {
+    const day = ok ? (sched.days.find((d) => d.date === from) || sched.days[0] || null) : null;
+    return (
+      <div style={{ background: T.paper, color: T.ink, fontFamily: T.sans }}>
+        <PhoneHeading title={longDay(day ? day.date : from)} sub={day && day.date === todayYmd ? "Today · VRA calendar" : "VRA calendar"} />
+        <div style={{ padding: "4px 16px 2px" }}>
+          <DatePick from={from} todayYmd={todayYmd} onChange={setFrom} phone />
+        </div>
+        {(sched === null || !ok) && <div style={{ padding: "12px 16px" }}>{statusBlock}</div>}
+        {ok && day && <SchedulePhone sched={sched} day={day} todayYmd={todayYmd} />}
+        {ok && !day && <div style={{ padding: "12px 16px", fontSize: 13, color: T.muted }}>No calendar days returned for this date.</div>}
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: "100vh", background: T.paper, color: T.ink, fontFamily: T.sans }}>
       <PageBar onBack={onBack} backLabel="Hub" title="Schedule" sub="VRA calendar · next 2 weeks" />
 
       <div className="vra-wrap" style={wrap({ paddingTop: 20, paddingBottom: 40 })}>
-        {/* Loading — 3 skeleton rows */}
-        {sched === null && (
-          <div style={card({ padding: 14, display: "flex", flexDirection: "column", gap: 10 })}>
-            {[0, 1, 2].map((i) => (
-              <div key={i} style={{ height: 36, borderRadius: T.r, background: T.paper }} />
-            ))}
-          </div>
-        )}
-
-        {/* Error / not configured */}
-        {sched !== null && !ok && (
-          <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 14px", borderRadius: T.r, fontSize: 13, border: `1px solid ${T.goldSoft}`, background: T.amberSoft, color: T.amber }}>
-            <span style={{ marginTop: 1 }}><AlertIcon /></span>
-            <span>Schedule unavailable — check the calendar link on the server.</span>
-          </div>
-        )}
-
-        {ok && (
+        {/* View switch · start-date picker · doctor legend */}
+        {(
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "0 0 14px", flexWrap: "wrap" }}>
-            <div style={segWrap} role="group" aria-label="Schedule view">
+            {ok && <div style={segWrap} role="group" aria-label="Schedule view">
               <button onClick={() => setView("doctors")} aria-pressed={view === "doctors"} style={segBtn(view === "doctors")}>Doctors</button>
               <button onClick={() => setView("site")} aria-pressed={view === "site"} style={segBtn(view === "site")}>By site</button>
-            </div>
-            <div className="vra-legend" style={{ marginLeft: "auto", display: "flex", gap: 10, fontSize: 12.5, color: T.muted, flexWrap: "wrap" }}>
+            </div>}
+            <DatePick from={from} todayYmd={todayYmd} onChange={setFrom} />
+            {ok && <div className="vra-legend" style={{ marginLeft: "auto", display: "flex", gap: 10, fontSize: 12.5, color: T.muted, flexWrap: "wrap" }}>
               {DOCTOR_ORDER.map((d) => (
                 <span key={d}><i style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", marginRight: 5, verticalAlign: 1, background: doctorColor(d).fg }} />{d}</span>
               ))}
-            </div>
+            </div>}
           </div>
         )}
+
+        {statusBlock}
 
         {/* ── Doctors view ── */}
         {ok && view === "doctors" && weeks.map((w) => (

@@ -12,10 +12,14 @@ export const SITE_ORDER = ["WORC", "LEOM", "LEX", "UMASS", "WSC", "VALEDA"];
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-/** GET /api/schedule. Never throws — failures come back as { error }. */
-export async function fetchSchedule(days = 14) {
+/**
+ * GET /api/schedule. Never throws — failures come back as { error }.
+ * `from` ("YYYY-MM-DD", optional) starts the range on that date instead of today.
+ */
+export async function fetchSchedule(days = 14, from = null) {
   try {
-    const res = await fetch(`${API_BASE}/api/schedule?days=${days}`);
+    const qs = `days=${encodeURIComponent(days)}${from && /^\d{4}-\d{2}-\d{2}$/.test(from) ? `&from=${from}` : ""}`;
+    const res = await fetch(`${API_BASE}/api/schedule?${qs}`);
     if (!res.ok) return { configured: true, error: `HTTP ${res.status}`, days: [] };
     const data = await res.json();
     return data && typeof data === "object" ? data : { configured: true, error: "bad response", days: [] };
@@ -108,4 +112,22 @@ export function translatorOf(techs) {
   if (typeof t === "string") return { raw: t };
   if (!t.AM && !t.PM) return null;
   return { am: t.AM || "—", pm: t.PM || "—", same: t.AM && t.AM === t.PM };
+}
+
+/**
+ * Valeda for one day: doctors with a VALEDA session (from the calendar) and
+ * techs whose sheet assignment mentions Valeda (the server files that word
+ * under roles.*.other / person.unknown). null when neither is present.
+ */
+export function valedaOf(day) {
+  if (!day) return null;
+  const docs = sessionsBySite(day.sessions).filter((x) => x.site === "VALEDA").flatMap((x) => x.docs);
+  const techs = [];
+  for (const p of (day.techs && day.techs.people) || []) {
+    const u = p.unknown || {};
+    const am = (u.AM || []).some((w) => /valeda/i.test(w));
+    const pm = (u.PM || []).some((w) => /valeda/i.test(w));
+    if (am || pm) techs.push({ name: p.name, half: am && pm ? null : am ? "AM" : "PM" });
+  }
+  return docs.length || techs.length ? { docs, techs } : null;
 }
