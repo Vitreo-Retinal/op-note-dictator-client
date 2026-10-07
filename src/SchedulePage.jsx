@@ -3,8 +3,8 @@ import PageBar, { wrap, segWrap, segBtn } from "./PageBar.jsx";
 import { DocChip } from "./CallBoard.jsx";
 import { T, card, DOCTOR_ORDER, SITE_TINTS, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
-import { usePhone, PhoneHeading } from "./phone.jsx";
-import SchedulePhone from "./SchedulePhone.jsx";
+import { usePhone } from "./phone.jsx";
+import SchedulePhone, { nextTiles } from "./SchedulePhone.jsx";
 import {
   fetchSchedule, scheduleOk, ymdOf, dateOfYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
   doctorHalves, translatorOf,
@@ -54,11 +54,6 @@ const TECH_ROWS = [
   { key: "other", label: "Other" },
 ];
 
-// Long heading date: "Wednesday, Oct 7"
-const DOW_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const longDay = (ymd) => { const d = dateOfYmd(ymd); return `${DOW_LONG[d.getDay()]}, ${MON3[d.getMonth()]} ${d.getDate()}`; };
-
 // Date picker: reloads the schedule starting on the picked date. "Today" resets.
 function DatePick({ from, todayYmd, onChange, phone }) {
   return (
@@ -78,6 +73,13 @@ export default function SchedulePage({ onBack }) {
   const { phone } = usePhone();
   const todayYmd = ymdOf(new Date());
   const [from, setFrom] = useState(todayYmd); // first day shown (date picker)
+  // Phone: the date the next-day tiles count from (date input / Today), the
+  // tiles themselves (kept while a tile's day loads), and open tech folds.
+  const [anchor, setAnchor] = useState(todayYmd);
+  const [tiles, setTiles] = useState(null);
+  const [openFolds, setOpenFolds] = useState(() => new Set());
+  const pickDate = (v) => { setAnchor(v); setTiles(null); setFrom(v); };
+  const toggleFold = (id) => setOpenFolds((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const [sched, setSched] = useState(null); // null = loading
   const [view, setView] = useState("doctors"); // "doctors" | "site"
   const [techDay, setTechDay] = useState(null); // YYYY-MM-DD picked on the tech board (null = default)
@@ -88,7 +90,11 @@ export default function SchedulePage({ onBack }) {
     setSched(null);
     setTechDay(null);
     setShowSheet(false);
-    fetchSchedule(14, from === todayYmd ? null : from).then((data) => { if (alive) setSched(data); });
+    fetchSchedule(14, from === todayYmd ? null : from).then((data) => {
+      if (!alive) return;
+      setSched(data);
+      if (from === anchor && scheduleOk(data)) setTiles(nextTiles(data, from));
+    });
     return () => { alive = false; };
   }, [from]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -284,12 +290,12 @@ export default function SchedulePage({ onBack }) {
     const day = ok ? (sched.days.find((d) => d.date === from) || sched.days[0] || null) : null;
     return (
       <div style={{ background: T.paper, color: T.ink, fontFamily: T.sans }}>
-        <PhoneHeading title={longDay(day ? day.date : from)} sub={day && day.date === todayYmd ? "Today · VRA calendar" : "VRA calendar"} />
-        <div style={{ padding: "4px 16px 2px" }}>
-          <DatePick from={from} todayYmd={todayYmd} onChange={setFrom} phone />
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px 8px" }}>
+          <b style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 600, color: T.ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{shortDate(day ? day.date : from)}</b>
+          <DatePick from={from} todayYmd={todayYmd} onChange={pickDate} phone />
         </div>
         {(sched === null || !ok) && <div style={{ padding: "12px 16px" }}>{statusBlock}</div>}
-        {ok && day && <SchedulePhone sched={sched} day={day} todayYmd={todayYmd} />}
+        {ok && day && <SchedulePhone day={day} tiles={tiles} selected={from} onPick={setFrom} open={openFolds} onToggle={toggleFold} />}
         {ok && !day && <div style={{ padding: "12px 16px", fontSize: 13, color: T.muted }}>No calendar days returned for this date.</div>}
       </div>
     );

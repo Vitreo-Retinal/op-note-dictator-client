@@ -2,9 +2,9 @@ import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf } from "./lib/vraSchedule.js";
 
 // ── Schedule, phone layout (Oct 2026) ───────────────────────────────
-// One day at a time (the picked date, default today): on call, doctors per
-// site, techs per site, translator + Valeda, then the next five weekdays'
-// on-call doctor. Everything comes from GET /api/schedule; nothing is filled
+// One day at a time, sized to fit one screen: on call (one row), doctors per
+// site, techs folded per site (tap opens the role rows), translator + Valeda,
+// then five next-day tiles (tap one to show that day). Everything comes from GET /api/schedule; nothing is filled
 // in when the API has no value.
 
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -19,7 +19,7 @@ const ROWS = [
   { key: "imaging", label: "Imaging" },
 ];
 
-const secH = { display: "flex", alignItems: "baseline", justifyContent: "space-between", fontSize: 11.5, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: T.muted, margin: "14px 0 6px" };
+const secH = { display: "flex", alignItems: "baseline", justifyContent: "space-between", fontSize: 11.5, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: T.muted, margin: "10px 0 5px" };
 const secNote = { textTransform: "none", letterSpacing: 0, fontWeight: 400, fontSize: 11.5 };
 const cardS = { background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg };
 const lbl = { fontSize: 11.5, color: T.muted };
@@ -43,86 +43,107 @@ function halves(am, pm) {
   return `${a || "—"} / ${p || "—"}`;
 }
 
-function SiteTechs({ site, roles }) {
-  const half = roles[site] || { AM: {}, PM: {} };
-  const tint = SITE_TINTS[site] || SITE_TINTS.WORC;
-  const rows = ROWS.filter((r) => r.always || (half.AM[r.key] || []).length || (half.PM[r.key] || []).length);
+// Distinct names in one role across AM and PM.
+function roleCount(half, key) {
+  return new Set([...(half.AM[key] || []), ...(half.PM[key] || [])]).size;
+}
+
+// One folded row (tap to open in place). `children` render when open.
+function Fold({ id, open, onToggle, title, summary, tint, children }) {
+  const isOpen = open.has(id);
   return (
-    <div style={{ borderRadius: T.rLg, overflow: "hidden", background: tint.bg, border: `1px solid ${tint.line}`, minWidth: 0 }}>
-      <div style={{ fontSize: 12, fontWeight: 600, padding: "5px 10px", background: tint.head, color: site === "LEOM" ? tint.text : T.ink2, borderBottom: `1px solid ${tint.line}` }}>
-        {site} <span style={{ fontWeight: 400, fontSize: 11, color: T.muted }}>{SITE_NAME[site]}</span>
-      </div>
-      <div style={{ padding: "3px 0 6px" }}>
-        {rows.map((r) => {
-          const v = halves(half.AM[r.key], half.PM[r.key]);
-          return (
-            <div key={r.key} style={{ display: "flex", gap: 6, padding: "3px 10px", fontSize: 12.5, lineHeight: 1.35 }}>
-              <b style={{ width: 72, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5, paddingTop: 1 }}>{r.label}</b>
-              <span style={{ flex: 1, minWidth: 0, color: v ? (r.key === "back" ? T.accent : T.ink) : T.lineStrong, fontWeight: r.key === "back" && v ? 600 : 400, overflowWrap: "anywhere" }}>{v || "—"}</span>
-            </div>
-          );
-        })}
-      </div>
+    <div style={{ borderRadius: T.rLg, overflow: "hidden", background: tint ? tint.bg : T.surface, border: `1px solid ${tint ? tint.line : T.line}`, marginBottom: 8 }}>
+      <button type="button" onClick={() => onToggle(id)} aria-expanded={isOpen}
+        style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", minHeight: 40, padding: "0 12px", background: "transparent", border: 0, fontFamily: T.sans, color: T.ink, textAlign: "left", cursor: "pointer" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, flex: "none", color: tint && tint.title ? tint.title : T.ink }}>{title}</span>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 11.5, lineHeight: 1.3, padding: "4px 0", color: T.muted, textAlign: "right" }}>{summary}</span>
+        <span aria-hidden="true" style={{ fontSize: 11, color: T.muted, flex: "none", transform: isOpen ? "rotate(180deg)" : "none" }}>▾</span>
+      </button>
+      {isOpen && <div style={{ borderTop: `1px solid ${tint ? tint.line : T.line}`, padding: "4px 0 6px" }}>{children}</div>}
     </div>
   );
 }
 
-export default function SchedulePhone({ sched, day, todayYmd }) {
+function TechRows({ half }) {
+  const rows = ROWS.filter((r) => r.always || (half.AM[r.key] || []).length || (half.PM[r.key] || []).length);
+  return rows.map((r) => {
+    const v = halves(half.AM[r.key], half.PM[r.key]);
+    return (
+      <div key={r.key} style={{ display: "flex", gap: 6, padding: "3px 12px", fontSize: 12.5, lineHeight: 1.35 }}>
+        <b style={{ width: 62, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5, paddingTop: 1 }}>{r.label}</b>
+        <span style={{ flex: 1, minWidth: 0, color: v ? (r.key === "back" ? T.accent : T.ink) : T.lineStrong, fontWeight: r.key === "back" && v ? 600 : 400, overflowWrap: "anywhere" }}>{v || "—"}</span>
+      </div>
+    );
+  });
+}
+
+const FOLD_TINT = {
+  WORC: { bg: SITE_TINTS.WORC.bg, line: SITE_TINTS.WORC.line },
+  LEOM: { bg: SITE_TINTS.LEOM.bg, line: SITE_TINTS.LEOM.line, title: SITE_TINTS.LEOM.text },
+};
+
+/**
+ * Phone schedule, one screen (Oct 2026). Props:
+ *  sched, day, todayYmd — the loaded range and the selected day
+ *  tiles — next-days tiles [{ date, closed, onCall }] (from the anchor date's load)
+ *  selected — selected date (highlights its tile); onPick(ymd) — tile tap
+ *  open, onToggle — expanded tech folds (kept by the page)
+ */
+export default function SchedulePhone({ day, tiles, selected, onPick, open, onToggle }) {
   const onCall = day.onCall || null;
   const sites = sessionsBySite(day.sessions).filter((x) => x.site !== "VALEDA");
   const t = day.techs || null;
   const tr = translatorOf(t);
   const valeda = valedaOf(day);
+  const off = (t && t.off) || [];
 
-  // Next five weekdays after the shown day (weekends only when they carry
-  // sessions or a closure, as on desktop).
-  const idx = sched.days.indexOf(day);
-  const next = sched.days.slice(idx + 1).filter((d) => {
-    const w = dateOfYmd(d.date).getDay();
-    return (w !== 0 && w !== 6) || d.sessions.length > 0 || d.closed;
-  }).slice(0, 5);
+  const siteSummary = (site) => {
+    const half = (t.roles && t.roles[site]) || { AM: {}, PM: {} };
+    const parts = ROWS.map((r) => [r.label, roleCount(half, r.key)]).filter(([, n]) => n > 0).map(([l, n]) => `${l}\u00a0${n}`);
+    return { half, text: parts.join(" · ") || "—" };
+  };
 
-  const updated = sched.generatedAt
-    ? new Date(sched.generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-    : null;
+  // Third fold: translator, Valeda, off.
+  const extraTitle = [tr && "Translator", valeda && "Valeda", off.length && "Off"].filter(Boolean).join(" · ");
+  const extraSummary = [
+    tr && (tr.raw ? tr.raw : tr.same ? tr.am : `${tr.am} / ${tr.pm}`),
+    valeda && [...valeda.docs.map((d) => d.doctor), ...valeda.techs.map((x) => x.name)].join(", "),
+    off.length && `Off ${off.join(", ")}`,
+  ].filter(Boolean).join(" · ");
 
   return (
-    <div style={{ padding: "0 16px 20px", fontFamily: T.sans, color: T.ink }}>
-      {/* Closure — as on desktop */}
+    <div style={{ padding: "0 16px 12px", fontFamily: T.sans, color: T.ink }}>
+      {/* Closure — compact */}
       {day.closed && (
-        <div style={{ marginTop: 10, padding: "9px 12px", borderRadius: T.r, background: T.amberSoft, color: T.amber, fontSize: 13.5, fontWeight: 600 }}>
+        <div style={{ marginBottom: 8, padding: "6px 12px", borderRadius: T.r, background: T.amberSoft, color: T.amber, fontSize: 13, fontWeight: 600 }}>
           Closed{day.closureName ? ` — ${day.closureName}` : ""}
         </div>
       )}
 
-      {/* On call */}
-      <div style={secH}>On call</div>
-      <div style={{ ...cardS, display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-        <div style={{ padding: "9px 12px", minHeight: 56, display: "flex", flexDirection: "column", justifyContent: "center", gap: 3 }}>
-          <span style={lbl}>Doctor</span>
-          {onCall && onCall.doctor ? <span><Pill doctor={onCall.doctor} /></span> : <span style={muted}>—</span>}
-          {onCall && onCall.doctorThrough && onCall.doctorThrough !== day.date && <span style={{ ...lbl, fontSize: 11 }}>through {shortDate(onCall.doctorThrough)}</span>}
-        </div>
-        <div style={{ padding: "9px 12px", minHeight: 56, display: "flex", flexDirection: "column", justifyContent: "center", gap: 3, borderLeft: `1px solid ${T.line}` }}>
-          <span style={lbl}>Tech</span>
-          <span style={{ fontSize: 15, fontWeight: 600, color: onCall && onCall.tech ? T.ink : T.muted }}>{(onCall && onCall.tech) || "—"}</span>
-        </div>
+      {/* On call — one row */}
+      <div style={{ ...cardS, display: "flex", alignItems: "center", gap: 8, minHeight: 38, padding: "4px 12px", flexWrap: "wrap" }}>
+        <span style={lbl}>On call</span>
+        {onCall && onCall.doctor ? <Pill doctor={onCall.doctor} /> : <span style={muted}>—</span>}
+        {onCall && onCall.doctorThrough && onCall.doctorThrough !== day.date && <span style={{ ...lbl, fontSize: 11.5 }}>through {shortDate(onCall.doctorThrough)}</span>}
+        <span style={{ flex: 1 }} />
+        <span style={lbl}>Tech</span>
+        <b style={{ fontSize: 13.5, fontWeight: 600, color: onCall && onCall.tech ? T.ink : T.muted }}>{(onCall && onCall.tech) || "—"}</b>
       </div>
 
       {/* Doctors at each site */}
-      <div style={secH}>{day.date === todayYmd ? "Doctors today" : "Doctors"}</div>
+      <div style={secH}>Doctors</div>
       <div style={cardS}>
         {sites.map(({ site, docs }, i) => (
-          <div key={site} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", minHeight: 44, borderTop: i ? `1px solid ${T.line}` : 0 }}>
+          <div key={site} style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: i ? `1px solid ${T.line}` : 0 }}>
             <span style={{ width: 52, fontSize: 12, fontWeight: 600, color: T.ink2, flex: "none" }}>{site}</span>
             <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
               {docs.map((d) => <Pill key={d.doctor} doctor={d.doctor} half={d.half} />)}
             </div>
           </div>
         ))}
-        {!sites.length && <div style={{ padding: "12px", ...muted }}>{day.closed ? "Office closed" : "No clinic sessions"}</div>}
+        {!sites.length && <div style={{ padding: "8px 12px", ...muted }}>{day.closed ? "Office closed" : "No clinic sessions"}</div>}
         {day.vacations.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.muted }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.muted }}>
             <span style={{ width: 52, fontSize: 12, fontWeight: 600, flex: "none" }}>Out</span>
             <span style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
               {day.vacations.map((d) => <span key={d} style={{ display: "inline-flex", alignItems: "center", height: 24, padding: "0 9px", borderRadius: 999, background: T.paper, border: `1px solid ${T.line}`, color: T.muted, fontSize: 12.5, fontWeight: 600 }}>{d}</span>)}
@@ -131,68 +152,80 @@ export default function SchedulePhone({ sched, day, todayYmd }) {
         )}
       </div>
 
-      {/* Techs */}
-      <div style={secH}>{day.date === todayYmd ? "Techs today" : "Techs"} <span style={secNote}>AM / PM</span></div>
-      {!t && <div style={{ ...cardS, padding: 12, ...muted }}>No tech sheet for this day.</div>}
-      {t && t.roles && (
-        // Stacked full width, one site under the other, so long name lists stay on one or two lines.
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
-          <SiteTechs site="WORC" roles={t.roles} />
-          <SiteTechs site="LEOM" roles={t.roles} />
-        </div>
-      )}
+      {/* Techs — one folded row per site */}
+      <div style={secH}>Techs {t && t.roles && <span style={secNote}>tap to open · AM / PM</span>}</div>
+      {!t && <div style={{ ...cardS, padding: "8px 12px", marginBottom: 8, ...muted }}>No tech sheet for this day.</div>}
+      {t && t.roles && ["WORC", "LEOM"].map((site) => {
+        const { half, text } = siteSummary(site);
+        return (
+          <Fold key={site} id={site} open={open} onToggle={onToggle} tint={FOLD_TINT[site]}
+            title={<>{site} <span style={{ fontWeight: 600 }}>{SITE_NAME[site]}</span></>} summary={text}>
+            <TechRows half={half} />
+          </Fold>
+        );
+      })}
       {t && !t.roles && (
         // Older server (no structured roles): Back lines only.
-        <div style={{ ...cardS, padding: "8px 12px", fontSize: 12.5, lineHeight: 1.6 }}>
+        <div style={{ ...cardS, padding: "6px 12px", marginBottom: 8, fontSize: 12.5, lineHeight: 1.6 }}>
           <div><b style={{ fontWeight: 600 }}>WORC Back</b> {halves(t.worcesterBackAM, t.worcesterBackPM) || "—"}</div>
           <div><b style={{ fontWeight: 600 }}>LEOM Back</b> {halves(t.leominsterBackAM, t.leominsterBackPM) || "—"}</div>
         </div>
       )}
-      {(tr || valeda) && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8, marginTop: 8 }}>
+      {extraTitle && (
+        <Fold id="extra" open={open} onToggle={onToggle} title={extraTitle} summary={extraSummary}>
           {tr && (
-            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 8px", padding: "7px 12px", minHeight: 36, borderRadius: 8, background: TRANSLATOR.bg, color: TRANSLATOR.fg, fontSize: 12.5 }}>
-              <b style={{ fontWeight: 600 }}>Translator</b>
-              <span>{tr.raw ? tr.raw : tr.same ? tr.am : `${tr.am} / ${tr.pm}`}</span>
+            <div style={{ display: "flex", gap: 6, padding: "3px 12px", fontSize: 12.5, lineHeight: 1.35 }}>
+              <b style={{ width: 62, flex: "none", fontWeight: 500, color: TRANSLATOR.fg, fontSize: 11.5, paddingTop: 1 }}>Translator</b>
+              <span style={{ flex: 1, minWidth: 0, color: TRANSLATOR.fg }}>{tr.raw ? tr.raw : tr.same ? tr.am : `${tr.am} / ${tr.pm}`}</span>
             </div>
           )}
           {valeda && (
-            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 8px", padding: "6px 12px", minHeight: 36, borderRadius: 8, background: T.surface, border: `1px solid ${T.line}`, color: T.ink2, fontSize: 12.5 }}>
-              <b style={{ fontWeight: 600 }}>Valeda</b>
+            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px 6px", padding: "3px 12px", fontSize: 12.5, color: T.ink2 }}>
+              <b style={{ width: 62, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5 }}>Valeda</b>
               {valeda.docs.map((d) => <Pill key={d.doctor} doctor={d.doctor} half={d.half} />)}
               {valeda.techs.map((x) => <span key={x.name}>{x.name}{x.half ? <small style={{ fontSize: 10, color: T.muted }}> {x.half}</small> : null}</span>)}
             </div>
           )}
-        </div>
-      )}
-      {t && t.off && t.off.length > 0 && (
-        <div style={{ marginTop: 6, fontSize: 12.5, color: T.ink2 }}><b style={{ fontWeight: 600 }}>Off</b> {t.off.join(", ")}</div>
+          {off.length > 0 && (
+            <div style={{ display: "flex", gap: 6, padding: "3px 12px", fontSize: 12.5, lineHeight: 1.35 }}>
+              <b style={{ width: 62, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5, paddingTop: 1 }}>Off</b>
+              <span style={{ flex: 1, minWidth: 0, color: T.ink2 }}>{off.join(", ")}</span>
+            </div>
+          )}
+        </Fold>
       )}
 
-      {/* Next days */}
-      {next.length > 0 && (
+      {/* Next days — tap a tile to show that day */}
+      {tiles && tiles.length > 0 && (
         <>
           <div style={secH}>Next days <span style={secNote}>on call</span></div>
-          <div style={{ ...cardS, display: "grid", gridTemplateColumns: `repeat(${next.length}, 1fr)` }}>
-            {next.map((d, i) => {
+          <div style={{ ...cardS, display: "grid", gridTemplateColumns: `repeat(${tiles.length}, 1fr)`, overflow: "hidden" }}>
+            {tiles.map((d, i) => {
               const dt = dateOfYmd(d.date);
               const who = d.onCall && d.onCall.doctor;
+              const sel = d.date === selected;
               return (
-                <div key={d.date} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, minHeight: 62, padding: "6px 2px", borderLeft: i ? `1px solid ${T.line}` : 0, fontSize: 11.5, color: T.muted, background: d.closed ? T.amberSoft : "transparent" }}>
-                  <span><b style={{ color: T.ink, fontWeight: 600, fontSize: 12 }}>{DOW[dt.getDay()]}</b> {dt.getDate()}</span>
+                <button type="button" key={d.date} onClick={() => onPick(d.date)} aria-pressed={sel}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, minHeight: 48, padding: "4px 2px", border: 0, borderLeft: i ? `1px solid ${T.line}` : 0, boxShadow: sel ? `inset 0 0 0 2px ${T.accent}` : "none", fontFamily: T.sans, fontSize: 12, cursor: "pointer", color: T.ink2, background: sel ? T.accentSoft : "transparent" }}>
+                  <b style={{ color: sel ? T.accent : T.ink, fontWeight: 600, fontSize: 12.5 }}>{DOW[dt.getDay()]} {dt.getDate()}</b>
                   {d.closed
-                    ? <span style={{ fontSize: 11, fontWeight: 600, color: T.amber }}>Closed</span>
-                    : who ? <Pill doctor={who} /> : <span>—</span>}
-                </div>
+                    ? <span style={{ fontSize: 11.5, fontWeight: 500, color: T.amber }}>Closed</span>
+                    : <span>{who || "—"}</span>}
+                </button>
               );
             })}
           </div>
         </>
       )}
-
-      <p style={{ color: T.muted, fontSize: 12, margin: "14px 0 0" }}>
-        {updated ? `Updated ${updated} · ` : ""}source: VRA Google Calendar
-      </p>
     </div>
   );
+}
+
+/** Next five weekdays after `ymd` in a loaded range (weekends only when they carry sessions or a closure). */
+export function nextTiles(sched, ymd) {
+  return sched.days.filter((d) => {
+    if (d.date <= ymd) return false;
+    const w = dateOfYmd(d.date).getDay();
+    return (w !== 0 && w !== 6) || d.sessions.length > 0 || d.closed;
+  }).slice(0, 5).map((d) => ({ date: d.date, closed: d.closed, onCall: d.onCall }));
 }
