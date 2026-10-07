@@ -1,13 +1,13 @@
 import { useState, useEffect, Fragment } from "react";
 import PageBar, { wrap, segWrap, segBtn } from "./PageBar.jsx";
-import { DocChip } from "./CallBoard.jsx";
+import { DocChip, ManagersLine } from "./CallBoard.jsx";
 import { T, card, DOCTOR_ORDER, SITE_TINTS, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
 import SchedulePhone, { nextTiles } from "./SchedulePhone.jsx";
 import {
   fetchSchedule, scheduleOk, ymdOf, dateOfYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
-  doctorHalves, translatorOf,
+  doctorHalves, translatorOf, managersOf,
 } from "./lib/vraSchedule.js";
 
 // ── Schedule — 2-week view from the shared VRA Google Calendar (Oct 2026) ─
@@ -155,12 +155,33 @@ export default function SchedulePage({ onBack }) {
     const all = weekAll(w.monday);
     const doc = rotationLabel(all, "doctor");
     const tech = rotationLabel(all, "tech");
+    // Managers: as of today when today is in this week, else the week's first
+    // weekday; a later change that week is noted, e.g. "(vacation from Thu)".
+    const wkdays = all.filter((d) => { const x = dateOfYmd(d.date).getDay(); return x !== 0 && x !== 6; });
+    const ref = wkdays.find((d) => d.date === todayYmd) || wkdays.find((d) => d.date >= todayYmd) || wkdays[0] || null;
+    const mgrs = ref ? managersOf(ref) : [];
+    const later = {};
+    if (ref) {
+      for (const m of ref.managers || []) {
+        const key = (x) => `${x.status}|${x.site}|${x.ext}|${x.part || ""}`;
+        const next = wkdays.find((d) => d.date > ref.date && (d.managers || []).some((x) => x.name === m.name && key(x) !== key(m)));
+        if (!next) continue;
+        const x = next.managers.find((y) => y.name === m.name);
+        const what = x.status === "vacation" ? "vacation" : x.status === "out" ? "out" : x.site;
+        later[m.name] = `(${what} from ${DOW[dateOfYmd(next.date).getDay()]})`;
+      }
+    }
     return (
-      <div style={head}>
-        <h3 style={h3}>{title || `Week of ${monDay(w.monday)}`}</h3>
-        {doc && <span style={oc}>On call {runLabel(doc)}</span>}
-        {tech && <span style={oc}>Tech {runLabel(tech)}</span>}
-      </div>
+      <>
+        <div style={head}>
+          <h3 style={h3}>{title || `Week of ${monDay(w.monday)}`}</h3>
+          {doc && <span style={oc}>On call {runLabel(doc)}</span>}
+          {tech && <span style={oc}>Tech {runLabel(tech)}</span>}
+        </div>
+        {mgrs.length > 0 && (
+          <ManagersLine managers={mgrs} extra={later} style={{ padding: "6px 16px", borderBottom: `1px solid ${T.line}`, background: T.surface }} />
+        )}
+      </>
     );
   };
 

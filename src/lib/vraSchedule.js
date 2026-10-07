@@ -22,7 +22,12 @@ export async function fetchSchedule(days = 14, from = null) {
     const res = await fetch(`${API_BASE}/api/schedule?${qs}`);
     if (!res.ok) return { configured: true, error: `HTTP ${res.status}`, days: [] };
     const data = await res.json();
-    return data && typeof data === "object" ? data : { configured: true, error: "bad response", days: [] };
+    if (!data || typeof data !== "object") return { configured: true, error: "bad response", days: [] };
+    // Managers line (Oct 2026): pass day.managers through; older servers → [].
+    if (Array.isArray(data.days)) {
+      for (const d of data.days) if (d && !Array.isArray(d.managers)) d.managers = [];
+    }
+    return data;
   } catch {
     return { configured: true, error: "network", days: [] };
   }
@@ -130,4 +135,26 @@ export function valedaOf(day) {
     if (am || pm) techs.push({ name: p.name, half: am && pm ? null : am ? "AM" : "PM" });
   }
   return docs.length || techs.length ? { docs, techs } : null;
+}
+
+/**
+ * Managers for one day (server: day.managers, Oct 2026). Older servers send
+ * none → []. Each → { name, text, tone } where tone is "vacation" (amber),
+ * "out" (muted) or "in". Examples:
+ *   "Aundrea · WORC", "Brittany · LEOM ext. 1234",
+ *   "Aundrea — vacation through Fri, Oct 9", "Brittany — out",
+ *   half-day: "Brittany · LEOM PM (AM WORC)".
+ */
+export function managersOf(day) {
+  const list = (day && Array.isArray(day.managers)) ? day.managers : [];
+  return list.map((m) => {
+    const ext = m.ext ? ` ext. ${m.ext}` : "";
+    const part = m.part ? ` ${m.part}` : "";
+    const note = m.note ? ` (${m.note})` : "";
+    if (m.status === "vacation") {
+      return { name: m.name, tone: "vacation", text: `${m.name} — vacation${m.through ? ` through ${shortDate(m.through)}` : ""}` };
+    }
+    if (m.status === "out") return { name: m.name, tone: "out", text: `${m.name} — out${part}${note}` };
+    return { name: m.name, tone: "in", text: `${m.name}${m.site ? ` · ${m.site}` : ""}${ext}${part}${note}` };
+  });
 }

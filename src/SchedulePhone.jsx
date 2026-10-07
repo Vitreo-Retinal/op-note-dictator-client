@@ -1,5 +1,5 @@
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
-import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf } from "./lib/vraSchedule.js";
+import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf, managersOf } from "./lib/vraSchedule.js";
 
 // ── Schedule, phone layout (Oct 2026) ───────────────────────────────
 // One day at a time, sized to fit one screen: on call (one row), doctors per
@@ -96,6 +96,8 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
   const tr = translatorOf(t);
   const valeda = valedaOf(day);
   const off = (t && t.off) || [];
+  const managers = managersOf(day);
+  const mgrTone = { in: T.ink, vacation: T.amber, out: T.muted };
 
   const siteSummary = (site) => {
     const half = (t.roles && t.roles[site]) || { AM: {}, PM: {} };
@@ -129,6 +131,18 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
         <span style={lbl}>Tech</span>
         <b style={{ fontSize: 13.5, fontWeight: 600, color: onCall && onCall.tech ? T.ink : T.muted }}>{(onCall && onCall.tech) || "—"}</b>
       </div>
+
+      {/* Managers — compact row card; wraps to one manager per line when needed */}
+      {managers.length > 0 && (
+        <div style={{ ...cardS, display: "flex", alignItems: "center", gap: 8, minHeight: 38, padding: "4px 12px", marginTop: 8, boxSizing: "border-box" }}>
+          <span style={{ ...lbl, flex: "none" }}>Managers</span>
+          <span style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", justifyContent: "flex-end", columnGap: 10, rowGap: 2, fontSize: 13 }}>
+            {managers.map((m) => (
+              <span key={m.name} style={{ whiteSpace: "nowrap", color: mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
+            ))}
+          </span>
+        </div>
+      )}
 
       {/* Doctors at each site */}
       <div style={secH}>Doctors</div>

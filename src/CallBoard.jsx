@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
 import { majorHoliday, injectionBlackout } from "./lib/practiceCalendar.js";
-import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf } from "./lib/vraSchedule.js";
+import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf, managersOf } from "./lib/vraSchedule.js";
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 
@@ -33,6 +33,28 @@ export function DocChip({ doctor, half, size = "sm" }) {
       {doctor}
       {half && <small style={{ fontSize: sm ? 9.5 : 10.5, fontWeight: 500, opacity: 0.75, marginLeft: sm ? 2 : 3 }}>{half}</small>}
     </span>
+  );
+}
+
+// Managers line (Oct 2026): "Managers  Aundrea · WORC · Brittany · LEOM ext. 1234".
+// One line, never wraps; vacation in amber, out muted. `extra` (optional)
+// renders after each manager's text, e.g. a muted "(vacation from Thu)".
+export function ManagersLine({ managers, extra, style }) {
+  if (!managers || !managers.length) return null;
+  const tone = { in: T.ink2, vacation: T.amber, out: T.muted };
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: T.sans, fontSize: 12.5, minWidth: 0, ...style }}>
+      <span style={{ fontSize: 12, color: T.muted, flex: "none" }}>Managers</span>
+      <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+        {managers.map((m, i) => (
+          <Fragment key={m.name}>
+            {i > 0 && <span style={{ color: T.lineStrong }}> · </span>}
+            <span style={{ color: tone[m.tone] || T.ink2, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
+            {extra && extra[m.name] && <span style={{ color: T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
+          </Fragment>
+        ))}
+      </span>
+    </div>
   );
 }
 
@@ -75,6 +97,7 @@ export default function CallBoard({ onOpenSchedule }) {
 
   const sites = todayDay ? sessionsBySite(todayDay.sessions) : [];
   const techs = todayDay ? todayDay.techs : null;
+  const managers = todayDay ? managersOf(todayDay) : [];
 
   // Mockup .band styles
   const cell = { padding: "12px 16px", borderRight: `1px solid ${T.line}`, minWidth: 0, overflow: "hidden" };
@@ -222,6 +245,11 @@ export default function CallBoard({ onOpenSchedule }) {
             )}
           </div>
         </div>
+
+        {/* Managers — one line under the band, starting under On call */}
+        {managers.length > 0 && (
+          <ManagersLine managers={managers} style={{ padding: "7px 16px", borderTop: `1px solid ${T.line}` }} />
+        )}
       </div>
 
       {/* Injection blackout banner — first two weeks of January (per Mari, Sep 2026) */}
