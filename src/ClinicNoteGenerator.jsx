@@ -1018,7 +1018,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         </div>
       </div>
 
-      <div className="vra-wrap" style={{ padding: phone ? "16px 16px 28px" : "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
+      <div className="vra-wrap" style={{ padding: phone ? "16px 16px 28px" : "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box", ...(phone ? { overflowWrap: "anywhere" } : {}) }}>
 
         {/* ── INPUT TAB ──────────────────────────────────────────── */}
         {tab === "input" && (

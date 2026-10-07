@@ -178,7 +178,7 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
         <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
           {/* Schedule — wide row tile, first in the shared grid */}
           <button className="vra-tile-wide" onClick={() => onSelectTool(scheduleTool.id)}
-            style={tile({ gridColumn: "span 6", flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14 })}
+            style={tile({ gridColumn: "span 6", flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14, ...(phone ? { flexWrap: "nowrap", borderTop: `3px solid ${T.accent}` } : {}) })}
             onMouseEnter={hoverOn}
             onMouseLeave={hoverOff}>
             <span style={iconBox()}><ScheduleIcon /></span>
@@ -186,10 +186,21 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
               <span style={{ fontSize: 15, fontWeight: 600, color: T.ink, letterSpacing: "-0.01em" }}>{scheduleTool.title}</span>
               <span style={{ fontSize: 13, color: T.muted, lineHeight: 1.45 }}>{scheduleTool.description}</span>
             </span>
-            <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>Next 2 weeks</span>
+            {!phone && <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>Next 2 weeks</span>}
           </button>
           {sharedTools.map((tool, i) => {
             const Icon = tool.icon;
+            // Phone: compact row tile (icon left, title + description), no tag line.
+            if (phone) return (
+              <button key={tool.id} className="vra-tile" onClick={() => onSelectTool(tool.id)}
+                style={tile({ gridColumn: "span 2", borderTop: `3px solid ${tool.gradient}`, flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14 })}>
+                <span style={iconBox()}><Icon /></span>
+                <span style={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: 15, fontWeight: 600, color: T.ink, letterSpacing: "-0.01em" }}>{tool.title}</span>
+                  <span style={{ fontSize: 13, color: T.muted, lineHeight: 1.4 }}>{tool.description}</span>
+                </span>
+              </button>
+            );
             return (
               <button key={tool.id} className="vra-tile" onClick={() => onSelectTool(tool.id)}
                 style={tile({ gridColumn: "span 2", borderTop: `3px solid ${tool.gradient}` })}
