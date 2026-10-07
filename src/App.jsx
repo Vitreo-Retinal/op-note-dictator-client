@@ -10,6 +10,7 @@ import CallBoard from "./CallBoard.jsx";
 import DropSchedule from "./DropSchedule.jsx";
 import SchedulePage from "./SchedulePage.jsx";
 import HomePhone from "./HomePhone.jsx";
+import RolePicker from "./RolePicker.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
@@ -81,7 +82,10 @@ function PasswordGate({ onSuccess }) {
 }
 
 // ── Homepage ────────────────────────────────────────────────────────
-export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager, unlockedDoctor, onDictate, onLock }) {
+// role (Oct 2026): "doctor" | "tech" | "manager" — picked once per device
+// (RolePicker). Desktop: doctor → "Your space" first, tools, Practice management;
+// tech → tools only; manager → Manager's Hub first, then tools.
+export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectTool, onSelectDoctor, onSelectManager, unlockedDoctor, onDictate, onLock, onSwitch }) {
   // Oct 2026 — shared VRA Google Calendar view. Rendered as a full-width wide
   // tile at the top of "Tools for everyone"; the six tiles below stay 3 + 3.
   const scheduleTool = {
@@ -155,11 +159,30 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager, unlock
 
   const { phone } = usePhone();
 
+  // Manager's Hub tile (PIN-gated; skips the PIN while unlocked).
+  const managerTile = (
+    <button className="vra-tile-wide" onClick={onSelectManager}
+      style={tile({ gridColumn: "span 6", borderTop: `3px solid ${T.gold}`, flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14 })}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.accentLine; e.currentTarget.style.borderTopColor = T.gold; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.line; e.currentTarget.style.borderTopColor = T.gold; }}>
+      <span style={iconBox()}><ManagerIcon /></span>
+      <span style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: T.ink }}>Manager's Hub</span>
+        <span style={{ fontSize: 13, color: T.muted }}>Rate comparison</span>
+      </span>
+      <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, display: "flex", gap: 6, alignItems: "center", whiteSpace: "nowrap" }}>
+        {managerOpen ? "Open" : <><LockIcon />PIN required</>}
+      </span>
+    </button>
+  );
+  const roleDoc = SURGEONS.find((d) => d.id === roleDoctorId) || null;
+
   // Phone (Oct 2026): one-screen briefing — see HomePhone.jsx. Desktop below is unchanged.
   if (phone) {
     return (
-      <HomePhone doctor={unlockedDoctor || null} onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
-        onSelectManager={onSelectManager} onLock={onLock} />
+      <HomePhone role={role} doctor={role === "doctor" ? unlockedDoctor || null : null} managerOpen={managerOpen}
+        onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
+        onSelectManager={onSelectManager} onLock={onLock} onSwitch={onSwitch} />
     );
   }
 
@@ -174,6 +197,10 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager, unlock
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Practice Hub</div>
         <div style={{ flex: 1 }} />
         <div className="vra-bar-hide" style={{ fontSize: 13, color: T.ink2, whiteSpace: "nowrap" }}>{todayWords}</div>
+        <button type="button" onClick={onSwitch}
+          style={{ background: "none", border: 0, padding: "4px 0", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>
+          Switch view
+        </button>
       </header>
       )}
 
@@ -181,6 +208,60 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager, unlock
         {/* Call board — practice-wide date + on-call + F/U counter. Sep 2026, per
             Mari: everyone (techs, managers, doctors) sees it, no PIN. */}
         <CallBoard onOpenSchedule={() => onSelectTool("schedule")} />
+
+        {/* Manager view: the Manager's Hub comes first */}
+        {role === "manager" && (
+          <>
+            <h2 style={secHead()}>Practice management</h2>
+            <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>{managerTile}</div>
+          </>
+        )}
+
+        {/* Doctor view: the doctor's own space comes first. Once a doctor has
+            passed the PIN on this device, their name is the big button. */}
+        {role === "doctor" && (
+          <>
+            <h2 style={secHead()}>Your space</h2>
+            {roleDoc ? (
+              <>
+                <button className="vra-tile-wide" onClick={() => onSelectDoctor(roleDoc)}
+                  style={tile({ width: "100%", boxSizing: "border-box", flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14, borderTop: `3px solid ${doctorColor(roleDoc.id).fg}` })}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.accentLine; e.currentTarget.style.borderTopColor = doctorColor(roleDoc.id).fg; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.line; e.currentTarget.style.borderTopColor = doctorColor(roleDoc.id).fg; }}>
+                  <span style={avatar(40, { fontSize: 13, background: doctorColor(roleDoc.id).soft, color: doctorColor(roleDoc.id).fg, borderColor: "transparent" })}>{roleDoc.name}</span>
+                  <span style={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 16, fontWeight: 600, color: T.ink, letterSpacing: "-0.01em" }}>Dr. {roleDoc.surname}</span>
+                    <span style={{ fontSize: 13, color: T.muted }}>Clinic notes, dictation, coding</span>
+                  </span>
+                  <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, display: "flex", gap: 6, alignItems: "center", whiteSpace: "nowrap" }}>
+                    {unlockedDoctor && unlockedDoctor.id === roleDoc.id ? "Open" : <><LockIcon />PIN required</>}
+                  </span>
+                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 10, fontSize: 13, color: T.muted }}>
+                  Another doctor:
+                  {SURGEONS.filter((d) => d.id !== roleDoc.id).map((doc) => (
+                    <button key={doc.id} type="button" onClick={() => onSelectDoctor(doc)}
+                      style={{ background: "none", border: 0, padding: "2px 4px", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer" }}>
+                      {doc.surname}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {SURGEONS.map((doc) => (
+                  <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)}
+                    style={{ display: "flex", alignItems: "center", gap: 12, background: T.surface, border: `1px solid ${T.line}`, borderRadius: 999, padding: "8px 20px 8px 8px", cursor: "pointer", fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.ink, transition: "border-color .15s" }}
+                    onMouseEnter={hoverOn}
+                    onMouseLeave={hoverOff}>
+                    <span style={avatar(36)}>{doc.name}</span>
+                    Dr. {doc.surname || doc.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
 
         {/* Shared tools */}
         <h2 style={secHead()}>Tools for everyone</h2>
@@ -224,38 +305,15 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager, unlock
           })}
         </div>
 
-        {/* Doctor spaces */}
-        <h2 style={secHead()}>Doctor notes</h2>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          {SURGEONS.map((doc) => (
-            <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)}
-              style={{ display: "flex", alignItems: "center", gap: 10, background: T.surface, border: `1px solid ${T.line}`, borderRadius: 999, padding: "6px 16px 6px 6px", cursor: "pointer", fontFamily: T.sans, fontSize: 14, fontWeight: 500, color: T.ink, transition: "border-color .15s" }}
-              onMouseEnter={hoverOn}
-              onMouseLeave={hoverOff}>
-              <span style={avatar(30)}>{doc.name}</span>
-              {doc.surname || doc.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Practice management */}
-        <h2 style={secHead()}>Practice management</h2>
-        <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
-          {/* Manager's Hub (PIN-gated) */}
-          <button className="vra-tile-wide" onClick={onSelectManager}
-            style={tile({ gridColumn: "span 6", borderTop: `3px solid ${T.gold}`, flexDirection: "row", alignItems: "center", minHeight: 0, gap: 14 })}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.accentLine; e.currentTarget.style.borderTopColor = T.gold; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.line; e.currentTarget.style.borderTopColor = T.gold; }}>
-            <span style={iconBox()}><ManagerIcon /></span>
-            <span style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: T.ink }}>Manager's Hub</span>
-              <span style={{ fontSize: 13, color: T.muted }}>Rate comparison</span>
-            </span>
-            <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, display: "flex", gap: 6, alignItems: "center", whiteSpace: "nowrap" }}>
-              <LockIcon />PIN required
-            </span>
-          </button>
-        </div>
+        {/* Practice management — doctor view keeps it at the bottom; techs never see it */}
+        {role === "doctor" && (
+          <>
+            <h2 style={secHead()}>Practice management</h2>
+            <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
+              {managerTile}
+            </div>
+          </>
+        )}
 
         <p style={{ color: T.muted, fontSize: 12, margin: "44px 0 32px" }}>
           Vitreo-Retinal Associates · No patient information is stored by these tools.
@@ -465,8 +523,28 @@ function rememberedUnlock() {
   return null;
 }
 
+// Role picked on this device (Oct 2026): "doctor" | "tech" | "manager".
+// No role → the role picker shows right after the site password.
+const ROLE_KEY = "vra-hub-role";
+const ROLES = ["doctor", "tech", "manager"];
+// Doctor role: the surgeon who last passed the PIN here → their big Home button (desktop).
+const ROLE_DOC_KEY = "vra-hub-role-doctor";
+// Manager unlock: like the doctor unlock, kept on phones until the end of the
+// local day (stored as the "YYYY-MM-DD" it was entered). Desktop: memory only.
+const MGR_UNLOCK_KEY = "vra-hub-mgr-unlock";
+function storedRole() { const r = storeGet(ROLE_KEY); return ROLES.includes(r) ? r : null; }
+function rememberedManager() {
+  if (!isPhoneNow()) return false;
+  if (storeGet(MGR_UNLOCK_KEY) === localYmd()) return true;
+  storeSet(MGR_UNLOCK_KEY, null);
+  return false;
+}
+
 function restoredState() {
   if (!isPhoneNow()) return { page: "home", surgeon: null, unlocked: null };
+  // Tech / Manager have no Notes tab: doctor pages fall back to Home.
+  const role = storedRole();
+  if (role && role !== "doctor" && ["notes", "pin", "doctor"].includes(storeGet(PAGE_KEY))) return { page: "home", surgeon: null, unlocked: null };
   const unlocked = rememberedUnlock();
   const unlockedDoc = SURGEONS.find((d) => d.id === unlocked) || null;
   let page = storeGet(PAGE_KEY);
@@ -477,7 +555,7 @@ function restoredState() {
     if (page === "notes") return { page, surgeon: unlockedDoc, unlocked };
     return surgeon ? { page: "pin", surgeon, unlocked } : { page: "notes", surgeon: null, unlocked };
   }
-  if (page === "manager") page = "managerpin";
+  if (page === "manager" && !rememberedManager()) page = "managerpin";
   return { page, surgeon: unlockedDoc, unlocked };
 }
 // Which tab is lit for each page.
@@ -496,7 +574,15 @@ export default function App() {
   // honored until the end of that local day (see rememberedUnlock).
   const [unlocked, setUnlocked] = useState(initial.unlocked ? { id: initial.unlocked, day: localYmd() } : null);
   const [inputNonce, setInputNonce] = useState(0);
+  // Role for this device (null → role picker after the password).
+  const [role, setRole] = useState(storedRole);
+  const [roleDoctorId, setRoleDoctorId] = useState(() => storeGet(ROLE_DOC_KEY));
+  // Day the manager PIN passed ("YYYY-MM-DD"), or null.
+  const [mgrDay, setMgrDay] = useState(() => (rememberedManager() ? localYmd() : null));
+  // True between picking a role and passing its PIN: PIN success then lands on Home.
+  const [onboarding, setOnboarding] = useState(false);
   const phone = useIsPhone();
+  const managerOpen = mgrDay === localYmd();
   const unlockedId = unlocked && (!phone || unlocked.day === localYmd()) ? unlocked.id : null;
   const unlockedDoc = SURGEONS.find((d) => d.id === unlockedId) || null;
 
@@ -509,6 +595,18 @@ export default function App() {
     return <PasswordGate onSuccess={() => setAuthed(true)} />;
   }
 
+  // Role picker — once per device; "Switch view" on Home brings it back.
+  if (!role) {
+    const pickRole = (r) => {
+      setRole(r); storeSet(ROLE_KEY, r);
+      setActiveSurgeon(null);
+      if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
+      else if (r === "manager") { setOnboarding(!managerOpen); setPage(managerOpen ? "home" : "managerpin"); }
+      else { setOnboarding(false); setPage("home"); }
+    };
+    return <RolePicker phone={phone} onPick={pickRole} />;
+  }
+
   const goHome = () => setPage("home");
   // Leaving the doctor space: desktop → hub; phone → the doctor picker.
   // On a phone the unlock is kept (it lasts the day; Home has a Lock button).
@@ -518,8 +616,20 @@ export default function App() {
     const v = { id, day: localYmd() };
     setUnlocked(v);
     if (phone) storeSet(UNLOCK_KEY, JSON.stringify(v));
+    if (role === "doctor") { setRoleDoctorId(id); storeSet(ROLE_DOC_KEY, id); }
   };
   const lock = () => { setUnlocked(null); storeSet(UNLOCK_KEY, null); setActiveSurgeon(null); };
+  const unlockManager = () => { setMgrDay(localYmd()); if (phone) storeSet(MGR_UNLOCK_KEY, localYmd()); };
+  const openManager = () => setPage(managerOpen ? "manager" : "managerpin");
+  // "Switch view": forget the role and both unlocks, back to the role picker.
+  const switchView = () => {
+    lock();
+    setMgrDay(null); storeSet(MGR_UNLOCK_KEY, null);
+    setRoleDoctorId(null); storeSet(ROLE_DOC_KEY, null);
+    setRole(null); storeSet(ROLE_KEY, null);
+    setOnboarding(false);
+    setPage("home");
+  };
   // Phone Home "Dictate a note": unlocked → straight to the Input tab; else the doctor picker.
   const dictate = () => {
     if (unlockedDoc) { setActiveSurgeon(unlockedDoc); setInputNonce((n) => n + 1); setPage("doctor"); }
@@ -580,7 +690,7 @@ export default function App() {
       <PinGate
         key={activeSurgeon.id}
         surgeon={activeSurgeon}
-        onSuccess={() => { unlock(activeSurgeon.id); setPage("doctor"); }}
+        onSuccess={() => { unlock(activeSurgeon.id); setPage(onboarding && phone ? "home" : "doctor"); setOnboarding(false); }}
         onCancel={() => { setActiveSurgeon(phone ? unlockedDoc : null); setPage(phone ? "notes" : "home"); }}
       />
     );
@@ -589,7 +699,14 @@ export default function App() {
     content = <ClinicNoteGenerator onBack={leaveDoctor} surgeon={activeSurgeon} />;
   } else if (page === "managerpin") {
     // ── Manager's Hub (PIN-gated; managers + doctors, never techs) ──
-    content = <ManagerPinGate onSuccess={() => setPage("manager")} onCancel={goHome} />;
+    // Picked "Manager" on the role screen: PIN first, then the manager Home.
+    // Cancel there goes back to the role picker.
+    content = (
+      <ManagerPinGate
+        onSuccess={() => { unlockManager(); setPage(onboarding ? "home" : "manager"); setOnboarding(false); }}
+        onCancel={onboarding ? switchView : goHome}
+      />
+    );
   } else if (page === "manager") {
     content = <RateComparison onBack={goHome} />;
   } else if (page === "doctor" && phone && activeSurgeon && unlockedId === activeSurgeon.id) {
@@ -600,10 +717,14 @@ export default function App() {
       <Homepage
         onSelectTool={(id) => setPage(id)}
         onSelectDoctor={pickDoctor}
-        onSelectManager={() => setPage("managerpin")}
+        onSelectManager={openManager}
         unlockedDoctor={unlockedDoc}
         onDictate={dictate}
         onLock={lock}
+        role={role}
+        roleDoctorId={roleDoctorId}
+        managerOpen={managerOpen}
+        onSwitch={switchView}
       />
     );
   }
@@ -622,7 +743,7 @@ export default function App() {
     else setPage("notes");
   };
   return (
-    <PhoneShell active={TAB_OF[page] || "home"} onTab={onTab}>
+    <PhoneShell active={TAB_OF[page] || "home"} onTab={onTab} hide={role === "doctor" ? [] : ["notes"]}>
       <PhoneCtx.Provider value={{ phone: true, tabRoot: TAB_ROOTS.has(page) }}>
         {page === "doctor" && noteOpen ? null : content}
       </PhoneCtx.Provider>

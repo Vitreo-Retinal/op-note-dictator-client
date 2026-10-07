@@ -62,7 +62,9 @@ const shortToday = () => new Date().toLocaleDateString("en-US", { weekday: "shor
 // heading, so its bar carries the page name instead of the date.
 const BAR_SUB = { schedule: "Schedule", coding: "Coding", notes: "Notes" };
 
-export function PhoneShell({ active, onTab, children }) {
+// `hide`: tab ids left out for this role (Tech / Manager have no Notes tab).
+export function PhoneShell({ active, onTab, hide = [], children }) {
+  const tabs = TABS.filter((t) => !hide.includes(t.id));
   const inject = active === "inject";
   const sub = inject ? "Coverage lookup" : BAR_SUB[active];
   return (
@@ -91,12 +93,12 @@ export function PhoneShell({ active, onTab, children }) {
 
       <nav aria-label="Main" style={{
         position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 50, background: T.surface,
-        borderTop: `1px solid ${T.line}`, display: "grid", gridTemplateColumns: `repeat(${TABS.length}, 1fr)`,
+        borderTop: `1px solid ${T.line}`, display: "grid", gridTemplateColumns: `repeat(${tabs.length}, 1fr)`,
         boxSizing: "content-box", height: TABBAR_H,
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
         paddingLeft: "env(safe-area-inset-left, 0px)", paddingRight: "env(safe-area-inset-right, 0px)",
       }}>
-        {TABS.map(({ id, label, Icon }) => {
+        {tabs.map(({ id, label, Icon }) => {
           const on = id === active;
           return (
             <button key={id} className="vra-phone-tab" onClick={() => onTab(id)} aria-current={on ? "page" : undefined}

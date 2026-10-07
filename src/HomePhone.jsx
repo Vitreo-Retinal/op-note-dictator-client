@@ -96,10 +96,15 @@ function alertsOf(days, todayYmd) {
 }
 
 /**
- * Props: doctor (unlocked surgeon or null), onDictate, onCoverage,
- * onSelectManager, onLock.
+ * Props: role ("doctor" | "tech" | "manager"), doctor (unlocked surgeon or
+ * null), managerOpen (manager PIN passed today), onDictate, onCoverage,
+ * onSelectManager, onLock, onSwitch (clears the role → role picker).
+ *
+ * Roles (Oct 2026): doctor = the view above (two buttons + Manager hub row
+ * last). Tech = one full-width "Check coverage", no Dictate, no Manager hub.
+ * Manager = Manager hub row on top, one full-width "Check coverage" last.
  */
-export default function HomePhone({ doctor, onDictate, onCoverage, onSelectManager, onLock }) {
+export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch }) {
   const [sched, setSched] = useState(null); // null = loading
 
   useEffect(() => {
@@ -153,6 +158,24 @@ export default function HomePhone({ doctor, onDictate, onCoverage, onSelectManag
       Check coverage<span style={btnSub(!doctor)}>Insurance · drug · PA</span>
     </button>
   );
+  const isDoctor = role === "doctor";
+  const isManager = role === "manager";
+
+  // Manager hub — runs the manager PIN flow (skipped when unlocked today).
+  const managerRow = (
+    <button type="button" onClick={onSelectManager}
+      style={{ ...card, display: "flex", alignItems: "center", gap: 12, width: "100%", height: 52, padding: "0 12px", fontFamily: T.sans, color: T.ink, cursor: "pointer", textAlign: "left", boxSizing: "border-box" }}>
+      <span style={{ color: T.accent, display: "flex", flex: "none" }}><BriefcaseIcon /></span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ display: "block", fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>Manager hub</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: T.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {managerOpen ? "Drug economics, rates, staff" : <><LockIcon size={11} />PIN required · drug economics, rates, staff</>}
+        </span>
+      </span>
+      <span style={{ color: T.muted, display: "flex", flex: "none" }}><ChevronRightIcon /></span>
+    </button>
+  );
+  const linkBtn = { display: "flex", alignItems: "center", gap: 5, minHeight: 32, padding: "0 4px", background: "none", border: 0, color: T.muted, fontFamily: T.sans, fontSize: 12.5, cursor: "pointer", whiteSpace: "nowrap" };
 
   return (
     <div style={{ padding: "0 16px", fontFamily: T.sans, color: T.ink }}>
@@ -164,13 +187,21 @@ export default function HomePhone({ doctor, onDictate, onCoverage, onSelectManag
           </h1>
           <div style={{ fontSize: 13, color: T.muted, marginTop: 1 }}>{doctor ? dateWords : "VRA today"}</div>
         </div>
-        {doctor && (
-          <button type="button" onClick={onLock} aria-label={`Lock ${doctor.name}'s space`}
-            style={{ display: "flex", alignItems: "center", gap: 5, minHeight: 32, padding: "0 4px", background: "none", border: 0, color: T.muted, fontFamily: T.sans, fontSize: 12.5, cursor: "pointer" }}>
-            <LockIcon />Lock
-          </button>
-        )}
+        <div style={{ display: "flex", alignItems: "center", flex: "none" }}>
+          {doctor && (
+            <>
+              <button type="button" onClick={onLock} aria-label={`Lock ${doctor.name}'s space`} style={linkBtn}>
+                <LockIcon />Lock
+              </button>
+              <span style={{ color: T.muted, fontSize: 12.5 }}>·</span>
+            </>
+          )}
+          <button type="button" onClick={onSwitch} style={linkBtn}>Switch view</button>
+        </div>
       </div>
+
+      {/* Manager: the hub is the top row */}
+      {isManager && managerRow}
 
       {/* Doctor-only: your day */}
       {doctor && docRows.length > 0 && (
@@ -221,23 +252,17 @@ export default function HomePhone({ doctor, onDictate, onCoverage, onSelectManag
         <div style={{ margin: "-2px 0 6px 12px", fontSize: 12, color: T.muted }}>+{alerts.length - 3} more this week · see Schedule</div>
       )}
 
-      {/* Two big actions */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "10px 0 8px" }}>
-        {doctor ? [dictate, coverage] : [coverage, dictate]}
-      </div>
+      {/* Doctor: two big actions. Tech / Manager: one full-width "Check coverage". */}
+      {isDoctor ? (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, margin: "10px 0 8px" }}>
+          {doctor ? [dictate, coverage] : [coverage, dictate]}
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", margin: "10px 0 8px" }}>{coverage}</div>
+      )}
 
-      {/* Manager hub — runs the manager PIN flow */}
-      <button type="button" onClick={onSelectManager}
-        style={{ ...card, display: "flex", alignItems: "center", gap: 12, width: "100%", height: 52, padding: "0 12px", fontFamily: T.sans, color: T.ink, cursor: "pointer", textAlign: "left", boxSizing: "border-box" }}>
-        <span style={{ color: T.accent, display: "flex", flex: "none" }}><BriefcaseIcon /></span>
-        <span style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ display: "block", fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>Manager hub</span>
-          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: T.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            <LockIcon size={11} />PIN required · drug economics, rates, staff
-          </span>
-        </span>
-        <span style={{ color: T.muted, display: "flex", flex: "none" }}><ChevronRightIcon /></span>
-      </button>
+      {/* Doctor: Manager hub row last */}
+      {isDoctor && managerRow}
     </div>
   );
 }
