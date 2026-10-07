@@ -618,7 +618,10 @@ export default function App() {
   // Leaving the doctor space: desktop → hub; phone → the doctor picker.
   // On a phone the unlock is kept (it lasts the day; Home has a Lock button).
   const leaveDoctor = () => { if (!phone) setUnlocked(null); setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
-  const pickDoctor = (doc) => { setActiveSurgeon(doc); setPage(unlockedId === doc.id ? "doctor" : "pin"); };
+  // Picking a name always asks for the PIN (per Mari, Oct 7). The day-long phone
+  // unlock only skips the PIN when the app is reopened or the Notes tab / Dictate
+  // button returns to an already-open space — never on an explicit name pick.
+  const pickDoctor = (doc) => { setActiveSurgeon(doc); setPage("pin"); };
   const unlock = (id) => {
     const v = { id, day: localYmd() };
     setUnlocked(v);
