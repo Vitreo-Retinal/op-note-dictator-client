@@ -200,6 +200,7 @@ export const RESPONSIVE_CSS = `
 .vra-rowbtn:hover{background:${T.paper}}
 .vra-row3{box-sizing:border-box}
 .vra-table{overflow-x:auto}
+.vra-chiprow::-webkit-scrollbar{display:none}
 @media (max-width:720px){
   .vra-row3{grid-template-columns:1fr!important}
   .vra-side{grid-template-columns:1fr!important}

@@ -9,8 +9,8 @@ import IntakeHpi from "./IntakeHpi.jsx";
 import CallBoard from "./CallBoard.jsx";
 import DropSchedule from "./DropSchedule.jsx";
 import SchedulePage from "./SchedulePage.jsx";
-import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS } from "./theme.js";
-import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon } from "./icons.jsx";
+import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
+import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H } from "./phone.jsx";
 
@@ -251,6 +251,7 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
+  const { phone } = usePhone();
 
   // On mount, check if this surgeon even has a PIN configured
   useState(() => {
@@ -302,18 +303,22 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
     }
   }
 
+  // Phone: the card sits near the top so the iOS keyboard does not cover it.
+  const wrapStyle = { minHeight: "100vh", background: S.bg, display: "flex", alignItems: phone ? "flex-start" : "center", justifyContent: "center", fontFamily: S.font, ...(phone ? { paddingTop: 32, boxSizing: "border-box" } : {}) };
   if (checking) {
     return (
-      <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
+      <div style={wrapStyle}>
         <div style={{ color: S.muted, fontSize: "0.9rem" }}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
+    <div style={wrapStyle}>
       <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: T.rLg, padding: "32px 28px", width: "100%", maxWidth: 340, textAlign: "center", boxSizing: "border-box", margin: "0 16px", fontFamily: T.sans }}>
-        <div style={avatar(48, { fontSize: 14, margin: "0 auto 14px" })}>{surgeon.name}</div>
+        {phone
+          ? <div style={doctorPill(surgeon.id, { height: 32, fontSize: 15, margin: "0 auto 14px" })}>{surgeon.name}</div>
+          : <div style={avatar(48, { fontSize: 14, margin: "0 auto 14px" })}>{surgeon.name}</div>}
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, marginBottom: 4 }}>Doctor Space</div>
         <div style={{ fontSize: 13, color: T.muted, marginBottom: 20 }}>Enter PIN to continue</div>
         <input type="password" inputMode="numeric" pattern="[0-9]*" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="PIN" autoFocus
@@ -321,9 +326,9 @@ function PinGate({ surgeon, onSuccess, onCancel }) {
         {error && <div style={{ color: T.red, fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
         <div style={{ display: "flex", gap: 10 }}>
           <button type="button" onClick={onCancel}
-            style={{ flex: 1, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, height: 38, padding: 0, color: T.ink2, fontFamily: T.sans, fontSize: 13.5, fontWeight: 500, cursor: "pointer" }}>Cancel</button>
+            style={{ flex: 1, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, height: phone ? 44 : 38, padding: 0, color: T.ink2, fontFamily: T.sans, fontSize: 13.5, fontWeight: 500, cursor: "pointer" }}>Cancel</button>
           <button type="submit" disabled={loading || !pin.trim()}
-            style={{ flex: 1, background: loading || !pin.trim() ? T.accentSoft : T.accent, color: loading || !pin.trim() ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: 38, padding: 0, fontSize: 13.5, fontFamily: T.sans, fontWeight: 600, cursor: loading || !pin.trim() ? "not-allowed" : "pointer" }}>
+            style={{ flex: 1, background: loading || !pin.trim() ? T.accentSoft : T.accent, color: loading || !pin.trim() ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: phone ? 44 : 38, padding: 0, fontSize: 13.5, fontFamily: T.sans, fontWeight: 600, cursor: loading || !pin.trim() ? "not-allowed" : "pointer" }}>
             {loading ? "..." : "Enter"}
           </button>
         </div>
@@ -385,21 +390,30 @@ function ManagerPinGate({ onSuccess, onCancel }) {
 }
 
 // ── Doctor picker (phone "Notes" tab) ─────────────────────────────
-// The same surgeon buttons as the desktop "Doctor notes" row, one per line
-// with full-width tap targets. Tapping one goes through the PIN gate.
+// One full-width row per surgeon: their calendar-color pill, name, chevron.
+// Tapping one goes through the PIN gate.
+function doctorPill(id, extra = {}) {
+  const c = doctorColor(id);
+  return { display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 50, height: 28, padding: "0 10px", borderRadius: 999, background: c.soft, color: c.fg, fontSize: 14, fontWeight: 600, fontFamily: T.sans, flexShrink: 0, boxSizing: "border-box", ...extra };
+}
+
 function DoctorPicker({ onSelectDoctor }) {
   return (
     <div style={{ background: T.paper, fontFamily: T.sans, color: T.ink }}>
-      <PhoneHeading title="Doctor notes" sub="Pick your name, then enter your PIN." />
-      <div style={{ padding: "8px 16px 24px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <PhoneHeading title="Notes" />
+      <div style={{ padding: "0 16px", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted, margin: "4px 0 10px" }}>Choose your space</div>
+      <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
         {SURGEONS.map((doc) => (
           <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)}
-            style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "8px 14px 8px 10px", cursor: "pointer", fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.ink, textAlign: "left" }}>
-            <span style={avatar(34)}>{doc.name}</span>
-            <span style={{ flex: 1 }}>Dr. {doc.surname || doc.name}</span>
-            <LockIcon size={14} />
+            style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 56, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "8px 14px", cursor: "pointer", fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.ink, textAlign: "left", boxSizing: "border-box" }}>
+            <span style={doctorPill(doc.id)}>{doc.name}</span>
+            <span style={{ flex: 1, minWidth: 0 }}>Dr. {doc.surname || doc.name}</span>
+            <span style={{ color: T.muted, display: "flex" }}><ChevronRightIcon /></span>
           </button>
         ))}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: T.muted, fontSize: 13, padding: "14px 16px 24px" }}>
+        <LockIcon />PIN required
       </div>
     </div>
   );

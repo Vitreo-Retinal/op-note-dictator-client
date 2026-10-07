@@ -9,7 +9,7 @@ import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./da
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
 import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
-import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS } from "./theme.js";
+import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { usePhone, PhoneHeading } from "./phone.jsx";
@@ -851,6 +851,20 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     fontWeight: 600, cursor: "pointer", ...extra,
   });
 
+  // Phone calculator block (one per input group).
+  const calcBlock = { display: "flex", flexDirection: "column", gap: 6, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "10px 14px", minWidth: 0 };
+  const generateBtn = (extra = {}) => (
+    <button onClick={handleGenerate} disabled={loading || !note.trim()} style={btn("primary", {
+      background: loading || !note.trim() ? T.accentSoft : pendingUnknown ? T.amber : T.accent,
+      borderColor: loading || !note.trim() ? T.line : pendingUnknown ? T.amber : T.accent,
+      color: loading || !note.trim() ? T.muted : T.onAccent,
+      fontSize: 13.5, cursor: loading || !note.trim() ? "not-allowed" : "pointer",
+      ...extra,
+    })}>
+      {loading ? "Working..." : pendingUnknown ? "Generate anyway →" : mode === "generate" ? "Generate Note →" : "Optimize →"}
+    </button>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: S.bg, color: S.text, fontFamily: S.font }}>
 
@@ -860,7 +874,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         <PhoneHeading
           title="Clinic Notes"
           back={onBack ? <button onClick={onBack} style={backBtnStyle()}><BackIcon />Doctors</button> : null}
-          right={surgeon ? <span style={avatar(30)}>{surgeon.name}</span> : null}
+          right={surgeon ? <span style={{ background: doctorColor(surgeon.name).soft, color: doctorColor(surgeon.name).fg, borderRadius: 999, padding: "3px 10px", fontSize: 13, fontWeight: 600, flexShrink: 0 }}>{surgeon.name}</span> : null}
           style={{ background: T.surface, paddingBottom: 10 }}
         />
       ) : (
@@ -884,8 +898,12 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       )}
 
       {/* Tabs */}
-      <nav style={{ background: T.surface, borderBottom: `1px solid ${T.line}` }}>
-        <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", display: "flex", gap: 2, flexWrap: "wrap" }}>
+      {/* Phone: one horizontally scrolling chip row, faded at the right edge. */}
+      <nav style={{ background: phone ? T.paper : T.surface, borderBottom: phone ? "none" : `1px solid ${T.line}`, position: phone ? "relative" : undefined }}>
+        {phone && <span aria-hidden="true" style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 36, background: `linear-gradient(to right, rgba(246,248,250,0), ${T.paper})`, pointerEvents: "none", zIndex: 1 }} />}
+        <div className={phone ? "vra-chiprow" : "vra-wrap"} style={phone
+          ? { display: "flex", gap: 6, flexWrap: "nowrap", overflowX: "auto", padding: "12px 36px 4px 16px", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }
+          : { maxWidth: 880, margin: "0 auto", padding: "0 24px", display: "flex", gap: 2, flexWrap: "wrap" }}>
         {[
           ["input", "Input"],
           ["output", "Output"],
@@ -900,7 +918,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           ["evidence", "Evidence"],
           ...(surgeon && surgeon.hasRobocall ? [["robocall", "Robocall"]] : []),
         ].map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} style={{
+          <button key={id} onClick={() => setTab(id)} aria-current={tab === id ? "page" : undefined} style={phone ? {
+            flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 999, whiteSpace: "nowrap", cursor: "pointer",
+            border: `1px solid ${tab === id ? T.accent : T.line}`, background: tab === id ? T.accent : T.surface,
+            color: tab === id ? T.onAccent : T.ink2, fontFamily: T.sans, fontSize: 14, fontWeight: tab === id ? 600 : 400,
+          } : {
             padding: "11px 10px 9px", background: "none", border: "none", marginBottom: -1,
             borderBottom: tab === id ? `2px solid ${T.accent}` : "2px solid transparent",
             color: tab === id ? T.accentInk : T.muted,
@@ -915,18 +937,25 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
       {/* Injection / F/U Calculator — always visible.
           Two columns. Each result sits UNDER the input it comes from; the next-appt notes stack under the date, one per line. */}
-      <div className="vra-wrap" style={{ padding: "18px 24px 0", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
-        <div className="vra-calc" style={{ display: "flex", gap: "12px 20px", alignItems: "flex-start", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 16px", fontSize: 13, fontFamily: T.sans }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: T.ink, whiteSpace: "nowrap", lineHeight: "30px" }}>Injection & F/U Calculator</span>
+      {/* Phone: no outer card — a section label and the two groups as stacked blocks
+          (.vra-calc already stacks them under 720px). Inputs are 16px so iOS
+          does not zoom on focus. */}
+      <div className="vra-wrap" style={{ padding: phone ? "14px 16px 0" : "18px 24px 0", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
+        <div className="vra-calc" style={phone
+          ? { display: "flex", flexDirection: "column", gap: 8, alignItems: "stretch", fontSize: 14, fontFamily: T.sans }
+          : { display: "flex", gap: "12px 20px", alignItems: "flex-start", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 16px", fontSize: 13, fontFamily: T.sans }}>
+          <span style={phone
+            ? { fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted }
+            : { fontSize: 13, fontWeight: 600, color: T.ink, whiteSpace: "nowrap", lineHeight: "30px" }}>Injection & F/U Calculator</span>
           {/* Last injection, with weeks since under it */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={phone ? calcBlock : { display: "flex", flexDirection: "column", gap: 6 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <label style={{ color: T.muted, whiteSpace: "nowrap" }}>Last inj:</label>
               <input
                 type="date"
                 value={lastInjDate}
                 onChange={e => setLastInjDate(e.target.value)}
-                style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, boxSizing: "border-box" }}
+                style={{ height: phone ? 36 : 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: phone ? 16 : 13, boxSizing: "border-box", ...(phone ? { flex: 1, minWidth: 0 } : {}) }}
               />
             </div>
             {injCalc && injCalc.weeksSince !== null && (
@@ -938,7 +967,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           </div>
           <span aria-hidden="true" className="vra-calc-div" style={{ alignSelf: "stretch", width: 1, background: T.line }} />
           {/* F/U weeks, with next appt and its notes under it */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: "1 1 0", minWidth: 0 }}>
+          <div style={phone ? calcBlock : { display: "flex", flexDirection: "column", gap: 6, flex: "1 1 0", minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <label style={{ color: T.muted, whiteSpace: "nowrap" }}>F/u in:</label>
               <input
@@ -946,7 +975,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 value={fuWeeks}
                 onChange={e => setFuWeeks(e.target.value)}
                 placeholder="wks"
-                style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, width: 60, boxSizing: "border-box" }}
+                inputMode="numeric"
+                style={{ height: phone ? 36 : 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: phone ? 16 : 13, width: phone ? 72 : 60, boxSizing: "border-box" }}
               />
               <span style={{ color: T.muted }}>weeks</span>
             </div>
@@ -988,15 +1018,19 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         </div>
       </div>
 
-      <div className="vra-wrap" style={{ padding: "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
+      <div className="vra-wrap" style={{ padding: phone ? "16px 16px 28px" : "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
 
         {/* ── INPUT TAB ──────────────────────────────────────────── */}
         {tab === "input" && (
           <div>
             {/* Mode toggle — segmented control */}
             <div className="vra-seg" role="group" aria-label="Mode" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 3, marginTop: 4, boxSizing: "border-box" }}>
-              {[["generate", "Generate from shorthand"], ["optimize", "Optimize existing note"], ["pbm", "PBM session"]].map(([m, label]) => (
+              {(phone
+                ? [["generate", "Generate"], ["optimize", "Optimize"], ["pbm", "PBM"]]
+                : [["generate", "Generate from shorthand"], ["optimize", "Optimize existing note"], ["pbm", "PBM session"]]
+              ).map(([m, label]) => (
                 <button key={m} onClick={() => setMode(m)} aria-pressed={mode === m} style={{
+                  ...(phone ? { height: 36, whiteSpace: "nowrap" } : {}),
                   padding: "6px 14px", borderRadius: 4, background: mode === m ? T.accent : "transparent",
                   color: mode === m ? T.onAccent : T.ink2, border: "none",
                   fontFamily: T.sans, fontSize: 13.5, fontWeight: mode === m ? 500 : 400, cursor: "pointer",
@@ -1023,6 +1057,32 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               </div>
             )}
 
+            {/* Phone: one large centered mic (inserts at the cursor, same as Dictate). */}
+            {phone && (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, margin: "2px 0 14px" }}>
+                <button
+                  onClick={isRecording ? stopRecording : () => startRecording("insert")}
+                  disabled={isTranscribing}
+                  aria-label={isRecording ? "Stop dictation" : "Dictate"}
+                  style={{
+                    width: 72, height: 72, borderRadius: "50%", display: "grid", placeItems: "center",
+                    border: `6px solid ${isRecording ? T.redSoft : T.accentSoft}`, boxSizing: "content-box",
+                    background: isRecording ? T.red : T.accent, color: T.onAccent,
+                    cursor: isTranscribing ? "wait" : "pointer", opacity: isTranscribing ? 0.6 : 1,
+                  }}
+                >
+                  {isRecording
+                    ? <span style={{ width: 20, height: 20, borderRadius: 3, background: T.onAccent, display: "block" }} />
+                    : <MicIcon size={28} />}
+                </button>
+                <span style={{ fontSize: 12.5, color: isRecording ? T.red : T.muted, fontWeight: isRecording ? 600 : 400 }}>
+                  {isRecording
+                    ? `Recording ${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, "0")} — tap to stop`
+                    : isTranscribing ? "Transcribing..." : "Tap to dictate"}
+                </span>
+              </div>
+            )}
+
             {/* Editor card: textarea + footer bar */}
             <div className="vra-editor" style={{ background: T.surface, border: `1px solid ${isRecording ? T.red : T.line}`, borderRadius: T.rLg, overflow: "hidden" }}>
               <textarea
@@ -1034,12 +1094,12 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 placeholder={mode === "generate"
                   ? "67 yo W, AMD denies Fhx, non-smoker, OD I dry, OS wet AMD failed A and E, on V q8..."
                   : "Paste your structured A/P note here..."}
-                rows={14}
-                style={{ display: "block", width: "100%", minHeight: 250, border: 0, background: "transparent", padding: "16px 18px", color: T.ink, fontFamily: T.mono, fontSize: 14, lineHeight: 1.65, resize: "vertical", boxSizing: "border-box", outline: "none" }}
+                rows={phone ? 8 : 14}
+                style={{ display: "block", width: "100%", minHeight: phone ? 180 : 250, border: 0, background: "transparent", padding: phone ? "12px 14px" : "16px 18px", color: T.ink, fontFamily: T.mono, fontSize: phone ? 16 : 14, lineHeight: 1.65, resize: "vertical", boxSizing: "border-box", outline: "none" }}
               />
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "10px 12px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
-                {/* Dictation mic buttons */}
-                <button
+                {/* Dictation mic buttons (phone: the big mic above replaces this one) */}
+                {!phone && <button
                   onClick={isRecording ? stopRecording : () => startRecording("insert")}
                   disabled={isTranscribing}
                   style={btnSm("secondary", {
@@ -1066,7 +1126,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       Dictate
                     </>
                   )}
-                </button>
+                </button>}
                 {!isRecording && (
                   <button
                     onClick={() => startRecording("edit")}
@@ -1088,7 +1148,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   </span>
                 )}
                 {/* Dictation tip */}
-                {!isRecording && !pendingEdit && (
+                {!phone && !isRecording && !pendingEdit && (
                   <span style={{ fontSize: 12, color: T.muted, flex: "1 1 220px", minWidth: 0, lineHeight: 1.4 }}>
                     Tip: click a spot in the note, then Dictate — your words are inserted right there. Or use Dictate an Edit to speak a change and regenerate hands-free.
                   </span>
@@ -1101,17 +1161,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       style={btnSm("secondary", { color: T.ink2 })}
                     >✕ Clear</button>
                   )}
-                  <button onClick={handleGenerate} disabled={loading || !note.trim()} style={btn("primary", {
-                    background: loading || !note.trim() ? T.accentSoft : pendingUnknown ? T.amber : T.accent,
-                    borderColor: loading || !note.trim() ? T.line : pendingUnknown ? T.amber : T.accent,
-                    color: loading || !note.trim() ? T.muted : T.onAccent,
-                    fontSize: 13.5, cursor: loading || !note.trim() ? "not-allowed" : "pointer",
-                  })}>
-                    {loading ? "Working..." : pendingUnknown ? "Generate anyway →" : mode === "generate" ? "Generate Note →" : "Optimize →"}
-                  </button>
+                  {!phone && generateBtn()}
                 </div>
               </div>
             </div>
+            {phone && generateBtn({ width: "100%", height: 46, fontSize: 15, marginTop: 12 })}
 
             {error && (
               <div style={{ display: "flex", gap: 10, alignItems: "flex-start", color: T.red, fontSize: 13, background: T.redSoft, padding: "10px 14px", borderRadius: T.r, border: "1px solid #F0C4BF", marginTop: 12, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
