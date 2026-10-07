@@ -9,6 +9,7 @@ import IntakeHpi from "./IntakeHpi.jsx";
 import CallBoard from "./CallBoard.jsx";
 import DropSchedule from "./DropSchedule.jsx";
 import SchedulePage from "./SchedulePage.jsx";
+import HomePhone from "./HomePhone.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
@@ -80,7 +81,7 @@ function PasswordGate({ onSuccess }) {
 }
 
 // ── Homepage ────────────────────────────────────────────────────────
-export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
+export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager, unlockedDoctor, onDictate, onLock }) {
   // Oct 2026 — shared VRA Google Calendar view. Rendered as a full-width wide
   // tile at the top of "Tools for everyone"; the six tiles below stay 3 + 3.
   const scheduleTool = {
@@ -153,6 +154,14 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
   const hoverOff = (e) => { e.currentTarget.style.borderColor = T.line; };
 
   const { phone } = usePhone();
+
+  // Phone (Oct 2026): one-screen briefing — see HomePhone.jsx. Desktop below is unchanged.
+  if (phone) {
+    return (
+      <HomePhone doctor={unlockedDoctor || null} onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
+        onSelectTool={onSelectTool} onSelectManager={onSelectManager} onLock={onLock} />
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
@@ -441,16 +450,36 @@ const PAGES = ["home", "schedule", "inject", "coding", "education", "intakehpi",
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* private mode */ } }
 
-function restoredState() {
-  if (!isPhoneNow()) return { page: "home", surgeon: null };
-  let page = storeGet(PAGE_KEY);
-  if (!PAGES.includes(page)) return { page: "home", surgeon: null };
-  const surgeon = SURGEONS.find((d) => d.id === storeGet(SURGEON_KEY)) || null;
-  if (page === "pin" || page === "doctor") return surgeon ? { page: "pin", surgeon } : { page: "notes", surgeon: null };
-  if (page === "manager") page = "managerpin";
-  return { page, surgeon: null };
+// Remembered doctor unlock (phones only, Oct 2026): a PIN entered on a phone
+// holds until the end of that local day, then the PIN is asked again.
+// Stored as { id, day: "YYYY-MM-DD" }. Desktop keeps the old memory-only unlock.
+const UNLOCK_KEY = "vra-hub-unlock";
+const localYmd = () => { const d = new Date(), p = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+function rememberedUnlock() {
+  if (!isPhoneNow()) return null;
+  try {
+    const v = JSON.parse(storeGet(UNLOCK_KEY) || "null");
+    if (v && v.day === localYmd() && SURGEONS.some((d) => d.id === v.id)) return v.id;
+  } catch { /* bad value */ }
+  storeSet(UNLOCK_KEY, null);
+  return null;
 }
 
+function restoredState() {
+  if (!isPhoneNow()) return { page: "home", surgeon: null, unlocked: null };
+  const unlocked = rememberedUnlock();
+  const unlockedDoc = SURGEONS.find((d) => d.id === unlocked) || null;
+  let page = storeGet(PAGE_KEY);
+  if (!PAGES.includes(page)) return { page: "home", surgeon: unlockedDoc, unlocked };
+  const surgeon = SURGEONS.find((d) => d.id === storeGet(SURGEON_KEY)) || null;
+  if (page === "pin" || page === "doctor" || page === "notes") {
+    if (unlockedDoc && (!surgeon || surgeon.id === unlocked)) return { page: "doctor", surgeon: unlockedDoc, unlocked };
+    if (page === "notes") return { page, surgeon: unlockedDoc, unlocked };
+    return surgeon ? { page: "pin", surgeon, unlocked } : { page: "notes", surgeon: null, unlocked };
+  }
+  if (page === "manager") page = "managerpin";
+  return { page, surgeon: unlockedDoc, unlocked };
+}
 // Which tab is lit for each page.
 const TAB_OF = { home: "home", schedule: "schedule", inject: "inject", coding: "coding", notes: "notes", pin: "notes", doctor: "notes" };
 const TAB_ROOTS = new Set(["home", "schedule", "inject", "coding", "notes", "doctor"]);
@@ -462,10 +491,14 @@ export default function App() {
   const [page, setPage] = useState(initial.page);
   // page: home | schedule | inject | coding | education | intakehpi | documents | dictator | notes | doctor | pin
   const [activeSurgeon, setActiveSurgeon] = useState(initial.surgeon);
-  // Surgeon id that passed the PIN gate this session (memory only — a reload
-  // always goes back through the gate).
-  const [unlocked, setUnlocked] = useState(null);
+  // Surgeon that passed the PIN gate: { id, day }. Desktop: memory only (a
+  // reload goes back through the gate). Phone: also kept in localStorage and
+  // honored until the end of that local day (see rememberedUnlock).
+  const [unlocked, setUnlocked] = useState(initial.unlocked ? { id: initial.unlocked, day: localYmd() } : null);
+  const [inputNonce, setInputNonce] = useState(0);
   const phone = useIsPhone();
+  const unlockedId = unlocked && (!phone || unlocked.day === localYmd()) ? unlocked.id : null;
+  const unlockedDoc = SURGEONS.find((d) => d.id === unlockedId) || null;
 
   useEffect(() => {
     storeSet(PAGE_KEY, page);
@@ -478,8 +511,20 @@ export default function App() {
 
   const goHome = () => setPage("home");
   // Leaving the doctor space: desktop → hub; phone → the doctor picker.
-  const leaveDoctor = () => { setUnlocked(null); setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
-  const pickDoctor = (doc) => { setActiveSurgeon(doc); setPage(unlocked === doc.id ? "doctor" : "pin"); };
+  // On a phone the unlock is kept (it lasts the day; Home has a Lock button).
+  const leaveDoctor = () => { if (!phone) setUnlocked(null); setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
+  const pickDoctor = (doc) => { setActiveSurgeon(doc); setPage(unlockedId === doc.id ? "doctor" : "pin"); };
+  const unlock = (id) => {
+    const v = { id, day: localYmd() };
+    setUnlocked(v);
+    if (phone) storeSet(UNLOCK_KEY, JSON.stringify(v));
+  };
+  const lock = () => { setUnlocked(null); storeSet(UNLOCK_KEY, null); setActiveSurgeon(null); };
+  // Phone Home "Dictate a note": unlocked → straight to the Input tab; else the doctor picker.
+  const dictate = () => {
+    if (unlockedDoc) { setActiveSurgeon(unlockedDoc); setInputNonce((n) => n + 1); setPage("doctor"); }
+    else setPage("notes");
+  };
 
   let content;
   // ── Shared tool pages ──
@@ -535,8 +580,8 @@ export default function App() {
       <PinGate
         key={activeSurgeon.id}
         surgeon={activeSurgeon}
-        onSuccess={() => { setUnlocked(activeSurgeon.id); setPage("doctor"); }}
-        onCancel={() => { setActiveSurgeon(null); setPage(phone ? "notes" : "home"); }}
+        onSuccess={() => { unlock(activeSurgeon.id); setPage("doctor"); }}
+        onCancel={() => { setActiveSurgeon(phone ? unlockedDoc : null); setPage(phone ? "notes" : "home"); }}
       />
     );
   } else if (page === "doctor" && activeSurgeon && !phone) {
@@ -547,7 +592,7 @@ export default function App() {
     content = <ManagerPinGate onSuccess={() => setPage("manager")} onCancel={goHome} />;
   } else if (page === "manager") {
     content = <RateComparison onBack={goHome} />;
-  } else if (page === "doctor" && phone && activeSurgeon && unlocked === activeSurgeon.id) {
+  } else if (page === "doctor" && phone && activeSurgeon && unlockedId === activeSurgeon.id) {
     content = null; // rendered by the kept-mounted note generator below
   } else {
     // ── Homepage ──
@@ -556,6 +601,9 @@ export default function App() {
         onSelectTool={(id) => setPage(id)}
         onSelectDoctor={pickDoctor}
         onSelectManager={() => setPage("managerpin")}
+        unlockedDoctor={unlockedDoc}
+        onDictate={dictate}
+        onLock={lock}
       />
     );
   }
@@ -565,10 +613,13 @@ export default function App() {
   // ── Phone shell ──
   // The note generator stays mounted while the doctor is unlocked, so hopping
   // to Schedule or Inject and back keeps the note being written.
-  const noteOpen = !!(activeSurgeon && unlocked === activeSurgeon.id);
+  const noteOpen = !!(activeSurgeon && unlockedId === activeSurgeon.id);
   const onTab = (id) => {
-    if (id === "notes") setPage(noteOpen ? "doctor" : "notes");
-    else setPage(id);
+    if (id !== "notes") setPage(id);
+    else if (noteOpen) setPage("doctor");
+    // Remembered unlock (today): the Notes tab opens that doctor's space, no PIN.
+    else if (unlockedDoc) { setActiveSurgeon(unlockedDoc); setPage("doctor"); }
+    else setPage("notes");
   };
   return (
     <PhoneShell active={TAB_OF[page] || "home"} onTab={onTab}>
@@ -578,7 +629,7 @@ export default function App() {
       {noteOpen && (
         <div style={{ display: page === "doctor" ? "block" : "none" }}>
           <PhoneCtx.Provider value={{ phone: true, tabRoot: false }}>
-            <ClinicNoteGenerator key={activeSurgeon.id} onBack={leaveDoctor} surgeon={activeSurgeon} />
+            <ClinicNoteGenerator key={activeSurgeon.id} onBack={leaveDoctor} surgeon={activeSurgeon} inputNonce={inputNonce} />
           </PhoneCtx.Provider>
         </div>
       )}

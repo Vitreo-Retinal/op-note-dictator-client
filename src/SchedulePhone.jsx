@@ -48,6 +48,35 @@ function roleCount(half, key) {
   return new Set([...(half.AM[key] || []), ...(half.PM[key] || [])]).size;
 }
 
+/**
+ * Doctors at each site for one day (one row per site, doctor pills, then an
+ * "Out" row for vacations). Shared by the phone Schedule and the phone Home.
+ */
+export function DoctorsCard({ day, style }) {
+  const sites = sessionsBySite(day.sessions).filter((x) => x.site !== "VALEDA");
+  return (
+    <div style={{ ...cardS, ...style }}>
+      {sites.map(({ site, docs }, i) => (
+        <div key={site} style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: i ? `1px solid ${T.line}` : 0 }}>
+          <span style={{ width: 52, fontSize: 12, fontWeight: 600, color: T.ink2, flex: "none" }}>{site}</span>
+          <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+            {docs.map((d) => <Pill key={d.doctor} doctor={d.doctor} half={d.half} />)}
+          </div>
+        </div>
+      ))}
+      {!sites.length && <div style={{ padding: "8px 12px", ...muted }}>{day.closed ? "Office closed" : "No clinic sessions"}</div>}
+      {day.vacations.length > 0 && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.muted }}>
+          <span style={{ width: 52, fontSize: 12, fontWeight: 600, flex: "none" }}>Out</span>
+          <span style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+            {day.vacations.map((d) => <span key={d} style={{ display: "inline-flex", alignItems: "center", height: 24, padding: "0 9px", borderRadius: 999, background: T.paper, border: `1px solid ${T.line}`, color: T.muted, fontSize: 12.5, fontWeight: 600 }}>{d}</span>)}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // One folded row (tap to open in place). `children` render when open.
 function Fold({ id, open, onToggle, title, summary, tint, children }) {
   const isOpen = open.has(id);
@@ -91,7 +120,6 @@ const FOLD_TINT = {
  */
 export default function SchedulePhone({ day, tiles, selected, onPick, open, onToggle }) {
   const onCall = day.onCall || null;
-  const sites = sessionsBySite(day.sessions).filter((x) => x.site !== "VALEDA");
   const t = day.techs || null;
   const tr = translatorOf(t);
   const valeda = valedaOf(day);
@@ -146,25 +174,7 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
 
       {/* Doctors at each site */}
       <div style={secH}>Doctors</div>
-      <div style={cardS}>
-        {sites.map(({ site, docs }, i) => (
-          <div key={site} style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: i ? `1px solid ${T.line}` : 0 }}>
-            <span style={{ width: 52, fontSize: 12, fontWeight: 600, color: T.ink2, flex: "none" }}>{site}</span>
-            <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-              {docs.map((d) => <Pill key={d.doctor} doctor={d.doctor} half={d.half} />)}
-            </div>
-          </div>
-        ))}
-        {!sites.length && <div style={{ padding: "8px 12px", ...muted }}>{day.closed ? "Office closed" : "No clinic sessions"}</div>}
-        {day.vacations.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.muted }}>
-            <span style={{ width: 52, fontSize: 12, fontWeight: 600, flex: "none" }}>Out</span>
-            <span style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-              {day.vacations.map((d) => <span key={d} style={{ display: "inline-flex", alignItems: "center", height: 24, padding: "0 9px", borderRadius: 999, background: T.paper, border: `1px solid ${T.line}`, color: T.muted, fontSize: 12.5, fontWeight: 600 }}>{d}</span>)}
-            </span>
-          </div>
-        )}
-      </div>
+      <DoctorsCard day={day} />
 
       {/* Techs — one folded row per site */}
       <div style={secH}>Techs {t && t.roles && <span style={secNote}>tap to open · AM / PM</span>}</div>

@@ -39,12 +39,12 @@ export function DocChip({ doctor, half, size = "sm" }) {
 // Managers line (Oct 2026): "Managers  Aundrea · WORC · Brittany · LEOM ext. 1234".
 // One line, never wraps; vacation in amber, out muted. `extra` (optional)
 // renders after each manager's text, e.g. a muted "(vacation from Thu)".
-export function ManagersLine({ managers, extra, style }) {
+export function ManagersLine({ managers, extra, style, labelStyle }) {
   if (!managers || !managers.length) return null;
   const tone = { in: T.ink2, vacation: T.amber, out: T.muted };
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: T.sans, fontSize: 12.5, minWidth: 0, ...style }}>
-      <span style={{ fontSize: 12, color: T.muted, flex: "none" }}>Managers</span>
+      <span style={{ fontSize: 12, color: T.muted, flex: "none", ...labelStyle }}>Managers</span>
       <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
         {managers.map((m, i) => (
           <Fragment key={m.name}>

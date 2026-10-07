@@ -139,7 +139,7 @@ function buildPbmNote(f) {
 
 
 // ── Component ───────────────────────────────────────────────────────
-export default function ClinicNoteGenerator({ onBack, surgeon }) {
+export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const { phone } = usePhone(); // phone shell: in-page heading instead of the app bar
   const [mode, setMode] = useState("generate"); // generate | optimize
   const [note, setNote] = useState("");
@@ -161,6 +161,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   const [tab, setTab] = useState("input"); // input | output | examples | rules | codes
   // Phone shows only four tabs; if a hidden one is active there, fall back to Input.
   useEffect(() => { if (phone && !PHONE_TABS.includes(tab)) setTab("input"); }, [phone, tab]);
+  // Phone Home "Dictate a note" bumps inputNonce → jump to the Input tab (Oct 2026).
+  useEffect(() => { if (inputNonce) setTab("input"); }, [inputNonce]);
   const [codeSearch, setCodeSearch] = useState("");
   const [copied, setCopied] = useState(false);
   const [hpiCopied, setHpiCopied] = useState(false); // Sep 2026, per Mari — CC/HPI card copy feedback
