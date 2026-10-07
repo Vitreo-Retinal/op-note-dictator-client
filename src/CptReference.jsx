@@ -713,9 +713,8 @@ export default function CptReference({ onBack, showReimbursement = false }) {
         <div style={{ display: refSheet ? "none" : "block" }}>
           <PhoneHeading title="Coding" right={
             <span style={{ fontSize: 12.5, color: T.muted, whiteSpace: "nowrap", flexShrink: 0 }}>
+              {/* ICD-10 lookups go through the assistant (its prompt carries the ICD-10 dictionary), so no separate link. */}
               <button onClick={() => openRef("cpt")} style={linkBtn}>CPT reference</button>
-              <span aria-hidden> · </span>
-              <button onClick={() => openRef("icd")} style={linkBtn}>ICD-10 reference</button>
             </span>
           } />
           <div style={{ padding: "0 16px" }}>
