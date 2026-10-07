@@ -45,8 +45,9 @@ export const TABS = [
 export const APPBAR_H = 50;
 export const TABBAR_H = 56;
 
-// Height left for a page between the two bars, safe areas included.
-export const PHONE_BODY_H = `calc(100dvh - ${APPBAR_H + TABBAR_H}px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))`;
+// Height left for a page between the two bars, safe areas included
+// (+1px each for the app bar's bottom border and the tab bar's top border).
+export const PHONE_BODY_H = `calc(100dvh - ${APPBAR_H + TABBAR_H + 2}px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))`;
 
 const PHONE_CSS = `
 .vra-phone-tab{-webkit-tap-highlight-color:transparent}
@@ -81,7 +82,7 @@ export function PhoneShell({ active, onTab, children }) {
         </div>
       </header>
 
-      <main className="vra-phone-main" style={{ paddingBottom: `calc(${TABBAR_H}px + env(safe-area-inset-bottom, 0px))` }}>
+      <main className="vra-phone-main" style={{ paddingBottom: `calc(${TABBAR_H + 1}px + env(safe-area-inset-bottom, 0px))` }}>
         {children}
       </main>
 
