@@ -148,7 +148,7 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
       <span style={{ ...lbl, flex: "none", width: 64 }}>{label}</span>
       <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
         {people.map((m) => (
-          <span key={m.name} style={{ overflowWrap: "anywhere", color: mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
+          <span key={m.name} style={{ overflowWrap: "anywhere", color: m.tone === "in" && m.site && m.site !== "WORC" && SITE_TINTS[m.site] ? SITE_TINTS[m.site].text : mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
         ))}
       </span>
     </div>

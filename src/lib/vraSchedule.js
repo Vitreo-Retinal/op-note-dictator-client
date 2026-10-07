@@ -160,15 +160,16 @@ export function managersOf(day) {
  */
 // Oct 2026: with the daily sheet → "Sandy 6:30–3:00", "Lisa 8:00–close",
 // "Kim — off" (muted). WORC is everyone's default site, so it is not shown;
-// another site is ("Lisa · LEOM 8:00–close").
+// another site is, after the hours ("Kim 6:30–3:00 · LEOM"), and the entry
+// carries `site` so StaffLine can tint it Leominster amber.
 export function frontDeskOf(day) {
-  return staffOf(day && day.frontDesk, { hideSite: "WORC" });
+  return staffOf(day && day.frontDesk, { hideSite: "WORC", siteAfterHours: true });
 }
 
 /** "6:30-3:00" → "6:30–3:00", "8:00-close" → "8:00–close". */
 export const hoursText = (h) => String(h || "").replace(/\s*-\s*/, "–");
 
-function staffOf(raw, { hideSite = null } = {}) {
+function staffOf(raw, { hideSite = null, siteAfterHours = false } = {}) {
   const list = Array.isArray(raw) ? raw : [];
   return list.map((m) => {
     const ext = m.ext ? ` ext. ${m.ext}` : "";
@@ -181,6 +182,9 @@ function staffOf(raw, { hideSite = null } = {}) {
     }
     if (m.status === "out") return { name: m.name, tone: "out", text: `${m.name} — out${part}${note}` };
     if (m.status === "off") return { name: m.name, tone: "out", text: `${m.name} — off` };
+    if (siteAfterHours) {
+      return { name: m.name, tone: "in", site: site ? m.site : null, text: `${m.name}${hours}${site}${ext}${part}${note}` };
+    }
     return { name: m.name, tone: "in", text: `${m.name}${site}${hours}${ext}${part}${note}` };
   });
 }

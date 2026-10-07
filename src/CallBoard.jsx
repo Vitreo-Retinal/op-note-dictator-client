@@ -51,9 +51,11 @@ export function StaffLine({ label, people, extra, style, labelStyle, stacked = f
   const managers = people;
   if (!managers || !managers.length) return null;
   const tone = { in: T.ink2, vacation: T.amber, out: T.muted };
+  // Front desk at Leominster (sheet "Kim 6:30-3:00 LEOM") reads like the LEOM tech card.
+  const colorOf = (m) => (m.tone === "in" && m.site && SITE_TINTS[m.site] && m.site !== "WORC" ? SITE_TINTS[m.site].text : tone[m.tone] || T.ink2);
   const item = (m) => (
     <Fragment key={m.name}>
-      <span style={{ color: tone[m.tone] || T.ink2, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
+      <span style={{ color: colorOf(m), fontWeight: m.tone === "vacation" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
       {extra && extra[m.name] && <span style={{ color: T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
     </Fragment>
   );
