@@ -1225,9 +1225,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               </div>
             )}
 
-            {/* Optional time field */}
+            {/* Optional time field (desktop only — on phones the CC/HPI box moves up so the Input tab fits one screen) */}
             <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }}>
-              <div style={field({ gridColumn: "1 / -1" })}>
+              {!phone && <div style={field({ gridColumn: "1 / -1" })}>
                 <label style={fieldLabel()}>Time with patient (optional):</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                   <input
@@ -1239,7 +1239,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   />
                   <span style={{ fontSize: 12, color: T.muted }}>99213=20 min · 99214=30 min · 99215=40 min</span>
                 </div>
-              </div>
+              </div>}
 
               {/* ── Optional CC/HPI intake (Sep 2026, per Mari) ──────────
                   Audit-proofing for injection-day modifier-25 after the OCB FCA
@@ -1247,18 +1247,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                   returns a purpose-neutral CC/HPI alongside the A/P. */}
               <div style={field({ gridColumn: "1 / -1" })}>
                 <label style={fieldLabel()}>
-                  CC/HPI intake (optional) — paste the tech&rsquo;s line or type your own
+                  {phone ? "CC/HPI intake (optional)" : <>CC/HPI intake (optional) — paste the tech&rsquo;s line or type your own</>}
                 </label>
                 <textarea
                   value={intakeText}
                   onChange={e => setIntakeText(e.target.value)}
                   placeholder="87 yo M wet AMD OD, mild distortion OD, no complaints OS; dry AMD OS"
-                  rows={3}
+                  rows={phone ? 2 : 3}
                   style={{ display: "block", width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "10px 12px", color: T.ink, fontFamily: T.mono, fontSize: 13, lineHeight: 1.6, resize: "vertical", boxSizing: "border-box" }}
                 />
-                <div style={{ fontSize: 12, color: T.muted, marginTop: 6 }}>
+                {!phone && <div style={{ fontSize: 12, color: T.muted, marginTop: 6 }}>
                   Leave blank to skip. Dates and treatment history stay in the A/P — never in the CC/HPI.
-                </div>
+                </div>}
               </div>
             </div>
             </>)}
