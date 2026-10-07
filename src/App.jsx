@@ -159,7 +159,7 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager, unlock
   if (phone) {
     return (
       <HomePhone doctor={unlockedDoctor || null} onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
-        onSelectTool={onSelectTool} onSelectManager={onSelectManager} onLock={onLock} />
+        onSelectManager={onSelectManager} onLock={onLock} />
     );
   }
 

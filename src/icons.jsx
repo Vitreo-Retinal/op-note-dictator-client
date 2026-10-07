@@ -23,6 +23,9 @@ export function DocumentsIcon({ size = 22 }) {
 export function ManagerIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M4 19h16" /><path d="M7 15v-5M12 15V6M17 15v-8" /></svg>);
 }
+export function BriefcaseIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5.5A1.5 1.5 0 0110.5 4h3A1.5 1.5 0 0115 5.5V7" /><path d="M3 12.5h18" /></svg>);
+}
 export function LockIcon({ size = 13 }) {
   return (<svg {...base(size, 2)}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 018 0v3" /></svg>);
 }

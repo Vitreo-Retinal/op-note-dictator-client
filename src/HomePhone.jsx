@@ -3,12 +3,12 @@ import { T, doctorColor } from "./theme.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard } from "./SchedulePhone.jsx";
 import { ManagersLine } from "./CallBoard.jsx";
-import { EducationIcon, DocumentsIcon, DropBottleIcon, IntakeIcon, ManagerIcon, LockIcon, ChevronRightIcon, ChevronDownIcon } from "./icons.jsx";
+import { BriefcaseIcon, LockIcon, ChevronRightIcon } from "./icons.jsx";
 
 // ── Phone Home (Oct 2026, approved mockup "home-compact" A + B) ──────
 // One screen, no scrolling at 390×844: header, (doctor only) "your day" card,
 // on call + managers, doctors today, alerts for the next 7 days, two big
-// buttons, and a folded "More tools" list. The tab bar already carries
+// buttons, and a Manager hub row (PIN). Other desktop tools are not on the phone. The tab bar already carries
 // Schedule · Inject · Coding · Notes, so those are not repeated here.
 // Everything comes from GET /api/schedule; a row whose data is missing is
 // left out rather than guessed.
@@ -16,15 +16,6 @@ import { EducationIcon, DocumentsIcon, DropBottleIcon, IntakeIcon, ManagerIcon, 
 const DOW_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DOW_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-// Tools that live on the desktop Home but have no tab on the phone.
-const MORE_TOOLS = [
-  { id: "education", title: "Patient education", short: "Handouts", icon: EducationIcon },
-  { id: "documents", title: "Workflow documents", short: "Documents", icon: DocumentsIcon },
-  { id: "drops", title: "Drop schedule", short: "Drops", icon: DropBottleIcon },
-  { id: "intakehpi", title: "Intake CC/HPI", icon: IntakeIcon },
-  { id: "manager", title: "Manager's Hub", short: "Rates", icon: ManagerIcon, pin: true },
-];
 
 const card = { background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginBottom: 8, overflow: "hidden" };
 const rowS = (first) => ({ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", minHeight: 36, boxSizing: "border-box", borderTop: first ? 0 : `1px solid ${T.line}`, fontSize: 13.5, minWidth: 0 });
@@ -106,11 +97,10 @@ function alertsOf(days, todayYmd) {
 
 /**
  * Props: doctor (unlocked surgeon or null), onDictate, onCoverage,
- * onSelectTool(id), onSelectManager, onLock.
+ * onSelectManager, onLock.
  */
-export default function HomePhone({ doctor, onDictate, onCoverage, onSelectTool, onSelectManager, onLock }) {
+export default function HomePhone({ doctor, onDictate, onCoverage, onSelectManager, onLock }) {
   const [sched, setSched] = useState(null); // null = loading
-  const [more, setMore] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -236,29 +226,18 @@ export default function HomePhone({ doctor, onDictate, onCoverage, onSelectTool,
         {doctor ? [dictate, coverage] : [coverage, dictate]}
       </div>
 
-      {/* More tools — expands in place */}
-      <div style={card}>
-        <button type="button" onClick={() => setMore((m) => !m)} aria-expanded={more}
-          style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", minHeight: 44, padding: "0 12px", background: "transparent", border: 0, fontFamily: T.sans, color: T.ink, cursor: "pointer", textAlign: "left" }}>
-          <span style={{ fontSize: 13.5, fontWeight: 500, flex: "none" }}>More tools</span>
-          <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, color: T.muted, textAlign: "right", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {more ? "" : MORE_TOOLS.filter((t) => t.short).map((t) => t.short).join(" · ")}
+      {/* Manager hub — runs the manager PIN flow */}
+      <button type="button" onClick={onSelectManager}
+        style={{ ...card, display: "flex", alignItems: "center", gap: 12, width: "100%", height: 52, padding: "0 12px", fontFamily: T.sans, color: T.ink, cursor: "pointer", textAlign: "left", boxSizing: "border-box" }}>
+        <span style={{ color: T.accent, display: "flex", flex: "none" }}><BriefcaseIcon /></span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>Manager hub</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: T.muted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <LockIcon size={11} />PIN required · drug economics, rates, staff
           </span>
-          <span style={{ color: T.muted, display: "flex", flex: "none" }}>{more ? <ChevronDownIcon /> : <ChevronRightIcon />}</span>
-        </button>
-        {more && MORE_TOOLS.map((t) => {
-          const Icon = t.icon;
-          return (
-            <button key={t.id} type="button" onClick={() => (t.id === "manager" ? onSelectManager() : onSelectTool(t.id))}
-              style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 48, padding: "0 12px", background: "transparent", border: 0, borderTop: `1px solid ${T.line}`, fontFamily: T.sans, fontSize: 14, color: T.ink, cursor: "pointer", textAlign: "left" }}>
-              <span style={{ color: T.accent, display: "flex" }}><Icon /></span>
-              <span style={{ flex: 1 }}>{t.title}</span>
-              {t.pin && <span style={{ color: T.muted, display: "flex", alignItems: "center", gap: 4, fontSize: 12 }}><LockIcon />PIN</span>}
-              <span style={{ color: T.muted, display: "flex" }}><ChevronRightIcon /></span>
-            </button>
-          );
-        })}
-      </div>
+        </span>
+        <span style={{ color: T.muted, display: "flex", flex: "none" }}><ChevronRightIcon /></span>
+      </button>
     </div>
   );
 }
