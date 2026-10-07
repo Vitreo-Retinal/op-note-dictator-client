@@ -44,12 +44,14 @@ function GroupCard({ group }) {
       <div style={secH}>{group.group}</div>
       <div style={card}>
         {group.items.map((it, i) => (
-          <div key={`${it.name}-${it.ext}`} style={{ display: "flex", alignItems: "baseline", gap: 8, minHeight: 36, padding: "8px 12px", boxSizing: "border-box", borderTop: i ? `1px solid ${T.line}` : 0, fontSize: 14 }}>
+          <div key={`${it.name}-${it.ext || it.phone}`} style={{ display: "flex", alignItems: "baseline", gap: 8, minHeight: 36, padding: "8px 12px", boxSizing: "border-box", borderTop: i ? `1px solid ${T.line}` : 0, fontSize: 14 }}>
             <span style={{ flex: 1, minWidth: 0, color: T.ink }}>
               {it.name}{it.note && <span style={{ color: T.muted, fontSize: 12.5 }}> ({it.note})</span>}
             </span>
             <span style={{ color: T.lineStrong }}>—</span>
-            <b style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, minWidth: 30, textAlign: "right" }}>{it.ext}</b>
+            {it.phone
+              ? <a href={`tel:${it.phone.replace(/[^\d+]/g, "")}`} style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, textDecoration: "none" }}>{it.phone}</a>
+              : <b style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, minWidth: 30, textAlign: "right" }}>{it.ext}</b>}
           </div>
         ))}
       </div>
