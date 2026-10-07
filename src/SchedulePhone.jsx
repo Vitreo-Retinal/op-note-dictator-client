@@ -67,10 +67,10 @@ export function DoctorsCard({ day, style }) {
       ))}
       {!sites.length && <div style={{ padding: "8px 12px", ...muted }}>{day.closed ? "Office closed" : "No clinic sessions"}</div>}
       {day.vacations.length > 0 && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.muted }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 12px", minHeight: 36, boxSizing: "border-box", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.red }}>
           <span style={{ width: 52, fontSize: 12, fontWeight: 600, flex: "none" }}>Out</span>
           <span style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-            {day.vacations.map((d) => <span key={d} style={{ display: "inline-flex", alignItems: "center", height: 24, padding: "0 9px", borderRadius: 999, background: T.paper, border: `1px solid ${T.line}`, color: T.muted, fontSize: 12.5, fontWeight: 600 }}>{d}</span>)}
+            {day.vacations.map((d) => <span key={d} style={{ display: "inline-flex", alignItems: "center", height: 24, padding: "0 9px", borderRadius: 999, background: T.redSoft, border: "1px solid #E7B9B2", color: T.red, fontSize: 12.5, fontWeight: 600 }}>{d}</span>)}
           </span>
         </div>
       )}
@@ -94,6 +94,13 @@ function Fold({ id, open, onToggle, title, summary, tint, children }) {
   );
 }
 
+// "Ledia out PM" / "Jenn off" — a tech who is away reads red (amber is Leominster only).
+const AWAY_RE = /\b(out|off)\b/i;
+function awayText(v) {
+  if (!v || !AWAY_RE.test(v)) return v;
+  return v.split(/(, | \/ )/).map((part, i) => (AWAY_RE.test(part) ? <span key={i} style={{ color: T.red, fontWeight: 600 }}>{part}</span> : part));
+}
+
 function TechRows({ half }) {
   const rows = ROWS.filter((r) => r.always || (half.AM[r.key] || []).length || (half.PM[r.key] || []).length);
   return rows.map((r) => {
@@ -101,7 +108,7 @@ function TechRows({ half }) {
     return (
       <div key={r.key} style={{ display: "flex", gap: 6, padding: "3px 12px", fontSize: 12.5, lineHeight: 1.35 }}>
         <b style={{ width: 62, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5, paddingTop: 1 }}>{r.label}</b>
-        <span style={{ flex: 1, minWidth: 0, color: v ? (r.key === "back" ? T.accent : T.ink) : T.lineStrong, fontWeight: r.key === "back" && v ? 600 : 400, overflowWrap: "anywhere" }}>{v || "—"}</span>
+        <span style={{ flex: 1, minWidth: 0, color: v ? (r.key === "back" ? T.accent : T.ink) : T.lineStrong, fontWeight: r.key === "back" && v ? 600 : 400, overflowWrap: "anywhere" }}>{awayText(v) || "—"}</span>
       </div>
     );
   });
@@ -127,7 +134,7 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
   const off = (t && t.off) || [];
   const managers = managersOf(day);
   const frontDesk = frontDeskOf(day);
-  const mgrTone = { in: T.ink, vacation: T.amber, out: T.muted };
+  const mgrTone = { in: T.ink, vacation: T.red, out: T.red };
 
   const siteSummary = (site) => {
     const half = (t.roles && t.roles[site]) || { AM: {}, PM: {} };
@@ -150,7 +157,7 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
       <span style={{ ...lbl, flex: "none", width: 64 }}>{label}</span>
       <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
         {people.map((m) => (
-          <span key={m.name} style={{ overflowWrap: "anywhere", color: m.tone === "in" && m.site && m.site !== "WORC" && SITE_TINTS[m.site] ? SITE_TINTS[m.site].text : mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
+          <span key={m.name} style={{ overflowWrap: "anywhere", color: m.tone === "in" && m.site && m.site !== "WORC" && SITE_TINTS[m.site] ? SITE_TINTS[m.site].text : mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" || m.tone === "out" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
         ))}
       </span>
     </div>
@@ -218,8 +225,8 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
           )}
           {off.length > 0 && (
             <div style={{ display: "flex", gap: 6, padding: "3px 12px", fontSize: 12.5, lineHeight: 1.35 }}>
-              <b style={{ width: 62, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5, paddingTop: 1 }}>Off</b>
-              <span style={{ flex: 1, minWidth: 0, color: T.ink2 }}>{off.join(", ")}</span>
+              <b style={{ width: 62, flex: "none", fontWeight: 500, color: T.red, fontSize: 11.5, paddingTop: 1 }}>Off</b>
+              <span style={{ flex: 1, minWidth: 0, color: T.red, fontWeight: 600 }}>{off.join(", ")}</span>
             </div>
           )}
         </Fold>

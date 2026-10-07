@@ -58,7 +58,7 @@ function siteTechs(techs, site, halves) {
   return parts.length ? parts : null;
 }
 
-/** Closures and doctor vacations from today through today+7, as short amber lines. */
+/** Closures (amber) and doctor vacations (red) from today through today+7, as short lines. */
 function alertsOf(days, todayYmd) {
   const end = ymdOf(new Date(dateOfYmd(todayYmd).getTime() + 7 * 864e5));
   const win = days.filter((d) => d.date >= todayYmd && d.date <= end).sort((a, b) => (a.date < b.date ? -1 : 1));
@@ -89,7 +89,7 @@ function alertsOf(days, todayYmd) {
       const text = r.start === todayYmd
         ? (r.end === todayYmd ? `${doc} out today` : `${doc} out through ${shortDate(r.end)}`)
         : r.start === r.end ? `${doc} out ${shortDate(r.start)}` : `${doc} out ${shortDate(r.start)} – ${shortDate(r.end)}`;
-      out.push({ key: `v${doc}${r.start}`, date: r.start, text });
+      out.push({ key: `v${doc}${r.start}`, date: r.start, text, away: true });
     }
   }
   return out.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
@@ -285,7 +285,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
 
       {/* Alerts — next 7 days */}
       {alerts.slice(0, 3).map((a) => (
-        <div key={a.key} style={{ marginBottom: 6, padding: "6px 12px", borderRadius: T.r, background: T.amberSoft, border: "1px solid #F4E3A7", color: T.amber, fontSize: 13, fontWeight: 500 }}>
+        <div key={a.key} style={{ marginBottom: 6, padding: "6px 12px", borderRadius: T.r, background: a.away ? T.redSoft : T.amberSoft, border: a.away ? "1px solid #E7B9B2" : "1px solid #F4E3A7", color: a.away ? T.red : T.amber, fontSize: 13, fontWeight: a.away ? 600 : 500 }}>
           {a.text}
         </div>
       ))}

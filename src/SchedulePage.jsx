@@ -217,7 +217,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
     }
     if (am || pm) return <span style={site}>{am || pm} <small style={smallS}>{am ? "AM" : "PM"}</small></span>;
     if (d.vacations.includes(doctor)) {
-      return <span style={{ display: "inline-block", background: T.paper, border: `1px solid ${T.line}`, color: T.muted, borderRadius: 4, padding: "0 6px", fontSize: 11.5 }}>Vacation</span>;
+      return <span style={{ display: "inline-block", background: T.redSoft, border: "1px solid #E7B9B2", color: T.red, fontWeight: 600, borderRadius: 4, padding: "0 6px", fontSize: 11.5 }}>Vacation</span>;
     }
     return <span style={{ color: T.muted, fontWeight: 400 }}>OUT</span>;
   };
@@ -267,7 +267,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
               <Fragment key={name}>
                 {i > 0 && " · "}
                 <span style={key === "back" ? { fontWeight: 600, color: T.accent } : null}>{name}</span>
-                {note && <span style={{ color: T.muted, fontSize: 11.5 }}> {note}</span>}
+                {note && <span style={{ color: /\b(out|off)\b/i.test(note) ? T.red : T.muted, fontSize: 11.5 }}> {note}</span>}
               </Fragment>
             );
           })}
@@ -299,8 +299,8 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
     );
   };
 
-  const footItem = (label, value) => (
-    <span><b style={{ fontWeight: 600, color: T.ink }}>{label}</b> {value || "—"}</span>
+  const footItem = (label, value, away) => (
+    <span><b style={{ fontWeight: 600, color: away && value ? T.red : T.ink }}>{label}</b> <span style={away && value ? { color: T.red, fontWeight: 600 } : null}>{value || "—"}</span></span>
   );
   const names = (arr) => (arr && arr.length ? arr.join(", ") : "—");
 
@@ -445,7 +445,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
                           {(d.closed || d.vacations.length > 0) && (
                             <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
                               {d.closed && <span style={{ display: "inline-block", padding: "0 6px", borderRadius: 4, background: T.amberSoft, color: T.amber, fontSize: 11.5, fontWeight: 600 }}>Closed{d.closureName ? ` · ${d.closureName}` : ""}</span>}
-                              {d.vacations.length > 0 && <span style={{ display: "inline-block", padding: "0 6px", borderRadius: 4, background: T.paper, border: `1px solid ${T.line}`, color: T.muted, fontSize: 11.5 }}>Out: {d.vacations.join(", ")}</span>}
+                              {d.vacations.length > 0 && <span style={{ display: "inline-block", padding: "0 6px", borderRadius: 4, background: T.redSoft, border: "1px solid #E7B9B2", color: T.red, fontWeight: 600, fontSize: 11.5 }}>Out: {d.vacations.join(", ")}</span>}
                             </div>
                           )}
                         </td>
@@ -503,7 +503,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
                   {siteCard("LEOM", "Leominster")}
                 </div>
                 <div style={{ padding: "9px 16px", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.ink2, display: "flex", gap: "4px 18px", flexWrap: "wrap" }}>
-                  {footItem("Off today", t.off && t.off.length ? t.off.join(", ") : null)}
+                  {footItem("Off today", t.off && t.off.length ? t.off.join(", ") : null, true)}
                   {footItem("Clinical trials", t.trials ? t.trials.replace(/\s*,\s*/g, " · ") : null)}
                   {footItem("Phone/portal", `Worcester ${(t.phonePortal && t.phonePortal.WORC) || "—"} · Leominster ${(t.phonePortal && t.phonePortal.LEOM) || "—"}`)}
                   {(t.extra || []).map((x) => <span key={x}>{x}</span>)}
@@ -518,7 +518,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
                 {((t.leominsterBackAM || []).length > 0 || (t.leominsterBackPM || []).length > 0) && (
                   <div>Leominster: AM {names(t.leominsterBackAM)}{(t.leominsterBackPM || []).length > 0 ? ` / PM ${names(t.leominsterBackPM)}` : ""}</div>
                 )}
-                {t.off && t.off.length > 0 && <div style={{ color: T.muted }}>Off: {t.off.join(", ")}</div>}
+                {t.off && t.off.length > 0 && <div style={{ color: T.red, fontWeight: 600 }}>Off: {t.off.join(", ")}</div>}
               </div>
             )}
 

@@ -38,7 +38,7 @@ export function DocChip({ doctor, half, size = "sm" }) {
 
 // Staff line (Oct 2026): "<label>  Aundrea · WORC · Brittany · LEOM ext. 1234".
 // Used for "Managers" and "Front desk". `people` = managersOf / frontDeskOf.
-// One line, never wraps; vacation in amber, out muted. `extra` (optional)
+// One line, never wraps; vacation / out in red (amber is Leominster only). `extra` (optional)
 // renders after each person's text, e.g. a muted "(vacation from Thu)".
 // `stacked` (phones): one person per line, never truncated.
 export function ManagersLine({ managers, ...rest }) {
@@ -50,13 +50,13 @@ export function ManagersLine({ managers, ...rest }) {
 export function StaffLine({ label, people, extra, style, labelStyle, stacked = false, flow = false }) {
   const managers = people;
   if (!managers || !managers.length) return null;
-  const tone = { in: T.ink2, vacation: T.amber, out: T.muted };
+  const tone = { in: T.ink2, vacation: T.red, out: T.red };
   // Front desk at Leominster (sheet "Kim 6:30-3:00 LEOM") reads like the LEOM tech card.
   const colorOf = (m) => (m.tone === "in" && m.site && SITE_TINTS[m.site] && m.site !== "WORC" ? SITE_TINTS[m.site].text : tone[m.tone] || T.ink2);
   const item = (m) => (
     <Fragment key={m.name}>
-      <span style={{ color: colorOf(m), fontWeight: m.tone === "vacation" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
-      {extra && extra[m.name] && <span style={{ color: T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
+      <span style={{ color: colorOf(m), fontWeight: m.tone === "vacation" || m.tone === "out" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
+      {extra && extra[m.name] && <span style={{ color: /^\((vacation|out)\b/.test(extra[m.name]) ? T.red : T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
     </Fragment>
   );
   if (stacked && flow) {
@@ -261,7 +261,7 @@ export default function CallBoard({ onOpenSchedule }) {
                   <div style={sub}>No clinic sessions</div>
                 )}
                 {todayDay && todayDay.vacations.length > 0 && (
-                  <div style={{ ...sub, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Out: {todayDay.vacations.join(", ")}</div>
+                  <div style={{ ...sub, color: T.red, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Out: {todayDay.vacations.join(", ")}</div>
                 )}
               </div>
             )}
