@@ -3,7 +3,7 @@ import { CPT_CATALOG, CPT_CATEGORIES } from "./cptCatalog";
 import { S, T, chip, btnSm, field, fieldLabel, RESPONSIVE_CSS } from "./theme.js";
 import PageBar, { segWrap, segBtn, wrap, searchInput } from "./PageBar.jsx";
 import { SendIcon, ChevronDownIcon, ChevronRightIcon, SearchIcon } from "./icons.jsx";
-import { usePhone, PhoneHeading } from "./phone.jsx";
+import { usePhone, PhoneHeading, APPBAR_H, TABBAR_H } from "./phone.jsx";
 
 // ── Styles (shared palette with the rest of the app) ────────────────
 
@@ -16,8 +16,8 @@ const CATEGORIES = [
 // ── AI Coding Assistant ─────────────────────────────────────────────
 const AI_API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
-// phoneLayout (Oct 2026): question box + Send on top, answers below it, no
-// fixed panel height — the page scrolls. Desktop keeps the chat panel.
+// phoneLayout (Oct 2026): chat-first phone screen — conversation in the page,
+// input bar fixed on top of the hub tab bar. Desktop keeps the chat panel.
 export function AICodingAssistant({ showReimbursement = false, phoneLayout = false }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -44,8 +44,10 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
     if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
-  const sendMessage = async () => {
-    const text = input.trim();
+  // `override`: text to send instead of the input box (phone example chips).
+  // onClick passes an event, so only a string counts.
+  const sendMessage = async (override) => {
+    const text = (typeof override === "string" ? override : input).trim();
     if (!text || loading) return;
 
     const userMsg = { role: "user", content: text };
@@ -70,7 +72,7 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
       setMessages([...updated, { role: "assistant", content: "Network error — check your connection." }]);
     }
     setLoading(false);
-    setTimeout(scrollToBottom, 100);
+    if (!phoneLayout) setTimeout(scrollToBottom, 100);
   };
 
   const handleKeyDown = (e) => {
@@ -108,6 +110,32 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
   };
 
   const hasInput = !!input.trim();
+
+  // Phone: the input bar is fixed above the tab bar, so the conversation needs
+  // bottom room equal to the bar's (auto-growing) height.
+  const barRef = useRef(null);
+  const taRef = useRef(null);
+  const lastAnswerRef = useRef(null);
+  const [barH, setBarH] = useState(64);
+  useEffect(() => {
+    if (!phoneLayout || !barRef.current || typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(() => { if (barRef.current) setBarH(barRef.current.offsetHeight); });
+    ro.observe(barRef.current);
+    return () => ro.disconnect();
+  }, [phoneLayout]);
+  // Phone auto-scroll: on send, show the question + "Thinking..."; when the answer
+  // lands, bring the top of the latest answer into view (long answers read top-down).
+  useEffect(() => {
+    if (!phoneLayout || messages.length === 0) return;
+    const last = messages[messages.length - 1];
+    requestAnimationFrame(() => {
+      if (last.role === "assistant" && lastAnswerRef.current) lastAnswerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      else window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
+    });
+  }, [messages, phoneLayout]);
+  // Reset the one-line textarea after sending.
+  useEffect(() => { if (phoneLayout && !input && taRef.current) taRef.current.style.height = ""; }, [input, phoneLayout]);
+
   const SUGGESTIONS = [
     "PPV ILM peel gas for mac hole",
     "Can I bill E/M with injection?",
@@ -117,67 +145,85 @@ export function AICodingAssistant({ showReimbursement = false, phoneLayout = fal
   ];
 
   if (phoneLayout) {
+    const PHONE_EXAMPLES = [
+      "Can I bill E/M with injection?",
+      "PPV + buckle for macula-off RD",
+      "67041 vs 67042 — when to use each?",
+    ];
+    const lastAnswerIdx = messages.map((m) => m.role).lastIndexOf("assistant");
+    const canSend = hasInput && !loading;
     return (
       <div style={{ fontFamily: T.sans }}>
-        <div className="vra-editor" style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden" }}>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask about codes, modifiers, bundling..."
-            rows={3}
-            style={{
-              display: "block", width: "100%", padding: "12px 14px", background: "transparent", border: 0,
-              color: T.ink, fontSize: 16, fontFamily: T.sans, boxSizing: "border-box",
-              outline: "none", resize: "none", lineHeight: 1.45, minHeight: 72,
-            }}
-          />
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
-            <span style={{ fontSize: 12, color: T.muted, flex: 1, minWidth: 0 }}>Retina billing questions</span>
-            {messages.length > 0 && (
-              <button onClick={clearChat} style={btnSm("secondary", { height: 36, color: T.ink2 })}>Clear</button>
-            )}
-            <button
-              onClick={sendMessage}
-              disabled={loading || !hasInput}
-              style={btnSm("primary", {
-                height: 36, padding: "0 16px", fontSize: 14,
-                background: loading || !hasInput ? T.accentSoft : T.accent,
-                borderColor: loading || !hasInput ? T.line : T.accent,
-                color: loading || !hasInput ? T.muted : T.onAccent,
-                cursor: loading || !hasInput ? "default" : "pointer",
-              })}
-            >Send<SendIcon size={14} /></button>
+        {messages.length === 0 && !loading ? (
+          <div style={{ paddingTop: 22 }}>
+            <div style={{ fontSize: 14, color: T.muted, marginBottom: 12 }}>Ask any retina coding question</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {PHONE_EXAMPLES.map((q) => (
+                <button key={q} onClick={() => sendMessage(q)}
+                  style={{
+                    width: "100%", minHeight: 44, padding: "0 14px", borderRadius: T.rLg, border: `1px solid ${T.line}`,
+                    background: T.surface, color: T.ink2, fontSize: 14, fontFamily: T.sans, textAlign: "left", cursor: "pointer",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >{q}</button>
+              ))}
+            </div>
           </div>
-        </div>
-
-        {messages.length === 0 && !loading && (
-          <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {SUGGESTIONS.map((q) => (
-              <button key={q} onClick={() => setInput(q)}
-                style={{ padding: "6px 11px", borderRadius: 999, border: `1px solid ${T.line}`, background: T.surface, color: T.ink2, fontSize: 12.5, cursor: "pointer", fontFamily: T.sans, maxWidth: "100%", textAlign: "left" }}
-              >{q}</button>
-            ))}
-          </div>
-        )}
-
-        {(messages.length > 0 || loading) && (
-          <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+        ) : (
+          <div style={{ paddingTop: 10, display: "flex", flexDirection: "column", gap: 10 }}>
             {messages.map((msg, i) => msg.role === "user" ? (
-              <div key={i} style={{ alignSelf: "flex-end", maxWidth: "85%", background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: "10px 10px 3px 10px", padding: "8px 12px", fontSize: 13.5, color: T.ink, overflowWrap: "anywhere" }}>
+              <div key={i} style={{ alignSelf: "flex-end", maxWidth: "85%", background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: 16, padding: "6px 12px", fontSize: 13, lineHeight: 1.4, color: T.ink, overflowWrap: "anywhere" }}>
                 {msg.content}
               </div>
             ) : (
-              <div key={i} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 13.5, lineHeight: 1.55, color: T.ink, overflowWrap: "anywhere" }}>
+              <div key={i} ref={i === lastAnswerIdx ? lastAnswerRef : undefined}
+                style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 14, lineHeight: 1.55, color: T.ink, overflowWrap: "anywhere", scrollMarginTop: APPBAR_H + 12 }}>
                 {renderContent(msg.content)}
               </div>
             ))}
             {loading && (
-              <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 13.5, color: T.muted }}>Thinking...</div>
+              <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 14, color: T.muted }}>Thinking...</div>
             )}
-            <div ref={(el) => { chatEndRef.current = el; }} />
+            {messages.length > 0 && !loading && (
+              <button onClick={clearChat} style={{ alignSelf: "center", background: "none", border: "none", color: T.muted, fontSize: 12.5, fontFamily: T.sans, padding: "6px 10px", cursor: "pointer" }}>Clear conversation</button>
+            )}
           </div>
         )}
+
+        {/* Room so the last answer never sits under the fixed input bar. */}
+        <div aria-hidden style={{ height: barH + 8 }} />
+
+        {/* Input bar — fixed directly on top of the hub tab bar (tab bar = TABBAR_H + 1px top border + safe area). */}
+        <div ref={barRef} style={{
+          position: "fixed", left: 0, right: 0, zIndex: 45,
+          bottom: `calc(${TABBAR_H + 1}px + env(safe-area-inset-bottom, 0px))`,
+          background: T.surface, borderTop: `1px solid ${T.line}`,
+          display: "flex", alignItems: "flex-end", gap: 8, boxSizing: "border-box",
+          padding: "8px max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px))",
+        }}>
+          <textarea
+            ref={taRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onInput={(e) => { e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight + 2, 132) + "px"; }}
+            placeholder="Ask a coding question..."
+            rows={1}
+            enterKeyHint="send"
+            style={{
+              flex: 1, minWidth: 0, display: "block", boxSizing: "border-box", height: 44, maxHeight: 132,
+              padding: "11px 14px", borderRadius: 22, border: `1px solid ${T.line}`, background: T.paper,
+              color: T.ink, fontSize: 16, lineHeight: 1.3, fontFamily: T.sans, outline: "none", resize: "none",
+            }}
+          />
+          <button onClick={sendMessage} disabled={!canSend} aria-label="Send"
+            style={{
+              width: 44, height: 44, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+              border: `1px solid ${canSend ? T.accent : T.line}`, background: canSend ? T.accent : T.accentSoft,
+              color: canSend ? T.onAccent : T.muted, cursor: canSend ? "pointer" : "default", padding: 0,
+            }}
+          ><SendIcon size={18} /></button>
+        </div>
       </div>
     );
   }
@@ -638,6 +684,18 @@ export default function CptReference({ onBack, showReimbursement = false }) {
 
   const { phone } = usePhone();
   const [dxOpen, setDxOpen] = useState(null); // phone: open diagnosis group id, or "all"
+  // Phone: null = the chat screen; "cpt" / "icd" = the reference sub-page.
+  // NOTE: the hub has no ICD-10 browser yet (ICD-10 lives in the server's
+  // deterministic engine, not in the client). "ICD-10 reference" therefore opens
+  // the same sub-page with "All codes" search open; swap in a real ICD-10
+  // dictionary here when one exists.
+  const [refSheet, setRefSheet] = useState(null);
+  const openRef = (which) => {
+    setRefSheet(which);
+    setDxOpen(which === "icd" ? "all" : null);
+    setExpanded(null);
+    window.scrollTo(0, 0);
+  };
 
   if (phone) {
     const rowBtn = (open) => ({
@@ -646,15 +704,32 @@ export default function CptReference({ onBack, showReimbursement = false }) {
       cursor: "pointer", textAlign: "left", fontFamily: T.sans, color: T.ink,
     });
     const chev = (open) => <span style={{ color: T.muted, flexShrink: 0, transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }}><ChevronRightIcon /></span>;
+    const linkBtn = { background: "none", border: "none", padding: "6px 0", margin: 0, color: T.accent, fontSize: 12.5, fontFamily: T.sans, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
+    // The chat stays mounted (hidden) while the reference sub-page is open, so
+    // going "‹ Coding" keeps the conversation.
     return (
       <div style={{ background: T.paper, fontFamily: T.sans, color: T.ink }}>
         <style>{RESPONSIVE_CSS}</style>
-        <PhoneHeading title="Coding" />
-        <div style={{ padding: "0 16px 28px" }}>
-          <div style={{ ...phoneSec, marginTop: 4 }}>AI Coding Assistant</div>
-          <AICodingAssistant showReimbursement={showReimbursement} phoneLayout />
-
-          <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden", marginTop: 18 }}>
+        <div style={{ display: refSheet ? "none" : "block" }}>
+          <PhoneHeading title="Coding" right={
+            <span style={{ fontSize: 12.5, color: T.muted, whiteSpace: "nowrap", flexShrink: 0 }}>
+              <button onClick={() => openRef("cpt")} style={linkBtn}>CPT reference</button>
+              <span aria-hidden> · </span>
+              <button onClick={() => openRef("icd")} style={linkBtn}>ICD-10 reference</button>
+            </span>
+          } />
+          <div style={{ padding: "0 16px" }}>
+            <AICodingAssistant showReimbursement={showReimbursement} phoneLayout />
+          </div>
+        </div>
+        {refSheet && <>
+        <PhoneHeading
+          title={refSheet === "icd" ? "Code search" : "CPT reference"}
+          sub={refSheet === "icd" ? "No ICD-10 dictionary in the hub yet — searching CPT codes and their notes." : undefined}
+          back={<button onClick={() => { setRefSheet(null); window.scrollTo(0, 0); }} style={{ ...linkBtn, fontSize: 15, padding: "6px 4px 6px 0", flexShrink: 0, whiteSpace: "nowrap" }}>‹ Coding</button>}
+        />
+        <div style={{ padding: "4px 16px 28px" }}>
+          <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden" }}>
             <div style={{ padding: "12px 14px", fontSize: 14.5, fontWeight: 600, color: T.ink }}>CPT reference by diagnosis</div>
             {DX_GROUPS.map((g) => {
               const open = dxOpen === g.id;
@@ -713,6 +788,7 @@ export default function CptReference({ onBack, showReimbursement = false }) {
             </div>
           )}
         </div>
+        </>}
       </div>
     );
   }
