@@ -23,9 +23,13 @@ export async function fetchSchedule(days = 14, from = null) {
     if (!res.ok) return { configured: true, error: `HTTP ${res.status}`, days: [] };
     const data = await res.json();
     if (!data || typeof data !== "object") return { configured: true, error: "bad response", days: [] };
-    // Managers line (Oct 2026): pass day.managers through; older servers → [].
+    // Managers / Front desk lines (Oct 2026): pass day.managers and
+    // day.frontDesk through; older servers → [].
     if (Array.isArray(data.days)) {
-      for (const d of data.days) if (d && !Array.isArray(d.managers)) d.managers = [];
+      for (const d of data.days) {
+        if (d && !Array.isArray(d.managers)) d.managers = [];
+        if (d && !Array.isArray(d.frontDesk)) d.frontDesk = [];
+      }
     }
     return data;
   } catch {
@@ -146,7 +150,20 @@ export function valedaOf(day) {
  *   half-day: "Brittany · LEOM PM (AM WORC)".
  */
 export function managersOf(day) {
-  const list = (day && Array.isArray(day.managers)) ? day.managers : [];
+  return staffOf(day && day.managers);
+}
+
+/**
+ * Front desk for one day (server: day.frontDesk, Oct 2026). Same shape and
+ * text as managersOf: "Sandy", "Lisa · LEOM ext. 12",
+ * "Kim — vacation through Fri, Oct 9", "Matt — out".
+ */
+export function frontDeskOf(day) {
+  return staffOf(day && day.frontDesk);
+}
+
+function staffOf(raw) {
+  const list = Array.isArray(raw) ? raw : [];
   return list.map((m) => {
     const ext = m.ext ? ` ext. ${m.ext}` : "";
     const part = m.part ? ` ${m.part}` : "";

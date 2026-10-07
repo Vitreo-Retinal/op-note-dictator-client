@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { T, doctorColor } from "./theme.js";
-import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf } from "./lib/vraSchedule.js";
+import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
-import { ManagersLine } from "./CallBoard.jsx";
+import { ManagersLine, StaffLine } from "./CallBoard.jsx";
 import { BriefcaseIcon, LockIcon, ChevronRightIcon } from "./icons.jsx";
 
 // ── Phone Home (Oct 2026, approved mockup "home-compact" A + B) ──────
@@ -125,6 +125,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
   const day = ok ? sched.days.find((d) => d.date === todayYmd) || null : null;
   const onCall = day ? day.onCall : null;
   const managers = day ? managersOf(day) : [];
+  const frontDesk = day ? frontDeskOf(day) : [];
   const alerts = ok ? alertsOf(sched.days, todayYmd) : [];
   const status = <span style={{ fontSize: 13, color: T.muted }}>{loading ? "Loading schedule…" : "Schedule unavailable"}</span>;
 
@@ -239,6 +240,14 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
             style={{ ...rowS(false), fontSize: 13, gap: 8 }} />
         )}
       </div>
+
+      {/* Front desk roster — Front desk and Manager views only */}
+      {(isFrontDesk || isManager) && frontDesk.length > 0 && (
+        <div style={card}>
+          <StaffLine label="Front desk" people={frontDesk} stacked labelStyle={{ width: 68 }}
+            style={{ ...rowS(true), fontSize: 13, gap: 8 }} />
+        </div>
+      )}
 
       {/* Doctors today */}
       {day && (

@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
 import { majorHoliday, injectionBlackout } from "./lib/practiceCalendar.js";
-import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf, managersOf } from "./lib/vraSchedule.js";
+import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 
@@ -36,11 +36,17 @@ export function DocChip({ doctor, half, size = "sm" }) {
   );
 }
 
-// Managers line (Oct 2026): "Managers  Aundrea · WORC · Brittany · LEOM ext. 1234".
+// Staff line (Oct 2026): "<label>  Aundrea · WORC · Brittany · LEOM ext. 1234".
+// Used for "Managers" and "Front desk". `people` = managersOf / frontDeskOf.
 // One line, never wraps; vacation in amber, out muted. `extra` (optional)
-// renders after each manager's text, e.g. a muted "(vacation from Thu)".
-// `stacked` (phones): one manager per line, never truncated.
-export function ManagersLine({ managers, extra, style, labelStyle, stacked = false }) {
+// renders after each person's text, e.g. a muted "(vacation from Thu)".
+// `stacked` (phones): one person per line, never truncated.
+export function ManagersLine({ managers, ...rest }) {
+  return <StaffLine label="Managers" people={managers} {...rest} />;
+}
+
+export function StaffLine({ label, people, extra, style, labelStyle, stacked = false }) {
+  const managers = people;
   if (!managers || !managers.length) return null;
   const tone = { in: T.ink2, vacation: T.amber, out: T.muted };
   const item = (m) => (
@@ -52,7 +58,7 @@ export function ManagersLine({ managers, extra, style, labelStyle, stacked = fal
   if (stacked) {
     return (
       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, fontFamily: T.sans, fontSize: 13, minWidth: 0, ...style }}>
-        <span style={{ fontSize: 12, color: T.muted, flex: "none", paddingTop: 1, ...labelStyle }}>Managers</span>
+        <span style={{ fontSize: 12, color: T.muted, flex: "none", paddingTop: 1, ...labelStyle }}>{label}</span>
         <span style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
           {managers.map((m) => <span key={m.name} style={{ overflowWrap: "anywhere" }}>{item(m)}</span>)}
         </span>
@@ -61,7 +67,7 @@ export function ManagersLine({ managers, extra, style, labelStyle, stacked = fal
   }
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: T.sans, fontSize: 12.5, minWidth: 0, ...style }}>
-      <span style={{ fontSize: 12, color: T.muted, flex: "none", ...labelStyle }}>Managers</span>
+      <span style={{ fontSize: 12, color: T.muted, flex: "none", ...labelStyle }}>{label}</span>
       <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
         {managers.map((m, i) => (
           <Fragment key={m.name}>
@@ -114,6 +120,7 @@ export default function CallBoard({ onOpenSchedule }) {
   const sites = todayDay ? sessionsBySite(todayDay.sessions) : [];
   const techs = todayDay ? todayDay.techs : null;
   const managers = todayDay ? managersOf(todayDay) : [];
+  const frontDesk = todayDay ? frontDeskOf(todayDay) : [];
 
   // Mockup .band styles
   const cell = { padding: "12px 16px", borderRight: `1px solid ${T.line}`, minWidth: 0, overflow: "hidden" };
@@ -262,9 +269,13 @@ export default function CallBoard({ onOpenSchedule }) {
           </div>
         </div>
 
-        {/* Managers — one line under the band, starting under On call */}
+        {/* Managers + Front desk — one line each under the band, starting under On call */}
         {managers.length > 0 && (
-          <ManagersLine managers={managers} style={{ padding: "7px 16px", borderTop: `1px solid ${T.line}` }} />
+          <ManagersLine managers={managers} labelStyle={{ width: 64 }} style={{ padding: "7px 16px", borderTop: `1px solid ${T.line}` }} />
+        )}
+        {frontDesk.length > 0 && (
+          <StaffLine label="Front desk" people={frontDesk} labelStyle={{ width: 64 }}
+            style={{ padding: managers.length > 0 ? "0 16px 7px" : "7px 16px", borderTop: managers.length > 0 ? 0 : `1px solid ${T.line}` }} />
         )}
       </div>
 

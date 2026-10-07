@@ -1,13 +1,13 @@
 import { useState, useEffect, Fragment } from "react";
 import PageBar, { wrap, segWrap, segBtn } from "./PageBar.jsx";
-import { DocChip, ManagersLine } from "./CallBoard.jsx";
+import { DocChip, ManagersLine, StaffLine } from "./CallBoard.jsx";
 import { T, card, DOCTOR_ORDER, SITE_TINTS, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
 import SchedulePhone, { nextTiles } from "./SchedulePhone.jsx";
 import {
   fetchSchedule, scheduleOk, ymdOf, dateOfYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
-  doctorHalves, translatorOf, managersOf,
+  doctorHalves, translatorOf, managersOf, frontDeskOf,
 } from "./lib/vraSchedule.js";
 
 // ── Schedule — 2-week view from the shared VRA Google Calendar (Oct 2026) ─
@@ -169,17 +169,23 @@ export default function SchedulePage({ onBack, initialDay }) {
     const wkdays = all.filter((d) => { const x = dateOfYmd(d.date).getDay(); return x !== 0 && x !== 6; });
     const ref = wkdays.find((d) => d.date === todayYmd) || wkdays.find((d) => d.date >= todayYmd) || wkdays[0] || null;
     const mgrs = ref ? managersOf(ref) : [];
-    const later = {};
-    if (ref) {
-      for (const m of ref.managers || []) {
+    const fd = ref ? frontDeskOf(ref) : [];
+    // A later change that week, per person: "(vacation from Thu)".
+    const laterOf = (field) => {
+      const out = {};
+      if (!ref) return out;
+      for (const m of ref[field] || []) {
         const key = (x) => `${x.status}|${x.site}|${x.ext}|${x.part || ""}`;
-        const next = wkdays.find((d) => d.date > ref.date && (d.managers || []).some((x) => x.name === m.name && key(x) !== key(m)));
+        const next = wkdays.find((d) => d.date > ref.date && (d[field] || []).some((x) => x.name === m.name && key(x) !== key(m)));
         if (!next) continue;
-        const x = next.managers.find((y) => y.name === m.name);
-        const what = x.status === "vacation" ? "vacation" : x.status === "out" ? "out" : x.site;
-        later[m.name] = `(${what} from ${DOW[dateOfYmd(next.date).getDay()]})`;
+        const x = next[field].find((y) => y.name === m.name);
+        const what = x.status === "vacation" ? "vacation" : x.status === "out" ? "out" : (x.site || "in");
+        out[m.name] = `(${what} from ${DOW[dateOfYmd(next.date).getDay()]})`;
       }
-    }
+      return out;
+    };
+    const later = laterOf("managers");
+    const laterFd = laterOf("frontDesk");
     return (
       <>
         <div style={head}>
@@ -188,7 +194,10 @@ export default function SchedulePage({ onBack, initialDay }) {
           {tech && <span style={oc}>Tech {runLabel(tech)}</span>}
         </div>
         {mgrs.length > 0 && (
-          <ManagersLine managers={mgrs} extra={later} style={{ padding: "6px 16px", borderBottom: `1px solid ${T.line}`, background: T.surface }} />
+          <ManagersLine managers={mgrs} extra={later} labelStyle={{ width: 64 }} style={{ padding: "6px 16px", borderBottom: `1px solid ${T.line}`, background: T.surface }} />
+        )}
+        {fd.length > 0 && (
+          <StaffLine label="Front desk" people={fd} extra={laterFd} labelStyle={{ width: 64 }} style={{ padding: "6px 16px", borderBottom: `1px solid ${T.line}`, background: T.surface }} />
         )}
       </>
     );

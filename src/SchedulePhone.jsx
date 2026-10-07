@@ -1,5 +1,5 @@
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
-import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf, managersOf } from "./lib/vraSchedule.js";
+import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
 
 // ── Schedule, phone layout (Oct 2026) ───────────────────────────────
 // One day at a time, sized to fit one screen: on call (one row), doctors per
@@ -125,6 +125,7 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
   const valeda = valedaOf(day);
   const off = (t && t.off) || [];
   const managers = managersOf(day);
+  const frontDesk = frontDeskOf(day);
   const mgrTone = { in: T.ink, vacation: T.amber, out: T.muted };
 
   const siteSummary = (site) => {
@@ -140,6 +141,18 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
     valeda && [...valeda.docs.map((d) => d.doctor), ...valeda.techs.map((x) => x.name)].join(", "),
     off.length && `Off ${off.join(", ")}`,
   ].filter(Boolean).join(" · ");
+
+  // Managers / Front desk — compact row card, one person per line.
+  const staffCard = (label, people) => people.length > 0 && (
+    <div style={{ ...cardS, display: "flex", alignItems: "flex-start", gap: 8, minHeight: 38, padding: "8px 12px", marginTop: 8, boxSizing: "border-box" }}>
+      <span style={{ ...lbl, flex: "none", width: 64 }}>{label}</span>
+      <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
+        {people.map((m) => (
+          <span key={m.name} style={{ overflowWrap: "anywhere", color: mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
+        ))}
+      </span>
+    </div>
+  );
 
   return (
     <div style={{ padding: "0 16px 12px", fontFamily: T.sans, color: T.ink }}>
@@ -160,17 +173,9 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
         <b style={{ fontSize: 13.5, fontWeight: 600, color: onCall && onCall.tech ? T.ink : T.muted }}>{(onCall && onCall.tech) || "—"}</b>
       </div>
 
-      {/* Managers — compact row card; wraps to one manager per line when needed */}
-      {managers.length > 0 && (
-        <div style={{ ...cardS, display: "flex", alignItems: "flex-start", gap: 8, minHeight: 38, padding: "8px 12px", marginTop: 8, boxSizing: "border-box" }}>
-          <span style={{ ...lbl, flex: "none" }}>Managers</span>
-          <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
-            {managers.map((m) => (
-              <span key={m.name} style={{ overflowWrap: "anywhere", color: mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
-            ))}
-          </span>
-        </div>
-      )}
+      {/* Managers, then Front desk — compact row cards */}
+      {staffCard("Managers", managers)}
+      {staffCard("Front desk", frontDesk)}
 
       {/* Doctors at each site */}
       <div style={secH}>Doctors</div>
