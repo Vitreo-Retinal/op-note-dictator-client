@@ -39,9 +39,26 @@ export function DocChip({ doctor, half, size = "sm" }) {
 // Managers line (Oct 2026): "Managers  Aundrea · WORC · Brittany · LEOM ext. 1234".
 // One line, never wraps; vacation in amber, out muted. `extra` (optional)
 // renders after each manager's text, e.g. a muted "(vacation from Thu)".
-export function ManagersLine({ managers, extra, style, labelStyle }) {
+// `stacked` (phones): one manager per line, never truncated.
+export function ManagersLine({ managers, extra, style, labelStyle, stacked = false }) {
   if (!managers || !managers.length) return null;
   const tone = { in: T.ink2, vacation: T.amber, out: T.muted };
+  const item = (m) => (
+    <Fragment key={m.name}>
+      <span style={{ color: tone[m.tone] || T.ink2, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
+      {extra && extra[m.name] && <span style={{ color: T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
+    </Fragment>
+  );
+  if (stacked) {
+    return (
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 8, fontFamily: T.sans, fontSize: 13, minWidth: 0, ...style }}>
+        <span style={{ fontSize: 12, color: T.muted, flex: "none", paddingTop: 1, ...labelStyle }}>Managers</span>
+        <span style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          {managers.map((m) => <span key={m.name} style={{ overflowWrap: "anywhere" }}>{item(m)}</span>)}
+        </span>
+      </div>
+    );
+  }
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: T.sans, fontSize: 12.5, minWidth: 0, ...style }}>
       <span style={{ fontSize: 12, color: T.muted, flex: "none", ...labelStyle }}>Managers</span>
@@ -49,8 +66,7 @@ export function ManagersLine({ managers, extra, style, labelStyle }) {
         {managers.map((m, i) => (
           <Fragment key={m.name}>
             {i > 0 && <span style={{ color: T.lineStrong }}> · </span>}
-            <span style={{ color: tone[m.tone] || T.ink2, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
-            {extra && extra[m.name] && <span style={{ color: T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
+            {item(m)}
           </Fragment>
         ))}
       </span>

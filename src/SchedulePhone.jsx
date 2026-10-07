@@ -162,11 +162,11 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
 
       {/* Managers — compact row card; wraps to one manager per line when needed */}
       {managers.length > 0 && (
-        <div style={{ ...cardS, display: "flex", alignItems: "center", gap: 8, minHeight: 38, padding: "4px 12px", marginTop: 8, boxSizing: "border-box" }}>
+        <div style={{ ...cardS, display: "flex", alignItems: "flex-start", gap: 8, minHeight: 38, padding: "8px 12px", marginTop: 8, boxSizing: "border-box" }}>
           <span style={{ ...lbl, flex: "none" }}>Managers</span>
-          <span style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", justifyContent: "flex-end", columnGap: 10, rowGap: 2, fontSize: 13 }}>
+          <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
             {managers.map((m) => (
-              <span key={m.name} style={{ whiteSpace: "nowrap", color: mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
+              <span key={m.name} style={{ overflowWrap: "anywhere", color: mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" ? 600 : 500 }}>{m.text}</span>
             ))}
           </span>
         </div>

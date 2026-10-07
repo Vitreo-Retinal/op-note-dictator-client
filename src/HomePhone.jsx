@@ -198,8 +198,8 @@ export default function HomePhone({ doctor, onDictate, onCoverage, onSelectManag
           ) : <span style={{ ...valS, color: T.muted }}>—</span>}
         </div>
         {managers.length > 0 && (
-          <ManagersLine managers={managers} labelStyle={{ width: 68 }}
-            style={{ ...rowS(false), fontSize: 13, alignItems: "center", gap: 8 }} />
+          <ManagersLine managers={managers} stacked labelStyle={{ width: 68 }}
+            style={{ ...rowS(false), fontSize: 13, gap: 8 }} />
         )}
       </div>
 
