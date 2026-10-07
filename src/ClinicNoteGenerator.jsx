@@ -901,81 +901,78 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         </div>
       </nav>
 
-      {/* Injection / F/U Calculator — always visible */}
+      {/* Injection / F/U Calculator — always visible.
+          Two columns. Each result sits UNDER the input it comes from; the next-appt notes stack under the date, one per line. */}
       <div className="vra-wrap" style={{ padding: "18px 24px 0", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
-        <div style={{ display: "flex", gap: "10px 22px", alignItems: "center", flexWrap: "wrap", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "10px 16px", fontSize: 13, fontFamily: T.sans }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Injection & F/U Calculator</span>
-          {/* Each result sits right after the input it comes from, in its own group, with a divider between the groups */}
-          {/* Last injection → weeks since */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "nowrap" }}>
-            <label style={{ color: T.muted, whiteSpace: "nowrap" }}>Last inj:</label>
-            <input
-              type="date"
-              value={lastInjDate}
-              onChange={e => setLastInjDate(e.target.value)}
-              style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, boxSizing: "border-box" }}
-            />
+        <div className="vra-calc" style={{ display: "flex", gap: "12px 20px", alignItems: "flex-start", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 16px", fontSize: 13, fontFamily: T.sans }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.ink, whiteSpace: "nowrap", lineHeight: "30px" }}>Injection & F/U Calculator</span>
+          {/* Last injection, with weeks since under it */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <label style={{ color: T.muted, whiteSpace: "nowrap" }}>Last inj:</label>
+              <input
+                type="date"
+                value={lastInjDate}
+                onChange={e => setLastInjDate(e.target.value)}
+                style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, boxSizing: "border-box" }}
+              />
+            </div>
             {injCalc && injCalc.weeksSince !== null && (
-              <span style={{ whiteSpace: "nowrap", background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: 999, padding: "3px 10px" }}>
+              <div style={{ whiteSpace: "nowrap" }}>
                 <b style={{ fontWeight: 600, color: T.ink }}>{injCalc.weeksSince}w{injCalc.daysSince % 7 > 0 ? ` ${injCalc.daysSince % 7}d` : ""}</b>
                 <span style={{ color: T.muted }}> since last inj</span>
-              </span>
+              </div>
             )}
           </div>
-          <span aria-hidden="true" className="vra-calc-div" style={{ alignSelf: "stretch", width: 1, background: T.line, margin: "2px 4px" }} />
-          {/* F/U weeks → next appt */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "nowrap" }}>
-            <label style={{ color: T.muted, whiteSpace: "nowrap" }}>F/u in:</label>
-            <input
-              type="number"
-              value={fuWeeks}
-              onChange={e => setFuWeeks(e.target.value)}
-              placeholder="wks"
-              style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, width: 60, boxSizing: "border-box" }}
-            />
-            <span style={{ color: T.muted }}>weeks</span>
-            {injCalc && injCalc.nextDate && (() => {
-              const warn = injCalc.holiday || (injCalc.sched && injCalc.sched.block);
-              return (
-                <span style={{ whiteSpace: "nowrap", background: warn ? T.amberSoft : T.greenSoft, border: `1px solid ${warn ? T.goldSoft : "#B9DCC5"}`, borderRadius: 999, padding: "3px 10px" }}>
-                  <span style={{ color: T.muted }}>Next appt </span>
-                  <b style={{ fontWeight: 600, color: warn ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
-                </span>
-              );
-            })()}
-          </div>
-          {/* Warnings / notes about the computed date — own line under the strip row */}
-          {injCalc && injCalc.nextDate && (injCalc.holiday || (injCalc.sched && (injCalc.sched.block || injCalc.sched.call)) || injCalc.blackout) && (
-            <div style={{ flexBasis: "100%", display: "flex", gap: "4px 14px", flexWrap: "wrap", fontSize: 12.5, justifyContent: "flex-end" }}>
-              {injCalc.holiday && (
-                <span style={{ color: T.amber, fontWeight: 600 }}>
-                  ⚠ {injCalc.holiday} — office closed, pick an adjacent day
-                </span>
-              )}
-              {/* Holiday wins; otherwise the schedule conflict, if any. MR only. */}
-              {!injCalc.holiday && injCalc.sched && injCalc.sched.block && (
-                <span style={{ color: T.amber, fontWeight: 600 }}>
-                  {injCalc.sched.block.type === "vacation"
-                    ? `⚠ You're away: ${injCalc.sched.block.title}`
-                    : injCalc.sched.block.type === "no_clinic"
-                    ? `⚠ No clinic that day (${injCalc.sched.block.title})`
-                    : `⚠ OR day: ${injCalc.sched.block.title}`}
-                </span>
-              )}
-              {/* Independent of the above — call week is a note, not a conflict. */}
-              {injCalc.sched && injCalc.sched.call && (
-                <span style={{ color: T.muted }}>
-                  {injCalc.sched.call.surgeon_id === "MR" ? "(your call week)" : `(on call that week: ${injCalc.sched.call.surgeon_id})`}
-                </span>
-              )}
-              {/* Injection blackout — independent of holiday/schedule (per Mari, Sep 2026) */}
-              {injCalc.blackout && (
-                <span style={{ color: T.red, fontWeight: 600 }}>
-                  🚫 {injCalc.blackout}
-                </span>
-              )}
+          <span aria-hidden="true" className="vra-calc-div" style={{ alignSelf: "stretch", width: 1, background: T.line }} />
+          {/* F/U weeks, with next appt and its notes under it */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: "1 1 0", minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <label style={{ color: T.muted, whiteSpace: "nowrap" }}>F/u in:</label>
+              <input
+                type="number"
+                value={fuWeeks}
+                onChange={e => setFuWeeks(e.target.value)}
+                placeholder="wks"
+                style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, width: 60, boxSizing: "border-box" }}
+              />
+              <span style={{ color: T.muted }}>weeks</span>
             </div>
-          )}
+            {injCalc && injCalc.nextDate && (
+              <div>
+                <span style={{ color: T.muted }}>Next appt: </span>
+                <b style={{ fontWeight: 600, color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
+              </div>
+            )}
+            {/* Notes about that date — each on its own line */}
+            {injCalc && injCalc.nextDate && injCalc.holiday && (
+              <div style={{ color: T.amber, fontWeight: 600, fontSize: 12.5 }}>
+                ⚠ {injCalc.holiday} — office closed, pick an adjacent day
+              </div>
+            )}
+            {/* Holiday wins; otherwise the schedule conflict, if any. MR only. */}
+            {injCalc && injCalc.nextDate && !injCalc.holiday && injCalc.sched && injCalc.sched.block && (
+              <div style={{ color: T.amber, fontWeight: 600, fontSize: 12.5 }}>
+                {injCalc.sched.block.type === "vacation"
+                  ? `⚠ You're away: ${injCalc.sched.block.title}`
+                  : injCalc.sched.block.type === "no_clinic"
+                  ? `⚠ No clinic that day (${injCalc.sched.block.title})`
+                  : `⚠ OR day: ${injCalc.sched.block.title}`}
+              </div>
+            )}
+            {/* Independent of the above — call week is a note, not a conflict. */}
+            {injCalc && injCalc.nextDate && injCalc.sched && injCalc.sched.call && (
+              <div style={{ color: T.muted, fontSize: 12.5 }}>
+                {injCalc.sched.call.surgeon_id === "MR" ? "Your call week" : `On call that week: ${injCalc.sched.call.surgeon_id}`}
+              </div>
+            )}
+            {/* Injection blackout — independent of holiday/schedule (per Mari, Sep 2026) */}
+            {injCalc && injCalc.nextDate && injCalc.blackout && (
+              <div style={{ color: T.red, fontWeight: 600, fontSize: 12.5 }}>
+                🚫 {injCalc.blackout}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

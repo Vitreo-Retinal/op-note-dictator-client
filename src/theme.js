@@ -222,6 +222,7 @@ export const RESPONSIVE_CSS = `
   .vra-legend{display:none!important}
   .vra-row2{grid-template-columns:1fr!important}
   .vra-calc-div{display:none!important}
+  .vra-calc{flex-direction:column!important}
   .vra-seg{display:flex!important;width:100%}
   .vra-seg>button{flex:1;padding:6px 8px!important}
 }
