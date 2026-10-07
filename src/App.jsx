@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OpNoteDictator from "./OpNoteDictator.jsx";
 import ClinicNoteGenerator from "./ClinicNoteGenerator.jsx";
 import CptReference from "./CptReference.jsx";
@@ -12,6 +12,7 @@ import SchedulePage from "./SchedulePage.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
+import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H } from "./phone.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -151,10 +152,13 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
   const hoverOn = (e) => { e.currentTarget.style.borderColor = T.accentLine; };
   const hoverOff = (e) => { e.currentTarget.style.borderColor = T.line; };
 
+  const { phone } = usePhone();
+
   return (
     <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       <style>{RESPONSIVE_CSS}</style>
-      {/* Top bar */}
+      {/* Top bar (desktop). On phones the shell has the bar; the title is an in-page heading. */}
+      {phone ? <PhoneHeading title="Practice Hub" style={{ paddingBottom: 0 }} /> : (
       <header className="vra-bar" style={appBar}>
         <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 48, width: "auto", display: "block" }} />
         <span style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
@@ -162,6 +166,7 @@ export function Homepage({ onSelectTool, onSelectDoctor, onSelectManager }) {
         <div style={{ flex: 1 }} />
         <div className="vra-bar-hide" style={{ fontSize: 13, color: T.ink2, whiteSpace: "nowrap" }}>{todayWords}</div>
       </header>
+      )}
 
       <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", boxSizing: "border-box" }}>
         {/* Call board — practice-wide date + on-call + F/U counter. Sep 2026, per
@@ -379,23 +384,95 @@ function ManagerPinGate({ onSuccess, onCancel }) {
   );
 }
 
+// ── Doctor picker (phone "Notes" tab) ─────────────────────────────
+// The same surgeon buttons as the desktop "Doctor notes" row, one per line
+// with full-width tap targets. Tapping one goes through the PIN gate.
+function DoctorPicker({ onSelectDoctor }) {
+  return (
+    <div style={{ background: T.paper, fontFamily: T.sans, color: T.ink }}>
+      <PhoneHeading title="Doctor notes" sub="Pick your name, then enter your PIN." />
+      <div style={{ padding: "8px 16px 24px", display: "flex", flexDirection: "column", gap: 8 }}>
+        {SURGEONS.map((doc) => (
+          <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)}
+            style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "8px 14px 8px 10px", cursor: "pointer", fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.ink, textAlign: "left" }}>
+            <span style={avatar(34)}>{doc.name}</span>
+            <span style={{ flex: 1 }}>Dr. {doc.surname || doc.name}</span>
+            <LockIcon size={14} />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Page persistence (Oct 2026) ─────────────────────────────────────
+// A home-screen app reloads whenever iOS evicts it, so on phones the current
+// page is restored from localStorage. PIN-gated pages come back through their
+// gate: doctor space → that surgeon's PIN prompt, Manager's Hub → manager PIN.
+const PAGE_KEY = "vra-hub-page";
+const SURGEON_KEY = "vra-hub-surgeon";
+const PAGES = ["home", "schedule", "inject", "coding", "education", "intakehpi", "documents", "drops", "dictator", "notes", "pin", "doctor", "managerpin", "manager"];
+
+function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function storeSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* private mode */ } }
+
+function restoredState() {
+  if (!isPhoneNow()) return { page: "home", surgeon: null };
+  let page = storeGet(PAGE_KEY);
+  if (!PAGES.includes(page)) return { page: "home", surgeon: null };
+  const surgeon = SURGEONS.find((d) => d.id === storeGet(SURGEON_KEY)) || null;
+  if (page === "pin" || page === "doctor") return surgeon ? { page: "pin", surgeon } : { page: "notes", surgeon: null };
+  if (page === "manager") page = "managerpin";
+  return { page, surgeon: null };
+}
+
+// Which tab is lit for each page.
+const TAB_OF = { home: "home", schedule: "schedule", inject: "inject", coding: "coding", notes: "notes", pin: "notes", doctor: "notes" };
+const TAB_ROOTS = new Set(["home", "schedule", "inject", "coding", "notes", "doctor"]);
+
 // ── App Router ──────────────────────────────────────────────────────
 export default function App() {
   const [authed, setAuthed] = useState(false);
-  const [page, setPage] = useState("home");
-  // page: home | schedule | inject | coding | education | intakehpi | documents | dictator | doctor | pin
-  const [activeSurgeon, setActiveSurgeon] = useState(null);
+  const [initial] = useState(restoredState);
+  const [page, setPage] = useState(initial.page);
+  // page: home | schedule | inject | coding | education | intakehpi | documents | dictator | notes | doctor | pin
+  const [activeSurgeon, setActiveSurgeon] = useState(initial.surgeon);
+  // Surgeon id that passed the PIN gate this session (memory only — a reload
+  // always goes back through the gate).
+  const [unlocked, setUnlocked] = useState(null);
+  const phone = useIsPhone();
+
+  useEffect(() => {
+    storeSet(PAGE_KEY, page);
+    storeSet(SURGEON_KEY, activeSurgeon ? activeSurgeon.id : null);
+  }, [page, activeSurgeon]);
 
   if (!authed) {
     return <PasswordGate onSuccess={() => setAuthed(true)} />;
   }
 
+  const goHome = () => setPage("home");
+  // Leaving the doctor space: desktop → hub; phone → the doctor picker.
+  const leaveDoctor = () => { setUnlocked(null); setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
+  const pickDoctor = (doc) => { setActiveSurgeon(doc); setPage(unlocked === doc.id ? "doctor" : "pin"); };
+
+  let content;
   // ── Shared tool pages ──
   if (page === "inject") {
-    return (
+    content = phone ? (
+      // Phone: the embed fills the space between the app bar and the tab bar.
+      <div style={{ background: S.bg, height: PHONE_BODY_H, overflow: "hidden" }}>
+        <iframe
+          src="https://retina-rx.vercel.app"
+          title="Can We Inject? — Coverage Lookup"
+          style={{ display: "block", border: "none", width: "100%", height: "100%" }}
+          allow="clipboard-write"
+        />
+      </div>
+    ) : (
       <div style={{ minHeight: "100vh", background: S.bg, fontFamily: S.font, color: S.text, display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "10px 20px", borderBottom: `1px solid ${S.border}`, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-          <button onClick={() => setPage("home")} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Home</button>
+          <button onClick={goHome} style={{ background: "none", border: `1px solid ${S.border}`, borderRadius: 8, padding: "6px 14px", color: S.muted, fontFamily: S.font, fontSize: "0.78rem", cursor: "pointer" }}>&larr; Home</button>
           <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>💉 Can We Inject?</span>
         </div>
         <iframe
@@ -406,75 +483,80 @@ export default function App() {
         />
       </div>
     );
-  }
-
-  if (page === "coding") {
+  } else if (page === "coding") {
     // CptReference already has the tree + AI assistant
-    return <CptReference onBack={() => setPage("home")} />;
-  }
-
-  if (page === "education") {
-    return <PatientEducation onBack={() => setPage("home")} />;
-  }
-
-  // Sep 2026, per Mari — tech-facing CC/HPI tool (OCB modifier-25 settlement). No PIN.
-  if (page === "intakehpi") {
-    return <IntakeHpi onBack={() => setPage("home")} />;
-  }
-
-  if (page === "documents") {
-    return <Documents onBack={() => setPage("home")} onOpenEducation={() => setPage("education")} />;
-  }
-
-  // Oct 2026 — 2-week schedule from the shared VRA Google Calendar. No PIN.
-  if (page === "schedule") {
-    return <SchedulePage onBack={() => setPage("home")} />;
-  }
-
-  // ── Legacy: Op Note Dictator (still accessible from Robocall tab) ──
-  if (page === "drops") {
-    return <DropSchedule onBack={() => setPage("home")} backLabel="Hub" />;
-  }
-
-  if (page === "dictator") {
-    return <OpNoteDictator onBack={() => setPage("home")} />;
-  }
-
-  // ── PIN gate (verifies before entering doctor space) ──
-  if (page === "pin" && activeSurgeon) {
-    return (
+    content = <CptReference onBack={goHome} />;
+  } else if (page === "education") {
+    content = <PatientEducation onBack={goHome} />;
+  } else if (page === "intakehpi") {
+    // Sep 2026, per Mari — tech-facing CC/HPI tool (OCB modifier-25 settlement). No PIN.
+    content = <IntakeHpi onBack={goHome} />;
+  } else if (page === "documents") {
+    content = <Documents onBack={goHome} onOpenEducation={() => setPage("education")} />;
+  } else if (page === "schedule") {
+    // Oct 2026 — 2-week schedule from the shared VRA Google Calendar. No PIN.
+    content = <SchedulePage onBack={goHome} />;
+  } else if (page === "drops") {
+    content = <DropSchedule onBack={goHome} backLabel="Hub" />;
+  } else if (page === "dictator") {
+    // ── Legacy: Op Note Dictator (still accessible from Robocall tab) ──
+    content = <OpNoteDictator onBack={goHome} />;
+  } else if (page === "notes" && phone) {
+    // Phone "Notes" tab — the doctor picker.
+    content = <DoctorPicker onSelectDoctor={pickDoctor} />;
+  } else if (page === "pin" && activeSurgeon) {
+    // ── PIN gate (verifies before entering doctor space) ──
+    content = (
       <PinGate
+        key={activeSurgeon.id}
         surgeon={activeSurgeon}
-        onSuccess={() => setPage("doctor")}
-        onCancel={() => { setPage("home"); setActiveSurgeon(null); }}
+        onSuccess={() => { setUnlocked(activeSurgeon.id); setPage("doctor"); }}
+        onCancel={() => { setActiveSurgeon(null); setPage(phone ? "notes" : "home"); }}
+      />
+    );
+  } else if (page === "doctor" && activeSurgeon && !phone) {
+    // ── Doctor space (desktop; on phones it is kept mounted below) ──
+    content = <ClinicNoteGenerator onBack={leaveDoctor} surgeon={activeSurgeon} />;
+  } else if (page === "managerpin") {
+    // ── Manager's Hub (PIN-gated; managers + doctors, never techs) ──
+    content = <ManagerPinGate onSuccess={() => setPage("manager")} onCancel={goHome} />;
+  } else if (page === "manager") {
+    content = <RateComparison onBack={goHome} />;
+  } else if (page === "doctor" && phone && activeSurgeon && unlocked === activeSurgeon.id) {
+    content = null; // rendered by the kept-mounted note generator below
+  } else {
+    // ── Homepage ──
+    content = (
+      <Homepage
+        onSelectTool={(id) => setPage(id)}
+        onSelectDoctor={pickDoctor}
+        onSelectManager={() => setPage("managerpin")}
       />
     );
   }
 
-  // ── Doctor space ──
-  if (page === "doctor" && activeSurgeon) {
-    return (
-      <ClinicNoteGenerator
-        onBack={() => { setPage("home"); setActiveSurgeon(null); }}
-        surgeon={activeSurgeon}
-      />
-    );
-  }
+  if (!phone) return content;
 
-  // ── Manager's Hub (PIN-gated; managers + doctors, never techs) ──
-  if (page === "managerpin") {
-    return <ManagerPinGate onSuccess={() => setPage("manager")} onCancel={() => setPage("home")} />;
-  }
-  if (page === "manager") {
-    return <RateComparison onBack={() => setPage("home")} />;
-  }
-
-  // ── Homepage ──
+  // ── Phone shell ──
+  // The note generator stays mounted while the doctor is unlocked, so hopping
+  // to Schedule or Inject and back keeps the note being written.
+  const noteOpen = !!(activeSurgeon && unlocked === activeSurgeon.id);
+  const onTab = (id) => {
+    if (id === "notes") setPage(noteOpen ? "doctor" : "notes");
+    else setPage(id);
+  };
   return (
-    <Homepage
-      onSelectTool={(id) => setPage(id)}
-      onSelectDoctor={(doc) => { setActiveSurgeon(doc); setPage("pin"); }}
-      onSelectManager={() => setPage("managerpin")}
-    />
+    <PhoneShell active={TAB_OF[page] || "home"} onTab={onTab}>
+      <PhoneCtx.Provider value={{ phone: true, tabRoot: TAB_ROOTS.has(page) }}>
+        {page === "doctor" && noteOpen ? null : content}
+      </PhoneCtx.Provider>
+      {noteOpen && (
+        <div style={{ display: page === "doctor" ? "block" : "none" }}>
+          <PhoneCtx.Provider value={{ phone: true, tabRoot: false }}>
+            <ClinicNoteGenerator key={activeSurgeon.id} onBack={leaveDoctor} surgeon={activeSurgeon} />
+          </PhoneCtx.Provider>
+        </div>
+      )}
+    </PhoneShell>
   );
 }

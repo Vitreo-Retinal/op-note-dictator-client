@@ -12,6 +12,8 @@ import { supabase } from "./supabaseClient.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
+import { usePhone, PhoneHeading } from "./phone.jsx";
+import { backBtnStyle } from "./PageBar.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -136,6 +138,7 @@ function buildPbmNote(f) {
 
 // ── Component ───────────────────────────────────────────────────────
 export default function ClinicNoteGenerator({ onBack, surgeon }) {
+  const { phone } = usePhone(); // phone shell: in-page heading instead of the app bar
   const [mode, setMode] = useState("generate"); // generate | optimize
   const [note, setNote] = useState("");
   const [timeSpent, setTimeSpent] = useState(""); // optional — minutes spent with patient
@@ -852,7 +855,15 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     <div style={{ minHeight: "100vh", background: S.bg, color: S.text, fontFamily: S.font }}>
 
       <style>{RESPONSIVE_CSS}</style>
-      {/* Header */}
+      {/* Header (phone: the shell has the bar; "Doctors" goes back to the picker) */}
+      {phone ? (
+        <PhoneHeading
+          title="Clinic Notes"
+          back={onBack ? <button onClick={onBack} style={backBtnStyle()}><BackIcon />Doctors</button> : null}
+          right={surgeon ? <span style={avatar(30)}>{surgeon.name}</span> : null}
+          style={{ background: T.surface, paddingBottom: 10 }}
+        />
+      ) : (
       <header className="vra-bar" style={appBar}>
         {onBack && (
           <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${T.line}`, borderRadius: T.r, color: T.ink2, padding: "6px 10px 6px 6px", cursor: "pointer", fontFamily: T.sans, fontSize: 13, flexShrink: 0 }}>
@@ -870,6 +881,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           </div>
         )}
       </header>
+      )}
 
       {/* Tabs */}
       <nav style={{ background: T.surface, borderBottom: `1px solid ${T.line}` }}>

@@ -5,6 +5,7 @@
 import { T, appBar, RESPONSIVE_CSS } from "./theme.js";
 import { BackIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
+import { usePhone, PhoneHeading } from "./phone.jsx";
 
 export function backBtnStyle(extra = {}) {
   return {
@@ -43,6 +44,23 @@ export function searchInput(extra = {}) {
 }
 
 export default function PageBar({ onBack, title, sub, right, backLabel = "Hub", topAccent }) {
+  // Phone shell: the shell owns the app bar; the title becomes an in-page
+  // heading. Tab-root pages drop the back button (the tab bar replaces it).
+  const { phone, tabRoot } = usePhone();
+  if (phone) {
+    return (
+      <>
+        <style>{RESPONSIVE_CSS}</style>
+        {topAccent && <div style={{ height: 2, background: topAccent }} />}
+        <PhoneHeading
+          title={title}
+          sub={sub}
+          right={right}
+          back={onBack && !tabRoot ? <button onClick={onBack} style={backBtnStyle()}><BackIcon />{backLabel}</button> : null}
+        />
+      </>
+    );
+  }
   return (
     <>
       <style>{RESPONSIVE_CSS}</style>

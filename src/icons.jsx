@@ -74,3 +74,10 @@ export function CalendarIcon({ size = 22 }) {
 export function DropBottleIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M10.5 2h3v3h-3z" /><path d="M10.5 5L9 7.5h6L13.5 5" /><rect x="7" y="7.5" width="10" height="9" rx="2.5" /><path d="M12 18.5c-.9 1.1-1.3 1.8-1.3 2.3a1.3 1.3 0 002.6 0c0-.5-.4-1.2-1.3-2.3z" /></svg>);
 }
+// ── Phone tab bar (Oct 2026) ──
+export function HomeIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z" /></svg>);
+}
+export function NotesIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z" /><path d="M14 3v5h5M8 13h8M8 17h6" /></svg>);
+}
