@@ -13,6 +13,9 @@ import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_C
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { usePhone, PhoneHeading } from "./phone.jsx";
+
+// Tabs shown on phones (everything else is desktop-only).
+const PHONE_TABS = ["input", "output", "coding", "evidence"];
 import { backBtnStyle } from "./PageBar.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
@@ -157,6 +160,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
   // (effect below) or by the second "Generate anyway" click.
   const [pendingUnknown, setPendingUnknown] = useState(null);
   const [tab, setTab] = useState("input"); // input | output | examples | rules | codes
+  // Phone shows only four tabs; if a hidden one is active there, fall back to Input.
+  useEffect(() => { if (phone && !PHONE_TABS.includes(tab)) setTab("input"); }, [phone, tab]);
   const [codeSearch, setCodeSearch] = useState("");
   const [copied, setCopied] = useState(false);
   const [hpiCopied, setHpiCopied] = useState(false); // Sep 2026, per Mari — CC/HPI card copy feedback
@@ -898,11 +903,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       )}
 
       {/* Tabs */}
-      {/* Phone: one horizontally scrolling chip row, faded at the right edge. */}
-      <nav style={{ background: phone ? T.paper : T.surface, borderBottom: phone ? "none" : `1px solid ${T.line}`, position: phone ? "relative" : undefined }}>
-        {phone && <span aria-hidden="true" style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 36, background: `linear-gradient(to right, rgba(246,248,250,0), ${T.paper})`, pointerEvents: "none", zIndex: 1 }} />}
+      {/* Phone: one chip row with just the four phone tabs — fits at 390px, no scroll, no fade. */}
+      <nav style={{ background: phone ? T.paper : T.surface, borderBottom: phone ? "none" : `1px solid ${T.line}` }}>
         <div className={phone ? "vra-chiprow" : "vra-wrap"} style={phone
-          ? { display: "flex", gap: 6, flexWrap: "nowrap", overflowX: "auto", padding: "12px 36px 4px 16px", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }
+          ? { display: "flex", gap: 6, flexWrap: "nowrap", overflowX: "auto", padding: "12px 16px 4px", scrollbarWidth: "none" }
           : { maxWidth: 880, margin: "0 auto", padding: "0 24px", display: "flex", gap: 2, flexWrap: "wrap" }}>
         {[
           ["input", "Input"],
@@ -917,7 +921,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           ["drops", "Drops"],
           ["evidence", "Evidence"],
           ...(surgeon && surgeon.hasRobocall ? [["robocall", "Robocall"]] : []),
-        ].map(([id, label]) => (
+        ].filter(([id]) => !phone || PHONE_TABS.includes(id)).map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)} aria-current={tab === id ? "page" : undefined} style={phone ? {
             flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 999, whiteSpace: "nowrap", cursor: "pointer",
             border: `1px solid ${tab === id ? T.accent : T.line}`, background: tab === id ? T.accent : T.surface,
@@ -939,8 +943,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
           Two columns. Each result sits UNDER the input it comes from; the next-appt notes stack under the date, one per line. */}
       {/* Phone: no outer card — a section label and the two groups as stacked blocks
           (.vra-calc already stacks them under 720px). Inputs are 16px so iOS
-          does not zoom on focus. */}
-      <div className="vra-wrap" style={{ padding: phone ? "14px 16px 0" : "18px 24px 0", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
+          does not zoom on focus.
+          Hidden on phones (Oct 2026): state and logic stay, the strip just isn't rendered. */}
+      {!phone && <div className="vra-wrap" style={{ padding: phone ? "14px 16px 0" : "18px 24px 0", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
         <div className="vra-calc" style={phone
           ? { display: "flex", flexDirection: "column", gap: 8, alignItems: "stretch", fontSize: 14, fontFamily: T.sans }
           : { display: "flex", gap: "12px 20px", alignItems: "flex-start", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 16px", fontSize: 13, fontFamily: T.sans }}>
@@ -1016,7 +1021,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
             )}
           </div>
         </div>
-      </div>
+      </div>}
 
       <div className="vra-wrap" style={{ padding: phone ? "16px 16px 28px" : "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box", ...(phone ? { overflowWrap: "anywhere" } : {}) }}>
 
@@ -1413,7 +1418,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         PBM / Valeda Session Note
                       </div>
                       <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-                        <button onClick={() => setTab("input")} style={btnSm("secondary")}>
+                        <button onClick={() => setTab("input")} style={btnSm("secondary", phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {})}>
                           &#8592; Back to PBM form
                         </button>
                         <button onClick={async () => {
@@ -1433,7 +1438,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                           setPbmCopied(true);
                           setTimeout(() => setPbmCopied(false), 2000);
                         }
-                      }} style={btnSm("primary", pbmCopied ? { background: T.green, borderColor: T.green } : {})}>
+                      }} style={btnSm("primary", { ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(pbmCopied ? { background: T.green, borderColor: T.green } : {}) })}>
                           <CopyIcon />{pbmCopied ? "Copied!" : "Copy note"}
                         </button>
                       </div>
@@ -1502,7 +1507,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     <div style={{ fontSize: 12, color: T.muted, marginTop: 8, lineHeight: 1.5 }}>
                       Paste over the intake HPI in NextGen. Dates and treatment history stay in the A/P.
                     </div>
-                    <button onClick={copyHpi} style={btnSm("secondary", { marginTop: 10, ...(hpiCopied ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
+                    <button onClick={copyHpi} style={btnSm("secondary", { marginTop: 10, ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(hpiCopied ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
                       <CopyIcon />{hpiCopied ? "Copied!" : "Copy CC/HPI"}
                     </button>
                   </div>
@@ -1518,10 +1523,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       <span style={{ background: T.goldSoft, color: T.ink, padding: "0 4px", borderRadius: 3, fontWeight: 600, marginRight: 4 }}>+</span>= billing language
                     </div>
                     <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-                      <button onClick={() => { setTab("input"); setResult(null); }} style={btnSm("secondary")}>
+                      <button onClick={() => { setTab("input"); setResult(null); }} style={btnSm("secondary", phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {})}>
                         &#8592; New note
                       </button>
-                      <button onClick={copyNote} style={btnSm("primary", copied ? { background: T.green, borderColor: T.green } : {})}>
+                      <button onClick={copyNote} style={btnSm("primary", { ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(copied ? { background: T.green, borderColor: T.green } : {}) })}>
                         <CopyIcon />{copied ? "Copied!" : "Copy note"}
                       </button>
                     </div>
@@ -1562,7 +1567,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         const text = icd10Codes.map(c => `${c.code} — ${c.description}`).join("\n");
                         try { await navigator.clipboard.writeText(text); setCopiedCodes(true); setTimeout(() => setCopiedCodes(false), 2000); }
                         catch { setCopiedCodes(false); }
-                      }} style={btnSm("secondary", { marginLeft: "auto", ...(copiedCodes ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
+                      }} style={btnSm("secondary", { marginLeft: "auto", ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(copiedCodes ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>
                         {copiedCodes ? "Copied!" : "Copy codes"}
                       </button>
                     )}
