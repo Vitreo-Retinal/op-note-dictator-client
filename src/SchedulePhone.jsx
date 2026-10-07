@@ -57,8 +57,8 @@ function SiteTechs({ site, roles }) {
           const v = halves(half.AM[r.key], half.PM[r.key]);
           return (
             <div key={r.key} style={{ display: "flex", gap: 6, padding: "3px 10px", fontSize: 12.5, lineHeight: 1.35 }}>
-              <b style={{ width: 52, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5, paddingTop: 1 }}>{r.label}</b>
-              <span style={{ minWidth: 0, color: v ? (r.key === "back" ? T.accent : T.ink) : T.lineStrong, fontWeight: r.key === "back" && v ? 600 : 400, overflowWrap: "anywhere" }}>{v || "—"}</span>
+              <b style={{ width: 72, flex: "none", fontWeight: 500, color: T.muted, fontSize: 11.5, paddingTop: 1 }}>{r.label}</b>
+              <span style={{ flex: 1, minWidth: 0, color: v ? (r.key === "back" ? T.accent : T.ink) : T.lineStrong, fontWeight: r.key === "back" && v ? 600 : 400, overflowWrap: "anywhere" }}>{v || "—"}</span>
             </div>
           );
         })}
@@ -135,7 +135,8 @@ export default function SchedulePhone({ sched, day, todayYmd }) {
       <div style={secH}>{day.date === todayYmd ? "Techs today" : "Techs"} <span style={secNote}>AM / PM</span></div>
       {!t && <div style={{ ...cardS, padding: 12, ...muted }}>No tech sheet for this day.</div>}
       {t && t.roles && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 8 }}>
+        // Stacked full width, one site under the other, so long name lists stay on one or two lines.
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
           <SiteTechs site="WORC" roles={t.roles} />
           <SiteTechs site="LEOM" roles={t.roles} />
         </div>
@@ -148,7 +149,7 @@ export default function SchedulePhone({ sched, day, todayYmd }) {
         </div>
       )}
       {(tr || valeda) && (
-        <div style={{ display: "grid", gridTemplateColumns: tr && valeda ? "1fr 1fr" : "1fr", gap: 8, marginTop: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8, marginTop: 8 }}>
           {tr && (
             <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 8px", padding: "7px 12px", minHeight: 36, borderRadius: 8, background: TRANSLATOR.bg, color: TRANSLATOR.fg, fontSize: 12.5 }}>
               <b style={{ fontWeight: 600 }}>Translator</b>

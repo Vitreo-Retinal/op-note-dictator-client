@@ -82,7 +82,10 @@ export function PhoneShell({ active, onTab, children }) {
         </div>
       </header>
 
-      <main className="vra-phone-main" style={{ paddingBottom: `calc(${TABBAR_H + 1}px + env(safe-area-inset-bottom, 0px))` }}>
+      {/* Room under the page so its last lines scroll clear of the fixed tab bar
+          (+8px breathing room). Inject sizes its iframe to exactly fill the
+          space between the bars, so it gets no extra room. */}
+      <main className="vra-phone-main" style={{ paddingBottom: `calc(${TABBAR_H + 1 + (inject ? 0 : 8)}px + env(safe-area-inset-bottom, 0px))` }}>
         {children}
       </main>
 
