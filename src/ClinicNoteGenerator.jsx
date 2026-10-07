@@ -12,11 +12,10 @@ import { supabase } from "./supabaseClient.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
-import { usePhone, PhoneHeading } from "./phone.jsx";
+import { usePhone, TABBAR_H } from "./phone.jsx";
 
 // Tabs shown on phones (everything else is desktop-only).
 const PHONE_TABS = ["input", "output", "coding", "evidence"];
-import { backBtnStyle } from "./PageBar.jsx";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
@@ -870,18 +869,51 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
     </button>
   );
 
+  const copyPbm = async () => {
+    try {
+      await navigator.clipboard.writeText(pbmNote);
+      setPbmCopied(true);
+      setTimeout(() => setPbmCopied(false), 2000);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = pbmNote;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setPbmCopied(true);
+      setTimeout(() => setPbmCopied(false), 2000);
+    }
+  };
+  // Phone Output: back + Copy in a footer that sticks just above the hub tab bar.
+  const phoneFooter = (onBackClick, backLabel, onCopy, isCopied) => (
+    <div style={{ position: "sticky", bottom: `calc(${TABBAR_H + 1}px + env(safe-area-inset-bottom, 0px))`, zIndex: 5, display: "flex", gap: 8, padding: "8px 0", marginTop: 8, background: S.bg }}>
+      <button onClick={onBackClick} style={btnSm("secondary", { height: 44, padding: "0 14px", fontSize: 14, flexShrink: 0 })}>&#8592; {backLabel}</button>
+      <button onClick={onCopy} style={btnSm("primary", { height: 44, padding: "0 14px", fontSize: 15, flex: 1, justifyContent: "center", ...(isCopied ? { background: T.green, borderColor: T.green } : {}) })}>
+        <CopyIcon />{isCopied ? "Copied!" : "Copy note"}
+      </button>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: S.bg, color: S.text, fontFamily: S.font }}>
 
       <style>{RESPONSIVE_CSS}</style>
       {/* Header (phone: the shell has the bar; "Doctors" goes back to the picker) */}
       {phone ? (
-        <PhoneHeading
-          title="Clinic Notes"
-          back={onBack ? <button onClick={onBack} style={backBtnStyle()}><BackIcon />Doctors</button> : null}
-          right={surgeon ? <span style={{ background: doctorColor(surgeon.name).soft, color: doctorColor(surgeon.name).fg, borderRadius: 999, padding: "3px 10px", fontSize: 13, fontWeight: 600, flexShrink: 0 }}>{surgeon.name}</span> : null}
-          style={{ background: T.surface, paddingBottom: 10 }}
-        />
+        // Phone (Oct 2026): no title row — one slim 34px row with a small
+        // "‹ Doctors" text button and the surgeon pill.
+        <div style={{ display: "flex", alignItems: "center", gap: 8, height: 34, padding: "0 16px 0 8px", background: T.surface, borderBottom: `1px solid ${T.line}`, fontFamily: T.sans }}>
+          {onBack && (
+            <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 2, height: 34, padding: "0 8px", background: "none", border: "none", color: T.accent, fontFamily: T.sans, fontSize: 14, cursor: "pointer" }}>
+              <BackIcon />Doctors
+            </button>
+          )}
+          <div style={{ flex: 1 }} />
+          {surgeon && <span style={{ background: doctorColor(surgeon.name).soft, color: doctorColor(surgeon.name).fg, borderRadius: 999, padding: "2px 10px", fontSize: 12.5, fontWeight: 600, flexShrink: 0 }}>{surgeon.name}</span>}
+        </div>
       ) : (
       <header className="vra-bar" style={appBar}>
         {onBack && (
@@ -906,7 +938,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       {/* Phone: one chip row with just the four phone tabs — fits at 390px, no scroll, no fade. */}
       <nav style={{ background: phone ? T.paper : T.surface, borderBottom: phone ? "none" : `1px solid ${T.line}` }}>
         <div className={phone ? "vra-chiprow" : "vra-wrap"} style={phone
-          ? { display: "flex", gap: 6, flexWrap: "nowrap", overflowX: "auto", padding: "12px 16px 4px", scrollbarWidth: "none" }
+          ? { display: "flex", gap: 6, flexWrap: "nowrap", overflowX: "auto", padding: "10px 16px 2px", scrollbarWidth: "none" }
           : { maxWidth: 880, margin: "0 auto", padding: "0 24px", display: "flex", gap: 2, flexWrap: "wrap" }}>
         {[
           ["input", "Input"],
@@ -1023,12 +1055,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
         </div>
       </div>}
 
-      <div className="vra-wrap" style={{ padding: phone ? "16px 16px 28px" : "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box", ...(phone ? { overflowWrap: "anywhere" } : {}) }}>
+      <div className="vra-wrap" style={{ padding: phone ? "10px 16px 28px" : "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box", ...(phone ? { overflowWrap: "anywhere" } : {}) }}>
 
         {/* ── INPUT TAB ──────────────────────────────────────────── */}
         {tab === "input" && (
           <div>
-            {/* Mode toggle — segmented control */}
+            {/* Mode toggle — segmented control (phone: with a small "No PHI" badge beside it) */}
+            <div style={phone ? { display: "flex", alignItems: "center", gap: 8 } : { display: "contents" }}>
             <div className="vra-seg" role="group" aria-label="Mode" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 3, marginTop: 4, boxSizing: "border-box" }}>
               {(phone
                 ? [["generate", "Generate"], ["optimize", "Optimize"], ["pbm", "PBM"]]
@@ -1044,15 +1077,17 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 </button>
               ))}
             </div>
+            {phone && <span style={{ flexShrink: 0, marginTop: 4, fontSize: 11.5, fontWeight: 600, color: T.amber, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: 999, padding: "2px 8px", whiteSpace: "nowrap" }}>No PHI</span>}
+            </div>
 
             {mode !== "pbm" && (<>
-            {/* Hint */}
-            <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5, margin: "14px 0 12px", fontFamily: T.sans }}>
+            {/* Hint (desktop only — phones show the "No PHI" badge instead) */}
+            {!phone && <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5, margin: "14px 0 12px", fontFamily: T.sans }}>
               <b style={{ color: T.amber, fontWeight: 600 }}>No PHI.</b>{" "}
               {mode === "generate"
                 ? "Type your shorthand — the tool expands it into a formatted A/P note with billing language."
                 : "Paste your structured A/P note — the tool inserts minimum billing-compliant language."}
-            </p>
+            </p>}
 
             {pendingEdit && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: T.r, padding: "8px 12px", marginBottom: 10, fontSize: 13, color: T.accent }}>
@@ -1064,23 +1099,23 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
             {/* Phone: one large centered mic (inserts at the cursor, same as Dictate). */}
             {phone && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, margin: "2px 0 14px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, height: 64, margin: "6px 0 8px" }}>
                 <button
                   onClick={isRecording ? stopRecording : () => startRecording("insert")}
                   disabled={isTranscribing}
                   aria-label={isRecording ? "Stop dictation" : "Dictate"}
                   style={{
-                    width: 72, height: 72, borderRadius: "50%", display: "grid", placeItems: "center",
-                    border: `6px solid ${isRecording ? T.redSoft : T.accentSoft}`, boxSizing: "content-box",
+                    width: 56, height: 56, borderRadius: "50%", display: "grid", placeItems: "center", flexShrink: 0,
+                    border: `4px solid ${isRecording ? T.redSoft : T.accentSoft}`, boxSizing: "content-box",
                     background: isRecording ? T.red : T.accent, color: T.onAccent,
                     cursor: isTranscribing ? "wait" : "pointer", opacity: isTranscribing ? 0.6 : 1,
                   }}
                 >
                   {isRecording
                     ? <span style={{ width: 20, height: 20, borderRadius: 3, background: T.onAccent, display: "block" }} />
-                    : <MicIcon size={28} />}
+                    : <MicIcon size={24} />}
                 </button>
-                <span style={{ fontSize: 12.5, color: isRecording ? T.red : T.muted, fontWeight: isRecording ? 600 : 400 }}>
+                <span style={{ fontSize: 14, color: isRecording ? T.red : T.ink2, fontWeight: isRecording ? 600 : 400, minWidth: 0 }}>
                   {isRecording
                     ? `Recording ${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, "0")} — tap to stop`
                     : isTranscribing ? "Transcribing..." : "Tap to dictate"}
@@ -1099,10 +1134,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 placeholder={mode === "generate"
                   ? "67 yo W, AMD denies Fhx, non-smoker, OD I dry, OS wet AMD failed A and E, on V q8..."
                   : "Paste your structured A/P note here..."}
-                rows={phone ? 8 : 14}
-                style={{ display: "block", width: "100%", minHeight: phone ? 180 : 250, border: 0, background: "transparent", padding: phone ? "12px 14px" : "16px 18px", color: T.ink, fontFamily: T.mono, fontSize: phone ? 16 : 14, lineHeight: 1.65, resize: "vertical", boxSizing: "border-box", outline: "none" }}
+                rows={phone ? 5 : 14}
+                style={{ display: "block", width: "100%", minHeight: phone ? 150 : 250, ...(phone ? { height: 150 } : {}), border: 0, background: "transparent", padding: phone ? "12px 14px" : "16px 18px", color: T.ink, fontFamily: T.mono, fontSize: phone ? 16 : 14, lineHeight: 1.65, resize: "vertical", boxSizing: "border-box", outline: "none" }}
               />
-              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "10px 12px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: phone ? "4px 8px" : "10px 12px", borderTop: `1px solid ${T.line}`, background: T.paper }}>
                 {/* Dictation mic buttons (phone: the big mic above replaces this one) */}
                 {!phone && <button
                   onClick={isRecording ? stopRecording : () => startRecording("insert")}
@@ -1141,10 +1176,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                       color: !note.trim() || loading ? T.muted : T.accent,
                       cursor: isTranscribing || loading || !note.trim() ? "not-allowed" : "pointer",
                       transition: "all 0.2s",
+                      ...(phone ? { background: "none", border: "none", padding: "6px 6px", height: 32, fontSize: 13 } : {}),
                     })}
                   >
                     <EditLinesIcon />
-                    Dictate an Edit
+                    {phone ? "Dictate edit" : "Dictate an Edit"}
                   </button>
                 )}
                 {isRecording && (
@@ -1163,14 +1199,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     <button
                       onClick={() => { setNote(""); setIntakeText(""); setError(""); setPendingEdit(""); if (noteRef.current) noteRef.current.focus(); }}
                       title="Clear the input box"
-                      style={btnSm("secondary", { color: T.ink2 })}
+                      style={btnSm("secondary", { color: T.ink2, ...(phone ? { background: "none", border: "none", padding: "6px 6px", height: 32, fontSize: 13 } : {}) })}
                     >✕ Clear</button>
                   )}
                   {!phone && generateBtn()}
                 </div>
               </div>
             </div>
-            {phone && generateBtn({ width: "100%", height: 46, fontSize: 15, marginTop: 12 })}
+            {phone && generateBtn({ width: "100%", height: 48, fontSize: 15, marginTop: 10, justifyContent: "center" })}
 
             {error && (
               <div style={{ display: "flex", gap: 10, alignItems: "flex-start", color: T.red, fontSize: 13, background: T.redSoft, padding: "10px 14px", borderRadius: T.r, border: "1px solid #F0C4BF", marginTop: 12, wordBreak: "break-all", maxHeight: 100, overflowY: "auto" }}>
@@ -1413,7 +1449,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                 {!pbmNote && <div style={{ textAlign: "center", padding: "60px 0", color: T.muted }}>Fill out the PBM Session form and click Generate first.</div>}
                 {pbmNote && (
                   <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
+                    {!phone && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
                       <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>
                         PBM / Valeda Session Note
                       </div>
@@ -1421,33 +1457,17 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         <button onClick={() => setTab("input")} style={btnSm("secondary", phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {})}>
                           &#8592; Back to PBM form
                         </button>
-                        <button onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(pbmNote);
-                          setPbmCopied(true);
-                          setTimeout(() => setPbmCopied(false), 2000);
-                        } catch {
-                          const ta = document.createElement("textarea");
-                          ta.value = pbmNote;
-                          ta.style.position = "fixed";
-                          ta.style.opacity = "0";
-                          document.body.appendChild(ta);
-                          ta.select();
-                          document.execCommand("copy");
-                          document.body.removeChild(ta);
-                          setPbmCopied(true);
-                          setTimeout(() => setPbmCopied(false), 2000);
-                        }
-                      }} style={btnSm("primary", { ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(pbmCopied ? { background: T.green, borderColor: T.green } : {}) })}>
+                        <button onClick={copyPbm} style={btnSm("primary", { ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(pbmCopied ? { background: T.green, borderColor: T.green } : {}) })}>
                           <CopyIcon />{pbmCopied ? "Copied!" : "Copy note"}
                         </button>
                       </div>
-                    </div>
-                    <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: "16px 18px" }}>
+                    </div>}
+                    <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: phone ? "12px 14px" : "16px 18px" }}>
                       {pbmNote}
                     </div>
                   </div>
                 )}
+                {pbmNote && phone && phoneFooter(() => setTab("input"), "PBM form", copyPbm, pbmCopied)}
               </div>
             ) : (<>
             {loading && (
@@ -1515,7 +1535,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
 
                 {/* The note */}
                 <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
+                  {/* Phone: no title row — the note starts right under the tabs; actions sit in the sticky footer below */}
+                  {!phone && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
                     <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>
                       {mode === "generate" ? "Generated A/P Note" : "Optimized A/P Note"}
                     </div>
@@ -1530,8 +1551,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                         <CopyIcon />{copied ? "Copied!" : "Copy note"}
                       </button>
                     </div>
-                  </div>
-                  <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: "16px 18px" }}>
+                  </div>}
+                  <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: phone ? "12px 14px" : "16px 18px" }}>
                     {renderNote(noteBody)}
                   </div>
 
@@ -1573,6 +1594,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
                     )}
                   </div>
                 </div>
+                {phone && phoneFooter(() => { setTab("input"); setResult(null); }, "New note", copyNote, copied)}
 
                 {/* Coverage reference(s) — server appends these to the note text */}
                 {Array.isArray(result.coverage) && result.coverage.length > 0
