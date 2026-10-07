@@ -905,19 +905,27 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
       <div className="vra-wrap" style={{ padding: "18px 24px 0", maxWidth: 880, margin: "0 auto", boxSizing: "border-box" }}>
         <div style={{ display: "flex", gap: "10px 22px", alignItems: "center", flexWrap: "wrap", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "10px 16px", fontSize: 13, fontFamily: T.sans }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Injection & F/U Calculator</span>
-          {/* Last injection */}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <label style={{ color: T.muted, marginRight: 6, whiteSpace: "nowrap" }}>Last inj:</label>
+          {/* Each result sits right after the input it comes from, in its own group, with a divider between the groups */}
+          {/* Last injection → weeks since */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "nowrap" }}>
+            <label style={{ color: T.muted, whiteSpace: "nowrap" }}>Last inj:</label>
             <input
               type="date"
               value={lastInjDate}
               onChange={e => setLastInjDate(e.target.value)}
               style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, boxSizing: "border-box" }}
             />
+            {injCalc && injCalc.weeksSince !== null && (
+              <span style={{ whiteSpace: "nowrap", background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: 999, padding: "3px 10px" }}>
+                <b style={{ fontWeight: 600, color: T.ink }}>{injCalc.weeksSince}w{injCalc.daysSince % 7 > 0 ? ` ${injCalc.daysSince % 7}d` : ""}</b>
+                <span style={{ color: T.muted }}> since last inj</span>
+              </span>
+            )}
           </div>
-          {/* F/U weeks */}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <label style={{ color: T.muted, marginRight: 6, whiteSpace: "nowrap" }}>F/u in:</label>
+          <span aria-hidden="true" className="vra-calc-div" style={{ alignSelf: "stretch", width: 1, background: T.line, margin: "2px 4px" }} />
+          {/* F/U weeks → next appt */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "nowrap" }}>
+            <label style={{ color: T.muted, whiteSpace: "nowrap" }}>F/u in:</label>
             <input
               type="number"
               value={fuWeeks}
@@ -925,25 +933,17 @@ export default function ClinicNoteGenerator({ onBack, surgeon }) {
               placeholder="wks"
               style={{ height: 30, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13, width: 60, boxSizing: "border-box" }}
             />
-            <span style={{ color: T.muted, marginLeft: 6 }}>weeks</span>
+            <span style={{ color: T.muted }}>weeks</span>
+            {injCalc && injCalc.nextDate && (() => {
+              const warn = injCalc.holiday || (injCalc.sched && injCalc.sched.block);
+              return (
+                <span style={{ whiteSpace: "nowrap", background: warn ? T.amberSoft : T.greenSoft, border: `1px solid ${warn ? T.goldSoft : "#B9DCC5"}`, borderRadius: 999, padding: "3px 10px" }}>
+                  <span style={{ color: T.muted }}>Next appt </span>
+                  <b style={{ fontWeight: 600, color: warn ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
+                </span>
+              );
+            })()}
           </div>
-          {/* Results — right-aligned */}
-          {injCalc && (
-            <div className="vra-calc-out" style={{ marginLeft: "auto", display: "flex", gap: 18, flexWrap: "wrap" }}>
-              {injCalc.weeksSince !== null && (
-                <div style={{ whiteSpace: "nowrap" }}>
-                  <b style={{ fontWeight: 600, color: T.ink }}>{injCalc.weeksSince}w {injCalc.daysSince % 7 > 0 ? `${injCalc.daysSince % 7}d` : ""}</b>
-                  <span style={{ color: T.muted }}> since last inj</span>
-                </div>
-              )}
-              {injCalc.nextDate && (
-                <div style={{ whiteSpace: "nowrap" }}>
-                  <span style={{ color: T.muted }}>Next appt: </span>
-                  <b style={{ fontWeight: 600, color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
-                </div>
-              )}
-            </div>
-          )}
           {/* Warnings / notes about the computed date — own line under the strip row */}
           {injCalc && injCalc.nextDate && (injCalc.holiday || (injCalc.sched && (injCalc.sched.block || injCalc.sched.call)) || injCalc.blackout) && (
             <div style={{ flexBasis: "100%", display: "flex", gap: "4px 14px", flexWrap: "wrap", fontSize: 12.5, justifyContent: "flex-end" }}>
