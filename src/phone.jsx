@@ -1,7 +1,7 @@
 // ── Phone shell (Oct 2026) — iPhone home-screen web app, Phase 1 ─────
 // At max-width 600px the hub runs inside this shell: a slim app bar with the
 // wordmark alone, the page, and a fixed bottom tab bar (Home, Schedule,
-// Inject, Coding, Notes). Above 600px nothing here renders and the desktop
+// Inject, Coding, Notes — fewer for some roles, see ROLE_TABS). Above 600px nothing here renders and the desktop
 // layout is unchanged. Pages read PhoneCtx to swap their own top app bar for
 // an in-page heading.
 import { createContext, useContext, useEffect, useState } from "react";
@@ -41,6 +41,17 @@ export const TABS = [
   { id: "notes", label: "Notes", Icon: NotesIcon },
 ];
 
+// Phone tabs per role (Oct 2026). Adding a tab for a role is one line here.
+export const ROLE_TABS = {
+  doctor: ["home", "schedule", "inject", "coding", "notes"],
+  tech: ["home", "schedule", "inject", "coding"],
+  manager: ["home", "schedule", "inject", "coding"],
+  // TODO(referrals): add "referrals" after "inject" once the Referrals page and
+  // its data source exist (also add it to TABS with an icon, and to TAB_OF in App.jsx).
+  frontdesk: ["home", "schedule", "inject"],
+};
+export const tabsFor = (role) => ROLE_TABS[role] || ROLE_TABS.doctor;
+
 // Bar heights (without the safe-area insets).
 export const APPBAR_H = 50;
 export const TABBAR_H = 56;
@@ -62,9 +73,10 @@ const shortToday = () => new Date().toLocaleDateString("en-US", { weekday: "shor
 // heading, so its bar carries the page name instead of the date.
 const BAR_SUB = { schedule: "Schedule", coding: "Coding", notes: "Notes" };
 
-// `hide`: tab ids left out for this role (Tech / Manager have no Notes tab).
-export function PhoneShell({ active, onTab, hide = [], children }) {
-  const tabs = TABS.filter((t) => !hide.includes(t.id));
+// `role`: which tabs show (ROLE_TABS).
+export function PhoneShell({ active, onTab, role, children }) {
+  const ids = tabsFor(role);
+  const tabs = ids.map((id) => TABS.find((t) => t.id === id)).filter(Boolean);
   const inject = active === "inject";
   const sub = inject ? "Coverage lookup" : BAR_SUB[active];
   return (

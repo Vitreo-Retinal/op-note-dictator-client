@@ -69,10 +69,11 @@ function DatePick({ from, todayYmd, onChange, phone }) {
   );
 }
 
-export default function SchedulePage({ onBack }) {
+// initialDay (phone, Front desk Home "Next days" tile): open on that day.
+export default function SchedulePage({ onBack, initialDay }) {
   const { phone } = usePhone();
   const todayYmd = ymdOf(new Date());
-  const [from, setFrom] = useState(todayYmd); // first day shown (date picker)
+  const [from, setFrom] = useState(initialDay || todayYmd); // first day shown (date picker)
   // Phone: the date the next-day tiles count from (date input / Today), the
   // tiles themselves (kept while a tile's day loads), and open tech folds.
   const [anchor, setAnchor] = useState(todayYmd);
@@ -97,6 +98,14 @@ export default function SchedulePage({ onBack }) {
     });
     return () => { alive = false; };
   }, [from]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Opened on a later day: the next-day tiles still count from today.
+  useEffect(() => {
+    if (!initialDay || initialDay === todayYmd) return undefined;
+    let alive = true;
+    fetchSchedule(14, null).then((data) => { if (alive && scheduleOk(data)) setTiles(nextTiles(data, todayYmd)); });
+    return () => { alive = false; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ok = scheduleOk(sched);
 

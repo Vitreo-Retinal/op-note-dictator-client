@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { T, doctorColor } from "./theme.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf } from "./lib/vraSchedule.js";
-import { Pill, DoctorsCard } from "./SchedulePhone.jsx";
+import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine } from "./CallBoard.jsx";
 import { BriefcaseIcon, LockIcon, ChevronRightIcon } from "./icons.jsx";
 
@@ -103,8 +103,12 @@ function alertsOf(days, todayYmd) {
  * Roles (Oct 2026): doctor = the view above (two buttons + Manager hub row
  * last). Tech = one full-width "Check coverage", no Dictate, no Manager hub.
  * Manager = Manager hub row on top, one full-width "Check coverage" last.
+ * Front desk = the staff view plus a "Next days" strip under Doctors today
+ * (tile → Schedule on that day, via onOpenDay). Still one screen at 390×844
+ * with up to three alerts; if it ever overflows, fold the alerts to one
+ * "N alerts ›" line that calls onOpenSchedule.
  */
-export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch }) {
+export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch, onOpenSchedule, onOpenDay }) {
   const [sched, setSched] = useState(null); // null = loading
 
   useEffect(() => {
@@ -160,6 +164,8 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
   );
   const isDoctor = role === "doctor";
   const isManager = role === "manager";
+  const isFrontDesk = role === "frontdesk";
+  const tiles = isFrontDesk && ok ? nextTiles(sched, todayYmd) : [];
 
   // Manager hub — runs the manager PIN flow (skipped when unlocked today).
   const managerRow = (
@@ -239,6 +245,14 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
         <>
           <div style={secH}>Doctors today</div>
           <DoctorsCard day={day} style={{ marginBottom: 8 }} />
+        </>
+      )}
+
+      {/* Front desk: next days — tap a tile for that day's schedule */}
+      {isFrontDesk && tiles.length > 0 && (
+        <>
+          <div style={secH}>Next days <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>· on call</span></div>
+          <NextDaysStrip tiles={tiles} onPick={onOpenDay} style={{ marginBottom: 8 }} />
         </>
       )}
 

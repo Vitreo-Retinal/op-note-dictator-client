@@ -223,24 +223,31 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
       {tiles && tiles.length > 0 && (
         <>
           <div style={secH}>Next days <span style={secNote}>on call</span></div>
-          <div style={{ ...cardS, display: "grid", gridTemplateColumns: `repeat(${tiles.length}, 1fr)`, overflow: "hidden" }}>
-            {tiles.map((d, i) => {
-              const dt = dateOfYmd(d.date);
-              const who = d.onCall && d.onCall.doctor;
-              const sel = d.date === selected;
-              return (
-                <button type="button" key={d.date} onClick={() => onPick(d.date)} aria-pressed={sel}
-                  style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, minHeight: 48, padding: "4px 2px", border: 0, borderLeft: i ? `1px solid ${T.line}` : 0, boxShadow: sel ? `inset 0 0 0 2px ${T.accent}` : "none", fontFamily: T.sans, fontSize: 12, cursor: "pointer", color: T.ink2, background: sel ? T.accentSoft : "transparent" }}>
-                  <b style={{ color: sel ? T.accent : T.ink, fontWeight: 600, fontSize: 12.5 }}>{DOW[dt.getDay()]} {dt.getDate()}</b>
-                  {d.closed
-                    ? <span style={{ fontSize: 11.5, fontWeight: 500, color: T.amber }}>Closed</span>
-                    : <span>{who || "—"}</span>}
-                </button>
-              );
-            })}
-          </div>
+          <NextDaysStrip tiles={tiles} selected={selected} onPick={onPick} />
         </>
       )}
+    </div>
+  );
+}
+
+/** The five next-day tiles (weekday + on-call doctor). Shared with the Front desk phone Home. */
+export function NextDaysStrip({ tiles, selected, onPick, style }) {
+  return (
+    <div style={{ ...cardS, display: "grid", gridTemplateColumns: `repeat(${tiles.length}, 1fr)`, overflow: "hidden", ...style }}>
+      {tiles.map((d, i) => {
+        const dt = dateOfYmd(d.date);
+        const who = d.onCall && d.onCall.doctor;
+        const sel = d.date === selected;
+        return (
+          <button type="button" key={d.date} onClick={() => onPick(d.date)} aria-pressed={sel}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, minHeight: 48, padding: "4px 2px", border: 0, borderLeft: i ? `1px solid ${T.line}` : 0, boxShadow: sel ? `inset 0 0 0 2px ${T.accent}` : "none", fontFamily: T.sans, fontSize: 12, cursor: "pointer", color: T.ink2, background: sel ? T.accentSoft : "transparent" }}>
+            <b style={{ color: sel ? T.accent : T.ink, fontWeight: 600, fontSize: 12.5 }}>{DOW[dt.getDay()]} {dt.getDate()}</b>
+            {d.closed
+              ? <span style={{ fontSize: 11.5, fontWeight: 500, color: T.amber }}>Closed</span>
+              : <span>{who || "—"}</span>}
+          </button>
+        );
+      })}
     </div>
   );
 }

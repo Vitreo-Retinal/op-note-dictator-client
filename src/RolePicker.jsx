@@ -3,14 +3,17 @@ import logo from "./vra-logo.png";
 
 // ── Role picker (Oct 2026, approved mockup "role-pick") ─────────────
 // Shown right after the site password when this device has no role stored
-// (localStorage "vra-hub-role"). Phone: stacked rows. Desktop: three cards.
+// (localStorage "vra-hub-role"). Phone: stacked rows. Desktop: four cards in
+// a row (2×2 below ~1060px wide).
 // The "Switch view" link on Home clears the role and brings this back.
 
 const OPTIONS = [
   { id: "doctor", icon: "Dr", label: "Doctor", phone: "Your day, notes, coding · PIN", desk: "Your day, notes, coding · PIN" },
   { id: "tech", icon: "Tx", label: "Tech", phone: "Schedule, coverage lookup", desk: "Schedule, coverage, handouts, documents" },
   { id: "manager", icon: "M", label: "Manager", phone: "Manager hub, schedule · PIN", desk: "Manager hub, rates, schedule · PIN" },
+  { id: "frontdesk", icon: "FD", label: "Front desk", phone: "Schedule, who's where, coverage", desk: "Schedule, who's where, coverage" },
 ];
+const DESK_CSS = ".vra-roles{grid-template-columns:repeat(4,240px)}@media (max-width:1060px){.vra-roles{grid-template-columns:repeat(2,240px)}}";
 
 export default function RolePicker({ phone, onPick }) {
   const icBox = (size) => ({
@@ -41,9 +44,10 @@ export default function RolePicker({ phone, onPick }) {
           <p style={{ color: T.muted, fontSize: 13.5, margin: "4px 0 0" }}>Pick your view</p>
         </div>
 
-        <div style={phone
+        {!phone && <style>{DESK_CSS}</style>}
+        <div className={phone ? undefined : "vra-roles"} style={phone
           ? { marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }
-          : { marginTop: 32, display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
+          : { marginTop: 32, display: "grid", justifyContent: "center", gap: 16 }}>
           {OPTIONS.map((o) => (
             <button key={o.id} type="button" onClick={() => onPick(o.id)} onMouseEnter={hoverOn} onMouseLeave={hoverOff}
               style={phone

@@ -14,7 +14,7 @@ import RolePicker from "./RolePicker.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
-import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H } from "./phone.jsx";
+import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -84,8 +84,9 @@ function PasswordGate({ onSuccess }) {
 // ── Homepage ────────────────────────────────────────────────────────
 // role (Oct 2026): "doctor" | "tech" | "manager" — picked once per device
 // (RolePicker). Desktop: doctor → "Your space" first, tools, Practice management;
-// tech → tools only; manager → Manager's Hub first, then tools.
-export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectTool, onSelectDoctor, onSelectManager, unlockedDoctor, onDictate, onLock, onSwitch }) {
+// tech → tools only; manager → Manager's Hub first, then tools;
+// frontdesk → Schedule, Can we inject, Patient education, Documents only.
+export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectTool, onOpenDay, onSelectDoctor, onSelectManager, unlockedDoctor, onDictate, onLock, onSwitch }) {
   // Oct 2026 — shared VRA Google Calendar view. Rendered as a full-width wide
   // tile at the top of "Tools for everyone"; the six tiles below stay 3 + 3.
   const scheduleTool = {
@@ -176,13 +177,16 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
     </button>
   );
   const roleDoc = SURGEONS.find((d) => d.id === roleDoctorId) || null;
+  const FRONTDESK_TOOLS = ["inject", "education", "documents"];
+  const tools = role === "frontdesk" ? FRONTDESK_TOOLS.map((id) => sharedTools.find((t) => t.id === id)) : sharedTools;
 
   // Phone (Oct 2026): one-screen briefing — see HomePhone.jsx. Desktop below is unchanged.
   if (phone) {
     return (
       <HomePhone role={role} doctor={role === "doctor" ? unlockedDoctor || null : null} managerOpen={managerOpen}
         onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
-        onSelectManager={onSelectManager} onLock={onLock} onSwitch={onSwitch} />
+        onSelectManager={onSelectManager} onLock={onLock} onSwitch={onSwitch}
+        onOpenSchedule={() => onSelectTool("schedule")} onOpenDay={onOpenDay} />
     );
   }
 
@@ -278,7 +282,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
             </span>
             {!phone && <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>Next 2 weeks</span>}
           </button>
-          {sharedTools.map((tool, i) => {
+          {tools.map((tool, i) => {
             const Icon = tool.icon;
             // Phone: compact row tile (icon left, title + description), no tag line.
             if (phone) return (
@@ -523,10 +527,10 @@ function rememberedUnlock() {
   return null;
 }
 
-// Role picked on this device (Oct 2026): "doctor" | "tech" | "manager".
+// Role picked on this device (Oct 2026): "doctor" | "tech" | "manager" | "frontdesk".
 // No role → the role picker shows right after the site password.
 const ROLE_KEY = "vra-hub-role";
-const ROLES = ["doctor", "tech", "manager"];
+const ROLES = ["doctor", "tech", "manager", "frontdesk"];
 // Doctor role: the surgeon who last passed the PIN here → their big Home button (desktop).
 const ROLE_DOC_KEY = "vra-hub-role-doctor";
 // Manager unlock: like the doctor unlock, kept on phones until the end of the
@@ -542,9 +546,10 @@ function rememberedManager() {
 
 function restoredState() {
   if (!isPhoneNow()) return { page: "home", surgeon: null, unlocked: null };
-  // Tech / Manager have no Notes tab: doctor pages fall back to Home.
+  // A page whose tab this role does not have (e.g. Notes for Tech) falls back to Home.
   const role = storedRole();
-  if (role && role !== "doctor" && ["notes", "pin", "doctor"].includes(storeGet(PAGE_KEY))) return { page: "home", surgeon: null, unlocked: null };
+  const tabOfStored = TAB_OF[storeGet(PAGE_KEY)];
+  if (role && tabOfStored && !tabsFor(role).includes(tabOfStored)) return { page: "home", surgeon: null, unlocked: null };
   const unlocked = rememberedUnlock();
   const unlockedDoc = SURGEONS.find((d) => d.id === unlocked) || null;
   let page = storeGet(PAGE_KEY);
@@ -581,6 +586,8 @@ export default function App() {
   const [mgrDay, setMgrDay] = useState(() => (rememberedManager() ? localYmd() : null));
   // True between picking a role and passing its PIN: PIN success then lands on Home.
   const [onboarding, setOnboarding] = useState(false);
+  // Schedule opened on a given day (Front desk Home "Next days" tile); null = today.
+  const [schedDay, setSchedDay] = useState(null);
   const phone = useIsPhone();
   const managerOpen = mgrDay === localYmd();
   const unlockedId = unlocked && (!phone || unlocked.day === localYmd()) ? unlocked.id : null;
@@ -675,7 +682,7 @@ export default function App() {
     content = <Documents onBack={goHome} onOpenEducation={() => setPage("education")} />;
   } else if (page === "schedule") {
     // Oct 2026 — 2-week schedule from the shared VRA Google Calendar. No PIN.
-    content = <SchedulePage onBack={goHome} />;
+    content = <SchedulePage key={schedDay || "today"} initialDay={schedDay} onBack={goHome} />;
   } else if (page === "drops") {
     content = <DropSchedule onBack={goHome} backLabel="Hub" />;
   } else if (page === "dictator") {
@@ -715,7 +722,8 @@ export default function App() {
     // ── Homepage ──
     content = (
       <Homepage
-        onSelectTool={(id) => setPage(id)}
+        onSelectTool={(id) => { if (id === "schedule") setSchedDay(null); setPage(id); }}
+        onOpenDay={(ymd) => { setSchedDay(ymd); setPage("schedule"); }}
         onSelectDoctor={pickDoctor}
         onSelectManager={openManager}
         unlockedDoctor={unlockedDoc}
@@ -736,6 +744,7 @@ export default function App() {
   // to Schedule or Inject and back keeps the note being written.
   const noteOpen = !!(activeSurgeon && unlockedId === activeSurgeon.id);
   const onTab = (id) => {
+    if (id === "schedule") setSchedDay(null);
     if (id !== "notes") setPage(id);
     else if (noteOpen) setPage("doctor");
     // Remembered unlock (today): the Notes tab opens that doctor's space, no PIN.
@@ -743,7 +752,7 @@ export default function App() {
     else setPage("notes");
   };
   return (
-    <PhoneShell active={TAB_OF[page] || "home"} onTab={onTab} hide={role === "doctor" ? [] : ["notes"]}>
+    <PhoneShell active={TAB_OF[page] || "home"} onTab={onTab} role={role}>
       <PhoneCtx.Provider value={{ phone: true, tabRoot: TAB_ROOTS.has(page) }}>
         {page === "doctor" && noteOpen ? null : content}
       </PhoneCtx.Provider>
