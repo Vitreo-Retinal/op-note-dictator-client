@@ -3,7 +3,7 @@ import { T, doctorColor } from "./theme.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine, StaffLine } from "./CallBoard.jsx";
-import { BriefcaseIcon, LockIcon, ChevronRightIcon, ChatIcon, PhoneIcon } from "./icons.jsx";
+import { BriefcaseIcon, LockIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon } from "./icons.jsx";
 
 // ── Phone Home (Oct 2026, approved mockup "home-compact" A + B) ──────
 // One screen, no scrolling at 390×844: header, (doctor only) "your day" card,
@@ -204,8 +204,15 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
 
   return (
     <div style={{ padding: "0 16px", fontFamily: T.sans, color: T.ink }}>
+      {/* Back to the view picker — a real button, visible, top left (Mari, Oct 7: "something like a back button") */}
+      <div style={{ paddingTop: 10 }}>
+        <button type="button" onClick={onSwitch}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 12px 0 8px", borderRadius: 8, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+          <BackIcon /> Change view
+        </button>
+      </div>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 10, padding: "14px 0 8px" }}>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 10, padding: "8px 0 8px" }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h1 style={{ fontSize: 20, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.25, color: T.ink, margin: 0 }}>
             {doctor ? `Good ${now.getHours() < 12 ? "morning" : "afternoon"}, ${doctor.name}` : dateWords}
@@ -218,10 +225,8 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
               <button type="button" onClick={onLock} aria-label={`Lock ${doctor.name}'s space`} style={linkBtn}>
                 <LockIcon />Lock
               </button>
-              <span style={{ color: T.muted, fontSize: 12.5 }}>·</span>
             </>
           )}
-          <button type="button" onClick={onSwitch} style={linkBtn}>Switch view</button>
         </div>
       </div>
 

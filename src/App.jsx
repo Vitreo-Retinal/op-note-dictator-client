@@ -14,7 +14,7 @@ import Extensions from "./Extensions.jsx";
 import DeskAssist from "./DeskAssist.jsx";
 import RolePicker from "./RolePicker.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
-import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon } from "./icons.jsx";
+import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
 
@@ -223,8 +223,8 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
         <div style={{ flex: 1 }} />
         <div className="vra-bar-hide" style={{ fontSize: 13, color: T.ink2, whiteSpace: "nowrap" }}>{todayWords}</div>
         <button type="button" onClick={onSwitch}
-          style={{ background: "none", border: 0, padding: "4px 0", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>
-          Switch view
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px 0 8px", borderRadius: 8, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>
+          <BackIcon /> Change view
         </button>
       </header>
       )}
