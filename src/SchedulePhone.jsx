@@ -1,5 +1,5 @@
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
-import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
+import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
 
 // ── Schedule, phone layout (Oct 2026) ───────────────────────────────
 // One day at a time, sized to fit one screen: on call (one row), doctors per
@@ -74,6 +74,29 @@ export function DoctorsCard({ day, style }) {
           </span>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * General calendar events for one day (title, time, location) — neutral
+ * styling. Renders nothing when the day has none.
+ */
+export function EventsCard({ day, style }) {
+  const events = eventsOf(day);
+  if (!events.length) return null;
+  return (
+    <div style={{ ...cardS, ...style }}>
+      {events.map((ev, i) => (
+        <div key={`${ev.title}|${ev.start}|${i}`} style={{ padding: "7px 12px", borderTop: i ? `1px solid ${T.line}` : 0, fontSize: 13, lineHeight: 1.35 }}>
+          <div style={{ overflowWrap: "anywhere" }}>
+            <span style={{ color: T.ink2, fontWeight: 600, whiteSpace: "nowrap" }}>{eventTime(ev)}</span>
+            <span style={{ color: T.muted }}> · </span>
+            <span style={{ color: T.ink }}>{ev.title}</span>
+          </div>
+          {ev.location && <div style={{ fontSize: 12, color: T.muted, marginTop: 1, overflowWrap: "anywhere" }}>{ev.location}</div>}
+        </div>
+      ))}
     </div>
   );
 }
@@ -190,6 +213,14 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
       <div style={secH}>Doctors</div>
       <DoctorsCard day={day} />
 
+      {/* General events (meetings, dinners …) */}
+      {eventsOf(day).length > 0 && (
+        <>
+          <div style={secH}>Events</div>
+          <EventsCard day={day} />
+        </>
+      )}
+
       {/* Techs — one folded row per site */}
       <div style={secH}>Techs {t && t.roles && <span style={secNote}>tap to open · AM / PM</span>}</div>
       {!t && <div style={{ ...cardS, padding: "8px 12px", marginBottom: 8, ...muted }}>No tech sheet for this day.</div>}
@@ -253,15 +284,24 @@ export function NextDaysStrip({ tiles, selected, onPick, style }) {
         const sel = d.date === selected;
         return (
           <button type="button" key={d.date} onClick={() => onPick(d.date)} aria-pressed={sel}
-            style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, minHeight: 48, padding: "4px 2px", border: 0, borderLeft: i ? `1px solid ${T.line}` : 0, boxShadow: sel ? `inset 0 0 0 2px ${T.accent}` : "none", fontFamily: T.sans, fontSize: 12, cursor: "pointer", color: T.ink2, background: sel ? T.accentSoft : "transparent" }}>
+            style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, minHeight: 48, padding: "4px 2px", border: 0, borderLeft: i ? `1px solid ${T.line}` : 0, boxShadow: sel ? `inset 0 0 0 2px ${T.accent}` : "none", fontFamily: T.sans, fontSize: 12, cursor: "pointer", color: T.ink2, background: sel ? T.accentSoft : "transparent" }}>
             <b style={{ color: sel ? T.accent : T.ink, fontWeight: 600, fontSize: 12.5 }}>{DOW[dt.getDay()]} {dt.getDate()}</b>
             {d.closed
               ? <span style={{ fontSize: 11.5, fontWeight: 500, color: T.amber }}>Closed</span>
               : <span>{who || "—"}</span>}
+            {d.events > 0 && <EventDot n={d.events} style={{ position: "absolute", top: 6, right: 6 }} />}
           </button>
         );
       })}
     </div>
+  );
+}
+
+/** Subtle "has events" marker for a day tile. */
+export function EventDot({ n, style }) {
+  return (
+    <span title={`${n} event${n === 1 ? "" : "s"}`} aria-label={`${n} event${n === 1 ? "" : "s"}`}
+      style={{ display: "inline-block", width: 5, height: 5, borderRadius: 999, background: T.muted, opacity: 0.7, ...style }} />
   );
 }
 
@@ -271,5 +311,5 @@ export function nextTiles(sched, ymd) {
     if (d.date <= ymd) return false;
     const w = dateOfYmd(d.date).getDay();
     return (w !== 0 && w !== 6) || d.sessions.length > 0 || d.closed;
-  }).slice(0, 5).map((d) => ({ date: d.date, closed: d.closed, onCall: d.onCall }));
+  }).slice(0, 5).map((d) => ({ date: d.date, closed: d.closed, onCall: d.onCall, events: eventsOf(d).length }));
 }

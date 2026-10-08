@@ -29,6 +29,8 @@ export async function fetchSchedule(days = 14, from = null) {
       for (const d of data.days) {
         if (d && !Array.isArray(d.managers)) d.managers = [];
         if (d && !Array.isArray(d.frontDesk)) d.frontDesk = [];
+        // General events (Oct 2026): title / time / location; older servers → [].
+        if (d && !Array.isArray(d.events)) d.events = [];
       }
     }
     return data;
@@ -36,6 +38,34 @@ export async function fetchSchedule(days = 14, from = null) {
     return { configured: true, error: "network", days: [] };
   }
 }
+
+/** "18:00" → "6:00 PM"; null/bad → null. */
+export function clock12(hm) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hm || ""));
+  if (!m) return null;
+  const h = Number(m[1]);
+  return `${h % 12 === 0 ? 12 : h % 12}:${m[2]} ${h < 12 ? "AM" : "PM"}`;
+}
+
+/**
+ * Event time label: all-day → "All day"; "18:00"–"21:00" → "6:00–9:00 PM";
+ * "11:00"–"13:00" → "11:00 AM–1:00 PM"; start only → "From 8:00 PM";
+ * end only → "Until 10:00 AM"; neither (middle of a multi-day event) → "All day".
+ */
+export function eventTime(ev) {
+  if (!ev || ev.allDay) return "All day";
+  const s = clock12(ev.start), e = clock12(ev.end);
+  if (s && e) {
+    const [sT, sP] = s.split(" "), [eT, eP] = e.split(" ");
+    return sP === eP ? `${sT}–${eT} ${eP}` : `${s}–${e}`;
+  }
+  if (s) return `From ${s}`;
+  if (e) return `Until ${e}`;
+  return "All day";
+}
+
+/** Day's general events (always an array). */
+export const eventsOf = (day) => (day && Array.isArray(day.events) ? day.events : []);
 
 /** True when the response has usable days. */
 export const scheduleOk = (s) => !!(s && s.configured && !s.error && Array.isArray(s.days));

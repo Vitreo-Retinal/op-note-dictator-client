@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
 import { majorHoliday, injectionBlackout } from "./lib/practiceCalendar.js";
-import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
+import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 
@@ -43,6 +43,27 @@ export function DocChip({ doctor, half, size = "sm" }) {
 // `stacked` (phones): one person per line, never truncated.
 export function ManagersLine({ managers, ...rest }) {
   return <StaffLine label="Managers" people={managers} {...rest} />;
+}
+
+// General calendar events (Oct 2026): "<label>  6:00–9:00 PM · Title  location"
+// — neutral ink/muted, one entry after another, wraps if needed. Nothing when none.
+export function EventsLine({ events, label = "Events", style, labelStyle }) {
+  if (!events || !events.length) return null;
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 8, fontFamily: T.sans, fontSize: 12.5, minWidth: 0, ...style }}>
+      <span style={{ fontSize: 12, color: T.muted, flex: "none", ...labelStyle }}>{label}</span>
+      <span style={{ minWidth: 0, flex: 1, display: "flex", flexWrap: "wrap", gap: "2px 16px" }}>
+        {events.map((ev, i) => (
+          <span key={`${ev.title}|${ev.start}|${i}`} style={{ minWidth: 0, overflowWrap: "anywhere" }}>
+            <span style={{ color: T.ink2, fontWeight: 600, whiteSpace: "nowrap" }}>{eventTime(ev)}</span>
+            <span style={{ color: T.muted }}> · </span>
+            <span style={{ color: T.ink }}>{ev.title}</span>
+            {ev.location && <span style={{ color: T.muted, fontSize: 12 }}> — {ev.location}</span>}
+          </span>
+        ))}
+      </span>
+    </div>
+  );
 }
 
 // `flow` (with stacked, Front desk): working people share wrapping lines
@@ -302,6 +323,10 @@ export default function CallBoard({ onOpenSchedule }) {
         {frontDesk.length > 0 && (
           <StaffLine label="Front desk" people={frontDesk} labelStyle={{ width: 64 }}
             style={{ padding: managers.length > 0 ? "0 16px 7px" : "7px 16px", borderTop: managers.length > 0 ? 0 : `1px solid ${T.line}` }} />
+        )}
+        {ok && eventsOf(todayDay).length > 0 && (
+          <EventsLine events={eventsOf(todayDay)} label="Events today"
+            style={{ padding: "7px 16px", borderTop: `1px solid ${T.line}` }} />
         )}
       </div>
 

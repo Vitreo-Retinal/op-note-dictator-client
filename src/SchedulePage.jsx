@@ -4,10 +4,10 @@ import { DocChip, ManagersLine, StaffLine } from "./CallBoard.jsx";
 import { T, card, DOCTOR_ORDER, SITE_TINTS, doctorColor } from "./theme.js";
 import { AlertIcon, PhoneIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
-import SchedulePhone, { nextTiles } from "./SchedulePhone.jsx";
+import SchedulePhone, { nextTiles, EventDot } from "./SchedulePhone.jsx";
 import {
   fetchSchedule, scheduleOk, ymdOf, dateOfYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
-  doctorHalves, translatorOf, managersOf, frontDeskOf,
+  doctorHalves, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime,
 } from "./lib/vraSchedule.js";
 
 // ── Schedule — 2-week view from the shared VRA Google Calendar (Oct 2026) ─
@@ -41,6 +41,21 @@ function rotationLabel(days, key) {
 }
 
 // "Day 6" header label
+// General events in a table cell: "6:00–9:00 PM · Title" + muted location (neutral).
+function EventList({ events }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      {events.map((ev, i) => (
+        <div key={`${ev.title}|${ev.start}|${i}`} style={{ fontSize: 12, lineHeight: 1.35, color: T.ink, overflowWrap: "anywhere" }}>
+          <span style={{ color: T.ink2, fontWeight: 600 }}>{eventTime(ev)}</span>
+          <span style={{ color: T.muted }}> · </span>{ev.title}
+          {ev.location && <div style={{ color: T.muted, fontSize: 11.5 }}>{ev.location}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const dayLabel = (ymd) => { const d = dateOfYmd(ymd); return `${DOW[d.getDay()]} ${d.getDate()}`; };
 
 // Tech-board rows, in order. `always` rows show even when empty.
@@ -387,13 +402,19 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
                     <th style={{ ...th, width: 72 }} />
                     {w.days.map((d) => {
                       const isToday = d.date === todayYmd;
-                      return <th key={d.date} style={{ ...th, ...(isToday ? { color: T.accent, background: T.accentSoft } : null) }}>{dayLabel(d.date)}</th>;
+                      const nEv = eventsOf(d).length;
+                      return (
+                        <th key={d.date} style={{ ...th, ...(isToday ? { color: T.accent, background: T.accentSoft } : null) }}>
+                          {dayLabel(d.date)}
+                          {nEv > 0 && <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: T.muted }}><EventDot n={nEv} style={{ verticalAlign: 2, marginRight: 3 }} />{nEv} event{nEv === 1 ? "" : "s"}</span>}
+                        </th>
+                      );
                     })}
                   </tr>
                 </thead>
                 <tbody>
                   {doctors.map((doctor, ri) => {
-                    const last = ri === doctors.length - 1;
+                    const last = ri === doctors.length - 1 && !w.days.some((d) => eventsOf(d).length);
                     return (
                       <tr key={doctor}>
                         <td style={td(last, { width: 72, fontWeight: 600, color: doctorColor(doctor).fg })}>{doctor}</td>
@@ -414,6 +435,16 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
                       </tr>
                     );
                   })}
+                  {w.days.some((d) => eventsOf(d).length) && (
+                    <tr>
+                      <td style={td(true, { width: 72, fontSize: 12, color: T.muted, borderTop: `1px solid ${T.line}` })}>Events</td>
+                      {w.days.map((d) => (
+                        <td key={d.date} style={td(true, { borderTop: `1px solid ${T.line}`, ...(d.date === todayYmd ? { background: TODAY_TINT } : null) })}>
+                          {eventsOf(d).length > 0 && <EventList events={eventsOf(d)} />}
+                        </td>
+                      ))}
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -448,6 +479,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
                               {d.vacations.length > 0 && <span style={{ display: "inline-block", padding: "0 6px", borderRadius: 4, background: T.redSoft, border: "1px solid #E7B9B2", color: T.red, fontWeight: 600, fontSize: 11.5 }}>Out: {d.vacations.join(", ")}</span>}
                             </div>
                           )}
+                          {eventsOf(d).length > 0 && <div style={{ marginTop: 4 }}><EventList events={eventsOf(d)} /></div>}
                         </td>
                         {sites.map((s) => (
                           <td key={s} style={td(last, tint)}>

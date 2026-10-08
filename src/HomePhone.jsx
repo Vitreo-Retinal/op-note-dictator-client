@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { T, doctorColor } from "./theme.js";
-import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf } from "./lib/vraSchedule.js";
+import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine, StaffLine } from "./CallBoard.jsx";
 import { BriefcaseIcon, LockIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon } from "./icons.jsx";
@@ -297,6 +297,17 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       {alerts.length > 3 && (
         <div style={{ margin: "-2px 0 6px 12px", fontSize: 12, color: T.muted }}>+{alerts.length - 3} more this week · see Schedule</div>
       )}
+
+      {/* Today's general events — neutral lines below the red/amber alerts */}
+      {eventsOf(day).map((ev, i) => (
+        <div key={`ev-${i}`} style={{ marginBottom: 6, padding: "6px 12px", borderRadius: T.r, background: T.surface, border: `1px solid ${T.line}`, fontSize: 13, lineHeight: 1.35, color: T.ink }}>
+          <div style={{ overflowWrap: "anywhere" }}>
+            <span style={{ color: T.ink2, fontWeight: 600, whiteSpace: "nowrap" }}>{eventTime(ev)}</span>
+            <span style={{ color: T.muted }}> · </span>{ev.title}
+          </div>
+          {ev.location && <div style={{ fontSize: 12, color: T.muted, overflowWrap: "anywhere" }}>{ev.location}</div>}
+        </div>
+      ))}
 
       {/* Doctor: two big actions. Tech / Manager: one full-width "Check coverage". */}
       {isDoctor ? (
