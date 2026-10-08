@@ -6,7 +6,7 @@
 // an in-page heading.
 import { createContext, useContext, useEffect, useState } from "react";
 import { T } from "./theme.js";
-import { HomeIcon, CalendarIcon, InjectIcon, ReceiptIcon, NotesIcon, ChatIcon } from "./icons.jsx";
+import { HomeIcon, CalendarIcon, InjectIcon, ReceiptIcon, NotesIcon, ChatIcon, ScanIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 
 export const PHONE_MQ = "(max-width: 600px)";
@@ -40,6 +40,7 @@ export const TABS = [
   { id: "coding", label: "Coding", Icon: ReceiptIcon },
   { id: "notes", label: "Notes", Icon: NotesIcon },
   { id: "ask", label: "Ask", Icon: ChatIcon }, // front desk assistant (Oct 2026)
+  { id: "scan", label: "Scan", Icon: ScanIcon }, // LEA Hub tech: opens the carton inventory (Oct 2026)
 ];
 
 // Phone tabs per role (Oct 2026). Adding a tab for a role is one line here.
@@ -75,11 +76,14 @@ const shortToday = () => new Date().toLocaleDateString("en-US", { weekday: "shor
 const BAR_SUB = { schedule: "Schedule", coding: "Coding", notes: "Notes", ask: "Front desk assistant" };
 
 // `role`: which tabs show (ROLE_TABS).
-export function PhoneShell({ active, onTab, role, children }) {
-  const ids = tabsFor(role);
+// LEA Hub (Oct 2026) passes `tabIds` (its own tab list), `brand` (replaces the
+// VRA logo) and `homeSub` (small line under the date on Home). VRA passes none
+// of these, so its shell is unchanged.
+export function PhoneShell({ active, onTab, role, tabIds, brand, homeSub, children }) {
+  const ids = tabIds || tabsFor(role);
   const tabs = ids.map((id) => TABS.find((t) => t.id === id)).filter(Boolean);
   const inject = active === "inject";
-  const sub = inject ? "Coverage lookup" : BAR_SUB[active];
+  const sub = inject ? "Coverage lookup" : (active === "home" && homeSub) || BAR_SUB[active];
   return (
     <div style={{ minHeight: "100dvh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       <style>{PHONE_CSS}</style>
@@ -89,7 +93,7 @@ export function PhoneShell({ active, onTab, role, children }) {
         paddingTop: "env(safe-area-inset-top, 0px)",
         paddingLeft: "max(16px, env(safe-area-inset-left, 0px))", paddingRight: "max(16px, env(safe-area-inset-right, 0px))",
       }}>
-        <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 34, width: "auto", display: "block", flexShrink: 0 }} />
+        {brand || <img src={logo} alt="Vitreo-Retinal Associates" style={{ height: 34, width: "auto", display: "block", flexShrink: 0 }} />}
         <div style={{ flex: 1 }} />
         <div style={{ textAlign: "right", lineHeight: 1.25, whiteSpace: "nowrap" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{inject ? "Can we inject?" : shortToday()}</div>

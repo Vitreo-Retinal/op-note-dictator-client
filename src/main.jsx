@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import LeaApp from './LeaApp.jsx'
+import { isLeaPath } from './lib/retinaRx.js'
 
 // ── Auth token wrapper (added July 2026) ──────────────────────────────────
 // After login, the server issues a token (stored in sessionStorage).
@@ -16,8 +18,13 @@ window.fetch = (input, init = {}) => {
   return RAW_FETCH(input, init);
 };
 
+// LEA Hub (Oct 2026): the same client under /lea/ (retina-rx.vercel.app/lea/)
+// runs LeaApp — Doctor + Tech only, signed in by the Retina-Rx front door.
+// Every other path is the VRA hub, unchanged.
+const Root = isLeaPath() ? LeaApp : App;
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>
 )

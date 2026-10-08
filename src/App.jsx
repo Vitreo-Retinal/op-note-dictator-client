@@ -17,6 +17,7 @@ import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doct
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
+import { COVERAGE_URL } from "./lib/retinaRx.js";
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -25,7 +26,7 @@ const API_BASE =
 // ── Shared styles ───────────────────────────────────────────────────
 
 // ── Surgeon roster ──────────────────────────────────────────────────
-const SURGEONS = [
+export const SURGEONS = [
   { id: "MR", name: "MR", surname: "Rodriguez", surgeonId: "998eae6c-1516-43d5-8bc7-6905074cd8e3", hasRobocall: true },
   { id: "BKH", name: "BKH", surname: "Hong", surgeonId: null },
   { id: "FJM", name: "FJM", surname: "McCabe", surgeonId: null },
@@ -351,7 +352,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
 }
 
 // ── PIN Gate (doctor space) ─────────────────────────────────────────
-function PinGate({ surgeon, onSuccess, onCancel }) {
+export function PinGate({ surgeon, onSuccess, onCancel }) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -497,12 +498,12 @@ function ManagerPinGate({ onSuccess, onCancel }) {
 // ── Doctor picker (phone "Notes" tab) ─────────────────────────────
 // One full-width row per surgeon: their calendar-color pill, name, chevron.
 // Tapping one goes through the PIN gate.
-function doctorPill(id, extra = {}) {
+export function doctorPill(id, extra = {}) {
   const c = doctorColor(id);
   return { display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 50, height: 28, padding: "0 10px", borderRadius: 999, background: c.soft, color: c.fg, fontSize: 14, fontWeight: 600, fontFamily: T.sans, flexShrink: 0, boxSizing: "border-box", ...extra };
 }
 
-function DoctorPicker({ onSelectDoctor }) {
+export function DoctorPicker({ onSelectDoctor }) {
   return (
     <div style={{ background: T.paper, fontFamily: T.sans, color: T.ink }}>
       <PhoneHeading title="Notes" />
@@ -680,7 +681,7 @@ export default function App() {
       // Phone: the embed fills the space between the app bar and the tab bar.
       <div style={{ background: S.bg, height: PHONE_BODY_H, overflow: "hidden" }}>
         <iframe
-          src="https://retina-rx.vercel.app"
+          src={COVERAGE_URL}
           title="Can We Inject? — Coverage Lookup"
           style={{ display: "block", border: "none", width: "100%", height: "100%" }}
           allow="clipboard-write"
@@ -693,7 +694,7 @@ export default function App() {
           <span style={{ fontSize: "1rem", fontWeight: 700, color: S.bright }}>💉 Can We Inject?</span>
         </div>
         <iframe
-          src="https://retina-rx.vercel.app"
+          src={COVERAGE_URL}
           title="Can We Inject? — Coverage Lookup"
           style={{ flex: 1, border: "none", width: "100%", minHeight: "calc(100vh - 52px)" }}
           allow="clipboard-write"

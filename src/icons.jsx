@@ -97,3 +97,8 @@ export function ChatIcon({ size = 22 }) {
 export function PhoneIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M6.6 3.5h2.6l1.4 4-2 1.3a11 11 0 006.6 6.6l1.3-2 4 1.4v2.6a2 2 0 01-2.2 2A16.5 16.5 0 014.6 5.7a2 2 0 012-2.2z" /></svg>);
 }
+// ── LEA Hub (Oct 2026) ──
+// Barcode in a scan frame — phone tab bar "Scan" (carton inventory)
+export function ScanIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><path d="M4 8V5.5A1.5 1.5 0 015.5 4H8M16 4h2.5A1.5 1.5 0 0120 5.5V8M20 16v2.5a1.5 1.5 0 01-1.5 1.5H16M8 20H5.5A1.5 1.5 0 014 18.5V16" /><path d="M8 8.5v7M11 8.5v7M13.5 8.5v7M16 8.5v7" /></svg>);
+}

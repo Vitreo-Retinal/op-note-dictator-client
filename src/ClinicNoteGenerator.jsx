@@ -10,6 +10,7 @@ import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./da
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
 import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
+import { COVERAGE_URL } from "./lib/retinaRx.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
@@ -1973,7 +1974,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         {tab === "inject" && (
           <div style={{ margin: "0 auto", maxWidth: "100%" }}>
             <iframe
-              src="https://retina-rx.vercel.app"
+              src={COVERAGE_URL}
               title="Can We Inject? — Coverage Lookup"
               style={{ border: "none", width: "100%", height: "calc(100vh - 160px)" }}
               allow="clipboard-write"
