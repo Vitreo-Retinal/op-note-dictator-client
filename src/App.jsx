@@ -559,7 +559,10 @@ const ROLE_DOC_KEY = "vra-hub-role-doctor";
 // Manager unlock: like the doctor unlock, kept on phones until the end of the
 // local day (stored as the "YYYY-MM-DD" it was entered). Desktop: memory only.
 const MGR_UNLOCK_KEY = "vra-hub-mgr-unlock";
-function storedRole() { const r = storeGet(ROLE_KEY); return ROLES.includes(r) ? r : null; }
+// TEMP (Mari, Oct 7 2026): while she tests every role, the view is NOT remembered — the
+// "Pick your view" screen shows on every launch. Flip REMEMBER_ROLE to true to restore.
+const REMEMBER_ROLE = false;
+function storedRole() { if (!REMEMBER_ROLE) return null; const r = storeGet(ROLE_KEY); return ROLES.includes(r) ? r : null; }
 function rememberedManager() {
   if (!isPhoneNow()) return false;
   if (storeGet(MGR_UNLOCK_KEY) === localYmd()) return true;
@@ -628,7 +631,7 @@ export default function App() {
   // Role picker — once per device; "Switch view" on Home brings it back.
   if (!role) {
     const pickRole = (r) => {
-      setRole(r); storeSet(ROLE_KEY, r);
+      setRole(r); if (REMEMBER_ROLE) storeSet(ROLE_KEY, r);
       setActiveSurgeon(null);
       if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
       // Picking Manager always asks for the PIN (same rule as picking a doctor's name).
