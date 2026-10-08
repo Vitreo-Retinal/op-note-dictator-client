@@ -16,7 +16,7 @@ import logo from "./vra-logo.png";
 import { usePhone, TABBAR_H } from "./phone.jsx";
 
 // Tabs shown on phones (everything else is desktop-only).
-const PHONE_TABS = ["input", "output", "coding", "evidence"];
+const PHONE_TABS = ["input", "output", "evidence"]; // Coding lives in the bottom tab bar on phone (same AI assistant, reimbursement shown once PIN-unlocked)
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
