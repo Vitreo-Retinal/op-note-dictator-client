@@ -20,6 +20,10 @@ function parseResponse(text) {
   const hasProcedure = text.includes("---PROCEDURE---");
   const hasDiagnoses = text.includes("---DIAGNOSES---");
   let code = sec("CODE", hasProcedure ? "PROCEDURE" : "G2211");
+  // Oct 8 2026 (owner decision 1): an injection day with no separately
+  // identifiable problem is coded "INJECTION ONLY (no E/M)". Keep just that line
+  // (the server shows the dictate-the-separate-problem reminder as a flag).
+  if (/^\s*INJECTION ONLY\b/i.test(code)) code = code.split("\n")[0].trim();
   const procedure = hasProcedure ? sec("PROCEDURE", "G2211") : "";
   let g2211 = secAuto("G2211") === "YES";
   let note = sec("NOTE", "END");
@@ -32,11 +36,15 @@ function parseResponse(text) {
       .split("\n")
       .filter((l) => !/longitudinal managing physician|ongoing complexity given|visit[- ]complexity add|\bG2211\b/i.test(l))
       .join("\n");
-    // (2) Ensure -25 on the E/M for a same-day MINOR procedure (injection / 10-day laser).
-    //     New-patient status does NOT exempt -25; without it the E/M bundles into the procedure.
-    const minorProc = /\b(67028|67105|67145|67141|67228|67031)\b/.test(procedure);
-    if (minorProc && /^\s*99\d{3}/.test(code) && !/-25\b/.test(code)) {
-      code = code.replace(/^(\s*99\d{3}(?:-\d{2})*)/, "$1-25");
+    // (2) Ensure -25 on a BILLED visit code (E/M or Eye visit code) for a same-day
+    //     MINOR procedure (CMS 2026 0-/10-day global). New-patient status does NOT
+    //     exempt -25. Oct 8 2026: 67031 removed (90-day → -57); never added when the
+    //     E/M already carries -57 (major-surgery decision — -25 only if a separate
+    //     problem qualifies, which only the note can show); "INJECTION ONLY" and
+    //     "POST-OP" lines are never touched.
+    const minorProc = /\b(67028|67105|67145|67141|67101|67228|67227|65800|67221|67516)\b/.test(procedure);
+    if (minorProc && /^\s*(?:99\d{3}|920(?:0[24]|1[24]))\b/.test(code) && !/-25\b/.test(code) && !/-57\b/.test(code)) {
+      code = code.replace(/^(\s*(?:99\d{3}|920(?:0[24]|1[24]))(?:-\d{2})*)/, "$1-25");
     }
   }
   return {
@@ -92,6 +100,15 @@ function getEmLabel(codeStr) {
       let m;
       pat.lastIndex = 0;
       while ((m = pat.exec(inputText)) !== null) {
+        // Oct 8 2026: the global depends on WHAT was done (CMS 2026). An
+        // intravitreal injection is 0-day (no post-op period at all); laser
+        // retinopexy / PRP / cryo / laser demarcation are 10-day; incisional
+        // surgery, YAG and focal laser are 90-day.
+        const ctx = inputText.slice(Math.max(0, m.index - 60), m.index + m[0].length).split("\n").pop();
+        let window = 90;
+        if (/\b(?:PPV|vitrectom\w*|SB|buckle|pneumatic|PnR|MP|membrane|IOL\w*|phaco\w*|CE|cataract|trab\w*|tube|YAG|focal|grid|67210|SO|ROSO|repair)\b/i.test(ctx)) window = 90;
+        else if (/\b(?:LRP|laser\s+retinopexy|PRP|cryo\w*|laser\s+demarcation|barricade|demarcat\w*|67145|67228|67105|67141|67101)\b/i.test(ctx)) window = 10;
+        else if (/\b(?:inj\w*|IVI|IVT|avastin|eylea|EHD|vabysmo|lucentis|beovu|izervay|syfovre|pavblu|byooviz|cimerli|ozurdex|67028)\b/i.test(ctx)) continue;
         const dateStr = m[2];
         const parts = dateStr.split("/");
         if (parts.length === 3) {
@@ -100,7 +117,7 @@ function getEmLabel(codeStr) {
           const surgDate = new Date(yr, mo - 1, da);
           const diffDays = Math.round((today - surgDate) / (1000 * 60 * 60 * 24));
           if (diffDays >= 0 && diffDays <= 365) {
-            surgeries.push({ surgeon: m[1], date: surgDate, days: diffDays });
+            surgeries.push({ surgeon: m[1], date: surgDate, days: diffDays, window });
           }
         }
       }
@@ -124,8 +141,9 @@ function getEmLabel(codeStr) {
     }
 
     for (const s of surgeries) {
-      const inGlobal = s.days <= 90;
-      lines.push(`[SYSTEM — POST-OP TIMING: Surgery by ${s.surgeon} was ${s.days} days ago (${s.date.toLocaleDateString()}). ${inGlobal ? "WITHIN 90-day global period — routine post-op care is NOT separately billable. Only UNRELATED conditions get separate E/M with -24, procedures with -79." : "OUTSIDE 90-day global period — this visit is independently billable."}]`);
+      const w = s.window || 90;
+      const inGlobal = s.days <= w;
+      lines.push(`[SYSTEM — POST-OP TIMING: Surgery by ${s.surgeon} was ${s.days} days ago (${s.date.toLocaleDateString()}). ${inGlobal ? `WITHIN ${w}-day global period — routine post-op care is NOT separately billable. Only UNRELATED conditions get separate E/M with -24, procedures with -79.` : `OUTSIDE ${w}-day global period — this visit is independently billable.`}]`);
     }
 
     return lines.join("\n");
