@@ -1130,6 +1130,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     ? `Recording ${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, "0")} — tap to stop`
                     : isTranscribing ? "Transcribing..." : "Tap to dictate"}
                 </span>
+                {/* NextGen (phone, per Mari Oct 2026): same remote-desktop sign-in link as desktop, beside where the note is typed. */}
+                {!isRecording && (
+                  <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in)"
+                    style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5, height: 34, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
+                    NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                  </a>
+                )}
               </div>
             )}
 
