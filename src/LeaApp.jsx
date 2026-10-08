@@ -9,7 +9,7 @@ import { SURGEONS, PinGate, DoctorPicker } from "./App.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, DropBottleIcon, CalendarIcon, ScanIcon, LockIcon, BackIcon } from "./icons.jsx";
 import { useIsPhone, PhoneCtx, PhoneShell, PHONE_BODY_H } from "./phone.jsx";
-import { RX_ORIGIN, readRxToken, tokenRole } from "./lib/retinaRx.js";
+import { RX_ORIGIN, RX_TOKEN_KEY, readRxToken, tokenRole } from "./lib/retinaRx.js";
 import { scheduleOk, ymdOf, shortDate } from "./lib/vraSchedule.js";
 import { DoctorsGrid, ComingUp, LeaSchedulePage, useLeaSchedule, doctorDay, nextLexDay, siteName } from "./LeaSchedule.jsx";
 
@@ -363,6 +363,14 @@ export default function LeaApp() {
 
   const phone = useIsPhone();
   const sched = useLeaSchedule(31, !!rx);
+  // The server refused the LEA token (expired, or the server's key changed):
+  // forget it and sign in again at the Retina-Rx front door.
+  useEffect(() => {
+    if (sched && sched.error === "HTTP 401") {
+      try { localStorage.removeItem(RX_TOKEN_KEY); sessionStorage.removeItem("vra_token"); } catch { /* storage blocked */ }
+      location.replace(RX_HOME);
+    }
+  }, [sched]);
   const [role, setRole] = useState(null); // null → "Pick your view"
   const [page, setPage] = useState("home");
   const [activeSurgeon, setActiveSurgeon] = useState(null);
