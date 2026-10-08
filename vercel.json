@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/lea", "destination": "/index.html" },
-    { "source": "/lea/:path*", "destination": "/:path*" }
+    { "source": "/lea/", "destination": "/index.html" },
+    { "source": "/lea/:path+", "destination": "/:path+" }
   ]
 }
