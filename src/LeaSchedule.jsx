@@ -23,7 +23,7 @@ const muted = { fontSize: 13, color: T.muted };
 export function useLeaSchedule(days = 31, enabled = true) {
   const [sched, setSched] = useState(null);
   useEffect(() => {
-    if (!enabled) return undefined;
+    if (!enabled) { setSched(null); return undefined; }
     let alive = true;
     fetchSchedule(days).then((d) => { if (alive) setSched(d); });
     return () => { alive = false; };

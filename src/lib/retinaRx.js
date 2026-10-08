@@ -11,16 +11,26 @@ export const COVERAGE_URL = `${RX_ORIGIN}/check`;
 export const isLeaPath = (p = typeof location !== "undefined" ? location.pathname : "/") => /^\/lea(\/|$)/.test(p);
 
 // The Retina-Rx front door stores { token, exp } here after /api/rx-login.
-// Same origin as LEA Hub, so LEA reads it from localStorage.
+// Same origin as LEA Hub. It only proves the front-door sign-in for the day:
+// the "rx" token opens no hub API (server answers 403).
 export const RX_TOKEN_KEY = "rx-token";
+// LEA Hub's own sign-in (/api/lea-login, LEA_SITE_PASSWORD) → { token, exp }.
+export const LEA_TOKEN_KEY = "lea-token";
 
-/** { token, exp } while the Retina-Rx sign-in is still valid, else null. */
-export function readRxToken() {
+function readStored(key) {
   try {
-    const v = JSON.parse(localStorage.getItem(RX_TOKEN_KEY) || "null");
+    const v = JSON.parse(localStorage.getItem(key) || "null");
     if (v && typeof v.token === "string" && Number(v.exp) > Date.now()) return v;
   } catch { /* bad value / storage blocked */ }
   return null;
+}
+
+/** { token, exp } while the Retina-Rx front-door sign-in is still valid, else null. */
+export const readRxToken = () => readStored(RX_TOKEN_KEY);
+/** { token, exp } while the LEA Hub sign-in is still valid, else null. */
+export const readLeaToken = () => readStored(LEA_TOKEN_KEY);
+export function storeLeaToken(v) {
+  try { if (v) localStorage.setItem(LEA_TOKEN_KEY, JSON.stringify(v)); else localStorage.removeItem(LEA_TOKEN_KEY); } catch { /* storage blocked */ }
 }
 
 /** Role inside a hub token ("lea", "lea-doctor", …) without checking the signature (display/routing only). */

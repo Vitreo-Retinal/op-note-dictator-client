@@ -9,16 +9,18 @@ import { SURGEONS, PinGate, DoctorPicker } from "./App.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, DropBottleIcon, CalendarIcon, ScanIcon, LockIcon, BackIcon } from "./icons.jsx";
 import { useIsPhone, PhoneCtx, PhoneShell, PHONE_BODY_H } from "./phone.jsx";
-import { RX_ORIGIN, RX_TOKEN_KEY, readRxToken, tokenRole } from "./lib/retinaRx.js";
+import { RX_ORIGIN, readRxToken, readLeaToken, storeLeaToken, tokenRole } from "./lib/retinaRx.js";
 import { scheduleOk, ymdOf, shortDate } from "./lib/vraSchedule.js";
 import { DoctorsGrid, ComingUp, LeaSchedulePage, useLeaSchedule, doctorDay, nextLexDay, siteName } from "./LeaSchedule.jsx";
 
 // ── LEA Hub (Oct 2026, approved mockup "retina-rx-front-mockup") ─────
 // Lexington Eye's hub: the VRA hub client running in "LEA" mode under
 // retina-rx.vercel.app/lea/ (main.jsx picks this component for /lea paths).
-//   · No password screen: the Retina-Rx front door (retina-rx.vercel.app/)
-//     signs in and stores { token, exp } in localStorage "rx-token" (same
-//     origin). Missing / expired → back to the front door.
+//   · Two sign-ins (owner, Oct 8): the Retina-Rx front door
+//     (retina-rx.vercel.app/) stores localStorage "rx-token" — missing or
+//     expired → back to the front door. Then LEA Hub's OWN password
+//     (POST /api/lea-login, LEA_SITE_PASSWORD) → "lea-token". A 401 from the
+//     hub API clears "lea-token" and shows the LEA password screen again.
 //   · Two views: Doctor (same names + PIN flow as VRA; the server turns the
 //     PIN into an "lea-doctor" token) and Tech. No Manager, no Front desk.
 //   · Phone tabs — Tech: Home · Schedule · Inject · Scan.
@@ -46,18 +48,23 @@ const TABS_BY_ROLE = {
 const TAB_OF = { home: "home", schedule: "schedule", inject: "inject", coding: "coding", notes: "notes", pin: "notes", doctor: "notes" };
 const TAB_ROOTS = new Set(["home", "schedule", "inject", "coding", "notes", "doctor"]);
 
+const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
+
 // Hub API calls carry sessionStorage "vra_token" (fetch wrapper in main.jsx).
-// In LEA that is the Retina-Rx "lea" token, or "lea-doctor" after a PIN.
-function seedToken(rxToken) {
+// In LEA that is the "lea" token from the LEA sign-in, or "lea-doctor" after a PIN.
+function seedToken(leaToken) {
   try {
     const cur = sessionStorage.getItem("vra_token");
     const role = tokenRole(cur);
-    if (role !== "lea" && role !== "lea-doctor") sessionStorage.setItem("vra_token", rxToken);
+    if (role !== "lea" && role !== "lea-doctor") sessionStorage.setItem("vra_token", leaToken);
   } catch { /* storage blocked */ }
 }
 function resetToken() {
-  const rx = readRxToken();
-  try { if (rx) sessionStorage.setItem("vra_token", rx.token); else sessionStorage.removeItem("vra_token"); } catch { /* storage blocked */ }
+  const lea = readLeaToken();
+  try { if (lea) sessionStorage.setItem("vra_token", lea.token); else sessionStorage.removeItem("vra_token"); } catch { /* storage blocked */ }
+}
+function clearHubToken() {
+  try { sessionStorage.removeItem("vra_token"); } catch { /* storage blocked */ }
 }
 
 const onVraDomain = () => /(^|\.)vra-hub\.com$/i.test(location.hostname);
@@ -332,6 +339,68 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onSelectDoc
   );
 }
 
+// ── LEA Hub password (owner, Oct 8) — styled like the VRA hub's gate ──
+const LOGIN_MESSAGES = {
+  wrong_password: "Incorrect password.",
+  not_configured: "Sign-in is not set up yet.",
+  locked: "Too many tries. Wait 15 minutes, then try again.",
+};
+
+function LeaPasswordGate({ onSuccess, onChangeHub, notice }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(notice || "");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!password.trim()) return;
+    setLoading(true);
+    setError("");
+    clearHubToken(); // nothing stale rides along on the sign-in call
+    try {
+      const res = await fetch(`${API_BASE}/api/lea-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: password.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data && data.success && data.token) {
+        const exp = Number(data.exp) || Date.now() + 24 * 3600e3;
+        onSuccess({ token: data.token, exp: Math.min(exp, Date.now() + 24 * 3600e3) });
+      } else {
+        setError(LOGIN_MESSAGES[data && data.error] || LOGIN_MESSAGES.wrong_password);
+        setPassword("");
+      }
+    } catch {
+      setError("Could not connect to server. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const off = loading || !password.trim();
+  return (
+    <div style={{ minHeight: "100vh", background: S.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: S.font }}>
+      <form onSubmit={handleSubmit} style={{ background: S.card, border: `1px solid ${S.border}`, borderRadius: T.rLg, padding: "36px 32px", width: "100%", maxWidth: 380, textAlign: "center", boxSizing: "border-box", margin: "0 16px", fontFamily: T.sans }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}><LeaMark size={52} /></div>
+        <div style={{ fontSize: 17, fontWeight: 600, color: T.ink, marginBottom: 4, letterSpacing: "-0.01em" }}>LEA Hub</div>
+        <div style={{ fontSize: 13, color: T.muted, marginBottom: 22 }}>Lexington Eye · Clinical Workflow Tools</div>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" autoFocus autoComplete="current-password"
+          style={{ display: "block", width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "10px 14px", color: T.ink, fontFamily: T.sans, outline: "none", fontSize: "0.9rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center" }} />
+        {error && <div role="alert" style={{ color: T.red, fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
+        <button type="submit" disabled={off}
+          style={{ width: "100%", background: off ? T.accentSoft : T.accent, color: off ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: 40, padding: 0, fontSize: 14, fontFamily: T.sans, fontWeight: 600, cursor: off ? "not-allowed" : "pointer" }}>
+          {loading ? "Verifying..." : "Enter"}
+        </button>
+        <button type="button" onClick={onChangeHub}
+          style={{ marginTop: 16, background: "none", border: 0, padding: "6px 4px", color: T.accent, fontFamily: T.sans, fontSize: 13.5, cursor: "pointer" }}>
+          ‹ Change hub
+        </button>
+      </form>
+    </div>
+  );
+}
+
 // ── Redirect screen (no sign-in yet / wrong host) ───────────────────
 function Leaving({ text }) {
   return (
@@ -341,47 +410,80 @@ function Leaving({ text }) {
 
 // ── App ─────────────────────────────────────────────────────────────
 export default function LeaApp() {
-  // Signed in by the Retina-Rx front door? Seed the hub token before any fetch.
-  const [rx] = useState(() => {
-    const v = onVraDomain() ? null : readRxToken();
-    if (v) seedToken(v.token);
+  // 1) Retina-Rx front-door sign-in (proof only). 2) LEA Hub's own sign-in.
+  const [rx] = useState(() => (onVraDomain() ? null : readRxToken()));
+  const [lea, setLea] = useState(() => {
+    const v = rx ? readLeaToken() : null;
+    if (v) seedToken(v.token); else clearHubToken();
     return v;
   });
+  const [notice, setNotice] = useState("");
+  const [role, setRole] = useState(null); // null → "Pick your view"
+  const [page, setPage] = useState("home");
+  const [activeSurgeon, setActiveSurgeon] = useState(null);
+  const [unlockedId, setUnlockedId] = useState(null);
+  const [onboarding, setOnboarding] = useState(false);
+
+  // LEA sign-in gone (401 from the hub API, or it ran out): forget it and
+  // show the LEA password screen again.
+  const expireLea = (msg) => {
+    storeLeaToken(null); clearHubToken();
+    setLea(null); setRole(null); setPage("home"); setActiveSurgeon(null); setUnlockedId(null); setOnboarding(false);
+    setNotice(msg || "");
+  };
+
   useEffect(() => {
     // LEA lives on retina-rx.vercel.app; a direct visit to vra-hub.com/lea goes there.
     if (onVraDomain()) { location.replace(LEA_HOME_ON_RX); return undefined; }
     if (!rx) { location.replace(RX_HOME); return undefined; }
     document.title = "LEA Hub";
     swapHeadForLea();
-    // The Retina-Rx sign-in lasts the day; when it runs out (or "Sign out" on
-    // the front door), go back to the front door.
-    const check = () => { if (!readRxToken()) location.replace(RX_HOME); };
+    // Front-door sign-in over (or "Sign out" there) → front door.
+    // LEA sign-in over → LEA password screen.
+    const check = () => {
+      if (!readRxToken()) location.replace(RX_HOME);
+      else if (!readLeaToken()) expireLea("");
+    };
     const t = setInterval(check, 60_000);
     document.addEventListener("visibilitychange", check);
-    return () => { clearInterval(t); document.removeEventListener("visibilitychange", check); };
+    // Any hub API call answered 401 → LEA password screen.
+    const prevFetch = window.fetch;
+    window.fetch = async (input, init) => {
+      const res = await prevFetch(input, init);
+      const url = typeof input === "string" ? input : (input && input.url) || "";
+      if (res.status === 401 && url.startsWith(API_BASE) && !url.includes("/api/lea-login")) {
+        window.dispatchEvent(new Event("lea-unauthorized"));
+      }
+      return res;
+    };
+    const on401 = () => expireLea("Please sign in to LEA Hub again.");
+    window.addEventListener("lea-unauthorized", on401);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", check);
+      window.removeEventListener("lea-unauthorized", on401);
+      window.fetch = prevFetch;
+    };
   }, [rx]);
 
   const phone = useIsPhone();
-  const sched = useLeaSchedule(31, !!rx);
-  // The server refused the LEA token (expired, or the server's key changed):
-  // forget it and sign in again at the Retina-Rx front door.
-  useEffect(() => {
-    if (sched && sched.error === "HTTP 401") {
-      try { localStorage.removeItem(RX_TOKEN_KEY); sessionStorage.removeItem("vra_token"); } catch { /* storage blocked */ }
-      location.replace(RX_HOME);
-    }
-  }, [sched]);
-  const [role, setRole] = useState(null); // null → "Pick your view"
-  const [page, setPage] = useState("home");
-  const [activeSurgeon, setActiveSurgeon] = useState(null);
-  const [unlockedId, setUnlockedId] = useState(null);
-  const [onboarding, setOnboarding] = useState(false);
+  const sched = useLeaSchedule(31, !!(rx && lea));
   const unlockedDoc = LEA_SURGEONS.find((d) => d.id === unlockedId) || null;
 
   if (!rx) return <Leaving text={onVraDomain() ? "Opening LEA Hub…" : "Opening the Retina-Rx sign-in…"} />;
 
   const changeHub = () => location.assign(RX_HOME);
   const openScan = () => location.assign(INVENTORY_PATH);
+
+  if (!lea) {
+    const signedIn = (v) => {
+      storeLeaToken(v);
+      try { sessionStorage.setItem("vra_token", v.token); } catch { /* storage blocked */ }
+      setNotice("");
+      setLea(v);
+    };
+    return <LeaPasswordGate key={notice} notice={notice} onSuccess={signedIn} onChangeHub={changeHub} />;
+  }
 
   if (!role) {
     const pickRole = (r) => {
