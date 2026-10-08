@@ -54,11 +54,6 @@ const KNOWN_DRUG_TOKENS = [
   // Literal HCPCS codes, in case the physician dictates the code itself
   "J0178", "J0177", "J9035", "J2777", "J2778", "J0179", "J2782", "J2781",
   "Q5124", "Q5128", "J1094", "J3301", "J3299", "J2997",
-  // Oct 8 2026 drug map (server prompt + DRUG_TABLE): biosimilars, implants, PDT.
-  "Pavblu", "Opuviz", "Yesafili", "Eydenzelt", "Enzeevu", "Ahzantive", "Mvasi", "Zirabev",
-  "Visudyne", "verteporfin",
-  "J7312", "J3300", "J7313", "J7314", "J2779", "J3396", "J7999",
-  "Q5147", "Q5153", "Q5155", "Q5170", "Q5149", "Q5150", "Q5107", "Q5118",
 ];
 const KNOWN_SINGLE_LETTER_DRUGS = new Set(["A", "E", "V", "L", "I", "S"]); // case-sensitive
 const KNOWN_DRUG_LOWER = new Set(
@@ -1597,9 +1592,6 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     )}
                     {isEyeCode(result.code) && (
                       <span style={{ fontSize: 12.5, color: T.accent, fontStyle: "italic" }}>— no MDM documentation needed</span>
-                    )}
-                    {/^INJECTION ONLY/i.test(result.code || "") && (
-                      <span style={{ fontSize: 12.5, color: T.muted, fontStyle: "italic" }}>— bill the procedure + drug only (no separate problem dictated)</span>
                     )}
                     {/* ICD-10 Codes */}
                     {icd10Codes.map((c, i) => (
