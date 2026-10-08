@@ -3,7 +3,7 @@
 // hub"), the coverage check at /check, the carton inventory at /inventory,
 // and LEA Hub at /lea/ (this same client, proxied — see vercel.json).
 
-export const RX_ORIGIN = "https://retina-rx.vercel.app";
+export const RX_ORIGIN = "https://retina-rx.com";
 // Coverage check ("Can we inject?") — moved from "/" to "/check" (Oct 2026).
 export const COVERAGE_URL = `${RX_ORIGIN}/check`;
 
