@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import { NEXTGEN_URL } from "./hubData.js";
 import { AICodingAssistant } from "./CptReference.jsx";
 import RateComparison from "./RateComparison.jsx";
 import PatientEducation from "./PatientEducation.jsx";
@@ -1063,7 +1064,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         {tab === "input" && (
           <div>
             {/* Mode toggle — segmented control (phone: with a small "No PHI" badge beside it) */}
-            <div style={phone ? { display: "flex", alignItems: "center", gap: 8 } : { display: "contents" }}>
+            <div style={phone ? { display: "flex", alignItems: "center", gap: 8 } : { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <div className="vra-seg" role="group" aria-label="Mode" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 3, marginTop: 4, boxSizing: "border-box" }}>
               {(phone
                 ? [["generate", "Generate"], ["optimize", "Optimize"], ["pbm", "PBM"]]
@@ -1080,6 +1081,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
               ))}
             </div>
             {phone && <span style={{ flexShrink: 0, marginTop: 4, fontSize: 11.5, fontWeight: 600, color: T.amber, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: 999, padding: "2px 8px", whiteSpace: "nowrap" }}>No PHI</span>}
+            {/* NextGen (desktop only, per Mari Oct 2026): opens the AWS remote-desktop sign-in in a new tab. Nothing passes through the hub. */}
+            {!phone && (
+              <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in) in a new tab"
+                style={{ marginLeft: "auto", marginTop: 4, display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+              </a>
+            )}
             </div>
 
             {mode !== "pbm" && (<>

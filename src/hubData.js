@@ -6,6 +6,9 @@
 //         MGB = Mass General Brigham Health Plan (commercial HMO).
 // Drugs: medicare + payer rates are PER UNIT; multiply by units_per_dose for per-dose.
 
+// NextGen EMR runs on the AWS remote desktop — desktop-only link (Oct 2026).
+export const NEXTGEN_URL = "https://rdg102818.nextgenmcs.com/RDWeb/Pages/en-US/login.aspx";
+
 export const HUB_DATA = [
   { code: "65260", desc: "Removal of intraocular foreign body, magnetic", type: "procedure", mh: 740.05, medicare: 840.03, units_per_dose: null, payers: { HPHC: { vra: 2295.96, lex: 2633.49 }, MGB: { vra: 1066.67, lex: 2649.18 }, Fallon: { vra: 947.07, lex: 1204.93 } } },
   { code: "65265", desc: "Removal of intraocular foreign body, nonmagnetic", type: "procedure", mh: 832.12, medicare: 941.91, units_per_dose: null, payers: { HPHC: { vra: 2574.28, lex: 2952.74 }, MGB: { vra: 1202.11, lex: 2978.08 }, Fallon: { vra: 1061.47, lex: 1349.16 } } },
