@@ -7,7 +7,7 @@ import { AlertIcon, PhoneIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
 import SchedulePhone, { nextTiles } from "./SchedulePhone.jsx";
 import PhoneText from "./PhoneText.jsx";
-import { majorHoliday } from "./lib/practiceCalendar.js";
+import { majorHoliday, halfDayNote } from "./lib/practiceCalendar.js";
 import {
   fetchSchedule, scheduleOk, ymdOf, dateOfYmd, addDaysYmd, monDay, shortDate, sessionsBySite,
   doctorHalves, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime,
@@ -159,6 +159,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   const pickDay = (ymd) => { setDay(ymd); setShowSheet(false); };
   const tDay = ok ? sched.days.find((d) => d.date === shownYmd) || null : null;
   const dayHoliday = majorHoliday(dateOfYmd(shownYmd));
+  const dayHalf = halfDayNote(dateOfYmd(shownYmd)); // open day — note only, schedule still shows
 
   // ── Styles (mockup .week / table / .tech) ──
   const th = { padding: "8px 10px", fontSize: 12.5, color: T.muted, fontWeight: 500, textAlign: "left", background: T.paper, borderBottom: `1px solid ${T.line}`, whiteSpace: "nowrap" };
@@ -220,7 +221,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
         const hol = majorHoliday(dateOfYmd(ymd));
         const past = ymd < todayYmd;
         return {
-          ymd, d, today: ymd === todayYmd, past,
+          ymd, d, today: ymd === todayYmd, past, half: halfDayNote(dateOfYmd(ymd)),
           blank: !d && (past || ymd < dates[0]),
           closed: !!d && (d.closed || !!hol), closedName: d ? d.closureName || hol : null,
           canOpen: !!d && !past && ymd >= minYmd && ymd <= maxYmd,
@@ -340,6 +341,9 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
                         {text}
                       </button>
                     ) : text}
+                    {c.half && !c.blank && (
+                      <div style={{ fontSize: 11, fontWeight: 500, color: T.amber, overflow: "hidden", textOverflow: "ellipsis" }}>{c.half}</div>
+                    )}
                   </th>
                 );
               })}
@@ -547,6 +551,9 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
           )}
           {dayHoliday && !(tDay && tDay.closed) && (
             <div style={{ fontSize: 13, color: T.amber, fontFamily: T.sans }}>{dayHoliday} — office closed</div>
+          )}
+          {dayHalf && !(tDay && tDay.closed) && (
+            <div style={{ fontSize: 12.5, color: T.amber, fontFamily: T.sans }}>{dayHalf}</div>
           )}
           {daySites.map(({ site, docs }) => (
             <div key={site} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", minWidth: 0 }}>

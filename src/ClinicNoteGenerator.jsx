@@ -9,7 +9,7 @@ import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPr
 import PhoneText from "./PhoneText.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
-import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
+import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL } from "./lib/retinaRx.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS, doctorColor } from "./theme.js";
@@ -348,7 +348,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     setIsRecording(false);
   }, []);
 
-  // Holiday engine (easterMonthDay / NOWRUZ_DAY / majorHoliday) and parseLocalNoon
+  // Holiday engine (easterMonthDay / majorHoliday / halfDayNote) and parseLocalNoon
   // now live in ./lib/practiceCalendar.js — shared verbatim with the homepage
   // call board so there is exactly one closure calendar in the app.
 
@@ -425,6 +425,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       daysSince,
       nextDate,
       holiday: nextDate ? majorHoliday(nextDate) : null,
+      halfDay: nextDate ? halfDayNote(nextDate) : null, // open day, note only
       blackout: nextDate ? injectionBlackout(nextDate) : null,
       sched: nextDate ? scheduleHit(nextDate) : null, // empty for non-MR profiles
     };
@@ -1048,6 +1049,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   ? `⚠ No clinic that day (${injCalc.sched.block.title})`
                   : `⚠ OR day: ${injCalc.sched.block.title}`}
               </div>
+            )}
+            {/* Day before Thanksgiving — open, usually a half day. Note only. */}
+            {injCalc && injCalc.nextDate && injCalc.halfDay && (
+              <div style={{ color: T.amber, fontSize: 12.5 }}>{injCalc.halfDay}</div>
             )}
             {/* Independent of the above — call week is a note, not a conflict. */}
             {injCalc && injCalc.nextDate && injCalc.sched && injCalc.sched.call && (

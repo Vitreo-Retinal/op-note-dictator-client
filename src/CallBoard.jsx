@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
-import { majorHoliday, injectionBlackout } from "./lib/practiceCalendar.js";
+import { majorHoliday, halfDayNote, injectionBlackout } from "./lib/practiceCalendar.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
@@ -169,12 +169,14 @@ export default function CallBoard({ onOpenSchedule }) {
   const when = isToday ? "today" : "that day";
   const pickDay = (ymd) => setPicked(ymd === todayYmd ? null : ymd);
   const dayHoliday = majorHoliday(dateOfYmd(shownYmd));
+  const dayHalf = halfDayNote(dateOfYmd(shownYmd)); // open day — note only, never "closed"
   const shownDay = ok ? sched.days.find((d) => d.date === shownYmd) || null : null;
   const onCall = shownDay ? shownDay.onCall : null;
 
   const n = parseInt(fuWeeks, 10);
   const fuDate = fuWeeks && n > 0 ? new Date(today.getTime() + n * 7 * 24 * 60 * 60 * 1000) : null;
   const fuHoliday = fuDate ? majorHoliday(fuDate) : null;
+  const fuHalf = fuDate ? halfDayNote(fuDate) : null;
   const fuCall = fuDate ? callFor(fuDate) : null;
   // Injection blackout banner — shown when TODAY or the computed F/U date is Jan 1–14.
   const blackout = injectionBlackout(fuDate) || injectionBlackout(today);
@@ -230,6 +232,9 @@ export default function CallBoard({ onOpenSchedule }) {
           {dayHoliday && (
             <span style={{ color: T.amber }}>{dayHoliday} — office closed</span>
           )}
+          {dayHalf && (
+            <span style={{ color: T.amber, fontSize: 12 }}>{dayHalf}</span>
+          )}
           <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px 6px", flexWrap: "wrap", color: T.ink2 }}>
             <span style={{ marginRight: 4 }}>Follow-up counter</span>
             <span>F/U in</span>
@@ -249,6 +254,7 @@ export default function CallBoard({ onOpenSchedule }) {
               <>
                 <span style={{ fontWeight: 600, color: fuHoliday ? T.amber : T.ink, whiteSpace: "nowrap" }}>→ {longDate(fuDate)}</span>
                 {fuHoliday && <span style={{ color: T.amber }}>⚠ {fuHoliday} — office closed</span>}
+                {fuHalf && <span style={{ color: T.amber, fontSize: 12 }}>{fuHalf}</span>}
                 {fuCall ? (
                   <span style={{ color: T.muted }}>(on call that week: {fuCall.doctor})</span>
                 ) : (
