@@ -333,7 +333,9 @@ export function generateEducationPrintHTML(handouts, lang = "en", drops = []) {
   const labels = langLabels[lang] || langLabels.en;
   const logoSrc = VRA_LOGO_DATA_URI;
 
-  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${PRACTICE_INFO.name} — ${labels.subtitle}</title>
+  // format-detection: iPhone must not auto-link the fax number in this print
+  // window; the voice number carries its own tel: link (prints as plain text).
+  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="format-detection" content="telephone=no"><title>${PRACTICE_INFO.name} — ${labels.subtitle}</title>
 <style>
 @page { margin: 0.5in 0.6in; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -395,7 +397,7 @@ body {
 <div class="page-header">
   <img src="${logoSrc}" alt="${PRACTICE_INFO.name}">
   <div class="practice-contact">
-    ${PRACTICE_INFO.locations.map(l => `<div><strong>${l.city}:</strong> ${l.address}<br>P. ${l.phone} &nbsp; F. ${l.fax}</div>`).join("")}
+    ${PRACTICE_INFO.locations.map(l => `<div><strong>${l.city}:</strong> ${l.address}<br>P. <a href="tel:+1${l.phone.replace(/\D/g, "")}" style="color:inherit;text-decoration:none">${l.phone}</a> &nbsp; F. ${l.fax}</div>`).join("")}
   </div>
 </div>
 

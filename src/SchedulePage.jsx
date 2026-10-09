@@ -6,6 +6,7 @@ import { T, card, DOCTOR_ORDER, SITE_TINTS, TRANSLATOR, doctorColor } from "./th
 import { AlertIcon, PhoneIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
 import SchedulePhone, { nextTiles, EventDot } from "./SchedulePhone.jsx";
+import PhoneText from "./PhoneText.jsx";
 import { majorHoliday } from "./lib/practiceCalendar.js";
 import {
   fetchSchedule, scheduleOk, ymdOf, dateOfYmd, addDaysYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
@@ -56,8 +57,8 @@ function EventList({ events }) {
       {events.map((ev, i) => (
         <div key={`${ev.title}|${ev.start}|${i}`} style={{ fontSize: 12, lineHeight: 1.35, color: T.ink, overflowWrap: "anywhere" }}>
           <span style={{ color: T.ink2, fontWeight: 600 }}>{eventTime(ev)}</span>
-          <span style={{ color: T.muted }}> · </span>{ev.title}
-          {ev.location && <div style={{ color: T.muted, fontSize: 11.5 }}>{ev.location}</div>}
+          <span style={{ color: T.muted }}> · </span><PhoneText text={ev.title} />
+          {ev.location && <div style={{ color: T.muted, fontSize: 11.5 }}><PhoneText text={ev.location} /></div>}
         </div>
       ))}
     </div>
@@ -338,7 +339,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   };
 
   const footItem = (label, value, away) => (
-    <span><b style={{ fontWeight: 600, color: away && value ? T.red : T.ink }}>{label}</b> <span style={away && value ? { color: T.red, fontWeight: 600 } : null}>{value || "—"}</span></span>
+    <span><b style={{ fontWeight: 600, color: away && value ? T.red : T.ink }}>{label}</b> <span style={away && value ? { color: T.red, fontWeight: 600 } : null}>{value ? <PhoneText text={value} /> : "—"}</span></span>
   );
   const names = (arr) => (arr && arr.length ? arr.join(", ") : "—");
 
@@ -471,7 +472,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
             {footItem(isToday ? "Off today" : "Off that day", t.off && t.off.length ? t.off.join(", ") : null, true)}
             {footItem("Clinical trials", t.trials ? t.trials.replace(/\s*,\s*/g, " · ") : null)}
             {footItem("Phone/portal", `Worcester ${(t.phonePortal && t.phonePortal.WORC) || "—"} · Leominster ${(t.phonePortal && t.phonePortal.LEOM) || "—"}`)}
-            {(t.extra || []).map((x) => <span key={x}>{x}</span>)}
+            {(t.extra || []).map((x) => <span key={x}><PhoneText text={x} /></span>)}
           </div>
         </>
       )}
@@ -496,7 +497,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
           </button>
           {showSheet && (
             <div style={{ paddingTop: 8, fontSize: 12.5, lineHeight: 1.55, color: T.ink2, whiteSpace: "pre-wrap", fontFamily: T.sans }}>
-              {t.text}
+              <PhoneText text={t.text} />
             </div>
           )}
         </>

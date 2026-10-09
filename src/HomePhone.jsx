@@ -3,6 +3,7 @@ import { T, doctorColor } from "./theme.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine, StaffLine } from "./CallBoard.jsx";
+import PhoneText from "./PhoneText.jsx";
 import { BriefcaseIcon, LockIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon } from "./icons.jsx";
 
 // ── Phone Home (Oct 2026, approved mockup "home-compact" A + B) ──────
@@ -291,7 +292,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       {/* Alerts — next 7 days */}
       {alerts.slice(0, 3).map((a) => (
         <div key={a.key} style={{ marginBottom: 6, padding: "6px 12px", borderRadius: T.r, background: a.away ? T.redSoft : T.amberSoft, border: a.away ? "1px solid #E7B9B2" : "1px solid #F4E3A7", color: a.away ? T.red : T.amber, fontSize: 13, fontWeight: a.away ? 600 : 500 }}>
-          {a.text}
+          <PhoneText text={a.text} />
         </div>
       ))}
       {alerts.length > 3 && (
@@ -303,9 +304,9 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
         <div key={`ev-${i}`} style={{ marginBottom: 6, padding: "6px 12px", borderRadius: T.r, background: T.surface, border: `1px solid ${T.line}`, fontSize: 13, lineHeight: 1.35, color: T.ink }}>
           <div style={{ overflowWrap: "anywhere" }}>
             <span style={{ color: T.ink2, fontWeight: 600, whiteSpace: "nowrap" }}>{eventTime(ev)}</span>
-            <span style={{ color: T.muted }}> · </span>{ev.title}
+            <span style={{ color: T.muted }}> · </span><PhoneText text={ev.title} />
           </div>
-          {ev.location && <div style={{ fontSize: 12, color: T.muted, overflowWrap: "anywhere" }}>{ev.location}</div>}
+          {ev.location && <div style={{ fontSize: 12, color: T.muted, overflowWrap: "anywhere" }}><PhoneText text={ev.location} /></div>}
         </div>
       ))}
 

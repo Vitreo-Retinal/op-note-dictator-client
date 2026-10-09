@@ -6,6 +6,7 @@ import PatientEducation from "./PatientEducation.jsx";
 import DropSchedule from "./DropSchedule.jsx";
 import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
+import PhoneText from "./PhoneText.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
 import { majorHoliday, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
@@ -747,12 +748,12 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 </div>
               );
             } else {
-              value = <span style={{ color: /billing alert/i.test(k) ? T.amber : T.ink, fontWeight: /billing alert/i.test(k) ? 500 : 400 }}>{v}</span>;
+              value = <span style={{ color: /billing alert/i.test(k) ? T.amber : T.ink, fontWeight: /billing alert/i.test(k) ? 500 : 400 }}><PhoneText text={v} fax={/fax/i.test(k)} /></span>;
             }
             return [label, <div key={`v${i}`} style={{ fontSize: 13.5, lineHeight: 1.5, minWidth: 0 }}>{value}</div>];
           })}
           {plain.map((l, i) => (
-            <div key={`p${i}`} style={{ gridColumn: "1 / -1", fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>{l}</div>
+            <div key={`p${i}`} style={{ gridColumn: "1 / -1", fontSize: 13, color: T.ink2, lineHeight: 1.5 }}><PhoneText text={l} /></div>
           ))}
         </div>
       </div>
@@ -805,7 +806,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     {tag && <div style={{ fontSize: 11.5, fontWeight: 600, color: T.accent, marginBottom: 1 }}>{tag}</div>}
                     <div style={{ display: "flex", gap: 8, alignItems: "baseline", fontSize: 13.5, lineHeight: 1.5, color: T.ink }}>
                       <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.accent, flexShrink: 0, transform: "translateY(-2px)" }} />
-                      <span style={{ minWidth: 0 }}>{String(r)}</span>
+                      <span style={{ minWidth: 0 }}><PhoneText text={String(r)} /></span>
                     </div>
                   </div>
                 );
@@ -813,16 +814,16 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             </div>
           )}
           {c.kind === "rule" && c.notes && (
-            <p style={{ margin: 0, fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>{c.notes}</p>
+            <p style={{ margin: 0, fontSize: 13, color: T.ink2, lineHeight: 1.5 }}><PhoneText text={c.notes} /></p>
           )}
           {c.kind === "rule" && c.billing_alert && (
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "8px 12px", borderRadius: T.r, fontSize: 13, lineHeight: 1.5, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, color: T.amber }}>
               <span style={{ marginTop: 1, flexShrink: 0 }}><AlertIcon /></span>
-              <div style={{ minWidth: 0 }}><b style={{ fontWeight: 600 }}>Billing alert:</b> {c.billing_alert}</div>
+              <div style={{ minWidth: 0 }}><b style={{ fontWeight: 600 }}>Billing alert:</b> <PhoneText text={c.billing_alert} /></div>
             </div>
           )}
           {c.kind !== "rule" && c.message && (
-            <div style={{ fontSize: 13.5, color: T.ink, lineHeight: 1.5 }}>{c.message}</div>
+            <div style={{ fontSize: 13.5, color: T.ink, lineHeight: 1.5 }}><PhoneText text={c.message} /></div>
           )}
           {c.kind === "ambiguous" && Array.isArray(c.plans) && c.plans.length > 0 && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>

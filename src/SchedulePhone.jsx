@@ -1,5 +1,6 @@
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { dateOfYmd, shortDate, sessionsBySite, translatorOf, valedaOf, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
+import PhoneText from "./PhoneText.jsx";
 
 // ── Schedule, phone layout (Oct 2026) ───────────────────────────────
 // One day at a time, sized to fit one screen: on call (one row), doctors per
@@ -92,9 +93,9 @@ export function EventsCard({ day, style }) {
           <div style={{ overflowWrap: "anywhere" }}>
             <span style={{ color: T.ink2, fontWeight: 600, whiteSpace: "nowrap" }}>{eventTime(ev)}</span>
             <span style={{ color: T.muted }}> · </span>
-            <span style={{ color: T.ink }}>{ev.title}</span>
+            <span style={{ color: T.ink }}><PhoneText text={ev.title} /></span>
           </div>
-          {ev.location && <div style={{ fontSize: 12, color: T.muted, marginTop: 1, overflowWrap: "anywhere" }}>{ev.location}</div>}
+          {ev.location && <div style={{ fontSize: 12, color: T.muted, marginTop: 1, overflowWrap: "anywhere" }}><PhoneText text={ev.location} /></div>}
         </div>
       ))}
     </div>
@@ -180,7 +181,7 @@ export default function SchedulePhone({ day, tiles, selected, onPick, open, onTo
       <span style={{ ...lbl, flex: "none", width: 64 }}>{label}</span>
       <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
         {people.map((m) => (
-          <span key={m.name} style={{ overflowWrap: "anywhere", color: m.tone === "in" && m.site && m.site !== "WORC" && SITE_TINTS[m.site] ? SITE_TINTS[m.site].text : mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" || m.tone === "out" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
+          <span key={m.name} style={{ overflowWrap: "anywhere", color: m.tone === "in" && m.site && m.site !== "WORC" && SITE_TINTS[m.site] ? SITE_TINTS[m.site].text : mgrTone[m.tone] || T.ink, fontWeight: m.tone === "vacation" || m.tone === "out" || (m.site && m.site !== "WORC") ? 600 : 500 }}><PhoneText text={m.text} /></span>
         ))}
       </span>
     </div>

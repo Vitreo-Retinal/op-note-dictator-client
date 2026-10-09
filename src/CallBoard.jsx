@@ -4,6 +4,7 @@ import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, sessionsBySite,
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 import DayStepper, { scheduleRange } from "./DayStepper.jsx";
+import PhoneText from "./PhoneText.jsx";
 
 // ── Call Board — practice-wide, homepage header card (Sep 2026, per Mari) ─
 // "Wire the call schedule somewhere in the front. Put the date on the site as
@@ -58,8 +59,8 @@ export function EventsLine({ events, label = "Events", style, labelStyle }) {
           <span key={`${ev.title}|${ev.start}|${i}`} style={{ minWidth: 0, overflowWrap: "anywhere" }}>
             <span style={{ color: T.ink2, fontWeight: 600, whiteSpace: "nowrap" }}>{eventTime(ev)}</span>
             <span style={{ color: T.muted }}> · </span>
-            <span style={{ color: T.ink }}>{ev.title}</span>
-            {ev.location && <span style={{ color: T.muted, fontSize: 12 }}> — {ev.location}</span>}
+            <span style={{ color: T.ink }}><PhoneText text={ev.title} /></span>
+            {ev.location && <span style={{ color: T.muted, fontSize: 12 }}> — <PhoneText text={ev.location} /></span>}
           </span>
         ))}
       </span>
@@ -77,7 +78,7 @@ export function StaffLine({ label, people, extra, style, labelStyle, stacked = f
   const colorOf = (m) => (m.tone === "in" && m.site && SITE_TINTS[m.site] && m.site !== "WORC" ? SITE_TINTS[m.site].text : tone[m.tone] || T.ink2);
   const item = (m) => (
     <Fragment key={m.name}>
-      <span style={{ color: colorOf(m), fontWeight: m.tone === "vacation" || m.tone === "out" || (m.site && m.site !== "WORC") ? 600 : 500 }}>{m.text}</span>
+      <span style={{ color: colorOf(m), fontWeight: m.tone === "vacation" || m.tone === "out" || (m.site && m.site !== "WORC") ? 600 : 500 }}><PhoneText text={m.text} /></span>
       {extra && extra[m.name] && <span style={{ color: /^\((vacation|out)\b/.test(extra[m.name]) ? T.red : T.muted, fontSize: 12 }}> {extra[m.name]}</span>}
     </Fragment>
   );

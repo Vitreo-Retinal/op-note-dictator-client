@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { T } from "./theme.js";
 import PageBar from "./PageBar.jsx";
 import { PhoneHeading, usePhone } from "./phone.jsx";
 import { AICodingAssistant } from "./CptReference.jsx";
+import { fetchDirectory } from "./lib/vraDirectory.js";
 
 // ── Front desk "Ask" page (Oct 2026) ────────────────────────────────
 // Same chat-first layout as the phone Coding tab (input pinned above the tab
@@ -20,6 +22,10 @@ const NO_PHI = "No PHI — symptoms only, no names";
 
 export default function DeskAssist({ onBack }) {
   const { phone } = usePhone();
+  // Load the directory once so every fax number it lists is known to the
+  // answer linkifier (lib/phoneText.js) — a fax in an answer is never tappable,
+  // even without a "fax" label next to it. Fails soft (office faxes are built in).
+  useEffect(() => { fetchDirectory(); }, []);
   const chatProps = {
     endpoint: "/api/desk-assist",
     examples: EXAMPLES,

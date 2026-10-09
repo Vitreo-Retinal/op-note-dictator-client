@@ -1,6 +1,8 @@
 // ── VRA offices + phone extensions — client helper (Oct 2026) ───────
 // Source: server GET /api/directory (lib/vra-directory.js is the one place
 // the data lives). The auth token is attached by the fetch wrapper in main.jsx.
+import { isFax, registerFaxNumbers } from "./phoneText.js";
+
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
 /** GET /api/directory. Never throws — failures come back as { error }. */
@@ -10,6 +12,7 @@ export async function fetchDirectory() {
     if (!res.ok) return { error: `HTTP ${res.status}` };
     const data = await res.json();
     if (!data || !Array.isArray(data.offices) || !Array.isArray(data.extensions)) return { error: "bad response" };
+    registerDirectoryFaxes(data);
     return data;
   } catch {
     return { error: "network" };
@@ -22,17 +25,22 @@ export async function fetchDirectory() {
 // name or note contains the word "fax" (e.g. "ED fax", note "fax"). Every
 // number on the page goes through numbersOf() + telHref(), so a new fax entry
 // added on the server cannot become a call link by accident.
-const FAX_RE = /\bfax\b/i;
-
-/** True when any of the texts names a fax line ("Fax", "ED fax", note "fax"). */
-export function isFax(...texts) {
-  return texts.some((t) => FAX_RE.test(String(t || "")));
-}
+// isFax lives in phoneText.js (shared with the text linkifier, PhoneText.jsx).
+export { isFax };
 
 /** True when a whole directory entry (office or extension item) is a fax line. */
 export function isFaxEntry(it) {
   if (!it) return false;
   return it.kind === "fax" || it.type === "fax" || isFax(it.name, it.note, it.label);
+}
+
+/** Every fax number in the directory → phoneText's known-fax list, so no text anywhere links it. */
+export function registerDirectoryFaxes(dir) {
+  if (!dir) return;
+  const nums = [];
+  for (const o of dir.offices || []) for (const n of numbersOf(o)) if (n.fax) nums.push(n.number);
+  for (const g of dir.extensions || []) for (const it of g.items || []) for (const n of numbersOf(it)) if (n.fax) nums.push(n.number);
+  registerFaxNumbers(nums);
 }
 
 /**

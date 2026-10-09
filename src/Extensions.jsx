@@ -3,7 +3,8 @@ import { T } from "./theme.js";
 import PageBar, { wrap, searchInput } from "./PageBar.jsx";
 import { SearchIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
-import { fetchDirectory, filterDirectory, telHref, numbersOf } from "./lib/vraDirectory.js";
+import PhoneText from "./PhoneText.jsx";
+import { fetchDirectory, filterDirectory, telHref, numbersOf, isFaxEntry } from "./lib/vraDirectory.js";
 
 // ── Phone extensions page (Oct 2026) ────────────────────────────────
 // Search box (name or number, filters as you type), the office cards with
@@ -45,8 +46,8 @@ function OfficeCard({ office }) {
   return (
     <div style={{ ...card, padding: "10px 12px" }}>
       <div style={{ fontSize: 15, fontWeight: 600, color: T.ink }}>{office.name}</div>
-      {office.address && <div style={{ fontSize: 12.5, color: T.muted, marginTop: 1, lineHeight: 1.35 }}>{office.address}</div>}
-      {office.note && <div style={{ fontSize: 12.5, color: T.muted, marginTop: 1 }}>{office.note}</div>}
+      {office.address && <div style={{ fontSize: 12.5, color: T.muted, marginTop: 1, lineHeight: 1.35 }}><PhoneText text={office.address} /></div>}
+      {office.note && <div style={{ fontSize: 12.5, color: T.muted, marginTop: 1 }}><PhoneText text={office.note} fax={!office.phone && !!office.fax} /></div>}
       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
         {numbersOf(office).map((n) => <NumberLink key={`${n.label}-${n.number}`} label={n.label} number={n.number} fax={n.fax} />)}
       </div>
@@ -62,7 +63,7 @@ function GroupCard({ group }) {
         {group.items.map((it, i) => (
           <div key={`${it.name}-${it.ext || it.phone}`} style={{ display: "flex", alignItems: "baseline", gap: 8, minHeight: 36, padding: "8px 12px", boxSizing: "border-box", borderTop: i ? `1px solid ${T.line}` : 0, fontSize: 14 }}>
             <span style={{ flex: 1, minWidth: 0, color: T.ink }}>
-              {it.name}{it.note && <span style={{ color: T.muted, fontSize: 12.5 }}> ({it.note})</span>}
+              <PhoneText text={it.name} fax={isFaxEntry(it)} />{it.note && <span style={{ color: T.muted, fontSize: 12.5 }}> (<PhoneText text={it.note} fax={isFaxEntry(it)} />)</span>}
             </span>
             <span style={{ color: T.lineStrong }}>—</span>
             {it.ext && <b style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, minWidth: 30, textAlign: "right" }}>{it.ext}</b>}

@@ -4,6 +4,8 @@ import { S, T, chip, btnSm, field, fieldLabel, RESPONSIVE_CSS } from "./theme.js
 import PageBar, { segWrap, segBtn, wrap, searchInput } from "./PageBar.jsx";
 import { SendIcon, ChevronDownIcon, ChevronRightIcon, SearchIcon } from "./icons.jsx";
 import { usePhone, PhoneHeading, APPBAR_H, TABBAR_H } from "./phone.jsx";
+import { linkifyPhones } from "./PhoneText.jsx";
+import { findPhones, faxLineFlags } from "./lib/phoneText.js";
 
 // ── Styles (shared palette with the rest of the app) ────────────────
 
@@ -32,8 +34,6 @@ const CODING_PHONE_EXAMPLES = [
   "PPV + buckle for macula-off RD",
   "67041 vs 67042 — when to use each?",
 ];
-// Escape model text before the light markdown (bold / bullets) is applied.
-const escHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export function AICodingAssistant({
   showReimbursement = false, phoneLayout = false,
@@ -115,26 +115,68 @@ export function AICodingAssistant({
     setInput("");
   };
 
-  // Simple markdown-ish rendering: bold (**text**), line breaks, bullet points
-  const renderContent = (text) => {
-    const lines = text.split("\n");
-    return lines.map((line, i) => {
-      // Bold
-      let rendered = escHtml(line).replace(/\*\*(.+?)\*\*/g, `<strong style="color:${T.ink};font-weight:600">$1</strong>`);
-      // Bullet points
-      const isBullet = /^\s*[-•]\s/.test(line);
-      if (isBullet) {
-        rendered = rendered.replace(/^\s*[-•]\s*/, "");
-        return (
-          <div key={i} style={{ display: "flex", gap: 6, marginBottom: 3, paddingLeft: 8 }}>
-            <span style={{ color: S.accent, flexShrink: 0 }}>•</span>
-            <span dangerouslySetInnerHTML={{ __html: rendered }} />
-          </div>
+  // Simple markdown-ish rendering: bold (**text**), `code`, ``` fences, line
+  // breaks, bullet points. Built as React nodes (no innerHTML). Phone numbers in
+  // text become tap-to-call links (voice only; fax stays plain — see
+  // lib/phoneText.js); never inside code. Numbers are found on the whole line,
+  // so a label in another token ("**Fax:** 508-…") still marks a fax.
+  const renderInline = (line, from, fax, key) => {
+    const phones = findPhones(line, { fax });
+    const nodes = [];
+    const rx = /`([^`]+)`|\*\*(.+?)\*\*/g;
+    let at = from;
+    let m;
+    rx.lastIndex = from;
+    while ((m = rx.exec(line))) {
+      if (m.index > at) nodes.push(...linkifyPhones(line.slice(at, m.index), { phones, offset: at }, `${key}t${at}`));
+      if (m[1] != null) {
+        nodes.push(<code key={`${key}c${m.index}`} style={{ fontFamily: T.mono, fontSize: "0.92em", background: T.paper, border: `1px solid ${T.line}`, borderRadius: 4, padding: "0 4px" }}>{m[1]}</code>);
+      } else {
+        nodes.push(
+          <strong key={`${key}b${m.index}`} style={{ color: T.ink, fontWeight: 600 }}>
+            {linkifyPhones(m[2], { phones, offset: m.index + 2 }, `${key}b${m.index}-`)}
+          </strong>
         );
       }
-      if (line.trim() === "") return <div key={i} style={{ height: 8 }} />;
-      return <div key={i} style={{ marginBottom: 3 }} dangerouslySetInnerHTML={{ __html: rendered }} />;
+      at = m.index + m[0].length;
+    }
+    if (at < line.length) nodes.push(...linkifyPhones(line.slice(at), { phones, offset: at }, `${key}t${at}`));
+    return nodes;
+  };
+  // The person's own question: plain text, numbers linked by the same rules.
+  const renderUser = (text) => linkifyPhones(text, {}, "u");
+  const renderContent = (text) => {
+    const lines = String(text).split("\n");
+    const faxFlags = faxLineFlags(lines);
+    const out = [];
+    let code = null; // lines of an open ``` fence
+    const flushCode = (key) => {
+      out.push(
+        <pre key={key} style={{ margin: "4px 0 6px", padding: "8px 10px", background: T.paper, border: `1px solid ${T.line}`, borderRadius: T.r, fontFamily: T.mono, fontSize: 12.5, lineHeight: 1.5, whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{code.join("\n")}</pre>
+      );
+      code = null;
+    };
+    lines.forEach((line, i) => {
+      if (/^\s*```/.test(line)) {
+        if (code) flushCode(`pre${i}`); else code = [];
+        return;
+      }
+      if (code) { code.push(line); return; }
+      const bullet = line.match(/^\s*[-•]\s+/);
+      if (bullet) {
+        out.push(
+          <div key={i} style={{ display: "flex", gap: 6, marginBottom: 3, paddingLeft: 8 }}>
+            <span style={{ color: S.accent, flexShrink: 0 }}>•</span>
+            <span>{renderInline(line, bullet[0].length, faxFlags[i], `l${i}`)}</span>
+          </div>
+        );
+        return;
+      }
+      if (line.trim() === "") { out.push(<div key={i} style={{ height: 8 }} />); return; }
+      out.push(<div key={i} style={{ marginBottom: 3 }}>{renderInline(line, 0, faxFlags[i], `l${i}`)}</div>);
     });
+    if (code) flushCode("pre-end");
+    return out;
   };
 
   const hasInput = !!input.trim();
@@ -191,7 +233,7 @@ export function AICodingAssistant({
           <div style={{ paddingTop: 10, display: "flex", flexDirection: "column", gap: 10 }}>
             {messages.map((msg, i) => msg.role === "user" ? (
               <div key={i} style={{ alignSelf: "flex-end", maxWidth: "85%", background: T.accentSoft, border: `1px solid ${T.accentLine}`, borderRadius: 16, padding: "6px 12px", fontSize: 13, lineHeight: 1.4, color: T.ink, overflowWrap: "anywhere" }}>
-                {msg.content}
+                {renderUser(msg.content)}
               </div>
             ) : (
               <div key={i} ref={i === lastAnswerIdx ? lastAnswerRef : undefined}
@@ -295,7 +337,7 @@ export function AICodingAssistant({
               border: `1px solid ${msg.role === "user" ? T.accentLine : T.line}`,
               overflowWrap: "anywhere",
             }}>
-              {msg.role === "user" ? msg.content : renderContent(msg.content)}
+              {msg.role === "user" ? renderUser(msg.content) : renderContent(msg.content)}
             </div>
           </div>
         ))}

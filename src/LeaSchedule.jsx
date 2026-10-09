@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { T, DOCTOR_ORDER, RESPONSIVE_CSS, appBar } from "./theme.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, doctorHalves, eventsOf, eventTime } from "./lib/vraSchedule.js";
 import { Pill, EventsCard } from "./SchedulePhone.jsx";
+import PhoneText from "./PhoneText.jsx";
 import { BackIcon } from "./icons.jsx";
 
 // ── LEA Hub schedule (Oct 2026, approved mockup "retina-rx-front-mockup") ──
@@ -128,8 +129,8 @@ export function ComingUp({ days, todayYmd, max = 4, onMore, style }) {
         <div key={it.key} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0", borderTop: i ? `1px solid ${T.line}` : 0, minWidth: 0 }}>
           <span style={{ width: 74, flex: "none", fontSize: 12, color: T.muted, fontVariantNumeric: "tabular-nums" }}>{it.date === todayYmd ? "Today" : shortDate(it.date)}</span>
           {it.kind === "closed"
-            ? <span style={{ display: "inline-flex", padding: "2px 9px", borderRadius: 999, background: T.amberSoft, color: T.amber, fontSize: 12.5, fontWeight: 600 }}>{it.text}</span>
-            : <span style={{ fontSize: 13, color: T.ink, minWidth: 0, overflowWrap: "anywhere" }}>{it.text} <span style={{ color: T.muted, fontSize: 12 }}>· {it.time}</span></span>}
+            ? <span style={{ display: "inline-flex", padding: "2px 9px", borderRadius: 999, background: T.amberSoft, color: T.amber, fontSize: 12.5, fontWeight: 600 }}><PhoneText text={it.text} /></span>
+            : <span style={{ fontSize: 13, color: T.ink, minWidth: 0, overflowWrap: "anywhere" }}><PhoneText text={it.text} /> <span style={{ color: T.muted, fontSize: 12 }}>· {it.time}</span></span>}
         </div>
       ))}
       {items.length > shown.length && (
