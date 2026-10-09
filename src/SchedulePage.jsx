@@ -1,20 +1,28 @@
 import { useState, useEffect, Fragment } from "react";
 import PageBar, { wrap, segWrap, segBtn } from "./PageBar.jsx";
-import { DocChip, ManagersLine, StaffLine } from "./CallBoard.jsx";
-import { T, card, DOCTOR_ORDER, SITE_TINTS, doctorColor } from "./theme.js";
+import { DocChip, ManagersLine, StaffLine, EventsLine } from "./CallBoard.jsx";
+import DayStepper, { scheduleRange } from "./DayStepper.jsx";
+import { T, card, DOCTOR_ORDER, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon, PhoneIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
 import SchedulePhone, { nextTiles, EventDot } from "./SchedulePhone.jsx";
+import { majorHoliday } from "./lib/practiceCalendar.js";
 import {
-  fetchSchedule, scheduleOk, ymdOf, dateOfYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
+  fetchSchedule, scheduleOk, ymdOf, dateOfYmd, addDaysYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
   doctorHalves, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime,
 } from "./lib/vraSchedule.js";
 
-// ── Schedule — 2-week view from the shared VRA Google Calendar (Oct 2026) ─
-// Doctors view (default): one row per doctor, Mon–Fri columns, site per cell.
-// By-site view: days × sites with doctor chips. Below both: the role-first
-// tech board for one day. Practice-wide, no PIN. Data: server GET
-// /api/schedule (secret ICS feed read server-side). Read-only.
+// ── Schedule — from the shared VRA Google Calendar (Oct 2026) ───────────
+// Computer (owner-approved mockup, Oct 9 2026): ONE DAY at a time. The page
+// bar carries the Call Board's day stepper (‹ date › Today); below it three
+// sections for that day — Doctors (on call + one row per site, same helpers
+// as the Call Board), Techs (the role-first tech board, one card per site,
+// Leominster's header strip in the Call Board's LEOM yellow, translator in
+// green) and Managers, front desk and events. "See 2 weeks ›" at the bottom
+// opens the older two-week grid (Doctors / By site), collapsed by default.
+// Phone: unchanged — SchedulePhone, one day at a time with next-day tiles.
+// Practice-wide, no PIN. Data: server GET /api/schedule (secret ICS feed
+// read server-side). Read-only.
 
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const TODAY_TINT = "#F3F7FA";
@@ -89,7 +97,16 @@ function DatePick({ from, todayYmd, onChange, phone }) {
 export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   const { phone } = usePhone();
   const todayYmd = ymdOf(new Date());
-  const [from, setFrom] = useState(initialDay || todayYmd); // first day shown (date picker)
+  // First day fetched. Phone: the picked date. Computer: today, so the day
+  // stepper can go back to today — unless initialDay lies outside the
+  // two weeks that start today (then the fetch starts on it).
+  const [from, setFrom] = useState(() => {
+    if (phone || !initialDay) return initialDay || todayYmd;
+    return initialDay >= todayYmd && initialDay <= addDaysYmd(todayYmd, 13) ? todayYmd : initialDay;
+  });
+  // Computer: the one day shown (day stepper), and the two-week grid fold.
+  const [day, setDay] = useState(initialDay || todayYmd);
+  const [showGrid, setShowGrid] = useState(false);
   // Phone: the date the next-day tiles count from (date input / Today), the
   // tiles themselves (kept while a tile's day loads), and open tech folds.
   const [anchor, setAnchor] = useState(todayYmd);
@@ -99,13 +116,11 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   const toggleFold = (id) => setOpenFolds((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const [sched, setSched] = useState(null); // null = loading
   const [view, setView] = useState("doctors"); // "doctors" | "site"
-  const [techDay, setTechDay] = useState(null); // YYYY-MM-DD picked on the tech board (null = default)
   const [showSheet, setShowSheet] = useState(false); // raw tech sheet open
 
   useEffect(() => {
     let alive = true;
     setSched(null);
-    setTechDay(null);
     setShowSheet(false);
     fetchSchedule(14, from === todayYmd ? null : from).then((data) => {
       if (!alive) return;
@@ -117,7 +132,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
 
   // Opened on a later day: the next-day tiles still count from today.
   useEffect(() => {
-    if (!initialDay || initialDay === todayYmd) return undefined;
+    if (!phone || !initialDay || initialDay === todayYmd) return undefined; // phone tiles only
     let alive = true;
     fetchSchedule(14, null).then((data) => { if (alive && scheduleOk(data)) setTiles(nextTiles(data, todayYmd)); });
     return () => { alive = false; };
@@ -153,13 +168,14 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   }
   const weekAll = (monday) => (ok ? sched.days.filter((d) => mondayOf(d.date) === monday) : []);
 
-  // ── Tech board day picker: the first five weekdays in range ──
-  const techDays = ok
-    ? sched.days.filter((d) => { const w = dateOfYmd(d.date).getDay(); return w !== 0 && w !== 6; }).slice(0, 5)
-    : [];
-  const oneWeek = techDays.length > 0 && techDays.every((d) => mondayOf(d.date) === mondayOf(techDays[0].date));
-  const defaultTechDay = (techDays.find((d) => d.date === todayYmd && d.techs) || techDays.find((d) => d.techs) || techDays[0] || {}).date || null;
-  const tDay = techDays.find((d) => d.date === (techDay || defaultTechDay)) || null;
+  // ── Computer: the one day shown (day stepper), clamped to the loaded range ──
+  const [minYmd, maxYmd] = scheduleRange(sched, todayYmd, ok);
+  const shownYmd = !ok ? day : (day >= minYmd && day <= maxYmd ? day : todayYmd);
+  const isToday = shownYmd === todayYmd;
+  const when = isToday ? "today" : "that day";
+  const pickDay = (ymd) => { setDay(ymd); setShowSheet(false); };
+  const tDay = ok ? sched.days.find((d) => d.date === shownYmd) || null : null;
+  const dayHoliday = majorHoliday(dateOfYmd(shownYmd));
 
   // ── Styles (mockup .week / table / .tech) ──
   const th = { padding: "8px 10px", fontSize: 12.5, color: T.muted, fontWeight: 500, textAlign: "left", background: T.paper, borderBottom: `1px solid ${T.line}`, whiteSpace: "nowrap" };
@@ -252,10 +268,14 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   const translator = translatorOf(t);
   const endHour = (hours) => { const m = String(hours || "").match(/-(\d{1,2}:\d{2})$/); return m ? m[1] : null; };
 
+  // One column card per site. Header strip: Worcester accent-soft blue,
+  // Leominster the Call Board's LEOM yellow (SITE_TINTS.LEOM.bg).
   const siteCard = (site, title) => {
     const half = t.roles[site] || { AM: {}, PM: {} };
-    const tint = site === "LEOM" ? SITE_TINTS.LEOM : null;
+    const strip = site === "LEOM" ? SITE_TINTS.LEOM.bg : T.accentSoft;
     const rows = TECH_ROWS.filter((r) => r.always || (half.AM[r.key] || []).length || (half.PM[r.key] || []).length);
+    // "7 techs": distinct names in the named roles ("Other" holds free text).
+    const count = new Set(["AM", "PM"].flatMap((h) => TECH_ROWS.filter((r) => r.key !== "other").flatMap((r) => half[h][r.key] || []))).size;
     // A person's note shows once per half (first row they appear in); the PM
     // note is skipped when it repeats the AM note.
     const seen = { AM: new Set(), PM: new Set() };
@@ -290,14 +310,17 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
       );
     };
     return (
-      <div style={{ minWidth: 0, borderRight: site === "WORC" ? `1px solid ${T.line}` : 0, background: tint ? tint.bg : "transparent" }}>
-        <div style={{ padding: "7px 14px", fontSize: 12.5, fontWeight: 600, color: tint ? tint.text : T.muted, background: tint ? tint.head : T.paper, borderBottom: `1px solid ${T.line}` }}>{title}</div>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: T.sans }}>
+      <div style={{ minWidth: 0, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden", background: T.surface }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, padding: "8px 12px", fontSize: 13.5, fontWeight: 600, color: T.ink, background: strip, borderBottom: `1px solid ${T.line}` }}>
+          <span>{title}</span>
+          {count > 0 && <span style={{ fontSize: 12, fontWeight: 500, color: T.muted }}>{count} tech{count === 1 ? "" : "s"}</span>}
+        </div>
+        <table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontFamily: T.sans }}>
           <thead>
             <tr>
-              <th style={{ ...th, width: 92, background: tint ? tint.head : T.paper }} />
-              <th style={{ ...th, background: tint ? tint.head : T.paper }}>AM</th>
-              <th style={{ ...th, background: tint ? tint.head : T.paper }}>PM</th>
+              <th style={{ ...th, width: 84, background: T.surface, padding: "6px 10px" }} />
+              <th style={{ ...th, background: T.surface, padding: "6px 10px" }}>AM</th>
+              <th style={{ ...th, background: T.surface, padding: "6px 10px" }}>PM</th>
             </tr>
           </thead>
           <tbody>
@@ -362,25 +385,183 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
     );
   }
 
+  // ── Computer: one day (the day stepper's) ──
+  const sec = { padding: "14px 18px", borderTop: `1px solid ${T.line}` };
+  const lbl = { fontSize: 11.5, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: T.muted, margin: "0 0 8px", fontFamily: T.sans };
+  const subS = { fontSize: 12.5, color: T.muted, fontFamily: T.sans };
+  const onCall = tDay ? tDay.onCall : null;
+  const daySites = tDay ? sessionsBySite(tDay.sessions) : [];
+  const dayManagers = tDay ? managersOf(tDay) : [];
+  const dayFrontDesk = tDay ? frontDeskOf(tDay) : [];
+  const dayEvents = eventsOf(tDay);
+  const staffLabel = { width: 78 };
+
+  const doctorsSection = (
+    <div style={{ ...sec, borderTop: 0 }}>
+      <div style={lbl}>Doctors</div>
+      <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "200px minmax(0, 1fr)", gap: "10px 18px", alignItems: "start" }}>
+        {/* On call — name in red, tech, through … */}
+        <div style={{ minWidth: 0, fontFamily: T.sans }}>
+          <div style={subS}>On call</div>
+          <div style={{ fontSize: 18, fontWeight: 600, color: onCall && onCall.doctor ? T.red : T.muted, lineHeight: 1.3 }}>
+            {onCall && onCall.doctor ? onCall.doctor : "—"}
+          </div>
+          {onCall && onCall.tech && <div style={subS}>Tech: {onCall.tech}</div>}
+          {onCall && onCall.doctorThrough && <div style={{ ...subS, whiteSpace: "nowrap" }}>through {shortDate(onCall.doctorThrough)}</div>}
+        </div>
+        {/* Where each doctor is — one row per site (Call Board helpers) */}
+        <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 5 }}>
+          {tDay && tDay.closed && (
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: T.amber, fontFamily: T.sans }}>
+              Closed{tDay.closureName ? ` — ${tDay.closureName}` : ""}
+            </div>
+          )}
+          {dayHoliday && !(tDay && tDay.closed) && (
+            <div style={{ fontSize: 13, color: T.amber, fontFamily: T.sans }}>{dayHoliday} — office closed</div>
+          )}
+          {daySites.map(({ site, docs }) => (
+            <div key={site} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", minWidth: 0 }}>
+              <span style={{ width: 56, flex: "none", fontSize: 12, fontWeight: 600, color: T.muted, fontFamily: T.sans }}>{site}</span>
+              {docs.map((d) => <DocChip key={d.doctor} doctor={d.doctor} half={d.half} size="md" />)}
+            </div>
+          ))}
+          {!daySites.length && !(tDay && tDay.closed) && (
+            <div style={subS}>{tDay ? "No clinic sessions" : `No schedule for ${when}`}</div>
+          )}
+          {tDay && tDay.vacations.length > 0 && (
+            <div style={{ fontSize: 12.5, fontWeight: 600, color: T.red, fontFamily: T.sans }}>Out: {tDay.vacations.join(", ")}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const techsSection = (
+    <div style={sec}>
+      <div style={{ display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "2px 12px", margin: "0 0 8px" }}>
+        <div style={{ ...lbl, margin: 0 }}>Techs</div>
+        {t && (t.headline || (onCall && onCall.tech)) && (
+          <span style={{ ...subS, minWidth: 0 }}>
+            {[t.headline, onCall && onCall.tech ? `Tech on call: ${onCall.tech}` : null].filter(Boolean).join(" · ")}
+          </span>
+        )}
+      </div>
+
+      {!t && <div style={{ ...subS, fontSize: 13 }}>No tech sheet {when}</div>}
+
+      {t && t.roles && (
+        <>
+          <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 14, alignItems: "start" }}>
+            {siteCard("WORC", "Worcester")}
+            {siteCard("LEOM", "Leominster")}
+          </div>
+          {translator && (
+            <div style={{ display: "flex", alignItems: "baseline", flexWrap: "wrap", gap: "2px 12px", marginTop: 10, padding: "7px 12px", borderRadius: T.r, background: TRANSLATOR.bg, fontFamily: T.sans, fontSize: 13 }}>
+              <span style={{ color: TRANSLATOR.fg, fontWeight: 600, width: 72, flex: "none" }}>Translator</span>
+              <span style={{ color: T.ink, fontWeight: 600, minWidth: 0 }}>
+                {translator.raw ? translator.raw : translator.same ? `${translator.am} all day` : (
+                  <>{translator.am} <span style={{ color: T.muted, fontWeight: 400, fontSize: 12 }}>AM</span>
+                    <span style={{ color: T.lineStrong }}> / </span>
+                    {translator.pm} <span style={{ color: T.muted, fontWeight: 400, fontSize: 12 }}>PM</span></>
+                )}
+              </span>
+            </div>
+          )}
+          <div style={{ marginTop: 10, fontSize: 12.5, color: T.ink2, display: "flex", gap: "4px 18px", flexWrap: "wrap", fontFamily: T.sans }}>
+            {footItem(isToday ? "Off today" : "Off that day", t.off && t.off.length ? t.off.join(", ") : null, true)}
+            {footItem("Clinical trials", t.trials ? t.trials.replace(/\s*,\s*/g, " · ") : null)}
+            {footItem("Phone/portal", `Worcester ${(t.phonePortal && t.phonePortal.WORC) || "—"} · Leominster ${(t.phonePortal && t.phonePortal.LEOM) || "—"}`)}
+            {(t.extra || []).map((x) => <span key={x}>{x}</span>)}
+          </div>
+        </>
+      )}
+
+      {/* Older server (no structured roles): the flat summary. */}
+      {t && !t.roles && (
+        <div style={{ fontSize: 13, color: T.ink2, lineHeight: 1.6, fontFamily: T.sans }}>
+          <div>Back AM: {names(t.worcesterBackAM)} / Back PM: {names(t.worcesterBackPM)}</div>
+          {((t.leominsterBackAM || []).length > 0 || (t.leominsterBackPM || []).length > 0) && (
+            <div>Leominster: AM {names(t.leominsterBackAM)}{(t.leominsterBackPM || []).length > 0 ? ` / PM ${names(t.leominsterBackPM)}` : ""}</div>
+          )}
+          {translator && <div style={{ color: TRANSLATOR.fg }}>Translator: {translator.raw || (translator.same ? `${translator.am} all day` : `${translator.am} AM, ${translator.pm} PM`)}</div>}
+          {t.off && t.off.length > 0 && <div style={{ color: T.red, fontWeight: 600 }}>Off: {t.off.join(", ")}</div>}
+        </div>
+      )}
+
+      {t && (
+        <>
+          <button onClick={() => setShowSheet(!showSheet)} aria-expanded={showSheet}
+            style={{ display: "block", background: "none", border: "none", padding: "10px 0 0", cursor: "pointer", fontFamily: T.sans, fontSize: 12.5, color: T.accent, textAlign: "left" }}>
+            {showSheet ? "Hide Nana's full sheet ▾" : "Show Nana's full sheet (hours, open/close) ▸"}
+          </button>
+          {showSheet && (
+            <div style={{ paddingTop: 8, fontSize: 12.5, lineHeight: 1.55, color: T.ink2, whiteSpace: "pre-wrap", fontFamily: T.sans }}>
+              {t.text}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+
+  const staffSection = (
+    <div style={sec}>
+      <div style={lbl}>Managers, front desk and events</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {dayManagers.length > 0 && <ManagersLine managers={dayManagers} labelStyle={staffLabel} />}
+        {dayFrontDesk.length > 0 && <StaffLine label="Front desk" people={dayFrontDesk} labelStyle={staffLabel} />}
+        {dayEvents.length > 0 && <EventsLine events={dayEvents} label="Events" labelStyle={staffLabel} />}
+        {!dayManagers.length && !dayFrontDesk.length && !dayEvents.length && (
+          <div style={{ ...subS, fontSize: 13 }}>Nothing listed {when}</div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: T.paper, color: T.ink, fontFamily: T.sans }}>
-      <PageBar onBack={onBack} backLabel="Hub" title="Schedule" sub="VRA calendar · next 2 weeks"
-        right={onOpenExtensions && (
-          <button type="button" onClick={onOpenExtensions}
-            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: 0, padding: "4px 0", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>
-            <PhoneIcon size={15} />Phone extensions ›
-          </button>
+      <PageBar onBack={onBack} backLabel="Hub" title="Schedule"
+        right={(
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "none" }}>
+            <DayStepper value={shownYmd} todayYmd={todayYmd} min={minYmd} max={maxYmd} onChange={pickDay} />
+            {onOpenExtensions && (
+              <button type="button" className="vra-daybtn" onClick={onOpenExtensions} aria-label="Phone extensions" title="Phone extensions"
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, padding: 0, boxSizing: "border-box", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, color: T.accent, cursor: "pointer", flex: "none" }}>
+                <PhoneIcon size={15} />
+              </button>
+            )}
+          </div>
         )} />
 
       <div className="vra-wrap" style={wrap({ paddingTop: 20, paddingBottom: 40 })}>
+        {statusBlock}
+
+        {/* ── One day: Doctors · Techs · Managers, front desk and events ── */}
+        {ok && (
+          <section style={card({ overflow: "hidden" })} aria-label={`Schedule for ${shortDate(shownYmd)}`}>
+            {doctorsSection}
+            {techsSection}
+            {staffSection}
+          </section>
+        )}
+
+        {/* ── Two-week grid (older view), collapsed by default ── */}
+        {sched !== null && (
+          <button type="button" className="vra-daybtn" onClick={() => setShowGrid(!showGrid)} aria-expanded={showGrid}
+            style={{ display: "inline-block", margin: "14px 0", background: "none", border: 0, padding: "4px 0", cursor: "pointer", color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500 }}>
+            {showGrid ? "Hide 2 weeks" : "See 2 weeks ›"}
+          </button>
+        )}
+
         {/* View switch · start-date picker · doctor legend */}
-        {(
+        {showGrid && (
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "0 0 14px", flexWrap: "wrap" }}>
             {ok && <div style={segWrap} role="group" aria-label="Schedule view">
               <button onClick={() => setView("doctors")} aria-pressed={view === "doctors"} style={segBtn(view === "doctors")}>Doctors</button>
               <button onClick={() => setView("site")} aria-pressed={view === "site"} style={segBtn(view === "site")}>By site</button>
             </div>}
-            <DatePick from={from} todayYmd={todayYmd} onChange={setFrom} />
+            {/* Picking a start date reloads from it and moves the day view there too. */}
+            <DatePick from={from} todayYmd={todayYmd} onChange={(v) => { setFrom(v); setDay(v); }} />
             {ok && <div className="vra-legend" style={{ marginLeft: "auto", display: "flex", gap: 10, fontSize: 12.5, color: T.muted, flexWrap: "wrap" }}>
               {DOCTOR_ORDER.map((d) => (
                 <span key={d}><i style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", marginRight: 5, verticalAlign: 1, background: doctorColor(d).fg }} />{d}</span>
@@ -389,10 +570,8 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
           </div>
         )}
 
-        {statusBlock}
-
         {/* ── Doctors view ── */}
-        {ok && view === "doctors" && weeks.map((w) => (
+        {ok && showGrid && view === "doctors" && weeks.map((w) => (
           <section key={w.monday} style={card({ marginBottom: 16, overflow: "hidden" })}>
             {weekHead(w)}
             <div className="vra-table">
@@ -452,7 +631,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
         ))}
 
         {/* ── By-site view ── */}
-        {ok && view === "site" && weeks.map((w) => (
+        {ok && showGrid && view === "site" && weeks.map((w) => (
           <section key={w.monday} style={card({ marginBottom: 16, overflow: "hidden" })}>
             {weekHead(w)}
             <div className="vra-table">
@@ -496,79 +675,6 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
             </div>
           </section>
         ))}
-
-        {/* ── Tech board (one day, role-first per site) ── */}
-        {ok && techDays.length > 0 && (
-          <section style={card({ marginBottom: 16, overflow: "hidden" })}>
-            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 12px", padding: "10px 16px", borderBottom: `1px solid ${T.line}` }}>
-              <h3 style={h3}>Techs — {tDay ? shortDate(tDay.date) : ""}</h3>
-              {t && (
-                <span style={{ fontSize: 13, color: T.muted, flex: "1 1 260px", minWidth: 0 }}>
-                  {[
-                    t.headline,
-                    tDay.onCall && tDay.onCall.tech ? `Tech on call: ${tDay.onCall.tech}` : null,
-                    translator ? `Translator: ${translator.raw || (translator.same ? `${translator.am} all day` : `${translator.am} AM, ${translator.pm} PM`)}` : null,
-                  ].filter(Boolean).join(" · ")}
-                </span>
-              )}
-              <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
-                {techDays.map((d) => {
-                  const on = tDay && d.date === tDay.date;
-                  const dt = dateOfYmd(d.date);
-                  return (
-                    <button key={d.date} onClick={() => { setTechDay(d.date); setShowSheet(false); }} aria-pressed={!!on}
-                      title={d.techs ? shortDate(d.date) : `${shortDate(d.date)} — no tech sheet`}
-                      style={{ padding: "4px 10px", borderRadius: 5, fontSize: 12.5, fontFamily: T.sans, cursor: "pointer", border: `1px solid ${on ? T.accentLine : "transparent"}`, background: on ? T.accentSoft : "transparent", color: on ? T.accent : T.muted, fontWeight: on ? 600 : 400, opacity: d.techs ? 1 : 0.55 }}>
-                      {oneWeek ? DOW[dt.getDay()] : `${DOW[dt.getDay()]} ${dt.getDate()}`}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {!t && <div style={{ padding: "12px 16px", fontSize: 13, color: T.muted }}>No tech sheet for this day.</div>}
-
-            {t && t.roles && (
-              <>
-                <div className="vra-sites" style={{ display: "grid", gridTemplateColumns: "1.25fr 1fr" }}>
-                  {siteCard("WORC", "Worcester")}
-                  {siteCard("LEOM", "Leominster")}
-                </div>
-                <div style={{ padding: "9px 16px", borderTop: `1px solid ${T.line}`, fontSize: 12.5, color: T.ink2, display: "flex", gap: "4px 18px", flexWrap: "wrap" }}>
-                  {footItem("Off today", t.off && t.off.length ? t.off.join(", ") : null, true)}
-                  {footItem("Clinical trials", t.trials ? t.trials.replace(/\s*,\s*/g, " · ") : null)}
-                  {footItem("Phone/portal", `Worcester ${(t.phonePortal && t.phonePortal.WORC) || "—"} · Leominster ${(t.phonePortal && t.phonePortal.LEOM) || "—"}`)}
-                  {(t.extra || []).map((x) => <span key={x}>{x}</span>)}
-                </div>
-              </>
-            )}
-
-            {/* Older server (no structured roles): the flat summary. */}
-            {t && !t.roles && (
-              <div style={{ padding: "10px 16px", fontSize: 13, color: T.ink2, lineHeight: 1.6 }}>
-                <div>Back AM: {names(t.worcesterBackAM)} / Back PM: {names(t.worcesterBackPM)}</div>
-                {((t.leominsterBackAM || []).length > 0 || (t.leominsterBackPM || []).length > 0) && (
-                  <div>Leominster: AM {names(t.leominsterBackAM)}{(t.leominsterBackPM || []).length > 0 ? ` / PM ${names(t.leominsterBackPM)}` : ""}</div>
-                )}
-                {t.off && t.off.length > 0 && <div style={{ color: T.red, fontWeight: 600 }}>Off: {t.off.join(", ")}</div>}
-              </div>
-            )}
-
-            {t && (
-              <>
-                <button onClick={() => setShowSheet(!showSheet)} aria-expanded={showSheet}
-                  style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", borderTop: `1px solid ${T.line}`, padding: "9px 16px", cursor: "pointer", fontFamily: T.sans, fontSize: 12.5, color: T.accent }}>
-                  {showSheet ? "Hide Nana's full sheet ▾" : "Show Nana's full sheet (hours, open/close) ▸"}
-                </button>
-                {showSheet && (
-                  <div style={{ padding: "0 16px 12px", fontSize: 12.5, lineHeight: 1.55, color: T.ink2, whiteSpace: "pre-wrap", fontFamily: T.sans }}>
-                    {t.text}
-                  </div>
-                )}
-              </>
-            )}
-          </section>
-        )}
 
         {ok && (
           <p style={{ color: T.muted, fontSize: 12, margin: "8px 0 0" }}>
