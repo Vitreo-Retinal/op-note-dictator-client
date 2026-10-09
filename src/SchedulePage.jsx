@@ -31,6 +31,8 @@ import {
 
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const TODAY_TINT = "#F3F7FA";
+// Two-week grid: shade for weekday columns with no loaded data before today.
+const BLANK_BG = T.paper;
 const NONE = T.lineStrong; // "—" in empty tech cells
 
 // Monday (YYYY-MM-DD) of the week containing ymd.
@@ -204,6 +206,9 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   // Mon–Fri blocks from the week of the first loaded day through the last
   // loaded day (a block with no loaded weekday is skipped). Five equal
   // columns; past days faded; days outside the loaded data left blank.
+  // A weekday before today (or before the first loaded day) with no data is
+  // "blank": the whole column is shaded gray and left empty (the schedule
+  // loads from today, so the days already gone this week have nothing).
   const byDate = new Map(ok ? sched.days.map((d) => [d.date, d]) : []);
   const gridWeeks = [];
   if (ok && sched.days.length) {
@@ -213,10 +218,12 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
         const ymd = addDaysYmd(m, i);
         const d = byDate.get(ymd) || null;
         const hol = majorHoliday(dateOfYmd(ymd));
+        const past = ymd < todayYmd;
         return {
-          ymd, d, today: ymd === todayYmd, past: ymd < todayYmd,
+          ymd, d, today: ymd === todayYmd, past,
+          blank: !d && (past || ymd < dates[0]),
           closed: !!d && (d.closed || !!hol), closedName: d ? d.closureName || hol : null,
-          canOpen: !!d && ymd >= minYmd && ymd <= maxYmd,
+          canOpen: !!d && !past && ymd >= minYmd && ymd <= maxYmd,
         };
       });
       if (cols.some((c) => c.d)) gridWeeks.push({ monday: m, cols });
@@ -262,7 +269,8 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
     ...(tint ? { background: tint } : null),
     ...extra,
     ...(c.closed ? { background: T.amberSoft } : null),
-    ...(c.past ? { opacity: 0.38 } : null),
+    ...(c.past && c.d ? { opacity: 0.38 } : null),
+    ...(c.blank ? { background: BLANK_BG } : null),
   });
   const mutedTxt = { color: T.muted };
   const halfTag = { color: T.muted, fontSize: 11, fontWeight: 500, marginLeft: 3 };
@@ -325,7 +333,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
               {w.cols.map((c) => {
                 const text = `${dayLabel(c.ymd)}${c.today ? " · Today" : ""}`;
                 return (
-                  <th key={c.ymd} style={{ ...gTh, ...(c.today ? { color: T.accent, background: T.accentSoft } : null) }}>
+                  <th key={c.ymd} style={{ ...gTh, ...(c.today ? { color: T.accent, background: T.accentSoft } : null), ...(c.blank ? { color: T.lineStrong, fontWeight: 500, background: BLANK_BG } : null) }}>
                     {c.canOpen ? (
                       <button type="button" className="vra-daybtn" onClick={() => openDay(c.ymd)} title={`Open ${shortDate(c.ymd)} above`}
                         style={{ background: "none", border: 0, padding: 0, font: "inherit", color: "inherit", cursor: "pointer", borderBottom: "1px dotted currentColor" }}>
