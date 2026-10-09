@@ -1,16 +1,16 @@
 import { useState, useEffect, Fragment } from "react";
-import PageBar, { wrap, segWrap, segBtn } from "./PageBar.jsx";
+import PageBar, { wrap } from "./PageBar.jsx";
 import { DocChip, ManagersLine, StaffLine, EventsLine } from "./CallBoard.jsx";
 import DayStepper, { scheduleRange } from "./DayStepper.jsx";
 import { T, card, DOCTOR_ORDER, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon, PhoneIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
-import SchedulePhone, { nextTiles, EventDot } from "./SchedulePhone.jsx";
+import SchedulePhone, { nextTiles } from "./SchedulePhone.jsx";
 import PhoneText from "./PhoneText.jsx";
 import { majorHoliday } from "./lib/practiceCalendar.js";
 import {
-  fetchSchedule, scheduleOk, ymdOf, dateOfYmd, addDaysYmd, monDay, shortDate, bySiteOrder, sessionsBySite,
-  doctorHalves, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime,
+  fetchSchedule, scheduleOk, ymdOf, dateOfYmd, addDaysYmd, monDay, shortDate, sessionsBySite,
+  doctorHalves, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime,
 } from "./lib/vraSchedule.js";
 
 // ── Schedule — from the shared VRA Google Calendar (Oct 2026) ───────────
@@ -20,7 +20,11 @@ import {
 // as the Call Board), Techs (the role-first tech board, one card per site,
 // Leominster's header strip in the Call Board's LEOM yellow, translator in
 // green) and Managers, front desk and events. "See 2 weeks ›" at the bottom
-// opens the older two-week grid (Doctors / By site), collapsed by default.
+// opens the two-week grid (collapsed by default; mockup approved Oct 9 2026):
+// Mon–Fri week blocks with equal columns — doctor rows, then back techs per
+// site (Leominster yellow) and the translator, then events. Past days faded;
+// managers / front desk out that week sit in the week's header line; a
+// column's date opens that day in the day view above.
 // Phone: unchanged — SchedulePhone, one day at a time with next-day tiles.
 // Practice-wide, no PIN. Data: server GET /api/schedule (secret ICS feed
 // read server-side). Read-only.
@@ -49,7 +53,6 @@ function rotationLabel(days, key) {
   return runs.map((r, i) => ({ who: r.who, from: i === 0 ? null : DOW[dateOfYmd(r.from.date).getDay()] }));
 }
 
-// "Day 6" header label
 // General events in a table cell: "6:00–9:00 PM · Title" + muted location (neutral).
 function EventList({ events }) {
   return (
@@ -116,7 +119,6 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   const pickDate = (v) => { setAnchor(v); setTiles(null); setFrom(v); };
   const toggleFold = (id) => setOpenFolds((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const [sched, setSched] = useState(null); // null = loading
-  const [view, setView] = useState("doctors"); // "doctors" | "site"
   const [showSheet, setShowSheet] = useState(false); // raw tech sheet open
 
   useEffect(() => {
@@ -141,33 +143,11 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
 
   const ok = scheduleOk(sched);
 
-  // Weekends only when they carry sessions or a closure.
-  const shown = ok
-    ? sched.days.filter((d) => {
-      const dow = dateOfYmd(d.date).getDay();
-      return (dow !== 0 && dow !== 6) || d.sessions.length > 0 || d.closed;
-    })
-    : [];
-
-  // Site columns present anywhere in the 2 weeks, fixed order (unknown sites last).
-  const sites = ok
-    ? [...new Set(sched.days.flatMap((d) => d.sessions.map((s) => s.site)))].sort(bySiteOrder)
-    : [];
-
   // Doctor rows: Brittany's order, then any other initials seen in the calendar.
   const doctors = ok
     ? [...DOCTOR_ORDER, ...[...new Set(sched.days.flatMap((d) => [...d.sessions.map((s) => s.doctor), ...d.vacations]))]
       .filter((x) => !DOCTOR_ORDER.includes(x)).sort()]
     : [];
-
-  // Group shown days into weeks; the header uses ALL days of that week in range.
-  const weeks = [];
-  for (const d of shown) {
-    const wk = mondayOf(d.date);
-    if (!weeks.length || weeks[weeks.length - 1].monday !== wk) weeks.push({ monday: wk, days: [] });
-    weeks[weeks.length - 1].days.push(d);
-  }
-  const weekAll = (monday) => (ok ? sched.days.filter((d) => mondayOf(d.date) === monday) : []);
 
   // ── Computer: the one day shown (day stepper), clamped to the loaded range ──
   const [minYmd, maxYmd] = scheduleRange(sched, todayYmd, ok);
@@ -192,49 +172,6 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
   const updated = ok && sched.generatedAt
     ? new Date(sched.generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
     : null;
-
-  const weekHead = (w, title) => {
-    const all = weekAll(w.monday);
-    const doc = rotationLabel(all, "doctor");
-    const tech = rotationLabel(all, "tech");
-    // Managers: as of today when today is in this week, else the week's first
-    // weekday; a later change that week is noted, e.g. "(vacation from Thu)".
-    const wkdays = all.filter((d) => { const x = dateOfYmd(d.date).getDay(); return x !== 0 && x !== 6; });
-    const ref = wkdays.find((d) => d.date === todayYmd) || wkdays.find((d) => d.date >= todayYmd) || wkdays[0] || null;
-    const mgrs = ref ? managersOf(ref) : [];
-    const fd = ref ? frontDeskOf(ref) : [];
-    // A later change that week, per person: "(vacation from Thu)".
-    const laterOf = (field) => {
-      const out = {};
-      if (!ref) return out;
-      for (const m of ref[field] || []) {
-        const key = (x) => `${x.status}|${x.site}|${x.ext}|${x.part || ""}`;
-        const next = wkdays.find((d) => d.date > ref.date && (d[field] || []).some((x) => x.name === m.name && key(x) !== key(m)));
-        if (!next) continue;
-        const x = next[field].find((y) => y.name === m.name);
-        const what = x.status === "vacation" ? "vacation" : x.status === "out" ? "out" : (x.site || "in");
-        out[m.name] = `(${what} from ${DOW[dateOfYmd(next.date).getDay()]})`;
-      }
-      return out;
-    };
-    const later = laterOf("managers");
-    const laterFd = laterOf("frontDesk");
-    return (
-      <>
-        <div style={head}>
-          <h3 style={h3}>{title || `Week of ${monDay(w.monday)}`}</h3>
-          {doc && <span style={oc}>On call {runLabel(doc)}</span>}
-          {tech && <span style={oc}>Tech {runLabel(tech)}</span>}
-        </div>
-        {mgrs.length > 0 && (
-          <ManagersLine managers={mgrs} extra={later} labelStyle={{ width: 64 }} style={{ padding: "6px 16px", borderBottom: `1px solid ${T.line}`, background: T.surface }} />
-        )}
-        {fd.length > 0 && (
-          <StaffLine label="Front desk" people={fd} extra={laterFd} labelStyle={{ width: 64 }} style={{ padding: "6px 16px", borderBottom: `1px solid ${T.line}`, background: T.surface }} />
-        )}
-      </>
-    );
-  };
 
   // One doctor-view cell (not closed).
   const docCell = (d, doctor) => {
@@ -262,6 +199,189 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
     const where = am && pm ? (am === pm ? am : `${am} / ${pm}`) : `${am || pm} ${am ? "AM" : "PM"}`;
     return <div key={doctor} style={{ fontSize: 12, fontWeight: 600, color: doctorColor(doctor).fg, whiteSpace: "nowrap" }}>{doctor} · {where}</div>;
   });
+
+  // ── Two-week grid (owner-approved mockup, Oct 9 2026) ──
+  // Mon–Fri blocks from the week of the first loaded day through the last
+  // loaded day (a block with no loaded weekday is skipped). Five equal
+  // columns; past days faded; days outside the loaded data left blank.
+  const byDate = new Map(ok ? sched.days.map((d) => [d.date, d]) : []);
+  const gridWeeks = [];
+  if (ok && sched.days.length) {
+    const dates = sched.days.map((d) => d.date).sort();
+    for (let m = mondayOf(dates[0]); m <= dates[dates.length - 1]; m = addDaysYmd(m, 7)) {
+      const cols = [0, 1, 2, 3, 4].map((i) => {
+        const ymd = addDaysYmd(m, i);
+        const d = byDate.get(ymd) || null;
+        const hol = majorHoliday(dateOfYmd(ymd));
+        return {
+          ymd, d, today: ymd === todayYmd, past: ymd < todayYmd,
+          closed: !!d && (d.closed || !!hol), closedName: d ? d.closureName || hol : null,
+          canOpen: !!d && ymd >= minYmd && ymd <= maxYmd,
+        };
+      });
+      if (cols.some((c) => c.d)) gridWeeks.push({ monday: m, cols });
+    }
+  }
+  const dowOf = (ymd) => DOW[dateOfYmd(ymd).getDay()];
+
+  // Managers / front desk out that week: "Brittany (from Tue)", "Kim (Wed)".
+  // Counts the open days from today on (or all loaded days for a past week).
+  const outThatWeek = (w) => {
+    const open = w.cols.filter((c) => c.d && !c.closed).map((c) => c.d);
+    const ahead = open.filter((d) => d.date >= todayYmd);
+    const span = ahead.length ? ahead : open;
+    const who = new Map();
+    for (const d of span) {
+      for (const p of [...managersOf(d), ...frontDeskOf(d)]) {
+        if (p.tone === "in") continue;
+        if (!who.has(p.name)) who.set(p.name, []);
+        if (!who.get(p.name).includes(d.date)) who.get(p.name).push(d.date);
+      }
+    }
+    return [...who].map(([name, days]) => {
+      const idx = days.map((x) => span.findIndex((d) => d.date === x));
+      const toEnd = idx.every((v, i) => v === idx[0] + i) && idx[idx.length - 1] === span.length - 1;
+      const when = toEnd ? (idx[0] === 0 ? null : `from ${dowOf(days[0])}`) : days.map(dowOf).join(", ");
+      return { name, when };
+    });
+  };
+
+  // Clicking a column's date opens that day in the day view above.
+  const openDay = (ymd) => {
+    pickDay(ymd);
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { window.scrollTo(0, 0); }
+  };
+
+  const gBorder = `1px solid ${T.line}`;
+  const gTh = { padding: "7px 10px", fontSize: 12.5, fontWeight: 600, color: T.muted, textAlign: "left", background: T.paper, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" };
+  const gGrp = { padding: "4px 10px", background: T.paper, borderTop: gBorder, fontSize: 11, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: T.muted };
+  const gLab = { padding: "6px 10px", borderTop: gBorder, verticalAlign: "top", fontSize: 12.5, color: T.muted };
+  const gCell = (c, tint, extra) => ({
+    padding: "6px 10px", borderTop: gBorder, verticalAlign: "top", minWidth: 0, overflowWrap: "anywhere",
+    ...(c.today ? { background: TODAY_TINT } : null),
+    ...(tint ? { background: tint } : null),
+    ...extra,
+    ...(c.closed ? { background: T.amberSoft } : null),
+    ...(c.past ? { opacity: 0.38 } : null),
+  });
+  const mutedTxt = { color: T.muted };
+  const halfTag = { color: T.muted, fontSize: 11, fontWeight: 500, marginLeft: 3 };
+  const sameList = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+
+  // Back techs for one site/day: "Nana · Evelyn", "AM names / PM names", "Kim AM".
+  const backCell = (c, site) => {
+    const t = c.d.techs;
+    if (!t) return <span style={mutedTxt}>{c.past ? "—" : "No sheet yet"}</span>;
+    const am = techBack(t, site, "AM"), pm = techBack(t, site, "PM");
+    if (!am.length && !pm.length) return <span style={mutedTxt}>—</span>;
+    if (sameList(am, pm)) return am.join(" · ");
+    if (!pm.length) return <>{am.join(" · ")}<span style={halfTag}>AM</span></>;
+    if (!am.length) return <>{pm.join(" · ")}<span style={halfTag}>PM</span></>;
+    return <>{am.join(" · ")}<span style={{ color: T.muted }}> / </span>{pm.join(" · ")}</>;
+  };
+  const translatorCell = (c) => {
+    const tr = c.d.techs ? translatorOf(c.d.techs) : null;
+    if (!tr) return <span style={mutedTxt}>—</span>;
+    if (tr.raw) return tr.raw;
+    if (tr.same) return tr.am;
+    const am = tr.am !== "—" ? tr.am : null, pm = tr.pm !== "—" ? tr.pm : null;
+    return (
+      <>
+        {am && <>{am}<span style={halfTag}>AM</span></>}
+        {am && pm && <span style={{ color: T.muted }}> · </span>}
+        {pm && <>{pm}<span style={halfTag}>PM</span></>}
+      </>
+    );
+  };
+  const TECH_GRID = [
+    { key: "WORC", label: "Worcester back" },
+    { key: "LEOM", label: "Leominster back", tint: SITE_TINTS.LEOM.bg },
+    { key: "TR", label: "Translator" },
+  ];
+
+  const weekBlock = (w) => {
+    const all = sched.days.filter((d) => mondayOf(d.date) === w.monday);
+    const doc = rotationLabel(all, "doctor");
+    const tech = rotationLabel(all, "tech");
+    const out = outThatWeek(w);
+    const hasEvents = w.cols.some((c) => eventsOf(c.d).length > 0);
+    return (
+      <section key={w.monday} style={card({ marginBottom: 14, overflow: "hidden", minWidth: 760 })} aria-label={`Week of ${monDay(w.monday)}`}>
+        <div style={head}>
+          <h3 style={h3}>Week of {monDay(w.monday)}</h3>
+          {doc && <span style={oc}>On call {runLabel(doc)}</span>}
+          {tech && <span style={oc}>Tech {runLabel(tech)}</span>}
+          {out.length > 0 && (
+            <span style={oc}>Out: {out.map((o, i) => (
+              <Fragment key={o.name}>{i > 0 ? ", " : ""}<b style={{ fontWeight: 600, color: T.red }}>{o.name}</b>{o.when ? ` (${o.when})` : ""}</Fragment>
+            ))}</span>
+          )}
+        </div>
+        <table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13, fontFamily: T.sans }}>
+          <colgroup><col style={{ width: 120 }} />{w.cols.map((c) => <col key={c.ymd} />)}</colgroup>
+          <thead>
+            <tr>
+              <th style={gTh} />
+              {w.cols.map((c) => {
+                const text = `${dayLabel(c.ymd)}${c.today ? " · Today" : ""}`;
+                return (
+                  <th key={c.ymd} style={{ ...gTh, ...(c.today ? { color: T.accent, background: T.accentSoft } : null) }}>
+                    {c.canOpen ? (
+                      <button type="button" className="vra-daybtn" onClick={() => openDay(c.ymd)} title={`Open ${shortDate(c.ymd)} above`}
+                        style={{ background: "none", border: 0, padding: 0, font: "inherit", color: "inherit", cursor: "pointer", borderBottom: "1px dotted currentColor" }}>
+                        {text}
+                      </button>
+                    ) : text}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colSpan={6} style={gGrp}>Doctors</td></tr>
+            {doctors.map((doctor, ri) => (
+              <tr key={doctor}>
+                <td style={{ ...gLab, fontWeight: 700, color: doctorColor(doctor).fg }}>{doctor}</td>
+                {w.cols.map((c) => {
+                  if (c.closed) {
+                    if (ri > 0) return null; // covered by the rowSpan cell
+                    return (
+                      <td key={c.ymd} rowSpan={doctors.length} style={gCell(c, null, { color: T.amber, fontSize: 12.5 })}>
+                        <b style={{ fontWeight: 600 }}>Closed</b>
+                        {c.closedName && <div>{c.closedName}</div>}
+                        {closedLines(c.d)}
+                      </td>
+                    );
+                  }
+                  return <td key={c.ymd} style={gCell(c)}>{c.d ? docCell(c.d, doctor) : null}</td>;
+                })}
+              </tr>
+            ))}
+            <tr><td colSpan={6} style={gGrp}>Techs</td></tr>
+            {TECH_GRID.map((r) => (
+              <tr key={r.key}>
+                <td style={{ ...gLab, ...(r.tint ? { background: r.tint } : null) }}>{r.label}</td>
+                {w.cols.map((c) => (
+                  <td key={c.ymd} style={gCell(c, r.tint, { fontSize: 12.5 })}>
+                    {c.d && !c.closed ? (r.key === "TR" ? translatorCell(c) : backCell(c, r.key)) : null}
+                  </td>
+                ))}
+              </tr>
+            ))}
+            {hasEvents && <tr><td colSpan={6} style={gGrp}>Events</td></tr>}
+            {hasEvents && (
+              <tr>
+                <td style={gLab} />
+                {w.cols.map((c) => (
+                  <td key={c.ymd} style={gCell(c)}>{eventsOf(c.d).length > 0 && <EventList events={eventsOf(c.d)} />}</td>
+                ))}
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </section>
+    );
+  };
 
   // ── Tech board pieces ──
   const t = tDay ? tDay.techs : null;
@@ -546,7 +666,7 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
           </section>
         )}
 
-        {/* ── Two-week grid (older view), collapsed by default ── */}
+        {/* ── Two-week grid, collapsed by default ── */}
         {sched !== null && (
           <button type="button" className="vra-daybtn" onClick={() => setShowGrid(!showGrid)} aria-expanded={showGrid}
             style={{ display: "inline-block", margin: "14px 0", background: "none", border: 0, padding: "4px 0", cursor: "pointer", color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500 }}>
@@ -554,128 +674,12 @@ export default function SchedulePage({ onBack, initialDay, onOpenExtensions }) {
           </button>
         )}
 
-        {/* View switch · start-date picker · doctor legend */}
-        {showGrid && (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "0 0 14px", flexWrap: "wrap" }}>
-            {ok && <div style={segWrap} role="group" aria-label="Schedule view">
-              <button onClick={() => setView("doctors")} aria-pressed={view === "doctors"} style={segBtn(view === "doctors")}>Doctors</button>
-              <button onClick={() => setView("site")} aria-pressed={view === "site"} style={segBtn(view === "site")}>By site</button>
-            </div>}
-            {/* Picking a start date reloads from it and moves the day view there too. */}
-            <DatePick from={from} todayYmd={todayYmd} onChange={(v) => { setFrom(v); setDay(v); }} />
-            {ok && <div className="vra-legend" style={{ marginLeft: "auto", display: "flex", gap: 10, fontSize: 12.5, color: T.muted, flexWrap: "wrap" }}>
-              {DOCTOR_ORDER.map((d) => (
-                <span key={d}><i style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", marginRight: 5, verticalAlign: 1, background: doctorColor(d).fg }} />{d}</span>
-              ))}
-            </div>}
+        {/* ── Two weeks: Mon–Fri blocks, doctors · back techs · events ── */}
+        {ok && showGrid && (
+          <div className="vra-table" style={{ overflowX: "auto", marginBottom: 2 }}>
+            {gridWeeks.map(weekBlock)}
           </div>
         )}
-
-        {/* ── Doctors view ── */}
-        {ok && showGrid && view === "doctors" && weeks.map((w) => (
-          <section key={w.monday} style={card({ marginBottom: 16, overflow: "hidden" })}>
-            {weekHead(w)}
-            <div className="vra-table">
-              <table style={{ width: "100%", minWidth: 72 + w.days.length * 96, tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13, fontFamily: T.sans }}>
-                <thead>
-                  <tr>
-                    <th style={{ ...th, width: 72 }} />
-                    {w.days.map((d) => {
-                      const isToday = d.date === todayYmd;
-                      const nEv = eventsOf(d).length;
-                      return (
-                        <th key={d.date} style={{ ...th, ...(isToday ? { color: T.accent, background: T.accentSoft } : null) }}>
-                          {dayLabel(d.date)}
-                          {nEv > 0 && <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 400, color: T.muted }}><EventDot n={nEv} style={{ verticalAlign: 2, marginRight: 3 }} />{nEv} event{nEv === 1 ? "" : "s"}</span>}
-                        </th>
-                      );
-                    })}
-                  </tr>
-                </thead>
-                <tbody>
-                  {doctors.map((doctor, ri) => {
-                    const last = ri === doctors.length - 1 && !w.days.some((d) => eventsOf(d).length);
-                    return (
-                      <tr key={doctor}>
-                        <td style={td(last, { width: 72, fontWeight: 600, color: doctorColor(doctor).fg })}>{doctor}</td>
-                        {w.days.map((d) => {
-                          if (d.closed) {
-                            if (ri > 0) return null; // covered by the rowSpan cell
-                            return (
-                              <td key={d.date} rowSpan={doctors.length} style={{ padding: "7px 10px", verticalAlign: "top", background: T.amberSoft, color: T.amber, fontSize: 12.5 }}>
-                                <b style={{ fontWeight: 600 }}>Closed</b>
-                                {d.closureName && <div>{d.closureName}</div>}
-                                {closedLines(d)}
-                              </td>
-                            );
-                          }
-                          const isToday = d.date === todayYmd;
-                          return <td key={d.date} style={td(last, isToday ? { background: TODAY_TINT } : null)}>{docCell(d, doctor)}</td>;
-                        })}
-                      </tr>
-                    );
-                  })}
-                  {w.days.some((d) => eventsOf(d).length) && (
-                    <tr>
-                      <td style={td(true, { width: 72, fontSize: 12, color: T.muted, borderTop: `1px solid ${T.line}` })}>Events</td>
-                      {w.days.map((d) => (
-                        <td key={d.date} style={td(true, { borderTop: `1px solid ${T.line}`, ...(d.date === todayYmd ? { background: TODAY_TINT } : null) })}>
-                          {eventsOf(d).length > 0 && <EventList events={eventsOf(d)} />}
-                        </td>
-                      ))}
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ))}
-
-        {/* ── By-site view ── */}
-        {ok && showGrid && view === "site" && weeks.map((w) => (
-          <section key={w.monday} style={card({ marginBottom: 16, overflow: "hidden" })}>
-            {weekHead(w)}
-            <div className="vra-table">
-              <table style={{ width: "100%", minWidth: 96 + sites.length * 80, borderCollapse: "collapse", fontSize: 13, fontFamily: T.sans }}>
-                <thead>
-                  <tr>
-                    <th style={{ ...th, width: 96 }}>Day</th>
-                    {sites.map((s) => <th key={s} style={th}>{s}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {w.days.map((d, ri) => {
-                    const last = ri === w.days.length - 1;
-                    const isToday = d.date === todayYmd;
-                    const bySite = Object.fromEntries(sessionsBySite(d.sessions).map((x) => [x.site, x.docs]));
-                    const tint = isToday ? { background: TODAY_TINT } : null;
-                    return (
-                      <tr key={d.date}>
-                        <td style={td(last, tint)}>
-                          <b style={{ fontWeight: 600, color: isToday ? T.accent : T.ink, whiteSpace: "nowrap" }}>{dayLabel(d.date)}</b>
-                          {(d.closed || d.vacations.length > 0) && (
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
-                              {d.closed && <span style={{ display: "inline-block", padding: "0 6px", borderRadius: 4, background: T.amberSoft, color: T.amber, fontSize: 11.5, fontWeight: 600 }}>Closed{d.closureName ? ` · ${d.closureName}` : ""}</span>}
-                              {d.vacations.length > 0 && <span style={{ display: "inline-block", padding: "0 6px", borderRadius: 4, background: T.redSoft, border: "1px solid #E7B9B2", color: T.red, fontWeight: 600, fontSize: 11.5 }}>Out: {d.vacations.join(", ")}</span>}
-                            </div>
-                          )}
-                          {eventsOf(d).length > 0 && <div style={{ marginTop: 4 }}><EventList events={eventsOf(d)} /></div>}
-                        </td>
-                        {sites.map((s) => (
-                          <td key={s} style={td(last, tint)}>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 3px" }}>
-                              {(bySite[s] || []).map((x) => <DocChip key={x.doctor} doctor={x.doctor} half={x.half} size="md" />)}
-                            </div>
-                          </td>
-                        ))}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ))}
 
         {ok && (
           <p style={{ color: T.muted, fontSize: 12, margin: "8px 0 0" }}>
