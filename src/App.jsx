@@ -233,7 +233,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
       <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", boxSizing: "border-box" }}>
         {/* Call board — practice-wide date + on-call + F/U counter. Sep 2026, per
             Mari: everyone (techs, managers, doctors) sees it, no PIN. */}
-        <CallBoard onOpenSchedule={() => onSelectTool("schedule")} />
+        <CallBoard onOpenSchedule={(ymd) => (ymd && onOpenDay ? onOpenDay(ymd) : onSelectTool("schedule"))} />
 
         {/* Manager view: the Manager's Hub comes first */}
         {role === "manager" && (

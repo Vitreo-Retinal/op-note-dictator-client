@@ -193,7 +193,7 @@ export const appBar = {
 // (inline styles cannot carry media queries). Mirrors the mockup's @media rules.
 export const RESPONSIVE_CSS = `
 .vra-wrap{box-sizing:border-box}
-.vra-tile:focus-visible,.vra-pill:focus-visible{outline:2px solid ${T.accent};outline-offset:2px}
+.vra-tile:focus-visible,.vra-pill:focus-visible,.vra-daybtn:focus-visible{outline:2px solid ${T.accent};outline-offset:2px}
 .vra-editor:focus-within{border-color:${T.accentLine}!important;box-shadow:${T.focusRing}}
 .vra-editor textarea:focus{outline:none}
 .vra-input:focus{border-color:${T.accentLine}!important;box-shadow:${T.focusRing}}

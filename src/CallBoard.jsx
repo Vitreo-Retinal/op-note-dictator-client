@@ -1,8 +1,9 @@
 import { useState, useEffect, Fragment } from "react";
 import { majorHoliday, injectionBlackout } from "./lib/practiceCalendar.js";
-import { fetchSchedule, scheduleOk, ymdOf, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
+import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
 import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
+import DayStepper, { scheduleRange } from "./DayStepper.jsx";
 
 // ── Call Board — practice-wide, homepage header card (Sep 2026, per Mari) ─
 // "Wire the call schedule somewhere in the front. Put the date on the site as
@@ -127,9 +128,15 @@ export function StaffLine({ label, people, extra, style, labelStyle, stacked = f
   );
 }
 
+// Oct 2026 (owner-approved): a day stepper in the header (‹ date › Today)
+// lets the desktop board show another day in the loaded range. Everything
+// day-specific follows the picked day; the F/U counter and the injection
+// blackout banner always count from the real today. Not persisted.
+// onOpenSchedule(ymd | null): null = today.
 export default function CallBoard({ onOpenSchedule }) {
   const [sched, setSched] = useState(null); // null = loading
   const [fuWeeks, setFuWeeks] = useState("");
+  const [picked, setPicked] = useState(null); // YYYY-MM-DD, null = today
 
   // Fetch once on mount. Never throws — a dead feed must never blank the card.
   useEffect(() => {
@@ -153,9 +160,16 @@ export default function CallBoard({ onOpenSchedule }) {
 
   const today = new Date();
   today.setHours(12, 0, 0, 0);
-  const todayHoliday = majorHoliday(today);
-  const todayDay = ok ? sched.days.find((d) => d.date === ymdOf(today)) || null : null;
-  const onCall = todayDay ? todayDay.onCall : null;
+  const todayYmd = ymdOf(today);
+  // The day the board shows (‹ › / date picker). Clamped to the loaded range.
+  const [minYmd, maxYmd] = scheduleRange(sched, todayYmd, ok);
+  const shownYmd = picked && picked >= minYmd && picked <= maxYmd ? picked : todayYmd;
+  const isToday = shownYmd === todayYmd;
+  const when = isToday ? "today" : "that day";
+  const pickDay = (ymd) => setPicked(ymd === todayYmd ? null : ymd);
+  const dayHoliday = majorHoliday(dateOfYmd(shownYmd));
+  const shownDay = ok ? sched.days.find((d) => d.date === shownYmd) || null : null;
+  const onCall = shownDay ? shownDay.onCall : null;
 
   const n = parseInt(fuWeeks, 10);
   const fuDate = fuWeeks && n > 0 ? new Date(today.getTime() + n * 7 * 24 * 60 * 60 * 1000) : null;
@@ -164,10 +178,10 @@ export default function CallBoard({ onOpenSchedule }) {
   // Injection blackout banner — shown when TODAY or the computed F/U date is Jan 1–14.
   const blackout = injectionBlackout(fuDate) || injectionBlackout(today);
 
-  const sites = todayDay ? sessionsBySite(todayDay.sessions) : [];
-  const techs = todayDay ? todayDay.techs : null;
-  const managers = todayDay ? managersOf(todayDay) : [];
-  const frontDesk = todayDay ? frontDeskOf(todayDay) : [];
+  const sites = shownDay ? sessionsBySite(shownDay.sessions) : [];
+  const techs = shownDay ? shownDay.techs : null;
+  const managers = shownDay ? managersOf(shownDay) : [];
+  const frontDesk = shownDay ? frontDeskOf(shownDay) : [];
 
   // Mockup .band styles
   const cell = { padding: "12px 16px", borderRight: `1px solid ${T.line}`, minWidth: 0, overflow: "hidden" };
@@ -208,12 +222,12 @@ export default function CallBoard({ onOpenSchedule }) {
   return (
     <div style={{ marginTop: 24 }}>
       <div style={{ border: `1px solid ${T.line}`, borderRadius: T.rLg, background: T.surface, overflow: "hidden" }}>
-        {/* Header row — today's date + practice holiday · F/U counter on the right */}
+        {/* Header row — day stepper (today by default) + practice holiday · F/U counter (always from today) on the right */}
         <div style={{ display: "flex", alignItems: "center", gap: "4px 10px", flexWrap: "wrap", padding: "8px 16px", borderBottom: `1px solid ${T.line}`, fontFamily: T.sans, fontSize: 12.5, color: T.muted }}>
           <span>Call Board</span>
-          <span style={{ fontSize: 13.5, fontWeight: 600, color: T.ink }}>{longDate(today)}</span>
-          {todayHoliday && (
-            <span style={{ color: T.amber }}>{todayHoliday} — office closed</span>
+          <DayStepper value={shownYmd} todayYmd={todayYmd} min={minYmd} max={maxYmd} onChange={pickDay} />
+          {dayHoliday && (
+            <span style={{ color: T.amber }}>{dayHoliday} — office closed</span>
           )}
           <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px 6px", flexWrap: "wrap", color: T.ink2 }}>
             <span style={{ marginRight: 4 }}>Follow-up counter</span>
@@ -262,14 +276,14 @@ export default function CallBoard({ onOpenSchedule }) {
             ) : unavailable}
           </div>
 
-          {/* Cell 2 — where each doctor is today; one row per site, never wraps */}
+          {/* Cell 2 — where each doctor is on the shown day; one row per site, never wraps */}
           <div style={cell}>
-            <div style={k}><span>Today</span></div>
+            <div style={k}><span>{isToday ? "Today" : "That day"}</span></div>
             {!ok ? unavailable : (
               <div>
-                {todayDay && todayDay.closed && (
+                {shownDay && shownDay.closed && (
                   <div style={{ fontSize: 13.5, fontWeight: 600, color: T.amber, fontFamily: T.sans, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    Closed{todayDay.closureName ? ` — ${todayDay.closureName}` : ""}
+                    Closed{shownDay.closureName ? ` — ${shownDay.closureName}` : ""}
                   </div>
                 )}
                 {sites.map(({ site, docs }) => (
@@ -278,22 +292,22 @@ export default function CallBoard({ onOpenSchedule }) {
                     {docs.map((d) => <DocChip key={d.doctor} doctor={d.doctor} half={d.half} />)}
                   </div>
                 ))}
-                {!sites.length && !(todayDay && todayDay.closed) && (
-                  <div style={sub}>No clinic sessions</div>
+                {!sites.length && !(shownDay && shownDay.closed) && (
+                  <div style={sub}>{shownDay ? "No clinic sessions" : `No schedule for ${when}`}</div>
                 )}
-                {todayDay && todayDay.vacations.length > 0 && (
-                  <div style={{ ...sub, color: T.red, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Out: {todayDay.vacations.join(", ")}</div>
+                {shownDay && shownDay.vacations.length > 0 && (
+                  <div style={{ ...sub, color: T.red, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Out: {shownDay.vacations.join(", ")}</div>
                 )}
               </div>
             )}
           </div>
 
-          {/* Cell 3 — techs today (from the daily tech sheet) */}
+          {/* Cell 3 — techs on the shown day (from that day's tech sheet); "Full board" opens Schedule on it */}
           <div style={{ ...cell, borderRight: 0 }}>
             <div style={k}>
-              <span>Techs today</span>
+              <span>Techs {when}</span>
               {ok && onOpenSchedule && (
-                <button onClick={onOpenSchedule}
+                <button type="button" className="vra-daybtn" onClick={() => onOpenSchedule(isToday ? null : shownYmd)}
                   style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: T.accent, fontFamily: T.sans, fontSize: 12, fontWeight: 500, whiteSpace: "nowrap" }}>
                   Full board ›
                 </button>
@@ -311,7 +325,7 @@ export default function CallBoard({ onOpenSchedule }) {
                 </div>
               </>
             ) : (
-              <div style={sub}>No tech sheet today</div>
+              <div style={sub}>No tech sheet {when}</div>
             )}
           </div>
         </div>
@@ -324,8 +338,8 @@ export default function CallBoard({ onOpenSchedule }) {
           <StaffLine label="Front desk" people={frontDesk} labelStyle={{ width: 64 }}
             style={{ padding: managers.length > 0 ? "0 16px 7px" : "7px 16px", borderTop: managers.length > 0 ? 0 : `1px solid ${T.line}` }} />
         )}
-        {ok && eventsOf(todayDay).length > 0 && (
-          <EventsLine events={eventsOf(todayDay)} label="Events today"
+        {ok && eventsOf(shownDay).length > 0 && (
+          <EventsLine events={eventsOf(shownDay)} label={`Events ${when}`}
             style={{ padding: "7px 16px", borderTop: `1px solid ${T.line}` }} />
         )}
       </div>

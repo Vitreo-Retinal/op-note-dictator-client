@@ -82,6 +82,13 @@ export function dateOfYmd(ymd) {
   return new Date(y, m - 1, d, 12);
 }
 
+/** "YYYY-MM-DD" + n calendar days → "YYYY-MM-DD" (DST-safe). */
+export function addDaysYmd(ymd, n) {
+  const d = dateOfYmd(ymd);
+  d.setDate(d.getDate() + n);
+  return ymdOf(d);
+}
+
 /** "2026-10-08" → "Thu, Oct 8" */
 export function shortDate(ymd) {
   const d = dateOfYmd(ymd);

@@ -11,6 +11,7 @@ import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, DropB
 import { useIsPhone, PhoneCtx, PhoneShell, PHONE_BODY_H } from "./phone.jsx";
 import { RX_ORIGIN, readRxToken, readLeaToken, storeLeaToken, tokenRole } from "./lib/retinaRx.js";
 import { scheduleOk, ymdOf, shortDate } from "./lib/vraSchedule.js";
+import DayStepper, { scheduleRange } from "./DayStepper.jsx";
 import { DoctorsGrid, ComingUp, LeaSchedulePage, useLeaSchedule, doctorDay, nextLexDay, siteName } from "./LeaSchedule.jsx";
 
 // ── LEA Hub (Oct 2026, approved mockup "retina-rx-front-mockup") ─────
@@ -247,7 +248,13 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onSelectDoc
   const todayYmd = ymdOf(new Date());
   const todayWords = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
   const ok = scheduleOk(sched);
-  const day = ok ? sched.days.find((d) => d.date === todayYmd) || null : null;
+  // Day stepper (Oct 2026, owner-approved): the Doctors card can show another
+  // day in the loaded range. Coming up always counts from today. Not persisted.
+  const [picked, setPicked] = useState(null); // YYYY-MM-DD, null = today
+  const [minYmd, maxYmd] = scheduleRange(sched, todayYmd, ok);
+  const shownYmd = picked && picked >= minYmd && picked <= maxYmd ? picked : todayYmd;
+  const when = shownYmd === todayYmd ? "today" : "that day";
+  const day = ok ? sched.days.find((d) => d.date === shownYmd) || null : null;
   const hoverOn = (e) => { e.currentTarget.style.borderColor = T.accentLine; };
   const hoverOff = (e) => { e.currentTarget.style.borderColor = T.line; };
   const wide = (key, Icon, title, description, right, onClick) => (
@@ -277,11 +284,17 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onSelectDoc
       <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", boxSizing: "border-box" }}>
         <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 20, alignItems: "start" }}>
           <div>
-            <div style={{ ...secH, marginTop: 0 }}>Doctors today</div>
-            {day ? <DoctorsGrid day={day} /> : ok ? <div style={{ ...card, padding: "10px 12px", ...muted }}>No schedule for today</div> : status}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "4px 8px", marginBottom: 6 }}>
+              <div style={{ ...secH, margin: 0 }}>Doctors {when}</div>
+              <DayStepper compact value={shownYmd} todayYmd={todayYmd} min={minYmd} max={maxYmd}
+                onChange={(ymd) => setPicked(ymd === todayYmd ? null : ymd)} />
+            </div>
+            {day ? <DoctorsGrid day={day} /> : ok ? <div style={{ ...card, padding: "10px 12px", ...muted }}>No schedule for {when}</div> : status}
           </div>
           <div>
-            <div style={{ ...secH, marginTop: 0 }}>Coming up</div>
+            <div style={{ display: "flex", alignItems: "center", minHeight: 28, marginBottom: 6 }}>
+              <div style={{ ...secH, margin: 0 }}>Coming up</div>
+            </div>
             {ok ? <ComingUp days={sched.days} todayYmd={todayYmd} max={6} onMore={() => onSelectTool("schedule")} /> : status}
           </div>
         </div>
