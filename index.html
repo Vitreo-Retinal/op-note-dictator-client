@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- iOS Safari: no automatic call links on plain numbers (fax numbers must not be tappable).
+         Explicit tel: links on voice numbers still work. -->
+    <meta name="format-detection" content="telephone=no" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

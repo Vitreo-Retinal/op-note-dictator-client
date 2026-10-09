@@ -3,26 +3,43 @@ import { T } from "./theme.js";
 import PageBar, { wrap, searchInput } from "./PageBar.jsx";
 import { SearchIcon } from "./icons.jsx";
 import { usePhone } from "./phone.jsx";
-import { fetchDirectory, filterDirectory, telHref } from "./lib/vraDirectory.js";
+import { fetchDirectory, filterDirectory, telHref, numbersOf } from "./lib/vraDirectory.js";
 
 // ── Phone extensions page (Oct 2026) ────────────────────────────────
 // Search box (name or number, filters as you type), the office cards with
-// tap-to-call phone and fax, then each extension group as compact rows
+// tap-to-call phone (fax numbers are plain, selectable text with a "Fax"
+// label — never a call link; see numbersOf / telHref), then each extension group as compact rows
 // "Name (note) — 104". Phone: one column. Desktop: two columns.
 // Data: GET /api/directory (server lib/vra-directory.js) — nothing is hard-coded here.
 
 const card = { background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, overflow: "hidden", boxSizing: "border-box" };
 const secH = { fontSize: 11.5, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: T.muted, margin: "0 0 6px" };
 
-function NumberLink({ label, number }) {
+// Office number box. Voice → tap-to-call link; fax (telHref → null) → the same
+// box as plain, selectable text, ink not link-blue, so it reads as "not a call".
+function NumberLink({ label, number, fax }) {
+  const href = telHref(number, { fax, label });
+  const box = { display: "flex", flexDirection: "column", justifyContent: "center", gap: 1, minHeight: 44, padding: "6px 12px", borderRadius: T.r, border: `1px solid ${T.line}`, textDecoration: "none", fontFamily: T.sans, flex: 1, minWidth: 0, boxSizing: "border-box" };
+  if (!href) {
+    return (
+      <div style={{ ...box, background: T.surface, userSelect: "text", WebkitUserSelect: "text", cursor: "text" }}>
+        <span style={{ fontSize: 11.5, color: T.muted }}>{label}</span>
+        <span style={{ fontSize: 14.5, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>{number}</span>
+      </div>
+    );
+  }
   return (
-    <a href={telHref(number)}
-      style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 1, minHeight: 44, padding: "6px 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.paper, textDecoration: "none", fontFamily: T.sans, flex: 1, minWidth: 0, boxSizing: "border-box" }}>
+    <a href={href} style={{ ...box, background: T.paper }}>
       <span style={{ fontSize: 11.5, color: T.muted }}>{label}</span>
       <span style={{ fontSize: 14.5, fontWeight: 600, color: T.accent, whiteSpace: "nowrap" }}>{number}</span>
     </a>
   );
 }
+
+// Small "Fax" tag in front of a plain fax number in an extension row.
+const FaxTag = () => (
+  <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: ".04em", textTransform: "uppercase", color: T.muted, border: `1px solid ${T.line}`, borderRadius: 4, padding: "0 4px", alignSelf: "center", fontFamily: T.sans }}>Fax</span>
+);
 
 function OfficeCard({ office }) {
   return (
@@ -31,8 +48,7 @@ function OfficeCard({ office }) {
       {office.address && <div style={{ fontSize: 12.5, color: T.muted, marginTop: 1, lineHeight: 1.35 }}>{office.address}</div>}
       {office.note && <div style={{ fontSize: 12.5, color: T.muted, marginTop: 1 }}>{office.note}</div>}
       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-        {office.phone && <NumberLink label="Phone" number={office.phone} />}
-        {office.fax && <NumberLink label={office.faxLabel || "Fax"} number={office.fax} />}
+        {numbersOf(office).map((n) => <NumberLink key={`${n.label}-${n.number}`} label={n.label} number={n.number} fax={n.fax} />)}
       </div>
     </div>
   );
@@ -49,9 +65,18 @@ function GroupCard({ group }) {
               {it.name}{it.note && <span style={{ color: T.muted, fontSize: 12.5 }}> ({it.note})</span>}
             </span>
             <span style={{ color: T.lineStrong }}>—</span>
-            {it.phone
-              ? <a href={`tel:${it.phone.replace(/[^\d+]/g, "")}`} style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, textDecoration: "none" }}>{it.phone}</a>
-              : <b style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, minWidth: 30, textAlign: "right" }}>{it.ext}</b>}
+            {it.ext && <b style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, minWidth: 30, textAlign: "right" }}>{it.ext}</b>}
+            {numbersOf(it).map((n) => {
+              const href = telHref(n.number, { fax: n.fax, label: n.label });
+              return href
+                ? <a key={n.number} href={href} style={{ fontFamily: T.mono, fontWeight: 600, color: T.accent, fontSize: 14, textDecoration: "none" }}>{n.number}</a>
+                : (
+                  <span key={n.number} style={{ display: "inline-flex", alignItems: "baseline", gap: 6 }}>
+                    <FaxTag />
+                    <span style={{ fontFamily: T.mono, fontWeight: 600, color: T.ink, fontSize: 14, userSelect: "text", WebkitUserSelect: "text" }}>{n.number}</span>
+                  </span>
+                );
+            })}
           </div>
         ))}
       </div>
