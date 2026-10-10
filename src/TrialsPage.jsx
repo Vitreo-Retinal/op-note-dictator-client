@@ -13,8 +13,8 @@ import { usePhone } from "./phone.jsx";
 // The auth token is attached by the fetch wrapper in main.jsx.
 const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
-/** GET /api/trials. Never throws — failures come back as { error }. */
-async function fetchTrials() {
+/** GET /api/trials. Never throws — failures come back as { error }. Shared with ResearchHome. */
+export async function fetchTrials() {
   try {
     const res = await fetch(`${API_BASE}/api/trials`);
     if (!res.ok) return { error: `HTTP ${res.status}` };
@@ -122,15 +122,23 @@ function TrialCard({ trial: t }) {
   );
 }
 
-export default function TrialsPage({ onBack, backLabel = "Hub" }) {
-  const { phone } = usePhone();
-  const [data, setData] = useState(null); // null = loading
+/**
+ * The trials list itself — intro line, loading / error / empty status, one
+ * card per internal trial. Shared by this page and the Research home
+ * (ResearchHome.jsx). `data` (optional): an already-fetched GET /api/trials
+ * result (null = still loading); when omitted the board fetches its own.
+ */
+export function TrialsBoard({ data: given }) {
+  const external = given !== undefined;
+  const [own, setOwn] = useState(null); // null = loading
 
   useEffect(() => {
+    if (external) return undefined;
     let alive = true;
-    fetchTrials().then((d) => { if (alive) setData(d); });
+    fetchTrials().then((d) => { if (alive) setOwn(d); });
     return () => { alive = false; };
-  }, []);
+  }, [external]);
+  const data = external ? given : own;
 
   // Trials we run at VRA only; enrolling first, then by acronym.
   const trials = data && !data.error
@@ -145,16 +153,25 @@ export default function TrialsPage({ onBack, backLabel = "Hub" }) {
       : !trials.length ? <div style={{ fontSize: 13, color: T.muted, padding: "8px 0" }}>No trials listed right now.</div> : null;
 
   return (
+    <>
+      <p style={{ fontSize: 13.5, color: T.ink2, margin: "0 0 14px", lineHeight: 1.45 }}>
+        Trials we run at VRA. If a patient might qualify, flag them to the person named on the card.
+      </p>
+      {status}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {trials.map((t) => <TrialCard key={t.id || t.slug} trial={t} />)}
+      </div>
+    </>
+  );
+}
+
+export default function TrialsPage({ onBack, backLabel = "Hub" }) {
+  const { phone } = usePhone();
+  return (
     <div style={{ minHeight: phone ? undefined : "100vh", background: T.paper, color: T.ink, fontFamily: T.sans }}>
       <PageBar onBack={onBack} backLabel={backLabel} title="Clinical Trials" sub={phone ? undefined : "Studies running at VRA"} />
       <div className="vra-wrap" style={phone ? { padding: "4px 16px 16px" } : wrap({ paddingTop: 20, paddingBottom: 40 })}>
-        <p style={{ fontSize: 13.5, color: T.ink2, margin: "0 0 14px", lineHeight: 1.45 }}>
-          Trials we run at VRA. If a patient might qualify, flag them to the person named on the card.
-        </p>
-        {status}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {trials.map((t) => <TrialCard key={t.id || t.slug} trial={t} />)}
-        </div>
+        <TrialsBoard />
       </div>
     </div>
   );

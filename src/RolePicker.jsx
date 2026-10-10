@@ -3,8 +3,8 @@ import logo from "./vra-logo.png";
 
 // ── Role picker (Oct 2026, approved mockup "role-pick") ─────────────
 // Shown right after the site password when this device has no role stored
-// (localStorage "vra-hub-role"). Phone: stacked rows. Desktop: four cards in
-// a row (2×2 below ~1060px wide).
+// (localStorage "vra-hub-role"). Phone: stacked rows. Desktop: five cards in
+// a row (3 + 2 below ~1330px wide, 2 per row below ~820px).
 // The "Switch view" link on Home clears the role and brings this back.
 
 const OPTIONS = [
@@ -12,8 +12,11 @@ const OPTIONS = [
   { id: "tech", icon: "Tx", label: "Tech", phone: "Schedule, coverage lookup", desk: "Schedule, coverage, handouts, documents" },
   { id: "manager", icon: "M", label: "Manager", phone: "Manager hub, schedule · PIN", desk: "Manager hub, rates, schedule · PIN" },
   { id: "frontdesk", icon: "FD", label: "Front desk", phone: "Schedule, who's where, coverage", desk: "Schedule, who's where, coverage" },
+  // Oct 2026 — open door (no PIN): Research home (ResearchHome.jsx).
+  { id: "research", icon: "Rs", label: "Research", phone: "Trials, participant visits, coordinators", desk: "Trials, participant visits, coordinators" },
 ];
-const DESK_CSS = ".vra-roles{grid-template-columns:repeat(4,240px)}@media (max-width:1060px){.vra-roles{grid-template-columns:repeat(2,240px)}}";
+// Five doors: one row on wide screens, then 3 + 2, then 2 per row.
+const DESK_CSS = ".vra-roles{grid-template-columns:repeat(5,240px)}@media (max-width:1330px){.vra-roles{grid-template-columns:repeat(3,240px)}}@media (max-width:820px){.vra-roles{grid-template-columns:repeat(2,240px)}}";
 
 export default function RolePicker({ phone, onPick }) {
   const icBox = (size) => ({

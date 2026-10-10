@@ -15,6 +15,7 @@ import DeskAssist from "./DeskAssist.jsx";
 import TrialsPage from "./TrialsPage.jsx";
 import DirectoryAsk from "./DirectoryAsk.jsx";
 import RolePicker from "./RolePicker.jsx";
+import ResearchHome from "./ResearchHome.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon, TrialsIcon, DirectoryIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
@@ -91,6 +92,7 @@ function PasswordGate({ onSuccess }) {
 // (RolePicker). Desktop: doctor → "Your space" first, tools, Practice management;
 // tech → tools only; manager → Manager's Hub first, then tools;
 // frontdesk → Schedule, Can we inject, Patient education, Documents only.
+// research (Oct 2026) → the Research home (ResearchHome.jsx), desktop and phone.
 export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectTool, onOpenDay, onSelectDoctor, onSelectManager, unlockedDoctor, onDictate, onLock, onSwitch }) {
   // Oct 2026 — shared VRA Google Calendar view. Rendered as a full-width wide
   // tile at the top of "Tools for everyone"; the six tiles below stay 3 + 3.
@@ -207,6 +209,11 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
   const directoryTile = wideTile("directory", DirectoryIcon, "Referral Directory", "Who we refer to and who refers to us — numbers, locations, and which insurances they take.", "Ask the directory");
   const FRONTDESK_TOOLS = ["inject", "education", "documents"];
   const tools = role === "frontdesk" ? FRONTDESK_TOOLS.map((id) => sharedTools.find((t) => t.id === id)) : sharedTools;
+
+  // Research (Oct 2026): its own home — coordinators, trials, participant visits.
+  if (role === "research") {
+    return <ResearchHome onSwitch={onSwitch} onOpenSchedule={() => onSelectTool("schedule")} />;
+  }
 
   // Phone (Oct 2026): one-screen briefing — see HomePhone.jsx. Desktop below is unchanged.
   if (phone) {
@@ -560,10 +567,10 @@ function rememberedUnlock() {
   return null;
 }
 
-// Role picked on this device (Oct 2026): "doctor" | "tech" | "manager" | "frontdesk".
+// Role picked on this device (Oct 2026): "doctor" | "tech" | "manager" | "frontdesk" | "research".
 // No role → the role picker shows right after the site password.
 const ROLE_KEY = "vra-hub-role";
-const ROLES = ["doctor", "tech", "manager", "frontdesk"];
+const ROLES = ["doctor", "tech", "manager", "frontdesk", "research"];
 // Doctor role: the surgeon who last passed the PIN here → their big Home button (desktop).
 const ROLE_DOC_KEY = "vra-hub-role-doctor";
 // Manager unlock: like the doctor unlock, kept on phones until the end of the
@@ -646,6 +653,7 @@ export default function App() {
       if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
       // Picking Manager always asks for the PIN (same rule as picking a doctor's name).
       else if (r === "manager") { setMgrDay(null); storeSet(MGR_UNLOCK_KEY, null); setOnboarding(true); setPage("managerpin"); }
+      // Tech, Front desk, Research (open door, no PIN) → straight to their Home.
       else { setOnboarding(false); setPage("home"); }
     };
     return <RolePicker phone={phone} onPick={pickRole} />;

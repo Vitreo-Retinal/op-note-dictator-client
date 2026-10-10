@@ -51,6 +51,8 @@ export const ROLE_TABS = {
   // TODO(referrals): add "referrals" after "inject" once the Referrals page and
   // its data source exist (also add it to TABS with an icon, and to TAB_OF in App.jsx).
   frontdesk: ["home", "schedule", "inject", "ask"],
+  // Research (Oct 2026): Home is the Research home (ResearchHome.jsx).
+  research: ["home", "schedule"],
 };
 export const tabsFor = (role) => ROLE_TABS[role] || ROLE_TABS.doctor;
 
