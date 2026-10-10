@@ -12,9 +12,10 @@ import SchedulePage from "./SchedulePage.jsx";
 import HomePhone from "./HomePhone.jsx";
 import Extensions from "./Extensions.jsx";
 import DeskAssist from "./DeskAssist.jsx";
+import TrialsPage from "./TrialsPage.jsx";
 import RolePicker from "./RolePicker.jsx";
 import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doctorColor } from "./theme.js";
-import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon } from "./icons.jsx";
+import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon, TrialsIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
 import { COVERAGE_URL } from "./lib/retinaRx.js";
@@ -198,6 +199,8 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
   const askTile = (role === "frontdesk" || role === "manager") &&
     wideTile("ask", ChatIcon, "Ask", "When to book a referral, triage questions, fax numbers, extensions — from the practice's sheet.", "No PHI — symptoms only");
   const extensionsTile = wideTile("extensions", PhoneIcon, "Phone extensions", "Office phone and fax numbers, every extension, searchable.", "Oct 2026");
+  // Oct 2026 — clinical trials run at VRA (GET /api/trials). Every role, no PIN.
+  const trialsTile = wideTile("trials", TrialsIcon, "Clinical Trials", "Studies running at VRA — who qualifies, and who to flag candidates to.", "Flag candidates");
   const FRONTDESK_TOOLS = ["inject", "education", "documents"];
   const tools = role === "frontdesk" ? FRONTDESK_TOOLS.map((id) => sharedTools.find((t) => t.id === id)) : sharedTools;
 
@@ -206,7 +209,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
     return (
       <HomePhone role={role} doctor={role === "doctor" ? unlockedDoctor || null : null} managerOpen={managerOpen}
         onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
-        onExtensions={() => onSelectTool("extensions")} onAsk={() => onSelectTool("ask")}
+        onExtensions={() => onSelectTool("extensions")} onAsk={() => onSelectTool("ask")} onTrials={() => onSelectTool("trials")}
         onSelectManager={onSelectManager} onLock={onLock} onSwitch={onSwitch}
         onOpenSchedule={() => onSelectTool("schedule")} onOpenDay={onOpenDay} />
     );
@@ -330,6 +333,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
               </button>
             );
           })}
+          {trialsTile}
           {extensionsTile}
         </div>
 
@@ -531,7 +535,7 @@ export function DoctorPicker({ onSelectDoctor }) {
 // gate: doctor space → that surgeon's PIN prompt, Manager's Hub → manager PIN.
 const PAGE_KEY = "vra-hub-page";
 const SURGEON_KEY = "vra-hub-surgeon";
-const PAGES = ["home", "schedule", "inject", "coding", "education", "intakehpi", "documents", "drops", "dictator", "notes", "pin", "doctor", "managerpin", "manager", "extensions", "ask"];
+const PAGES = ["home", "schedule", "inject", "coding", "education", "intakehpi", "documents", "drops", "dictator", "notes", "pin", "doctor", "managerpin", "manager", "extensions", "ask", "trials"];
 
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* private mode */ } }
@@ -718,6 +722,9 @@ export default function App() {
   } else if (page === "extensions") {
     // Oct 2026 — offices, fax numbers, phone extensions (GET /api/directory). No PIN.
     content = <Extensions onBack={goHome} backLabel={phone ? "Home" : "Hub"} />;
+  } else if (page === "trials") {
+    // Oct 2026 — clinical trials run at VRA (GET /api/trials). No PIN, every role.
+    content = <TrialsPage onBack={goHome} backLabel={phone ? "Home" : "Hub"} />;
   } else if (page === "ask") {
     // Oct 2026 — front desk assistant (POST /api/desk-assist). No PIN, no PHI.
     content = <DeskAssist onBack={goHome} />;

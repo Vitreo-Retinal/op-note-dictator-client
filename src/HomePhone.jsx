@@ -4,7 +4,7 @@ import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorH
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine, StaffLine } from "./CallBoard.jsx";
 import PhoneText from "./PhoneText.jsx";
-import { BriefcaseIcon, LockIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon } from "./icons.jsx";
+import { BriefcaseIcon, LockIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon, TrialsIcon } from "./icons.jsx";
 
 // ── Phone Home (Oct 2026, approved mockup "home-compact" A + B) ──────
 // One screen, no scrolling at 390×844: header, (doctor only) "your day" card,
@@ -112,7 +112,7 @@ function alertsOf(days, todayYmd) {
 // Oct 2026: every role gets a "Phone extensions ›" row (doctor: under the
 // Manager hub row; others: under Check coverage). Manager also gets an "Ask"
 // row (front desk assistant) above it; Front desk has Ask as a tab instead.
-export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch, onOpenSchedule, onOpenDay, onExtensions, onAsk }) {
+export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch, onOpenSchedule, onOpenDay, onExtensions, onAsk, onTrials }) {
   const [sched, setSched] = useState(null); // null = loading
 
   useEffect(() => {
@@ -200,6 +200,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
   );
   const askRow = onAsk && linkRow("ask", ChatIcon, "Ask", "Scheduling, triage, fax, ext.", onAsk);
   const extRow = onExtensions && linkRow("ext", PhoneIcon, "Phone extensions", "Offices, fax, ext.", onExtensions);
+  const trialsRow = onTrials && linkRow("trials", TrialsIcon, "Clinical Trials", "Studies at VRA, who to flag", onTrials);
 
   const linkBtn = { display: "flex", alignItems: "center", gap: 5, minHeight: 32, padding: "0 4px", background: "none", border: 0, color: T.muted, fontFamily: T.sans, fontSize: 12.5, cursor: "pointer", whiteSpace: "nowrap" };
 
@@ -322,8 +323,9 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       {/* Doctor: Manager hub row last */}
       {isDoctor && managerRow}
 
-      {/* Manager: Ask row. Everyone: Phone extensions row last. */}
+      {/* Manager: Ask row. Everyone: Clinical Trials, then Phone extensions row last. */}
       {isManager && askRow}
+      {trialsRow}
       {extRow}
     </div>
   );

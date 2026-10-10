@@ -97,6 +97,10 @@ export function ChatIcon({ size = 22 }) {
 export function PhoneIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M6.6 3.5h2.6l1.4 4-2 1.3a11 11 0 006.6 6.6l1.3-2 4 1.4v2.6a2 2 0 01-2.2 2A16.5 16.5 0 014.6 5.7a2 2 0 012-2.2z" /></svg>);
 }
+// Clipboard with a pulse line — Clinical Trials (Oct 2026)
+export function TrialsIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1" /><path d="M7.5 13.5h2.2l1.4-3 2 5.5 1.5-2.5h1.9" /></svg>);
+}
 // ── LEA Hub (Oct 2026) ──
 // Barcode in a scan frame — phone tab bar "Scan" (carton inventory)
 export function ScanIcon({ size = 22 }) {
