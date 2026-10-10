@@ -46,6 +46,10 @@ export function AICodingAssistant({
   desktopIntro = "Ask any retina billing question — CPT codes, ICD-10 pairing, modifiers, bundling, E/M, global periods.",
   desktopPlaceholder = "Describe your case or ask a billing question...",
   sendSuggestions = false,
+  // Referral Directory (Oct 2026): one quiet line under the input; and a plain
+  // { messages } body (no showReimbursement — /api/ask decides by login).
+  caption = null,
+  sendReimbursementFlag = true,
 }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -88,7 +92,7 @@ export function AICodingAssistant({
       const res = await fetch(`${AI_API_BASE}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updated, showReimbursement }),
+        body: JSON.stringify(sendReimbursementFlag ? { messages: updated, showReimbursement } : { messages: updated }),
       });
       const data = await res.json();
       if (data.success && data.reply) {
@@ -259,6 +263,7 @@ export function AICodingAssistant({
           bottom: `calc(${TABBAR_H + 1}px + env(safe-area-inset-bottom, 0px))`,
           background: T.surface, borderTop: `1px solid ${T.line}`,
           display: "flex", alignItems: "flex-end", gap: 8, boxSizing: "border-box",
+          ...(caption ? { flexWrap: "wrap", rowGap: 5 } : {}),
           padding: "8px max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px))",
         }}>
           <textarea
@@ -283,6 +288,9 @@ export function AICodingAssistant({
               color: canSend ? T.onAccent : T.muted, cursor: canSend ? "pointer" : "default", padding: 0,
             }}
           ><SendIcon size={18} /></button>
+          {caption && (
+            <div style={{ flexBasis: "100%", padding: "0 4px", fontSize: 11.5, lineHeight: 1.4, color: T.muted, fontFamily: T.sans }}>{caption}</div>
+          )}
         </div>
       </div>
     );
@@ -360,7 +368,7 @@ export function AICodingAssistant({
       {/* Input area — editor-footer style bar pinned to the bottom of the panel */}
       <div className="vra-editor" style={{
         background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg,
-        overflow: "hidden", marginBottom: 16, flexShrink: 0,
+        overflow: "hidden", marginBottom: caption ? 8 : 16, flexShrink: 0,
       }}>
         <textarea
           value={input}
@@ -400,6 +408,9 @@ export function AICodingAssistant({
           >Send<SendIcon size={14} /></button>
         </div>
       </div>
+      {caption && (
+        <div style={{ fontSize: 12, lineHeight: 1.45, color: T.muted, padding: "0 2px", marginBottom: 16, flexShrink: 0 }}>{caption}</div>
+      )}
     </div>
   );
 }

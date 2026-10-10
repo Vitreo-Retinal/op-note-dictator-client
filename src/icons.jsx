@@ -101,6 +101,10 @@ export function PhoneIcon({ size = 22 }) {
 export function TrialsIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V3h6v1" /><path d="M7.5 13.5h2.2l1.4-3 2 5.5 1.5-2.5h1.9" /></svg>);
 }
+// Address book: card with binder tabs on the left edge and a person — Referral Directory (Oct 2026)
+export function DirectoryIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><rect x="5.5" y="3" width="14.5" height="18" rx="2" /><path d="M3.5 7.5h3.5M3.5 12h3.5M3.5 16.5h3.5" /><circle cx="12.75" cy="10" r="2.5" /><path d="M8.75 17c.6-1.9 2.1-3 4-3s3.4 1.1 4 3" /></svg>);
+}
 // ── LEA Hub (Oct 2026) ──
 // Barcode in a scan frame — phone tab bar "Scan" (carton inventory)
 export function ScanIcon({ size = 22 }) {
