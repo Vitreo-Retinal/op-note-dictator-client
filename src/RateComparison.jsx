@@ -88,10 +88,10 @@ export default function RateComparison({ onBack, embedded = false }) {
   const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState("field_rest_of_ma");
   const [geoAdj, setGeoAdj] = useState(true);
-  const [drugEcon, setDrugEcon] = useState([]); // hub_drug_economics(): per-dose buy-and-bill margins
+  const [drugEcon, setDrugEcon] = useState([]); // hub_drug_economics_v3(): per-dose buy-and-bill margins, current + prior Medicare quarter
 
   useEffect(() => {
-    supabase.rpc("hub_drug_economics").then(({ data }) => setDrugEcon(data || []));
+    supabase.rpc("hub_drug_economics_v3").then(({ data }) => setDrugEcon(data || []));
     supabase.rpc("hub_codes").then(({ data }) => setCodes((data || []).filter((c) => c.has_market)));
     supabase.rpc("hub_networks").then(({ data }) => {
       const list = data || [];
@@ -348,6 +348,8 @@ export default function RateComparison({ onBack, embedded = false }) {
             <span style={{ flex: 1, textAlign: "right" }}>Acq</span>
             <span style={{ flex: 1, textAlign: "right" }}>Medicare/dose</span>
             <span style={{ flex: 1, textAlign: "right" }}>Margin/dose</span>
+            <span style={{ flex: 1, textAlign: "right" }}>Prior Q Medicare/dose</span>
+            <span style={{ flex: 1, textAlign: "right" }}>Prior Q margin</span>
           </div>
           {[...drugEcon].sort((a, b) => Number(b.margin_per_dose) - Number(a.margin_per_dose)).map((d, i) => (
             <div key={d.code} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, padding: "8px 14px", borderTop: i === 0 ? "none" : `1px solid ${T.line}` }}>
@@ -355,10 +357,12 @@ export default function RateComparison({ onBack, embedded = false }) {
               <span style={{ flex: 1, ...numCell, color: T.ink2 }}>{money(Number(d.acq_cost))}</span>
               <span style={{ flex: 1, ...numCell, color: T.ink2 }}>{money(Number(d.medicare_per_dose))}</span>
               <span style={{ flex: 1, ...numCell, fontWeight: 500, color: Number(d.margin_per_dose) >= 0 ? T.green : T.red }}>{money(Number(d.margin_per_dose))}</span>
+              <span style={{ flex: 1, ...numCell, color: T.ink2 }}>{d.prior_medicare_per_dose != null ? money(Number(d.prior_medicare_per_dose)) : "—"}</span>
+              <span style={{ flex: 1, ...numCell, fontWeight: 500, color: d.prior_margin_per_dose == null ? T.muted : Number(d.prior_margin_per_dose) >= 0 ? T.green : T.red }}>{d.prior_margin_per_dose != null ? money(Number(d.prior_margin_per_dose)) : "—"}</span>
             </div>
           ))}
           <div style={{ fontSize: 12, color: T.muted, padding: "10px 14px", borderTop: `1px solid ${T.line}`, background: T.paper, lineHeight: 1.6 }}>
-            Acquisition as of {drugEcon[0].acq_as_of} · Medicare ASP+6 as of {drugEcon[0].medicare_as_of}. Buy-and-bill margin before 2% sequestration; commercial payers vary — use the picker above for a specific plan.
+            Acquisition as of {drugEcon[0].acq_as_of} · Medicare ASP+6 as of {drugEcon[0].medicare_as_of} (current quarter){(() => { const p = drugEcon.find((r) => r.prior_medicare_from && r.prior_medicare_to); return p ? <> · Prior quarter Medicare {p.prior_medicare_from}–{p.prior_medicare_to} (prior Q margin = prior-quarter Medicare minus prior acquisition)</> : null; })()}. Buy-and-bill margin before 2% sequestration; commercial payers vary — use the picker above for a specific plan.
             <br /><span style={{ color: T.amber, fontWeight: 600 }}>Timing:</span> these are <b>forward</b> figures at the current-quarter rate — right for "should I use this drug now" decisions. Payments landing in the bank now are for prior-period claims paid at the <b>prior</b> quarter's ASP rate (Medicare resets quarterly on a ~2-quarter lag), so this month's receipts won't match these margins exactly.
           </div>
         </div>
