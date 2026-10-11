@@ -12,7 +12,7 @@ import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaq
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL } from "./lib/retinaRx.js";
-import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, RESPONSIVE_CSS, doctorColor } from "./theme.js";
+import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, input, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { usePhone, TABBAR_H } from "./phone.jsx";
@@ -174,6 +174,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const [codeSearch, setCodeSearch] = useState("");
   const [copied, setCopied] = useState(false);
   const [hpiCopied, setHpiCopied] = useState(false); // Sep 2026, per Mari — CC/HPI card copy feedback
+  // Shadow coder v1 (Oct 2026, per Mari): "Flag for review" on the output → weekly review ledger.
+  const [flagOpen, setFlagOpen] = useState(false);
+  const [flagReason, setFlagReason] = useState("");
+  const [flagSending, setFlagSending] = useState(false);
+  const [flagErr, setFlagErr] = useState("");
   const [copiedCodes, setCopiedCodes] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -586,6 +591,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     const edit = typeof editInstruction === "string" ? editInstruction.trim() : "";
     if (!note.trim()) return;
     setLoading(true); setError(""); setResult(null);
+    setFlagOpen(false); setFlagReason(""); setFlagErr("");
     try {
       // System prompt now lives server-side (server/prompts/note-generator-prompt.js, July 2026).
       // The server builds it from mode + examples + customInstructions sent below.
@@ -619,6 +625,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           // Oct 6 2026 (Mari): medium effort — low took the global rules too literally (same-eye complication coded POST-OP).
           effort: "medium",
           thinking: "between_tools",
+          // Shadow coder v1: surgeon initials for the PHI-free note ledger.
+          surgeon: surgeon?.id || "",
         }),
       });
       const data = await res.json();
@@ -629,6 +637,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       parsed.safetyFlags = Array.isArray(data.safetyFlags) ? data.safetyFlags : [];
       parsed.hpi = data.hpi || null; // Sep 2026, per Mari — only present when intakeText was sent
       parsed.coverage = Array.isArray(data.coverage) ? data.coverage : null; // Oct 2026 — structured coverage (older servers omit it)
+      parsed.noteId = typeof data.noteId === "string" ? data.noteId : null; // Oct 2026 — shadow coder ledger id (older servers omit it)
+      parsed.flagged = !!data.flagged; // true when the dictation carried a "flag: …" line
       setResult(parsed);
       setTab("output");
       if (edit) setPendingEdit(""); // spoken edit applied — clear the banner
@@ -645,6 +655,30 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       setLoading(false);
     }
   }
+  // ── Flag for review (shadow coder v1, Oct 2026) ── codes/modifiers only, no PHI.
+  async function sendFlag() {
+    if (!result?.noteId || flagSending) return;
+    setFlagSending(true); setFlagErr("");
+    try {
+      const res = await fetch(`${API_BASE}/api/note-flag`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ noteId: result.noteId, reason: flagReason.trim().slice(0, 140) }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.ok) {
+        setResult((r) => (r ? { ...r, flagged: true } : r));
+        setFlagOpen(false); setFlagReason("");
+      } else {
+        setFlagErr("Couldn't flag this note — try again.");
+      }
+    } catch {
+      setFlagErr("Couldn't flag this note — try again.");
+    } finally {
+      setFlagSending(false);
+    }
+  }
+
   runRef.current = run; // lets the dictation pipeline auto-trigger a regenerate with a spoken edit
 
   // ── Generate click: deterministic pre-flight before any network call ──
@@ -1539,6 +1573,33 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                         );
                       })}
                     </div>
+                  </div>
+                )}
+
+                {/* Flag for review (shadow coder v1, Oct 2026) — sends the note id to the
+                    weekly-review ledger; hidden when an older server sent no noteId. */}
+                {result.noteId && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 14, fontSize: 13 }}>
+                    {result.flagged ? (
+                      <span style={chip("amber")}>Flagged for weekly review</span>
+                    ) : flagOpen ? (
+                      <>
+                        <input
+                          value={flagReason}
+                          onChange={(e) => setFlagReason(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") sendFlag(); if (e.key === "Escape") setFlagOpen(false); }}
+                          maxLength={140}
+                          placeholder="What's off? Codes/modifiers only — no patient names"
+                          autoFocus
+                          style={input({ flex: 1, minWidth: 200 })}
+                        />
+                        <button onClick={sendFlag} disabled={flagSending} style={btnSm("secondary")}>{flagSending ? "Sending…" : "Send"}</button>
+                        <button onClick={() => { setFlagOpen(false); setFlagErr(""); }} style={btnSm("ghost")}>Cancel</button>
+                      </>
+                    ) : (
+                      <button onClick={() => setFlagOpen(true)} style={btn("ghost", { height: 28, padding: "0 8px", color: T.muted })}>Flag for review</button>
+                    )}
+                    {flagErr && <span style={{ color: T.red, fontSize: 12 }}>{flagErr}</span>}
                   </div>
                 )}
 
