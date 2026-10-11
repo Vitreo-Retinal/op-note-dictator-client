@@ -942,6 +942,38 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     </div>
   );
 
+  // ── Flag for review (shadow coder v1, Oct 2026) ── lives in the note header row,
+  // left of "← New note" (phone: slim row at the top of the note card). Sends the
+  // note id to the weekly-review ledger; callers hide it when no noteId was sent.
+  const phoneBtn = phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {};
+  const flagTrigger = () => (
+    result?.flagged ? (
+      <span style={chip("amber")}>Flagged for weekly review</span>
+    ) : (
+      <button onClick={() => setFlagOpen(true)} disabled={flagOpen} style={btnSm("secondary", phoneBtn)}>Flag for review</button>
+    )
+  );
+  const flagForm = () => (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: phone ? "8px 14px" : "8px 12px 8px 16px", borderBottom: `1px solid ${T.line}`, background: T.paper, fontSize: 13 }}>
+      {flagOpen && (
+        <>
+          <input
+            value={flagReason}
+            onChange={(e) => setFlagReason(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") sendFlag(); if (e.key === "Escape") setFlagOpen(false); }}
+            maxLength={140}
+            placeholder="What's off? Codes/modifiers only — no patient names"
+            autoFocus
+            style={input({ flex: 1, minWidth: 200 })}
+          />
+          <button onClick={sendFlag} disabled={flagSending} style={btnSm("secondary", phoneBtn)}>{flagSending ? "Sending…" : "Send"}</button>
+          <button onClick={() => { setFlagOpen(false); setFlagErr(""); }} style={btnSm("ghost", phoneBtn)}>Cancel</button>
+        </>
+      )}
+      {flagErr && <span style={{ color: T.red, fontSize: 12 }}>{flagErr}</span>}
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: S.bg, color: S.text, fontFamily: S.font }}>
 
@@ -1576,33 +1608,6 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   </div>
                 )}
 
-                {/* Flag for review (shadow coder v1, Oct 2026) — sends the note id to the
-                    weekly-review ledger; hidden when an older server sent no noteId. */}
-                {result.noteId && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 14, fontSize: 13 }}>
-                    {result.flagged ? (
-                      <span style={chip("amber")}>Flagged for weekly review</span>
-                    ) : flagOpen ? (
-                      <>
-                        <input
-                          value={flagReason}
-                          onChange={(e) => setFlagReason(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === "Enter") sendFlag(); if (e.key === "Escape") setFlagOpen(false); }}
-                          maxLength={140}
-                          placeholder="What's off? Codes/modifiers only — no patient names"
-                          autoFocus
-                          style={input({ flex: 1, minWidth: 200 })}
-                        />
-                        <button onClick={sendFlag} disabled={flagSending} style={btnSm("secondary")}>{flagSending ? "Sending…" : "Send"}</button>
-                        <button onClick={() => { setFlagOpen(false); setFlagErr(""); }} style={btnSm("ghost")}>Cancel</button>
-                      </>
-                    ) : (
-                      <button onClick={() => setFlagOpen(true)} style={btn("ghost", { height: 28, padding: "0 8px", color: T.muted })}>Flag for review</button>
-                    )}
-                    {flagErr && <span style={{ color: T.red, fontSize: 12 }}>{flagErr}</span>}
-                  </div>
-                )}
-
                 {/* ── CC/HPI card (Sep 2026, per Mari) ────────────────
                     Only rendered when an intake line was supplied. Sits ABOVE the
                     A/P on purpose: that is the order it is pasted into NextGen. */}
@@ -1625,7 +1630,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
 
                 {/* The note */}
                 <div style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg }}>
-                  {/* Phone: no title row — the note starts right under the tabs; actions sit in the sticky footer below */}
+                  {/* Phone: no title row — the note starts right under the tabs; actions sit in the sticky footer below.
+                      The flag control gets its own slim row at the top of the card instead (not the footer). */}
+                  {phone && result.noteId && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderBottom: `1px solid ${T.line}` }}>
+                      {flagTrigger()}
+                    </div>
+                  )}
                   {!phone && <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 16px", borderBottom: `1px solid ${T.line}`, flexWrap: "wrap" }}>
                     <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>
                       {mode === "generate" ? "Generated A/P Note" : "Optimized A/P Note"}
@@ -1633,7 +1644,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     <div style={{ fontSize: 12, color: T.muted, fontFamily: T.sans }}>
                       <span style={{ background: T.goldSoft, color: T.ink, padding: "0 4px", borderRadius: 3, fontWeight: 600, marginRight: 4 }}>+</span>= billing language
                     </div>
-                    <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+                    <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+                      {result.noteId && flagTrigger()}
                       <button onClick={() => { setTab("input"); setResult(null); }} style={btnSm("secondary", phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {})}>
                         &#8592; New note
                       </button>
@@ -1642,6 +1654,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                       </button>
                     </div>
                   </div>}
+                  {result.noteId && !result.flagged && (flagOpen || flagErr) && flagForm()}
                   <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: phone ? "12px 14px" : "16px 18px" }}>
                     {renderNote(noteBody)}
                   </div>
