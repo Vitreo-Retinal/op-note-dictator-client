@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { T, IMAGING, doctorColor } from "./theme.js";
+import { T, IMAGING, SITE_TINTS, doctorColor } from "./theme.js";
 import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf, eventsOf, eventTime, imagingOf, leaStaffOf, isLeaStaffEvent } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine, StaffLine } from "./CallBoard.jsx";
@@ -147,11 +147,17 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
     const b = (t) => <b style={{ fontWeight: 600, color }}>{t || "—"}</b>;
     return a && a === p ? <>{b(a)} <span style={{ color: T.muted, fontSize: 12.5 }}>all day</span></> : <>{b(a)}<span style={{ color: T.lineStrong }}> / </span>{b(p)}</>;
   };
-  const imgText = (am, pm) => imgLike(am, pm, IMAGING.fg);
   // VRA back techs per site (Nana's sheet), for the "Techs today" card.
   const backRows = day && !lea && day.techs
     ? ["WORC", "LEOM"].map((site) => ({ site, am: techBack(day.techs, site, "AM"), pm: techBack(day.techs, site, "PM") })).filter((b) => b.am.length || b.pm.length)
     : [];
+  const techRows = [];
+  for (const site of ["WORC", "LEOM"]) {
+    const b = backRows.find((x) => x.site === site);
+    if (b) techRows.push({ key: site, site, label: site, am: b.am, pm: b.pm });
+    const im = imaging.find((x) => x.site === site);
+    if (im) techRows.push({ key: `img-${site}`, site, label: b ? "Imaging" : `${site} imaging`, am: im.am, pm: im.pm });
+  }
   const alerts = ok ? alertsOf(sched.days, todayYmd) : [];
   const status = <span style={{ fontSize: 13, color: T.muted }}>{loading ? "Loading schedule…" : "Schedule unavailable"}</span>;
 
@@ -339,20 +345,15 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       )}
 
       {/* VRA: techs today (Back per site, AM / PM), then Imaging under them — Mari, Oct 12 */}
-      {backRows.length + imaging.length > 0 && (
+      {techRows.length > 0 && (
         <>
-          <div style={secH}>Techs today <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>· Back · AM / PM</span></div>
+          <div style={secH}>Techs today <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>· AM / PM</span></div>
           <div style={card}>
-            {backRows.map((b, i) => (
-              <div key={b.site} style={rowS(i === 0)}>
-                <span style={keyS}>{b.site}</span>
-                <span style={valS}>{imgLike(b.am, b.pm, T.accent)}</span>
-              </div>
-            ))}
-            {imaging.map((im, i) => (
-              <div key={`img-${im.site}`} style={{ ...rowS(backRows.length === 0 && i === 0), background: IMAGING.bg }}>
-                <span style={{ ...keyS, color: IMAGING.fg, fontWeight: 600 }}>Imaging{im.site !== "WORC" ? ` · ${im.site}` : ""}</span>
-                <span style={valS}>{imgText(im.am, im.pm)}</span>
+            {/* Each site's Back row, then that site's Imaging row in the same color (Mari, Oct 12) */}
+            {techRows.map((r, i) => (
+              <div key={r.key} style={{ ...rowS(i === 0), background: r.site === "LEOM" ? SITE_TINTS.LEOM.bg : undefined }}>
+                <span style={{ ...keyS, color: r.site === "LEOM" ? SITE_TINTS.LEOM.text : T.muted }}>{r.label}</span>
+                <span style={valS}>{imgLike(r.am, r.pm, T.accent)}</span>
               </div>
             ))}
           </div>

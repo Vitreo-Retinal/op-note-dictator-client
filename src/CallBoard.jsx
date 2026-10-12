@@ -222,10 +222,10 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given })
     </Fragment>
   );
   const techLines = [];
-  // Imaging: names in the imaging color; "Tami all day" when AM = PM.
+  // VRA imaging names, styled like the techs; "Tami all day" when AM = PM.
   const imgNames = (am, pm) => {
     const a = am.join(" · "), p = pm.join(" · ");
-    const b = (t) => <b style={{ fontWeight: 600, color: IMAGING.fg }}>{t || "—"}</b>;
+    const b = (t) => <b style={{ fontWeight: 600, color: T.accent }}>{t || "—"}</b>;
     return a && a === p ? <>{b(a)} all day</> : <>{b(a)}{sep}{b(p)}</>;
   };
   if (lea && leaStaff) {
@@ -236,14 +236,14 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given })
     }
   }
   if (techs) {
+    // Imaging sits under its site's Back row in that site's color (Mari, Oct 12:
+    // the dedicated imaging tech is at Worcester).
+    const imaging = imagingOf(techs);
     for (const site of ["WORC", "LEOM"]) {
       const am = techBack(techs, site, "AM"), pm = techBack(techs, site, "PM");
-      if (!am.length && !pm.length) continue;
-      techLines.push(tLine(site, SITE_TINTS[site].bg, site, "Back", <>{nm(am)}{sep}{nm(pm)}</>));
-    }
-    // Imaging right under the techs (Mari, Oct 12); the site shows only when it is not Worcester.
-    for (const im of imagingOf(techs)) {
-      techLines.push(tLine(`img-${im.site}`, IMAGING.bg, "Imaging", im.site === "WORC" ? "" : im.site, imgNames(im.am, im.pm), IMAGING.fg));
+      if (am.length || pm.length) techLines.push(tLine(site, SITE_TINTS[site].bg, site, "Back", <>{nm(am)}{sep}{nm(pm)}</>));
+      const im = imaging.find((x) => x.site === site);
+      if (im) techLines.push(tLine(`img-${site}`, SITE_TINTS[site].bg, site, "Imaging", imgNames(im.am, im.pm)));
     }
     const tr = translatorOf(techs);
     if (tr) {
