@@ -241,14 +241,14 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given })
       if (!am.length && !pm.length) continue;
       techLines.push(tLine(site, SITE_TINTS[site].bg, site, "Back", <>{nm(am)}{sep}{nm(pm)}</>));
     }
+    // Imaging right under the techs (Mari, Oct 12); the site shows only when it is not Worcester.
+    for (const im of imagingOf(techs)) {
+      techLines.push(tLine(`img-${im.site}`, IMAGING.bg, "Imaging", im.site === "WORC" ? "" : im.site, imgNames(im.am, im.pm), IMAGING.fg));
+    }
     const tr = translatorOf(techs);
     if (tr) {
       techLines.push(tLine("tr", TRANSLATOR.bg, "Translator", "",
         tr.raw ? tr.raw : tr.same ? `${tr.am} all day` : <>{tr.am}{sep}{tr.pm}</>, TRANSLATOR.fg));
-    }
-    // Imaging under the techs; the site shows only when it is not Worcester.
-    for (const im of imagingOf(techs)) {
-      techLines.push(tLine(`img-${im.site}`, IMAGING.bg, "Imaging", im.site === "WORC" ? "" : im.site, imgNames(im.am, im.pm), IMAGING.fg));
     }
   }
 

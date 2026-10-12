@@ -141,12 +141,17 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
   const leaStaff = day && lea ? leaStaffOf(day) : null;
   const imaging = day && !lea ? imagingOf(day.techs) : [];
   const dayEvents = eventsOf(day).filter((ev) => !lea || !isLeaStaffEvent(ev));
-  // Imaging names: "Tami all day" when AM = PM, else "Tami / Ana".
-  const imgText = (am, pm) => {
+  // Names for AM / PM: "Tami all day" when AM = PM, else "Nana, Stephanie / Evelyn".
+  const imgLike = (am, pm, color) => {
     const a = am.join(", "), p = pm.join(", ");
-    const b = (t) => <b style={{ fontWeight: 600, color: IMAGING.fg }}>{t || "—"}</b>;
+    const b = (t) => <b style={{ fontWeight: 600, color }}>{t || "—"}</b>;
     return a && a === p ? <>{b(a)} <span style={{ color: T.muted, fontSize: 12.5 }}>all day</span></> : <>{b(a)}<span style={{ color: T.lineStrong }}> / </span>{b(p)}</>;
   };
+  const imgText = (am, pm) => imgLike(am, pm, IMAGING.fg);
+  // VRA back techs per site (Nana's sheet), for the "Techs today" card.
+  const backRows = day && !lea && day.techs
+    ? ["WORC", "LEOM"].map((site) => ({ site, am: techBack(day.techs, site, "AM"), pm: techBack(day.techs, site, "PM") })).filter((b) => b.am.length || b.pm.length)
+    : [];
   const alerts = ok ? alertsOf(sched.days, todayYmd) : [];
   const status = <span style={{ fontSize: 13, color: T.muted }}>{loading ? "Loading schedule…" : "Schedule unavailable"}</span>;
 
@@ -311,13 +316,6 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
             </div>
           )
         )}
-        {/* VRA: imaging from Nana's sheet (site shown when not Worcester) */}
-        {imaging.map((im) => (
-          <div key={im.site} style={{ ...rowS(false), background: IMAGING.bg }}>
-            <span style={{ ...keyS, color: IMAGING.fg, fontWeight: 600 }}>Imaging{im.site !== "WORC" ? ` · ${im.site}` : ""}</span>
-            <span style={valS}>{imgText(im.am, im.pm)}</span>
-          </div>
-        ))}
         {managers.length > 0 && (
           <ManagersLine managers={managers} stacked labelStyle={{ width: 68 }}
             style={{ ...rowS(false), fontSize: 13, gap: 8 }} />
@@ -337,6 +335,27 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
         <>
           <div style={secH}>Doctors today</div>
           <DoctorsCard day={day} style={{ marginBottom: 8 }} />
+        </>
+      )}
+
+      {/* VRA: techs today (Back per site, AM / PM), then Imaging under them — Mari, Oct 12 */}
+      {backRows.length + imaging.length > 0 && (
+        <>
+          <div style={secH}>Techs today <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>· Back · AM / PM</span></div>
+          <div style={card}>
+            {backRows.map((b, i) => (
+              <div key={b.site} style={rowS(i === 0)}>
+                <span style={keyS}>{b.site}</span>
+                <span style={valS}>{imgLike(b.am, b.pm, T.accent)}</span>
+              </div>
+            ))}
+            {imaging.map((im, i) => (
+              <div key={`img-${im.site}`} style={{ ...rowS(backRows.length === 0 && i === 0), background: IMAGING.bg }}>
+                <span style={{ ...keyS, color: IMAGING.fg, fontWeight: 600 }}>Imaging{im.site !== "WORC" ? ` · ${im.site}` : ""}</span>
+                <span style={valS}>{imgText(im.am, im.pm)}</span>
+              </div>
+            ))}
+          </div>
         </>
       )}
 
