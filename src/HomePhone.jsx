@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { T, doctorColor } from "./theme.js";
-import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
+import { T, IMAGING, doctorColor } from "./theme.js";
+import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, monDay, doctorHalves, techBack, managersOf, frontDeskOf, eventsOf, eventTime, imagingOf, leaStaffOf, isLeaStaffEvent } from "./lib/vraSchedule.js";
 import { Pill, DoctorsCard, NextDaysStrip, nextTiles } from "./SchedulePhone.jsx";
 import { ManagersLine, StaffLine } from "./CallBoard.jsx";
 import PhoneText from "./PhoneText.jsx";
@@ -112,14 +112,22 @@ function alertsOf(days, todayYmd) {
 // Oct 2026: every role gets a "Phone extensions ›" row (doctor: under the
 // Manager hub row; others: under Check coverage). Manager also gets an "Ask"
 // row (front desk assistant) above it; Front desk has Ask as a tab instead.
-export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch, onOpenSchedule, onOpenDay, onExtensions, onAsk, onTrials, onDirectory }) {
-  const [sched, setSched] = useState(null); // null = loading
+// Oct 2026 (per Mari): hub="lea" is the LEA Hub's phone home — the same
+// screen, with LEA techs + OCT/FP from the calendar's LEA line, no managers,
+// front desk or Manager hub, and the LEA line kept out of the events. LEA
+// passes its own loaded schedule as `sched`. Both hubs get "Change hub"
+// (onChangeHub) next to "Change view". VRA gets an Imaging row (Nana's sheet).
+export default function HomePhone({ role = "doctor", doctor, managerOpen, onDictate, onCoverage, onSelectManager, onLock, onSwitch, onChangeHub, onOpenSchedule, onOpenDay, onExtensions, onAsk, onTrials, onDirectory, hub = "vra", sched: given }) {
+  const lea = hub === "lea";
+  const [fetched, setFetched] = useState(null); // null = loading
+  const sched = given !== undefined ? given : fetched;
 
   useEffect(() => {
+    if (given !== undefined) return undefined; // the hub loads it (LEA)
     let alive = true;
-    fetchSchedule(31).then((data) => { if (alive) setSched(data); });
+    fetchSchedule(31).then((data) => { if (alive) setFetched(data); });
     return () => { alive = false; };
-  }, []);
+  }, [given !== undefined]);
 
   const now = new Date();
   const todayYmd = ymdOf(now);
@@ -128,8 +136,17 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
   const loading = sched === null;
   const day = ok ? sched.days.find((d) => d.date === todayYmd) || null : null;
   const onCall = day ? day.onCall : null;
-  const managers = day ? managersOf(day) : [];
-  const frontDesk = day ? frontDeskOf(day) : [];
+  const managers = day && !lea ? managersOf(day) : [];
+  const frontDesk = day && !lea ? frontDeskOf(day) : [];
+  const leaStaff = day && lea ? leaStaffOf(day) : null;
+  const imaging = day && !lea ? imagingOf(day.techs) : [];
+  const dayEvents = eventsOf(day).filter((ev) => !lea || !isLeaStaffEvent(ev));
+  // Imaging names: "Tami all day" when AM = PM, else "Tami / Ana".
+  const imgText = (am, pm) => {
+    const a = am.join(", "), p = pm.join(", ");
+    const b = (t) => <b style={{ fontWeight: 600, color: IMAGING.fg }}>{t || "—"}</b>;
+    return a && a === p ? <>{b(a)} <span style={{ color: T.muted, fontSize: 12.5 }}>all day</span></> : <>{b(a)}<span style={{ color: T.lineStrong }}> / </span>{b(p)}</>;
+  };
   const alerts = ok ? alertsOf(sched.days, todayYmd) : [];
   const status = <span style={{ fontSize: 13, color: T.muted }}>{loading ? "Loading schedule…" : "Schedule unavailable"}</span>;
 
@@ -144,8 +161,11 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       const next = sched.days.find((d) => d.date > todayYmd && d.onCall && d.onCall.doctor === doctor.id);
       docRows.push(["Your call", next ? `Next: week of ${monDay(next.date)}` : "None in the next 4 weeks"]);
     }
-    const tx = siteTechs(day.techs, yd.site, yd.halves);
+    const tx = lea ? null : siteTechs(day.techs, yd.site, yd.halves);
     if (tx) docRows.push([`${yd.site} techs`, tx]);
+    if (lea && yd.site === "LEX" && leaStaff && leaStaff.techs.length) {
+      docRows.push(["LEX techs", <b key="t" style={{ fontWeight: 600, color: T.accent }}>{leaStaff.techs.join(", ")}</b>]);
+    }
   }
   const dc = doctor ? doctorColor(doctor.id) : null;
 
@@ -208,11 +228,17 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
   return (
     <div style={{ padding: "0 16px", fontFamily: T.sans, color: T.ink }}>
       {/* Back to the view picker — a real button, visible, top left (Mari, Oct 7: "something like a back button") */}
-      <div style={{ paddingTop: 10 }}>
+      <div style={{ paddingTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
         <button type="button" onClick={onSwitch}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 12px 0 8px", borderRadius: 8, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
           <BackIcon /> Change view
         </button>
+        {onChangeHub && (
+          <button type="button" onClick={onChangeHub}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 12px 0 8px", borderRadius: 8, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+            <BackIcon /> Change hub
+          </button>
+        )}
       </div>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-end", gap: 10, padding: "8px 0 8px" }}>
@@ -220,7 +246,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
           <h1 style={{ fontSize: 20, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.25, color: T.ink, margin: 0 }}>
             {doctor ? `Good ${now.getHours() < 12 ? "morning" : "afternoon"}, ${doctor.name}` : dateWords}
           </h1>
-          <div style={{ fontSize: 13, color: T.muted, marginTop: 1 }}>{doctor ? dateWords : "VRA today"}</div>
+          <div style={{ fontSize: 13, color: T.muted, marginTop: 1 }}>{doctor ? dateWords : lea ? "LEA today" : "VRA today"}</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", flex: "none" }}>
           {doctor && (
@@ -261,6 +287,37 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
             </span>
           ) : <span style={{ ...valS, color: T.muted }}>—</span>}
         </div>
+        {/* LEA: today's techs + OCT/FP from the calendar's LEA line */}
+        {ok && lea && (
+          leaStaff && (leaStaff.techs.length || leaStaff.imaging.length) ? (
+            <>
+              {leaStaff.techs.length > 0 && (
+                <div style={rowS(false)}>
+                  <span style={keyS}>Techs</span>
+                  <b style={{ ...valS, fontWeight: 600, color: T.accent }}>{leaStaff.techs.join(", ")}</b>
+                </div>
+              )}
+              {leaStaff.imaging.length > 0 && (
+                <div style={{ ...rowS(false), background: IMAGING.bg }}>
+                  <span style={{ ...keyS, color: IMAGING.fg, fontWeight: 600 }}>OCT/FP</span>
+                  <b style={{ ...valS, fontWeight: 600, color: IMAGING.fg }}>{leaStaff.imaging.join(", ")}</b>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={rowS(false)}>
+              <span style={keyS}>Techs</span>
+              <span style={{ ...valS, color: T.muted }}>No LEA tech line today</span>
+            </div>
+          )
+        )}
+        {/* VRA: imaging from Nana's sheet (site shown when not Worcester) */}
+        {imaging.map((im) => (
+          <div key={im.site} style={{ ...rowS(false), background: IMAGING.bg }}>
+            <span style={{ ...keyS, color: IMAGING.fg, fontWeight: 600 }}>Imaging{im.site !== "WORC" ? ` · ${im.site}` : ""}</span>
+            <span style={valS}>{imgText(im.am, im.pm)}</span>
+          </div>
+        ))}
         {managers.length > 0 && (
           <ManagersLine managers={managers} stacked labelStyle={{ width: 68 }}
             style={{ ...rowS(false), fontSize: 13, gap: 8 }} />
@@ -302,7 +359,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       )}
 
       {/* Today's general events — neutral lines below the red/amber alerts */}
-      {eventsOf(day).map((ev, i) => (
+      {dayEvents.map((ev, i) => (
         <div key={`ev-${i}`} style={{ marginBottom: 6, padding: "6px 12px", borderRadius: T.r, background: T.surface, border: `1px solid ${T.line}`, fontSize: 13, lineHeight: 1.35, color: T.ink }}>
           <div style={{ overflowWrap: "anywhere" }}>
             <span style={{ color: T.ink2, fontWeight: 600, whiteSpace: "nowrap" }}>{eventTime(ev)}</span>
@@ -322,7 +379,7 @@ export default function HomePhone({ role = "doctor", doctor, managerOpen, onDict
       )}
 
       {/* Doctor: Manager hub row last */}
-      {isDoctor && managerRow}
+      {isDoctor && !lea && managerRow}
 
       {/* Manager: Ask row. Everyone: Clinical Trials, Referral Directory, then Phone extensions row last. */}
       {isManager && askRow}

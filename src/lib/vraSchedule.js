@@ -4,7 +4,8 @@
 // feed server-side; the feed URL never reaches the browser). The auth token is
 // attached by the global fetch wrapper in main.jsx (URL contains railway.app).
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
+// (import.meta.env || {}) so node --test can load this file (scripts/leaLine.test.js).
+const API_BASE = (import.meta.env || {}).VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
 // Fixed site order for display. Unknown sites from the calendar sort after these.
 export const SITE_ORDER = ["WORC", "LEOM", "LEX", "UMASS", "WSC", "VALEDA"];
@@ -158,6 +159,81 @@ export function translatorOf(techs) {
   if (typeof t === "string") return { raw: t };
   if (!t.AM && !t.PM) return null;
   return { am: t.AM || "—", pm: t.PM || "—", same: t.AM && t.AM === t.PM };
+}
+
+/**
+ * Imaging (OCT / FP) from Nana's tech sheet (Oct 2026, per Mari: Tami most
+ * days). The server files "OCT", "FP", "OCT/FP" and "imaging" assignments
+ * under roles[site][half].imaging. → [{ site, am: [names], pm: [names] }] for
+ * each tech site with anyone on imaging; [] when none (or an older server).
+ */
+export function imagingOf(techs) {
+  const out = [];
+  if (!techs || !techs.roles) return out;
+  for (const site of ["WORC", "LEOM"]) {
+    const r = techs.roles[site];
+    if (!r) continue;
+    const am = (r.AM && r.AM.imaging) || [];
+    const pm = (r.PM && r.PM.imaging) || [];
+    if (am.length || pm.length) out.push({ site, am, pm });
+  }
+  return out;
+}
+
+// ── LEA tech line (Oct 2026) ─────────────────────────────────────────
+// Lexington Eye's staffing is one all-day event on the VRA calendar:
+//   "LEA · BKH: Ashley, Dom, Tony, Bill · Imaging: Mairead"
+// Pieces are split on "·" (or "|"). "<label>: names" where the label is
+//   · doctor initials (BKH) or "Techs" / "Tech" → techs
+//   · "Imaging" / "OCT/FP" / "OCT" / "FP"      → imaging
+// A piece with no label is more tech names. A title only counts as the LEA
+// tech line when at least one labelled piece is found, so "LEA · Staff
+// meeting" stays an ordinary event.
+const LEA_LINE_RX = /^LEA\s*(?:·|:|\||-|–|—)\s*(.+)$/i;
+const IMAGING_LABEL_RX = /^(?:imaging|oct\s*\/?\s*fp|oct|fp)$/i;
+const TECH_LABEL_RX = /^techs?$/i;
+const DOC_LABEL_RX = /^[A-Z]{2,4}$/;
+
+const splitPeople = (s) => String(s || "").split(/\s*,\s*|\s+(?:and|&)\s+/i).map((x) => x.trim()).filter(Boolean);
+
+/** One event title → { doctors, techs, imaging } or null when it is not the LEA tech line. */
+export function parseLeaLine(title) {
+  const m = LEA_LINE_RX.exec(String(title || "").trim());
+  if (!m) return null;
+  const res = { doctors: [], techs: [], imaging: [] };
+  let labelled = false;
+  for (const piece of m[1].split(/\s*[·|]\s*/)) {
+    if (!piece) continue;
+    const lm = /^([^:]{1,12}):\s*(.*)$/.exec(piece);
+    if (!lm) { res.techs.push(...splitPeople(piece)); continue; }
+    const label = lm[1].trim();
+    const names = splitPeople(lm[2]);
+    if (IMAGING_LABEL_RX.test(label)) { labelled = true; res.imaging.push(...names); }
+    else if (TECH_LABEL_RX.test(label)) { labelled = true; res.techs.push(...names); }
+    else if (DOC_LABEL_RX.test(label)) { labelled = true; res.doctors.push(label); res.techs.push(...names); }
+    else res.techs.push(...splitPeople(piece));
+  }
+  if (!labelled) return null;
+  const uniq = (a) => [...new Set(a)];
+  return { doctors: uniq(res.doctors), techs: uniq(res.techs), imaging: uniq(res.imaging) };
+}
+
+/** True for the LEA tech-line event (kept out of the LEA Hub's "Events" line). */
+export const isLeaStaffEvent = (ev) => !!(ev && parseLeaLine(ev.title));
+
+/**
+ * The day's LEA staffing → { doctors, techs, imaging } (several LEA lines on
+ * one day are merged), or null when the calendar has none that day.
+ */
+export function leaStaffOf(day) {
+  let out = null;
+  for (const ev of eventsOf(day)) {
+    const p = parseLeaLine(ev.title);
+    if (!p) continue;
+    if (!out) { out = p; continue; }
+    for (const k of ["doctors", "techs", "imaging"]) for (const n of p[k]) if (!out[k].includes(n)) out[k].push(n);
+  }
+  return out;
 }
 
 /**

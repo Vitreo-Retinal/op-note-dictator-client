@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment } from "react";
 import { majorHoliday, halfDayNote, injectionBlackout } from "./lib/practiceCalendar.js";
-import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime } from "./lib/vraSchedule.js";
-import { T, SITE_TINTS, TRANSLATOR, doctorColor } from "./theme.js";
+import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, sessionsBySite, techBack, translatorOf, managersOf, frontDeskOf, eventsOf, eventTime, imagingOf, leaStaffOf, isLeaStaffEvent } from "./lib/vraSchedule.js";
+import { T, SITE_TINTS, TRANSLATOR, IMAGING, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 import DayStepper, { scheduleRange } from "./DayStepper.jsx";
 import PhoneText from "./PhoneText.jsx";
@@ -134,17 +134,28 @@ export function StaffLine({ label, people, extra, style, labelStyle, stacked = f
 // day-specific follows the picked day; the F/U counter and the injection
 // blackout banner always count from the real today. Not persisted.
 // onOpenSchedule(ymd | null): null = today.
-export default function CallBoard({ onOpenSchedule }) {
-  const [sched, setSched] = useState(null); // null = loading
+//
+// LEA Hub (Oct 2026, per Mari: "the same look as the VRA hub, just the techs
+// different"): hub="lea" shows the same board. Techs come from the calendar's
+// LEA line ("LEA · BKH: Ashley, Dom, Tony, Bill · Imaging: Mairead") with
+// OCT/FP in its own color, that line is kept out of "Events", and Managers /
+// Front desk are not shown. LEA passes its own loaded schedule as `sched`
+// (the server already sends LEA tokens the doctor-only view).
+// VRA (Oct 2026, per Mari): an Imaging row from Nana's sheet (Tami most days).
+export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given }) {
+  const lea = hub === "lea";
+  const [fetched, setFetched] = useState(null); // null = loading
+  const sched = given !== undefined ? given : fetched;
   const [fuWeeks, setFuWeeks] = useState("");
   const [picked, setPicked] = useState(null); // YYYY-MM-DD, null = today
 
   // Fetch once on mount. Never throws — a dead feed must never blank the card.
   useEffect(() => {
+    if (given !== undefined) return undefined; // the hub loads it (LEA)
     let alive = true;
-    fetchSchedule(14).then((data) => { if (alive) setSched(data); });
+    fetchSchedule(14).then((data) => { if (alive) setFetched(data); });
     return () => { alive = false; };
-  }, []);
+  }, [given !== undefined]);
 
   const ok = scheduleOk(sched);
   const loading = sched === null;
@@ -182,9 +193,11 @@ export default function CallBoard({ onOpenSchedule }) {
   const blackout = injectionBlackout(fuDate) || injectionBlackout(today);
 
   const sites = shownDay ? sessionsBySite(shownDay.sessions) : [];
-  const techs = shownDay ? shownDay.techs : null;
-  const managers = shownDay ? managersOf(shownDay) : [];
-  const frontDesk = shownDay ? frontDeskOf(shownDay) : [];
+  const techs = shownDay && !lea ? shownDay.techs : null;
+  const leaStaff = shownDay && lea ? leaStaffOf(shownDay) : null;
+  const managers = shownDay && !lea ? managersOf(shownDay) : [];
+  const frontDesk = shownDay && !lea ? frontDeskOf(shownDay) : [];
+  const events = eventsOf(shownDay).filter((ev) => !lea || !isLeaStaffEvent(ev));
 
   // Mockup .band styles
   const cell = { padding: "12px 16px", borderRight: `1px solid ${T.line}`, minWidth: 0, overflow: "hidden" };
@@ -209,6 +222,19 @@ export default function CallBoard({ onOpenSchedule }) {
     </Fragment>
   );
   const techLines = [];
+  // Imaging: names in the imaging color; "Tami all day" when AM = PM.
+  const imgNames = (am, pm) => {
+    const a = am.join(" · "), p = pm.join(" · ");
+    const b = (t) => <b style={{ fontWeight: 600, color: IMAGING.fg }}>{t || "—"}</b>;
+    return a && a === p ? <>{b(a)} all day</> : <>{b(a)}{sep}{b(p)}</>;
+  };
+  if (lea && leaStaff) {
+    if (leaStaff.techs.length) techLines.push(tLine("lex", SITE_TINTS.WORC.bg, "LEX", "Techs", nm(leaStaff.techs)));
+    if (leaStaff.imaging.length) {
+      techLines.push(tLine("img", IMAGING.bg, "OCT/FP", "",
+        <b style={{ fontWeight: 600, color: IMAGING.fg }}>{leaStaff.imaging.join(" · ")}</b>, IMAGING.fg));
+    }
+  }
   if (techs) {
     for (const site of ["WORC", "LEOM"]) {
       const am = techBack(techs, site, "AM"), pm = techBack(techs, site, "PM");
@@ -219,6 +245,10 @@ export default function CallBoard({ onOpenSchedule }) {
     if (tr) {
       techLines.push(tLine("tr", TRANSLATOR.bg, "Translator", "",
         tr.raw ? tr.raw : tr.same ? `${tr.am} all day` : <>{tr.am}{sep}{tr.pm}</>, TRANSLATOR.fg));
+    }
+    // Imaging under the techs; the site shows only when it is not Worcester.
+    for (const im of imagingOf(techs)) {
+      techLines.push(tLine(`img-${im.site}`, IMAGING.bg, "Imaging", im.site === "WORC" ? "" : im.site, imgNames(im.am, im.pm), IMAGING.fg));
     }
   }
 
@@ -320,7 +350,17 @@ export default function CallBoard({ onOpenSchedule }) {
                 </button>
               )}
             </div>
-            {!ok ? unavailable : techs ? (
+            {!ok ? unavailable : lea ? (
+              techLines.length > 0 ? (
+                <>
+                  <div style={{ display: "grid", gridTemplateColumns: "auto auto minmax(0, 1fr)", marginLeft: -6, rowGap: 3, marginTop: 2 }}>
+                    {techLines}
+                  </div>
+                </>
+              ) : (
+                <div style={sub}>No LEA tech line {when}</div>
+              )
+            ) : techs ? (
               <>
                 {techLines.length > 0 && (
                   <div style={{ display: "grid", gridTemplateColumns: "auto auto minmax(0, 1fr)", marginLeft: -6, rowGap: 3, marginTop: 2 }}>
@@ -345,8 +385,8 @@ export default function CallBoard({ onOpenSchedule }) {
           <StaffLine label="Front desk" people={frontDesk} labelStyle={{ width: 64 }}
             style={{ padding: managers.length > 0 ? "0 16px 7px" : "7px 16px", borderTop: managers.length > 0 ? 0 : `1px solid ${T.line}` }} />
         )}
-        {ok && eventsOf(shownDay).length > 0 && (
-          <EventsLine events={eventsOf(shownDay)} label={`Events ${when}`}
+        {ok && events.length > 0 && (
+          <EventsLine events={events} label={`Events ${when}`}
             style={{ padding: "7px 16px", borderTop: `1px solid ${T.line}` }} />
         )}
       </div>

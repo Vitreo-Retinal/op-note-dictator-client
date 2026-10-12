@@ -51,6 +51,10 @@ export const SITE_TINTS = {
 };
 // On-call translator (green).
 export const TRANSLATOR = { bg: "#E8F5E9", fg: "#2E7D32" };
+// Imaging / OCT-FP (Oct 2026, per Mari: imaging in its own color, apart from
+// the techs). Warm orange: clear of the doctor colors, Leominster amber and
+// the translator green.
+export const IMAGING = { bg: "#FDEEE2", fg: "#A84B0C" };
 
 // Backward-compatible alias object: the old dark-theme key names, mapped to light values.
 export const S = {

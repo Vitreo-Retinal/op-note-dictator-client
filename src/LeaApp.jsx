@@ -10,9 +10,9 @@ import { S, T, appBar, tile, iconBox, secHead, avatar, RESPONSIVE_CSS, doctorCol
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, DropBottleIcon, CalendarIcon, ScanIcon, LockIcon, BackIcon } from "./icons.jsx";
 import { useIsPhone, PhoneCtx, PhoneShell, PHONE_BODY_H } from "./phone.jsx";
 import { RX_ORIGIN, readRxToken, readLeaToken, storeLeaToken, tokenRole } from "./lib/retinaRx.js";
-import { scheduleOk, ymdOf, shortDate } from "./lib/vraSchedule.js";
-import DayStepper, { scheduleRange } from "./DayStepper.jsx";
-import { DoctorsGrid, ComingUp, LeaSchedulePage, useLeaSchedule, doctorDay, nextLexDay, siteName } from "./LeaSchedule.jsx";
+import CallBoard from "./CallBoard.jsx";
+import HomePhone from "./HomePhone.jsx";
+import { LeaSchedulePage, useLeaSchedule } from "./LeaSchedule.jsx";
 
 // ── LEA Hub (Oct 2026, approved mockup "retina-rx-front-mockup") ─────
 // Lexington Eye's hub: the VRA hub client running in "LEA" mode under
@@ -86,9 +86,6 @@ function LeaBrand({ size = 28, text = "LEA Hub" }) {
 }
 
 const linkBtn = { display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 12px 0 8px", borderRadius: 8, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" };
-const card = { background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg };
-const secH = { fontSize: 11.5, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: T.muted, margin: "12px 0 6px" };
-const muted = { fontSize: 13, color: T.muted };
 
 // ── Pick your view (Doctor / Tech) ──────────────────────────────────
 const ROLE_OPTIONS = [
@@ -142,98 +139,6 @@ function LeaRolePicker({ phone, onPick, onChangeHub }) {
   );
 }
 
-// ── Phone Home ──────────────────────────────────────────────────────
-const DOW_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function HalfLine({ label, sites, out }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderTop: label === "PM" ? `1px solid ${T.line}` : 0, fontSize: 13.5 }}>
-      <span style={{ width: 40, flex: "none", fontSize: 12, color: T.muted }}>{label}</span>
-      {sites.length
-        ? <b style={{ fontWeight: 600, color: sites.includes("LEX") ? T.accent : T.ink }}>{sites.map(siteName).join(" + ")}</b>
-        : out ? <b style={{ fontWeight: 600, color: T.red }}>Vacation</b> : <span style={{ color: T.muted }}>Off</span>}
-    </div>
-  );
-}
-
-function LeaHomePhone({ role, doctor, sched, onSwitch, onLock, onOpenSchedule, onPickName }) {
-  const now = new Date();
-  const todayYmd = ymdOf(now);
-  const dateWords = `${DOW_LONG[now.getDay()]}, ${MON[now.getMonth()]} ${now.getDate()}`;
-  const ok = scheduleOk(sched);
-  const day = ok ? sched.days.find((d) => d.date === todayYmd) || null : null;
-  const status = <div style={{ ...card, padding: "10px 12px", ...muted }}>{sched === null ? "Loading schedule…" : "Schedule unavailable"}</div>;
-  const isDoctor = role === "doctor";
-  const mine = doctor && day ? doctorDay(day, doctor.id) : null;
-  const nextLex = doctor && ok ? nextLexDay(sched.days, doctor.id, todayYmd) : null;
-  const onCallMe = doctor && day && day.onCall && day.onCall.doctor === doctor.id;
-  const dc = doctor ? doctorColor(doctor.id) : null;
-
-  return (
-    <div style={{ padding: "0 16px 8px", fontFamily: T.sans, color: T.ink }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, paddingTop: 10 }}>
-        <button type="button" onClick={onSwitch} style={linkBtn}><BackIcon /> Change view</button>
-        <div style={{ flex: 1 }} />
-        {doctor && (
-          <button type="button" onClick={onLock} aria-label={`Lock ${doctor.name}'s space`}
-            style={{ display: "flex", alignItems: "center", gap: 5, minHeight: 32, padding: "0 4px", background: "none", border: 0, color: T.muted, fontFamily: T.sans, fontSize: 12.5, cursor: "pointer" }}>
-            <LockIcon />Lock
-          </button>
-        )}
-      </div>
-      <div style={{ padding: "8px 0 2px" }}>
-        <h1 style={{ fontSize: 20, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.25, margin: 0 }}>
-          {doctor ? `Good ${now.getHours() < 12 ? "morning" : "afternoon"}, ${doctor.name}` : dateWords}
-        </h1>
-        <div style={{ fontSize: 13, color: T.muted, marginTop: 1 }}>{doctor ? dateWords : "Where every doctor is today"}</div>
-      </div>
-
-      {isDoctor && !doctor && (
-        <button type="button" onClick={onPickName}
-          style={{ ...card, display: "flex", alignItems: "center", gap: 10, width: "100%", minHeight: 52, padding: "0 12px", marginTop: 10, fontFamily: T.sans, color: T.ink, cursor: "pointer", textAlign: "left" }}>
-          <LockIcon /><span style={{ fontSize: 14, fontWeight: 600 }}>Pick your name</span><span style={{ fontSize: 12.5, color: T.muted }}>PIN required</span>
-        </button>
-      )}
-
-      {doctor && (
-        <>
-          <div style={secH}>Your day</div>
-          {mine ? (
-            <div style={{ ...card, padding: "2px 12px", background: dc.soft, borderColor: `${dc.fg}33` }}>
-              <HalfLine label="AM" sites={mine.AM} out={mine.out} />
-              <HalfLine label="PM" sites={mine.PM} out={mine.out} />
-              {onCallMe && (
-                <div style={{ display: "flex", gap: 8, padding: "6px 0", borderTop: `1px solid ${T.line}`, fontSize: 13.5 }}>
-                  <span style={{ width: 40, flex: "none", fontSize: 12, color: T.muted }}>Call</span>
-                  <b style={{ fontWeight: 600 }}>On call{day.onCall.doctorThrough && day.onCall.doctorThrough !== todayYmd ? ` through ${shortDate(day.onCall.doctorThrough)}` : " today"}</b>
-                </div>
-              )}
-            </div>
-          ) : status}
-          <div style={secH}>Your next Lexington day</div>
-          <div style={{ ...card, display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", fontSize: 13.5 }}>
-            {!ok ? <span style={muted}>{sched === null ? "Loading…" : "Schedule unavailable"}</span>
-              : nextLex ? <><span style={{ width: 90, flex: "none", fontSize: 12.5, color: T.muted }}>{shortDate(nextLex.date)}</span><b style={{ fontWeight: 600, color: T.accent }}>{nextLex.halves}</b></>
-                : <span style={muted}>None in the next 4 weeks</span>}
-          </div>
-        </>
-      )}
-
-      <div style={secH}>Doctors today</div>
-      {day ? <DoctorsGrid day={day} /> : ok ? <div style={{ ...card, padding: "10px 12px", ...muted }}>No schedule for today</div> : status}
-
-      {ok && (
-        <>
-          <div style={secH}>Coming up</div>
-          <ComingUp days={sched.days} todayYmd={todayYmd} max={doctor ? 3 : 4} onMore={onOpenSchedule} />
-        </>
-      )}
-      <div style={{ textAlign: "center", fontSize: 10.5, letterSpacing: ".05em", textTransform: "uppercase", color: T.muted, margin: "12px 0 4px" }}>From the VRA calendar</div>
-    </div>
-  );
-}
-
 // ── Desktop Home ────────────────────────────────────────────────────
 const TOOLS = [
   { id: "inject", title: "Can We Inject?", icon: InjectIcon, description: "Check PA requirements, step therapy, and billing alerts by drug + insurance plan.", tags: ["PA Lookup", "Step Therapy"] },
@@ -244,17 +149,11 @@ const TOOLS = [
   { id: "drops", title: "Drop Schedule", icon: DropBottleIcon, description: "Build and print a drop schedule for a patient — post-op or post-injection, in EN / ES / VI / PT.", tags: ["Printable", "EN", "ES", "VI", "PT"] },
 ];
 
-function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onSelectDoctor, onSwitch, onChangeHub, onScan }) {
-  const todayYmd = ymdOf(new Date());
+function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onOpenDay, onSelectDoctor, onSwitch, onChangeHub, onScan }) {
+  // Oct 2026 (per Mari): the same front page as the VRA hub — the shared Call
+  // Board (day stepper, F/U counter, on call, doctors that day, LEA techs +
+  // OCT/FP, events at the bottom), then Your space and Tools for everyone.
   const todayWords = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-  const ok = scheduleOk(sched);
-  // Day stepper (Oct 2026, owner-approved): the Doctors card can show another
-  // day in the loaded range. Coming up always counts from today. Not persisted.
-  const [picked, setPicked] = useState(null); // YYYY-MM-DD, null = today
-  const [minYmd, maxYmd] = scheduleRange(sched, todayYmd, ok);
-  const shownYmd = picked && picked >= minYmd && picked <= maxYmd ? picked : todayYmd;
-  const when = shownYmd === todayYmd ? "today" : "that day";
-  const day = ok ? sched.days.find((d) => d.date === shownYmd) || null : null;
   const hoverOn = (e) => { e.currentTarget.style.borderColor = T.accentLine; };
   const hoverOff = (e) => { e.currentTarget.style.borderColor = T.line; };
   const wide = (key, Icon, title, description, right, onClick) => (
@@ -268,36 +167,22 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onSelectDoc
       {right && <span className="vra-bar-hide" style={{ marginLeft: "auto", fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{right}</span>}
     </button>
   );
-  const status = <div style={{ ...card, padding: "10px 12px", ...muted }}>{sched === null ? "Loading schedule…" : "Schedule unavailable"}</div>;
 
   return (
     <div style={{ minHeight: "100vh", background: T.paper, fontFamily: T.sans, color: T.ink }}>
       <style>{RESPONSIVE_CSS}</style>
       <header className="vra-bar" style={appBar}>
-        <LeaBrand size={34} />
+        <LeaBrand size={34} text="Lexington Eye" />
+        <span style={{ width: 1, height: 22, background: T.line, flexShrink: 0 }} />
+        <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, whiteSpace: "nowrap" }}>Practice Hub</div>
         <div style={{ flex: 1 }} />
         <div className="vra-bar-hide" style={{ fontSize: 13, color: T.ink2, whiteSpace: "nowrap" }}>{todayWords}</div>
         <button type="button" onClick={onSwitch} style={{ ...linkBtn, height: 32 }}><BackIcon /> Change view</button>
-        <button type="button" onClick={onChangeHub} style={{ ...linkBtn, height: 32 }}>Change hub</button>
+        <button type="button" onClick={onChangeHub} style={{ ...linkBtn, height: 32 }}><BackIcon /> Change hub</button>
       </header>
 
       <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", boxSizing: "border-box" }}>
-        <div className="vra-row2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 20, alignItems: "start" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "4px 8px", marginBottom: 6 }}>
-              <div style={{ ...secH, margin: 0 }}>Doctors {when}</div>
-              <DayStepper compact value={shownYmd} todayYmd={todayYmd} min={minYmd} max={maxYmd}
-                onChange={(ymd) => setPicked(ymd === todayYmd ? null : ymd)} />
-            </div>
-            {day ? <DoctorsGrid day={day} /> : ok ? <div style={{ ...card, padding: "10px 12px", ...muted }}>No schedule for {when}</div> : status}
-          </div>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", minHeight: 28, marginBottom: 6 }}>
-              <div style={{ ...secH, margin: 0 }}>Coming up</div>
-            </div>
-            {ok ? <ComingUp days={sched.days} todayYmd={todayYmd} max={6} onMore={() => onSelectTool("schedule")} /> : status}
-          </div>
-        </div>
+        <CallBoard hub="lea" sched={sched} onOpenSchedule={(ymd) => onOpenDay(ymd)} />
 
         {role === "doctor" && (
           <>
@@ -326,7 +211,7 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onSelectDoc
           </>
         )}
 
-        <h2 style={secHead()}>Tools</h2>
+        <h2 style={secHead()}>Tools for everyone</h2>
         <div className="vra-tiles" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
           {wide("schedule", CalendarIcon, "Schedule", "Every doctor at every site, on call, vacations, closures and events. Lexington highlighted.", "Next 2 weeks", () => onSelectTool("schedule"))}
           {TOOLS.map((tool) => {
@@ -436,6 +321,7 @@ export default function LeaApp() {
   const [activeSurgeon, setActiveSurgeon] = useState(null);
   const [unlockedId, setUnlockedId] = useState(null);
   const [onboarding, setOnboarding] = useState(false);
+  const [schedDay, setSchedDay] = useState(null); // Schedule page opens on this day (Call Board "Full board ›")
 
   // LEA sign-in gone (401 from the hub API, or it ran out): forget it and
   // show the LEA password screen again.
@@ -541,7 +427,7 @@ export default function LeaApp() {
   } else if (page === "drops") {
     content = <DropSchedule onBack={goHome} backLabel="Hub" />;
   } else if (page === "schedule") {
-    content = <LeaSchedulePage phone={phone} sched={sched} onBack={goHome} />;
+    content = <LeaSchedulePage key={schedDay || "today"} phone={phone} sched={sched} initialYmd={schedDay} onBack={goHome} />;
   } else if (page === "notes" && phone) {
     content = <DoctorPicker onSelectDoctor={pickDoctor} />;
   } else if (page === "pin" && activeSurgeon) {
@@ -555,14 +441,18 @@ export default function LeaApp() {
   } else if (page === "doctor" && phone && activeSurgeon && unlockedId === activeSurgeon.id) {
     content = null; // kept-mounted note generator below
   } else if (phone) {
+    // Oct 2026 (per Mari): the VRA phone home in LEA mode (HomePhone hub="lea").
     content = (
-      <LeaHomePhone role={role} doctor={role === "doctor" ? unlockedDoc : null} sched={sched}
-        onSwitch={switchView} onLock={lock} onOpenSchedule={() => setPage("schedule")} onPickName={() => setPage("notes")} />
+      <HomePhone hub="lea" sched={sched} role={role} doctor={role === "doctor" ? unlockedDoc : null}
+        onDictate={() => onTab("notes")} onCoverage={() => setPage("inject")}
+        onSwitch={switchView} onChangeHub={changeHub} onLock={lock}
+        onOpenSchedule={() => { setSchedDay(null); setPage("schedule"); }}
+        onOpenDay={(ymd) => { setSchedDay(ymd || null); setPage("schedule"); }} />
     );
   } else {
     content = (
       <LeaHomeDesktop role={role} sched={sched} unlockedDoctor={role === "doctor" ? unlockedDoc : null}
-        onSelectTool={(id) => setPage(id)} onSelectDoctor={pickDoctor} onSwitch={switchView} onChangeHub={changeHub} onScan={openScan} />
+        onSelectTool={(id) => { setSchedDay(null); setPage(id); }} onOpenDay={(ymd) => { setSchedDay(ymd || null); setPage("schedule"); }} onSelectDoctor={pickDoctor} onSwitch={switchView} onChangeHub={changeHub} onScan={openScan} />
     );
   }
 

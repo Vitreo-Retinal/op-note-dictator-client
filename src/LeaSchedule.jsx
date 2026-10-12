@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { T, DOCTOR_ORDER, RESPONSIVE_CSS, appBar } from "./theme.js";
-import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, doctorHalves, eventsOf, eventTime } from "./lib/vraSchedule.js";
+import { fetchSchedule, scheduleOk, ymdOf, dateOfYmd, shortDate, doctorHalves, eventsOf, eventTime, leaStaffOf, isLeaStaffEvent } from "./lib/vraSchedule.js";
+import { IMAGING } from "./theme.js";
 import { Pill, EventsCard } from "./SchedulePhone.jsx";
 import PhoneText from "./PhoneText.jsx";
 import { BackIcon } from "./icons.jsx";
@@ -109,7 +110,7 @@ export function comingUpItems(days, todayYmd) {
   const seenEv = new Map(); // title → last date seen (fold consecutive days)
   for (const d of [...days].filter((x) => x.date >= todayYmd).sort((a, b) => (a.date < b.date ? -1 : 1))) {
     if (d.closed) out.push({ key: `c${d.date}`, date: d.date, kind: "closed", text: `Closed${d.closureName ? ` · ${d.closureName}` : ""}` });
-    for (const ev of eventsOf(d)) {
+    for (const ev of leaEventsOf(d)) {
       const prev = seenEv.get(ev.title);
       seenEv.set(ev.title, d.date);
       if (prev && (dateOfYmd(d.date) - dateOfYmd(prev)) / 864e5 <= 1.5) continue;
@@ -174,11 +175,37 @@ const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
  * Schedule page (phone and desktop). Phone: in-page heading, a day strip, the
  * selected day. Desktop: app bar with "← Hub", same body in an 880px column.
  */
-export function LeaSchedulePage({ phone, sched, onBack }) {
+/**
+ * LEA techs + OCT/FP for one day, from the calendar's LEA line (Oct 2026).
+ * null when the day has no LEA line.
+ */
+export function LeaTechsCard({ day, style }) {
+  const staff = leaStaffOf(day);
+  if (!staff || (!staff.techs.length && !staff.imaging.length)) return null;
+  const row = (first, label, names, color) => (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 8, padding: "7px 12px", borderTop: first ? 0 : `1px solid ${T.line}`, fontSize: 13.5 }}>
+      <span style={{ width: 56, flex: "none", fontSize: 12, color: label === "OCT/FP" ? IMAGING.fg : T.muted, fontWeight: label === "OCT/FP" ? 600 : 400 }}>{label}</span>
+      <b style={{ fontWeight: 600, color, minWidth: 0, overflowWrap: "anywhere" }}>{names.join(" · ")}</b>
+    </div>
+  );
+  return (
+    <div style={{ ...card, overflow: "hidden", ...style }}>
+      {staff.techs.length > 0 && row(true, "Techs", staff.techs, T.accent)}
+      {staff.imaging.length > 0 && (
+        <div style={{ background: IMAGING.bg }}>{row(!staff.techs.length, "OCT/FP", staff.imaging, IMAGING.fg)}</div>
+      )}
+    </div>
+  );
+}
+
+/** The day's events without the LEA tech line (it has its own card). */
+export const leaEventsOf = (day) => eventsOf(day).filter((ev) => !isLeaStaffEvent(ev));
+
+export function LeaSchedulePage({ phone, sched, onBack, initialYmd = null }) {
   const todayYmd = ymdOf(new Date());
   const ok = scheduleOk(sched);
   const days = ok ? stripDays(sched.days, todayYmd, phone ? 10 : 12) : [];
-  const [sel, setSel] = useState(null);
+  const [sel, setSel] = useState(initialYmd);
   const selected = days.find((d) => d.date === sel) || days[0] || null;
 
   const body = (
@@ -208,10 +235,16 @@ export function LeaSchedulePage({ phone, sched, onBack }) {
         <>
           <div style={secH}>{shortDate(selected.date)} · Doctors</div>
           <DoctorsGrid day={selected} />
-          {eventsOf(selected).length > 0 && (
+          {leaStaffOf(selected) && (
+            <>
+              <div style={secH}>LEA techs</div>
+              <LeaTechsCard day={selected} />
+            </>
+          )}
+          {leaEventsOf(selected).length > 0 && (
             <>
               <div style={secH}>Events</div>
-              <EventsCard day={selected} />
+              <EventsCard day={{ ...selected, events: leaEventsOf(selected) }} />
             </>
           )}
           <div style={{ ...muted, fontSize: 12, margin: "10px 2px 0", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>

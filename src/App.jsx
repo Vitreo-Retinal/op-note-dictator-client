@@ -20,7 +20,10 @@ import { S, T, appBar, tile, iconBox, secHead, avatar, btn, RESPONSIVE_CSS, doct
 import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, ManagerIcon, LockIcon, DropBottleIcon, CalendarIcon, ChevronRightIcon, ChatIcon, PhoneIcon, BackIcon, TrialsIcon, DirectoryIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
-import { COVERAGE_URL } from "./lib/retinaRx.js";
+import { COVERAGE_URL, RX_ORIGIN } from "./lib/retinaRx.js";
+
+// "Change hub" (Oct 2026, per Mari): back to the Retina-Rx landing ("Choose a hub").
+export const goChangeHub = () => location.assign(`${RX_ORIGIN}/`);
 
 const API_BASE =
   import.meta.env.VITE_API_BASE ||
@@ -221,7 +224,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
       <HomePhone role={role} doctor={role === "doctor" ? unlockedDoctor || null : null} managerOpen={managerOpen}
         onDictate={onDictate} onCoverage={() => onSelectTool("inject")}
         onExtensions={() => onSelectTool("extensions")} onAsk={() => onSelectTool("ask")} onTrials={() => onSelectTool("trials")} onDirectory={() => onSelectTool("directory")}
-        onSelectManager={onSelectManager} onLock={onLock} onSwitch={onSwitch}
+        onSelectManager={onSelectManager} onLock={onLock} onSwitch={onSwitch} onChangeHub={goChangeHub}
         onOpenSchedule={() => onSelectTool("schedule")} onOpenDay={onOpenDay} />
     );
   }
@@ -240,6 +243,10 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
         <button type="button" onClick={onSwitch}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px 0 8px", borderRadius: 8, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>
           <BackIcon /> Change view
+        </button>
+        <button type="button" onClick={goChangeHub}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px 0 8px", borderRadius: 8, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap" }}>
+          <BackIcon /> Change hub
         </button>
       </header>
       )}
