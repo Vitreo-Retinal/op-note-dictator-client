@@ -1,5 +1,6 @@
 import { T } from "./theme.js";
 import logo from "./vra-logo.png";
+import { RoleBadge, roleColor } from "./roleIcons.jsx";
 
 // ── Role picker (Oct 2026, approved mockup "role-pick") ─────────────
 // Shown right after the site password when this device has no role stored
@@ -19,15 +20,11 @@ const OPTIONS = [
 const DESK_CSS = ".vra-roles{grid-template-columns:repeat(5,240px)}@media (max-width:1330px){.vra-roles{grid-template-columns:repeat(3,240px)}}@media (max-width:820px){.vra-roles{grid-template-columns:repeat(2,240px)}}";
 
 export default function RolePicker({ phone, onPick }) {
-  const icBox = (size) => ({
-    width: size, height: size, borderRadius: 10, background: T.accentSoft, color: T.accent, fontWeight: 600,
-    fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", flex: "none",
-  });
   const optBase = {
     background: T.surface, border: `1px solid ${T.line}`, borderRadius: 12, cursor: "pointer",
     fontFamily: T.sans, color: T.ink, boxSizing: "border-box", transition: "border-color .15s",
   };
-  const hoverOn = (e) => { e.currentTarget.style.borderColor = T.accentLine; };
+  const hoverOn = (e, id) => { e.currentTarget.style.borderColor = roleColor(id); };
   const hoverOff = (e) => { e.currentTarget.style.borderColor = T.line; };
 
   return (
@@ -52,11 +49,11 @@ export default function RolePicker({ phone, onPick }) {
           ? { marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }
           : { marginTop: 32, display: "grid", justifyContent: "center", gap: 16 }}>
           {OPTIONS.map((o) => (
-            <button key={o.id} type="button" onClick={() => onPick(o.id)} onMouseEnter={hoverOn} onMouseLeave={hoverOff}
+            <button key={o.id} type="button" onClick={() => onPick(o.id)} onMouseEnter={(e) => hoverOn(e, o.id)} onMouseLeave={hoverOff}
               style={phone
                 ? { ...optBase, display: "flex", alignItems: "center", gap: 14, width: "100%", minHeight: 72, padding: "14px 16px", textAlign: "left" }
                 : { ...optBase, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, width: 240, padding: "22px 18px", textAlign: "center" }}>
-              <span style={icBox(phone ? 40 : 48)}>{o.icon}</span>
+              <RoleBadge role={o.id} size={phone ? 44 : 56} />
               <span style={{ minWidth: 0 }}>
                 <span style={{ display: "block", fontSize: 16, fontWeight: 600, lineHeight: 1.3 }}>{o.label}</span>
                 <span style={{ display: "block", fontSize: 12.5, color: T.muted, lineHeight: 1.4, marginTop: phone ? 1 : 4 }}>{phone ? o.phone : o.desk}</span>
