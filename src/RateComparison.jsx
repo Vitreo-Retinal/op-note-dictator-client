@@ -363,7 +363,7 @@ export default function RateComparison({ onBack, embedded = false }) {
           ))}
           <div style={{ fontSize: 12, color: T.muted, padding: "10px 14px", borderTop: `1px solid ${T.line}`, background: T.paper, lineHeight: 1.6 }}>
             Acquisition as of {drugEcon[0].acq_as_of} · Medicare ASP+6 as of {drugEcon[0].medicare_as_of} (current quarter){(() => { const p = drugEcon.find((r) => r.prior_medicare_from && r.prior_medicare_to); return p ? <> · Prior quarter Medicare {p.prior_medicare_from}–{p.prior_medicare_to} (prior Q margin = prior-quarter Medicare minus prior acquisition)</> : null; })()}. Buy-and-bill margin before 2% sequestration; commercial payers vary — use the picker above for a specific plan.
-            <br /><span style={{ color: T.amber, fontWeight: 600 }}>Timing:</span> these are <b>forward</b> figures at the current-quarter rate — right for "should I use this drug now" decisions. Payments landing in the bank now are for prior-period claims paid at the <b>prior</b> quarter's ASP rate (Medicare resets quarterly on a ~2-quarter lag), so this month's receipts won't match these margins exactly.
+            <br /><span style={{ color: T.amber, fontWeight: 600 }}>Timing:</span> Medicare pays each drug at the rate for the quarter of the <b>injection date</b>, not the date the claim is paid. <b>Margin/dose</b> is the current quarter — use it for injections given now. <b>Prior Q</b> columns are last quarter's rate and margin — use them for last quarter's injections still being paid, so this month's receipts will track the Prior Q margin more closely. A vial bought at last quarter's price but injected this quarter earns the current Medicare rate minus last quarter's price.
           </div>
         </div>
         </>
