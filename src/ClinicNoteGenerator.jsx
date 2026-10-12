@@ -1675,6 +1675,16 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                         <b style={{ fontFamily: T.mono, fontWeight: 500, color: T.ink }}>+ G2211</b>
                       </span>
                     )}
+                    {/* TESTS (Oct 12 2026): diagnostic tests performed today — its own line in the
+                        coding block. HUB ONLY: never part of Copy note or Copy codes. */}
+                    {result.tests && !/^none\b/i.test(result.tests.trim()) && (
+                      <div style={{ flexBasis: "100%", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={codeChip({})} title="Diagnostic tests performed today (hub only — not copied into the chart)">
+                          <span style={{ color: T.muted }}>Tests</span>
+                          <b style={{ fontFamily: T.mono, fontWeight: 500, color: T.ink }}>{result.tests}</b>
+                        </span>
+                      </div>
+                    )}
                     {/* v2 Oct 8 2026: an Eye visit code with -25 on an injection day DOES need the MDM sentence. */}
                     {isEyeCode(result.code) && !/-25\b/.test(result.code || "") && (
                       <span style={{ fontSize: 12.5, color: T.accent, fontStyle: "italic" }}>— no MDM documentation needed</span>

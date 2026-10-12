@@ -19,8 +19,13 @@ function parseResponse(text) {
   };
   const hasProcedure = text.includes("---PROCEDURE---");
   const hasDiagnoses = text.includes("---DIAGNOSES---");
-  let code = sec("CODE", hasProcedure ? "PROCEDURE" : "G2211");
-  const procedure = hasProcedure ? sec("PROCEDURE", "G2211") : "";
+  // ---TESTS--- (Oct 12 2026): diagnostic tests performed today. Hub display
+  // only — never copied into the chart, and NOT a procedure: PROCEDURE ends at
+  // ---TESTS--- when that marker follows it, so G2211/-25 below never see tests.
+  const hasTests = text.includes("---TESTS---") && (!hasProcedure || text.indexOf("---TESTS---") > text.indexOf("---PROCEDURE---"));
+  let code = sec("CODE", hasProcedure ? "PROCEDURE" : (hasTests ? "TESTS" : "G2211"));
+  const procedure = hasProcedure ? sec("PROCEDURE", hasTests ? "TESTS" : "G2211") : "";
+  const tests = hasTests ? secAuto("TESTS") : "";
   let g2211 = secAuto("G2211") === "YES";
   let note = sec("NOTE", "END");
   // Guards for same-day procedure days (the E/M carries -25).
@@ -47,6 +52,7 @@ function parseResponse(text) {
   return {
     code,
     procedure,
+    tests,
     g2211,
     // Billing-additions list is derived deterministically from the [+] markers
     // in the note body (July 2026 — Sonnet no longer writes a CHANGES section;

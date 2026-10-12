@@ -46,3 +46,44 @@ test("no procedure: G2211 and the note stay as written", () => {
   assert.equal(p.g2211, true);
   assert.ok(p.note.includes("Longitudinal managing physician"));
 });
+
+// ── ---TESTS--- (Oct 12 2026): hub-only diagnostic tests, never a procedure ──
+const noteT = (code, proc, tests, g2211, body) =>
+  `---CODE---\n${code}\n---PROCEDURE---\n${proc}\n---TESTS---\n${tests}\n---G2211---\n${g2211}\n---DIAGNOSES---\nCME OS\n---NOTE---\n${body}\n---END---`;
+
+test("TESTS: ladder B (99214) + 92201 on TESTS keeps G2211 YES and no -25", () => {
+  const p = parseResponse(noteT("99214", "None", "92201", "YES", BODY + LONGITUDINAL + TAIL));
+  assert.equal(p.code, "99214");
+  assert.equal(p.procedure, "None");
+  assert.equal(p.tests, "92201");
+  assert.equal(p.g2211, true);
+  assert.ok(p.note.includes("Longitudinal managing physician"));
+});
+
+test("TESTS: an empty PROCEDURE before TESTS is still 'no procedure'", () => {
+  const p = parseResponse(noteT("99214", "", "92134, 92201", "YES", BODY + TAIL));
+  assert.equal(p.procedure, "");
+  assert.equal(p.tests, "92134, 92201");
+  assert.equal(p.g2211, true);
+  assert.equal(p.code, "99214");
+});
+
+test("TESTS: injection day — PROCEDURE still drives G2211 NO / -25; tests parsed separately", () => {
+  const p = parseResponse(noteT("99214", "67028-RT, J0178-JZ x2", "92134", "YES", BODY + LONGITUDINAL + TAIL));
+  assert.equal(p.procedure, "67028-RT, J0178-JZ x2");
+  assert.equal(p.tests, "92134");
+  assert.equal(p.code, "99214-25");
+  assert.equal(p.g2211, false);
+});
+
+test("TESTS: never part of the copied note text (result.note)", () => {
+  const p = parseResponse(noteT("99214", "None", "92201", "YES", BODY + TAIL));
+  assert.ok(!/92201|---TESTS---/.test(p.note));
+});
+
+test("TESTS: a response without ---TESTS--- parses exactly as before (tests = '')", () => {
+  const p = parseResponse(NO_PROCEDURE);
+  assert.equal(p.tests, "");
+  assert.equal(p.procedure, "None");
+  assert.equal(p.g2211, true);
+});
