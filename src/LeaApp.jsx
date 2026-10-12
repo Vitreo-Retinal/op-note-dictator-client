@@ -11,6 +11,7 @@ import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, DropB
 import { useIsPhone, PhoneCtx, PhoneShell, PHONE_BODY_H } from "./phone.jsx";
 import { RX_ORIGIN, readRxToken, readLeaToken, storeLeaToken, tokenRole } from "./lib/retinaRx.js";
 import CallBoard from "./CallBoard.jsx";
+import leaSwoosh from "./lea-swoosh.png";
 import HomePhone from "./HomePhone.jsx";
 import { LeaSchedulePage, useLeaSchedule } from "./LeaSchedule.jsx";
 
@@ -71,10 +72,10 @@ function clearHubToken() {
 const onVraDomain = () => /(^|\.)vra-hub\.com$/i.test(location.hostname);
 
 // ── Brand ───────────────────────────────────────────────────────────
+// Lexington Eye Associates' blue eye swoosh (Mari, Oct 12: replaces the "LEA" circle).
+// Rebuilt from lexingtoneyeassociates.com's site icon: blue on transparent, 96 px.
 export function LeaMark({ size = 26 }) {
-  return (
-    <span aria-hidden="true" style={{ width: size, height: size, borderRadius: "50%", border: `2px solid ${T.accent}`, color: T.accent, display: "grid", placeItems: "center", fontSize: Math.round(size * 0.32), fontWeight: 700, fontFamily: T.sans, letterSpacing: "0.02em", flex: "none", boxSizing: "border-box" }}>LEA</span>
-  );
+  return <img src={leaSwoosh} alt="" aria-hidden="true" width={size} height={size} style={{ width: size, height: size, display: "block", flex: "none" }} />;
 }
 function LeaBrand({ size = 28, text = "LEA Hub" }) {
   return (
