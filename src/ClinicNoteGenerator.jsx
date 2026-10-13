@@ -8,7 +8,7 @@ import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 import PhoneText from "./PhoneText.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
-import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose } from "./lib/noteHelpers.js";
+import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText } from "./lib/noteHelpers.js";
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL } from "./lib/retinaRx.js";
@@ -1690,16 +1690,22 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                       <span style={{ fontSize: 12.5, color: T.accent, fontStyle: "italic" }}>— no MDM documentation needed</span>
                     )}
                     {/* ICD-10 Codes */}
-                    {icd10Codes.map((c, i) => (
+                    {/* Oct 13 2026: server ICD-10 warning entries render as amber chips and are never copied. */}
+                    {icd10Codes.map((c, i) => isIcdWarning(c) ? (
+                      <span key={i} style={codeChip({ background: T.amberSoft, borderColor: T.goldSoft, color: T.amber })}>
+                        <b style={{ fontWeight: 600, color: T.amber }}>{c.code}</b>
+                        <span>{c.description}</span>
+                      </span>
+                    ) : (
                       <span key={i} style={codeChip(c.primary ? { background: T.accentSoft, borderColor: T.accentLine } : {})}>
                         <b style={{ fontFamily: T.mono, fontWeight: 500, color: c.primary ? T.accent : T.ink }}>{c.code}</b>
                         <span style={{ color: T.muted }}>{c.description}</span>
                         {c.primary && <span style={{ fontSize: 10.5, color: T.accent, fontWeight: 700 }}>PRIMARY</span>}
                       </span>
                     ))}
-                    {icd10Codes.length > 0 && (
+                    {icd10Codes.some(c => !isIcdWarning(c)) && (
                       <button onClick={async () => {
-                        const text = icd10Codes.map(c => `${c.code} — ${c.description}`).join("\n");
+                        const text = copyableIcdText(icd10Codes); // real codes only — warnings skipped
                         try { await navigator.clipboard.writeText(text); setCopiedCodes(true); setTimeout(() => setCopiedCodes(false), 2000); }
                         catch { setCopiedCodes(false); }
                       }} style={btnSm("secondary", { marginLeft: "auto", ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(copiedCodes ? { background: T.green, borderColor: T.green, color: T.onAccent } : {}) })}>

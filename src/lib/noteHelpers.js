@@ -190,4 +190,16 @@ function getEmLabel(codeStr) {
     return `\n\n[PLAQUENIL CUMULATIVE DOSE: ${totalG} g (${dailyDose} mg/day × ${years} years)]`;
   }
 
-export { parseResponse, isEyeCode, EM_LABELS, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose };
+// ICD-10 warning entries (server lib/note-icd-check.js, Oct 13 2026): "⚠ ICD-10 check" replaces a
+// code that is not on the CMS FY2027 list; "⚠ Eye not stated" follows an unspecified-eye code.
+// They carry `warning` ("icd:invalid" | "icd:no-eye"). Shown as chips, never copied as codes.
+const ICD_CODE_SHAPE = /^[A-Z][0-9][0-9A-Z](?:\.[0-9A-Z]{1,4})?$/;
+function isIcdWarning(c) {
+  return !c || !!c.warning || typeof c.code !== "string" || !ICD_CODE_SHAPE.test(c.code.trim());
+}
+/** "Copy codes" text: real code entries only, "<code> — <description>" one per line. */
+function copyableIcdText(codes) {
+  return (Array.isArray(codes) ? codes : []).filter(c => !isIcdWarning(c)).map(c => `${c.code} — ${c.description}`).join("\n");
+}
+
+export { parseResponse, isEyeCode, EM_LABELS, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText };

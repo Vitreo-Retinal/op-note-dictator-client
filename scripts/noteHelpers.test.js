@@ -6,7 +6,7 @@
 // Same fixtures as the server's tests/billed-text.test.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseResponse } from "../src/lib/noteHelpers.js";
+import { parseResponse, isIcdWarning, copyableIcdText } from "../src/lib/noteHelpers.js";
 
 const note = (code, proc, g2211, body) =>
   `---CODE---\n${code}\n---PROCEDURE---\n${proc}\n---G2211---\n${g2211}\n---DIAGNOSES---\nExudative AMD OD\n---NOTE---\n${body}\n---END---`;
@@ -86,4 +86,22 @@ test("TESTS: a response without ---TESTS--- parses exactly as before (tests = ''
   assert.equal(p.tests, "");
   assert.equal(p.procedure, "None");
   assert.equal(p.g2211, true);
+});
+
+// Oct 13 2026: server ICD-10 warning entries are shown as chips but never copied by "Copy codes".
+test("copyableIcdText skips ICD-10 warning entries", () => {
+  const codes = [
+    { code: "H35.3291", description: "Wet AMD, active CNV, unspecified eye", eye: "unspecified", primary: true },
+    { code: "⚠ Eye not stated", description: "for Wet AMD — add OD/OS/OU.", eye: "", primary: false, warning: "icd:no-eye" },
+    { code: "⚠ ICD-10 check", description: "H16.01 is not a valid FY2027 code — closest: H16.011. Confirm the code.", eye: "", primary: false, warning: "icd:invalid" },
+    { code: "T15.01XA", description: "Corneal foreign body, right eye, initial encounter", eye: "OD", primary: false },
+    { code: "Z96.1", description: "Pseudophakia", eye: "OU", primary: false },
+  ];
+  assert.equal(copyableIcdText(codes), "H35.3291 — Wet AMD, active CNV, unspecified eye\nT15.01XA — Corneal foreign body, right eye, initial encounter\nZ96.1 — Pseudophakia");
+  assert.deepEqual(codes.map(isIcdWarning), [false, true, true, false, false]);
+  // No `warning` flag (older server) but not a code shape → still treated as a warning.
+  assert.equal(isIcdWarning({ code: "⚠ ICD-10 check", description: "x" }), true);
+  assert.equal(isIcdWarning(null), true);
+  assert.equal(copyableIcdText([codes[1]]), "");
+  assert.equal(copyableIcdText(undefined), "");
 });
