@@ -6,7 +6,8 @@
 // Same fixtures as the server's tests/billed-text.test.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseResponse, isIcdWarning, copyableIcdText } from "../src/lib/noteHelpers.js";
+import { parseResponse, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines } from "../src/lib/noteHelpers.js";
+import { readFileSync } from "node:fs";
 
 const note = (code, proc, g2211, body) =>
   `---CODE---\n${code}\n---PROCEDURE---\n${proc}\n---G2211---\n${g2211}\n---DIAGNOSES---\nExudative AMD OD\n---NOTE---\n${body}\n---END---`;
@@ -104,4 +105,102 @@ test("copyableIcdText skips ICD-10 warning entries", () => {
   assert.equal(isIcdWarning(null), true);
   assert.equal(copyableIcdText([codes[1]]), "");
   assert.equal(copyableIcdText(undefined), "");
+});
+
+// ── Bold diagnosis headers are SCREEN ONLY (owner, Oct 12 2026) ──────────────
+// Copy note / phone footer copy / Copy codes must produce byte-identical text to before.
+const HEADER_NOTE = [
+  "78-year-old lady with wet AMD OS",
+  "",
+  "1. AMD",
+  "OD: Intermediate dry AMD",
+  "OS: Wet AMD, new SRF",
+  "[+] OCT reviewed demonstrating new SRF OS",
+  "",
+  "**2. ERM OS**",
+  "Mild, observe",
+  "",
+  "3) Bilateral RDs",
+  "s/p SB OU (MR, 2019), attached",
+  "",
+  "Plan",
+  "1. Eylea OS today",
+  "[+] RBA discussed including endophthalmitis, RD, VH, IOP elevation and vision loss.",
+  "F/u 4 weeks",
+].join("\n");
+// The Copy note text before this change, written out literally.
+const HEADER_NOTE_COPIED = [
+  "78-year-old lady with wet AMD OS",
+  "",
+  "1. AMD",
+  "OD: Intermediate dry AMD",
+  "OS: Wet AMD, new SRF",
+  "OCT reviewed demonstrating new SRF OS",
+  "",
+  "2. ERM OS",
+  "Mild, observe",
+  "",
+  "3) Bilateral RDs",
+  "s/p SB OU (MR, 2019), attached",
+  "",
+  "Plan",
+  "1. Eylea OS today",
+  "RBA discussed including endophthalmitis, RD, VH, IOP elevation and vision loss.",
+  "F/u 4 weeks",
+].join("\n");
+
+test("Copy note: byte-identical to the pre-change expression for a note with headers (no asterisks, no markup)", () => {
+  const legacy = (n) => n.replace(/\[\+\]\s*/g, "").replace(/\*\*/g, ""); // copyNote before Oct 17 2026
+  assert.equal(copyableNoteText(HEADER_NOTE), legacy(HEADER_NOTE));
+  assert.equal(copyableNoteText(HEADER_NOTE), HEADER_NOTE_COPIED);
+  assert.ok(!/\*|<\/?strong|<b>/.test(copyableNoteText(HEADER_NOTE)));
+  // Same for a parsed server response (the path the button takes: result.note).
+  const p = parseResponse(note("99214-25", "67028-LT, J0178-JZ x2", "NO", HEADER_NOTE));
+  assert.equal(copyableNoteText(p.note), legacy(p.note));
+  for (const n of ["", "plain line", "**bold** mid-line and a stray ** marker", "[+]x\n[+] y"]) assert.equal(copyableNoteText(n), legacy(n), n);
+});
+
+test("display: numbered diagnosis headers flagged bold; OD:/OS:, [+], Plan items never; input untouched", () => {
+  const before = HEADER_NOTE;
+  const lines = noteDisplayLines(HEADER_NOTE);
+  assert.equal(HEADER_NOTE, before);
+  assert.deepEqual(lines.filter((l) => l.header).map((l) => l.text), ["1. AMD", "2. ERM OS", "3) Bilateral RDs"]);
+  for (const t of ["OD: Intermediate dry AMD", "OS: Wet AMD, new SRF", "[+] OCT reviewed demonstrating new SRF OS", "1. Eylea OS today", "Plan", "F/u 4 weeks"])
+    assert.equal(lines.find((l) => l.text === t).header, false, t);
+  // Non-header lines are passed through exactly; only header lines lose their "**".
+  const src = HEADER_NOTE.split("\n");
+  lines.forEach((l, i) => assert.equal(l.text, l.header ? src[i].replace(/\*\*/g, "") : src[i]));
+  assert.equal(lines.length, src.length);
+  // Header shape = server HEADER_RX: "1." / "1)" / "12." + space + title, optional ** wrapper.
+  for (const h of ["1. AMD", "2. ERM OS", "3) Bilateral RDs", "**1. AMD**", "  10. Pseudophakia OU", "1. AMD:"]) assert.equal(isDiagnosisHeaderLine(h), true, h);
+  for (const h of ["OD: wet AMD", "[+] 1. x", "1.5 mg", "10/10/2025 PPV", "POD1 s/p PPV OD", "1.AMD", ""]) assert.equal(isDiagnosisHeaderLine(h), false, h);
+  // "Plan:" with text, and "**Plan**", also start the plan section; "Plan discussed" does not.
+  assert.equal(noteDisplayLines("1. AMD\nPlan: Eylea OS\n2. Something").filter((l) => l.header).length, 1);
+  assert.equal(noteDisplayLines("1. AMD\n**Plan**\n2. Something").filter((l) => l.header).length, 1);
+  assert.equal(noteDisplayLines("1. AMD\nPlan discussed with pt\n2. ERM OS\n\nPlan\n3. x").filter((l) => l.header).length, 2);
+  assert.deepEqual(noteDisplayLines(""), []);
+});
+
+test("Copy codes: unchanged for a note with headers (real codes only, one per line)", () => {
+  const codes = [
+    { code: "H35.3221", description: "Wet AMD, active CNV, left eye", eye: "OS", primary: true },
+    { code: "H35.372", description: "Puckering of macula (ERM), left eye", eye: "OS", primary: false },
+  ];
+  assert.equal(copyableIcdText(codes), "H35.3221 — Wet AMD, active CNV, left eye\nH35.372 — Puckering of macula (ERM), left eye");
+});
+
+test("source guard: every copy path writes the same text as before; display helper used only for rendering", () => {
+  const src = readFileSync(new URL("../src/ClinicNoteGenerator.jsx", import.meta.url), "utf8");
+  // copyNote (desktop button + phone footer) → copyableNoteText(result.note), both clipboard and fallback.
+  const copyNote = src.slice(src.indexOf("const copyNote = useCallback"), src.indexOf("const copyHpi = useCallback"));
+  assert.match(copyNote, /const clean = copyableNoteText\(result\.note\);/);
+  assert.match(copyNote, /writeText\(clean\)/); assert.match(copyNote, /ta\.value = clean;/);
+  assert.ok(!/noteDisplayLines|renderNote/.test(copyNote));
+  assert.equal((src.match(/noteDisplayLines\(/g) || []).length, 1, "only renderNote uses the display lines");
+  assert.match(src, /const text = copyableIcdText\(icd10Codes\);/);
+  assert.match(src, /writeText\(pbmNote\)/);
+  assert.match(src, /phoneFooter\(\(\) => \{ setTab\("input"\); setResult\(null\); \}, "New note", copyNote, copied\)/);
+  // Every clipboard write in the component is one of the known, unchanged paths.
+  const writes = [...src.matchAll(/writeText\(([^)]*)\)/g)].map((m) => m[1]);
+  assert.deepEqual(writes.sort(), ["clean", "clean", "pbmNote", "text"].sort());
 });

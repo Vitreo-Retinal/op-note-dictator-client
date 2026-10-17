@@ -8,7 +8,7 @@ import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 import PhoneText from "./PhoneText.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
-import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText } from "./lib/noteHelpers.js";
+import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, noteDisplayLines } from "./lib/noteHelpers.js";
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL } from "./lib/retinaRx.js";
@@ -493,7 +493,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // ── Copy to clipboard ─────────────────────────────────────────────
   const copyNote = useCallback(async () => {
     if (!result?.note) return;
-    const clean = result.note.replace(/\[\+\]\s*/g, "").replace(/\*\*/g, "");
+    const clean = copyableNoteText(result.note); // unchanged: "[+] " and "**" removed, nothing else (bold headers are screen-only)
     try {
       await navigator.clipboard.writeText(clean);
       setCopied(true);
@@ -700,21 +700,36 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
 
   // ── Render note with [+] badges ───────────────────────────────────
   function renderBold(segment, segKey) {
-    // Split on **bold** patterns and render as <strong>
+    // Split on **bold** patterns and render as <strong>; a stray unpaired "**" is dropped on
+    // screen (Copy note removes every "**" too).
     const parts = segment.split(/\*\*(.+?)\*\*/g);
     return parts.map((p, j) =>
       j % 2 === 1
         ? <strong key={`${segKey}-b${j}`}>{p}</strong>
-        : <span key={`${segKey}-t${j}`}>{p}</span>
+        : <span key={`${segKey}-t${j}`}>{p.replace(/\*\*/g, "")}</span>
     );
   }
 
+  function renderInline(line, key) {
+    return line.split("[+]").map((part, i) => (
+      <span key={`${key}-${i}`}>
+        {i > 0 && <span style={{ background: T.goldSoft, color: T.ink, fontWeight: 600, fontSize: "0.72em", padding: "0 4px", borderRadius: 3, marginRight: 3, verticalAlign: "1px" }}>+</span>}
+        {renderBold(part, `${key}-${i}`)}
+      </span>
+    ));
+  }
+
+  // Oct 2026 (owner, Oct 12): numbered diagnosis headers ("1. AMD", "2) ERM OS") render bold
+  // on SCREEN only (desktop and phone). Display-only — result.note and every copy path
+  // (Copy note, phone footer copy, Copy codes) are byte-identical to before.
   function renderNote(text) {
     if (!text) return null;
-    return text.split("[+]").map((part, i) => (
+    return noteDisplayLines(text).map((l, i) => (
       <span key={i}>
-        {i > 0 && <span style={{ background: T.goldSoft, color: T.ink, fontWeight: 600, fontSize: "0.72em", padding: "0 4px", borderRadius: 3, marginRight: 3, verticalAlign: "1px" }}>+</span>}
-        {renderBold(part, i)}
+        {i > 0 && "\n"}
+        {l.header
+          ? <strong style={{ fontWeight: 700, color: T.ink }}>{renderInline(l.text, i)}</strong>
+          : renderInline(l.text, i)}
       </span>
     ));
   }

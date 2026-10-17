@@ -202,4 +202,38 @@ function copyableIcdText(codes) {
   return (Array.isArray(codes) ? codes : []).filter(c => !isIcdWarning(c)).map(c => `${c.code} — ${c.description}`).join("\n");
 }
 
-export { parseResponse, isEyeCode, EM_LABELS, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText };
+// ── "Copy note" text (unchanged since Sep 2026) ──────────────────────────────
+// What goes on the clipboard for NextGen/Epic: the note with the "[+] " billing badges
+// and any markdown "**" removed — nothing else. Display formatting below never touches it.
+function copyableNoteText(note) {
+  return String(note == null ? "" : note).replace(/\[\+\]\s*/g, "").replace(/\*\*/g, "");
+}
+
+// ── Bold diagnosis headers — SCREEN ONLY (owner, Oct 12 2026) ────────────────
+// A numbered diagnosis header is the server's header shape (server lib/amd-header-merge.js
+// HEADER_RX): optional indent, optional "**" / "__" wrapper, 1–2 digits, "." or ")", a space,
+// a title, optional ":" — "1. AMD", "2. ERM OS", "3) Bilateral RDs", "**1. AMD**".
+// Lines from the "Plan" heading on are plan items (never bold), and "OD:" / "OS:" / "[+]"
+// lines never start with a number, so they are never headers.
+const DX_HEADER_RX = /^\s*(?:\*\*|__)?\s*\d{1,2}[.)]\s+\S/;
+// "Plan", "Plan:", "**Plan**", "Plan: Eylea OD" — not "Plan discussed …" inside a diagnosis block.
+const PLAN_HEADING_RX = /^\s*(?:\*\*|__)?\s*plan\s*(?:\*\*|__)?\s*(?::|$)/i;
+function isDiagnosisHeaderLine(line) {
+  return DX_HEADER_RX.test(String(line || ""));
+}
+/**
+ * Note text → display lines [{ text, header }] for the hub screen. Header lines lose their
+ * "**" markers (they render bold anyway). Every other line is returned as-is. The input is
+ * never modified, and nothing here is used by any copy path (see copyableNoteText).
+ */
+function noteDisplayLines(text) {
+  if (text == null || text === "") return [];
+  let inPlan = false;
+  return String(text).split("\n").map((line) => {
+    if (!inPlan && PLAN_HEADING_RX.test(line)) inPlan = true;
+    const header = !inPlan && isDiagnosisHeaderLine(line);
+    return { text: header ? line.replace(/\*\*/g, "") : line, header };
+  });
+}
+
+export { parseResponse, isEyeCode, EM_LABELS, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines };
