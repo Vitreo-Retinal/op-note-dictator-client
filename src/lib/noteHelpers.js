@@ -236,4 +236,26 @@ function noteDisplayLines(text) {
   });
 }
 
-export { parseResponse, isEyeCode, EM_LABELS, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines };
+// ── Dual-coverage note line — SCREEN ONLY (Oct 17 2026) ─────────────────────
+// The server's data.coverage cards (routes/notes.js dualSideCard) may carry
+// `dualNote` ("No combined primary + secondary rule on file for this pair — …").
+// Returns one entry per card: the note to show as a small muted line under that
+// card, or null. A dual pair is a "primary" card followed by its "secondary"
+// card; the note goes under the secondary card, or under the card that carries
+// it when there is no secondary card after it. Shown once per pair. Cards are
+// never modified, and nothing here is used by any copy path (see copyableNoteText).
+function coverageCardNotes(cards) {
+  const list = Array.isArray(cards) ? cards : [];
+  const out = list.map(() => null);
+  for (let i = 0; i < list.length; i++) {
+    const c = list[i];
+    const note = c && typeof c.dualNote === "string" ? c.dualNote.trim() : "";
+    if (!note) continue;
+    const next = list[i + 1];
+    const at = (c.role === "primary" && next && next.role === "secondary") ? i + 1 : i;
+    if (!out[at]) out[at] = note;
+  }
+  return out;
+}
+
+export { parseResponse, isEyeCode, EM_LABELS, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines, coverageCardNotes };

@@ -8,7 +8,7 @@ import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 import PhoneText from "./PhoneText.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
-import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, noteDisplayLines } from "./lib/noteHelpers.js";
+import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, noteDisplayLines, coverageCardNotes } from "./lib/noteHelpers.js";
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL } from "./lib/retinaRx.js";
@@ -818,7 +818,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const reqTag = (r) => /prior auth/i.test(r) || /\bPA required\b/i.test(r) ? "Prior auth"
     : /step therapy|step [0-9]|first-line|trial of|must try|before/i.test(r) ? "Step therapy" : null;
 
-  function renderCoverageJsonCard(c, key) {
+  function renderCoverageJsonCard(c, key, dualNote) {
     const muted = { fontSize: 12, color: T.muted, minWidth: 0 };
     let sub = null;
     if (c.kind === "rule") {
@@ -879,6 +879,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {c.plans.map((pl, i) => <span key={i} style={chip("muted", { fontSize: 12, padding: "2px 10px" })}>{pl}</span>)}
             </div>
+          )}
+          {/* Oct 17 2026: dual coverage, no combined rule — screen only, never copied */}
+          {dualNote && (
+            <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.45 }}>{dualNote}</div>
           )}
         </div>
       </div>
@@ -1733,7 +1737,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
 
                 {/* Coverage reference(s) — server appends these to the note text */}
                 {Array.isArray(result.coverage) && result.coverage.length > 0
-                  ? result.coverage.map((c, i) => renderCoverageJsonCard(c, i))
+                  ? (() => { const notes = coverageCardNotes(result.coverage); return result.coverage.map((c, i) => renderCoverageJsonCard(c, i, notes[i])); })()
                   : coverageBlocks.map((blk, i) => renderCoverageCard(blk, i))}
 
                 {/* Coding additions */}

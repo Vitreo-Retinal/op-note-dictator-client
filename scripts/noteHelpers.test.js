@@ -6,7 +6,7 @@
 // Same fixtures as the server's tests/billed-text.test.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseResponse, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines } from "../src/lib/noteHelpers.js";
+import { parseResponse, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines, coverageCardNotes } from "../src/lib/noteHelpers.js";
 import { readFileSync } from "node:fs";
 
 const note = (code, proc, g2211, body) =>
@@ -203,4 +203,59 @@ test("source guard: every copy path writes the same text as before; display help
   // Every clipboard write in the component is one of the known, unchanged paths.
   const writes = [...src.matchAll(/writeText\(([^)]*)\)/g)].map((m) => m[1]);
   assert.deepEqual(writes.sort(), ["clean", "clean", "pbmNote", "text"].sort());
+});
+
+// ── Dual-coverage note line (Oct 17 2026) — screen only, never copied ────────
+const DUAL_NOTE = "No combined primary + secondary rule on file for this pair — each plan's own rule is shown.";
+const DUAL_CARDS = [
+  { kind: "rule", role: "primary", dual: "separate", drug: "Eylea 2mg", carrier: "Tufts Medicare Advantage", status: "yellow" },
+  { kind: "rule", role: "secondary", dual: "separate", drug: "Eylea 2mg", insurance: "Secondary — Mass Health Standard", status: "green", dualNote: DUAL_NOTE },
+];
+
+test("coverageCardNotes: the dual note goes under the secondary card, once", () => {
+  assert.deepEqual(coverageCardNotes(DUAL_CARDS), [null, DUAL_NOTE]);
+  // note carried by the primary card → still shown under its secondary card
+  const onPrimary = [{ ...DUAL_CARDS[0], dualNote: DUAL_NOTE }, { ...DUAL_CARDS[1], dualNote: undefined }];
+  assert.deepEqual(coverageCardNotes(onPrimary), [null, DUAL_NOTE]);
+  // both carry it → shown once
+  assert.deepEqual(coverageCardNotes([{ ...DUAL_CARDS[0], dualNote: DUAL_NOTE }, DUAL_CARDS[1]]), [null, DUAL_NOTE]);
+});
+
+test("coverageCardNotes: no secondary card → under the card that carries the note; none → all null", () => {
+  assert.deepEqual(coverageCardNotes([{ kind: "ambiguous", role: "primary", dual: "partial", dualNote: "Specify plan." }]), ["Specify plan."]);
+  assert.deepEqual(coverageCardNotes([{ kind: "rule", status: "green" }, { kind: "ambiguous", alias: "uhc" }]), [null, null]);
+  assert.deepEqual(coverageCardNotes([{ kind: "rule", dualNote: "  " }]), [null]);
+  assert.deepEqual(coverageCardNotes(null), []);
+  assert.deepEqual(coverageCardNotes(undefined), []);
+});
+
+test("coverageCardNotes never modifies the cards", () => {
+  const before = JSON.stringify(DUAL_CARDS);
+  coverageCardNotes(DUAL_CARDS);
+  assert.equal(JSON.stringify(DUAL_CARDS), before);
+});
+
+test("copy output is byte-identical with or without coverage cards / dualNote (copy reads result.note only)", () => {
+  const legacy = (n) => n.replace(/\[\+\]\s*/g, "").replace(/\*\*/g, "");
+  const text = note("99214-25", "67028-RT, J0178", "NO", BODY + TAIL);
+  const p = parseResponse(text);
+  const copied = copyableNoteText(p.note);
+  assert.equal(copied, legacy(p.note));
+  const withCards = { ...p, coverage: DUAL_CARDS };
+  assert.equal(copyableNoteText(withCards.note), copied);
+  assert.ok(!copied.includes(DUAL_NOTE));
+});
+
+test("dualNote is rendered only inside renderCoverageJsonCard — no copy path reads it", () => {
+  const src = readFileSync(new URL("../src/ClinicNoteGenerator.jsx", import.meta.url), "utf8");
+  const start = src.indexOf("function renderCoverageJsonCard(");
+  const end = src.indexOf("\n  }\n", start);
+  assert.ok(start > 0 && end > start);
+  const outside = src.slice(0, start) + src.slice(end);
+  assert.ok(!/dualNote/.test(outside.replace(/renderCoverageJsonCard\(c, i, notes\[i\]\)/, "")), "dualNote used outside the card renderer");
+  for (const fn of ["const copyNote = useCallback", "const copyHpi = useCallback"]) {
+    const a = src.indexOf(fn);
+    const body = src.slice(a, src.indexOf("}, [", a));
+    assert.ok(a > 0 && !/coverage|dualNote/i.test(body), `${fn} must not read coverage`);
+  }
 });
