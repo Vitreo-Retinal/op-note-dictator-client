@@ -374,41 +374,76 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
   );
 }
 
+// ── PIN sign-in messages ────────────────────────────────────────────
+// Wording for a /api/verify-pin reply that is not a success. `who` names the
+// sign-in in the "not set up" message.
+export function pinErrorText(data, who = "this doctor") {
+  if (data && data.error === "locked") {
+    const sec = Number(data.retryAfterSec);
+    const min = Number.isFinite(sec) && sec > 0 ? Math.ceil(sec / 60) : 15;
+    return `Too many tries — wait ${min} minute${min === 1 ? "" : "s"} and try again.`;
+  }
+  if (data && data.error === "not_configured") return `Sign-in isn't set up for ${who} yet.`;
+  if (data && data.error === "not_allowed") return "This sign-in isn't available here.";
+  return "Incorrect PIN.";
+}
+
 // ── PIN Gate (doctor space) ─────────────────────────────────────────
 export function PinGate({ surgeon, onSuccess, onCancel }) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
+  // "ok" = PIN form; "offline" = server unreachable or sign-in locked (Retry);
+  // "blocked" = sign-in not set up (message shown, form stays disabled).
+  const [probe, setProbe] = useState("ok");
+  const [probeNonce, setProbeNonce] = useState(0);
   const { phone } = usePhone();
 
-  // On mount, check if this surgeon even has a PIN configured
-  useState(() => {
+  // On mount (and on Retry): ask the server about this doctor's sign-in.
+  // Nobody gets in without a token from the server.
+  useEffect(() => {
+    let alive = true;
+    setChecking(true);
     (async () => {
+      let next = "ok";
+      let msg = "";
       try {
         const res = await fetch(`${API_BASE}/api/verify-pin`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ surgeonId: surgeon.id, pin: "__check__" }),
         });
-        const data = await res.json();
-        // If server says success (no PIN set), skip the gate
-        if (data.success) {
+        let data = null;
+        try { data = await res.json(); } catch { data = null; }
+        if (!alive) return;
+        if (data && data.success && data.token) {
+          sessionStorage.setItem("vra_token", data.token);
           onSuccess();
           return;
         }
+        if (data && (data.error === "locked" || data.error === "not_configured")) {
+          next = data.error === "locked" ? "offline" : "blocked"; // locked: Retry once the wait is over
+          msg = pinErrorText(data);
+        } else if (!data || (!res.ok && res.status !== 429)) {
+          next = "offline";
+          msg = "Could not reach the server. Check the connection and try again.";
+        }
       } catch {
-        // If server unreachable, let them through
-        onSuccess();
-        return;
+        if (!alive) return;
+        next = "offline";
+        msg = "Could not reach the server. Check the connection and try again.";
       }
+      setProbe(next);
+      setError(msg);
       setChecking(false);
     })();
-  });
+    return () => { alive = false; };
+  }, [surgeon.id, probeNonce]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!pin.trim()) return;
+    if (!pin.trim() || probe !== "ok") return;
     setLoading(true);
     setError("");
     try {
@@ -417,12 +452,15 @@ export function PinGate({ surgeon, onSuccess, onCancel }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ surgeonId: surgeon.id, pin: pin.trim() }),
       });
-      const data = await res.json();
-      if (data.success) {
-        if (data.token) sessionStorage.setItem("vra_token", data.token);
+      let data = null;
+      try { data = await res.json(); } catch { data = null; }
+      if (data && data.success && data.token) {
+        sessionStorage.setItem("vra_token", data.token);
         onSuccess();
+      } else if (!data || (!res.ok && res.status !== 429)) {
+        setError("Could not connect to server.");
       } else {
-        setError("Incorrect PIN.");
+        setError(pinErrorText(data));
         setPin("");
       }
     } catch {
@@ -450,16 +488,23 @@ export function PinGate({ surgeon, onSuccess, onCancel }) {
           : <div style={avatar(48, { fontSize: 14, margin: "0 auto 14px" })}>{surgeon.name}</div>}
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, marginBottom: 4 }}>Doctor Space</div>
         <div style={{ fontSize: 13, color: T.muted, marginBottom: 20 }}>Enter PIN to continue</div>
-        <input type="password" inputMode="numeric" pattern="[0-9]*" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="PIN" autoFocus
+        <input type="password" inputMode="numeric" pattern="[0-9]*" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="PIN" autoFocus disabled={probe !== "ok"}
           style={{ display: "block", width: "100%", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "10px 14px", color: T.ink, fontFamily: T.sans, outline: "none", fontSize: "1.1rem", boxSizing: "border-box", marginBottom: 12, textAlign: "center", letterSpacing: 6 }} />
         {error && <div style={{ color: T.red, fontSize: "0.76rem", marginBottom: 10 }}>{error}</div>}
         <div style={{ display: "flex", gap: 10 }}>
           <button type="button" onClick={onCancel}
             style={{ flex: 1, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, height: phone ? 44 : 38, padding: 0, color: T.ink2, fontFamily: T.sans, fontSize: 13.5, fontWeight: 500, cursor: "pointer" }}>Cancel</button>
-          <button type="submit" disabled={loading || !pin.trim()}
-            style={{ flex: 1, background: loading || !pin.trim() ? T.accentSoft : T.accent, color: loading || !pin.trim() ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: phone ? 44 : 38, padding: 0, fontSize: 13.5, fontFamily: T.sans, fontWeight: 600, cursor: loading || !pin.trim() ? "not-allowed" : "pointer" }}>
-            {loading ? "..." : "Enter"}
-          </button>
+          {probe === "offline" ? (
+            <button type="button" onClick={() => { setError(""); setProbeNonce((n) => n + 1); }}
+              style={{ flex: 1, background: T.accent, color: T.onAccent, border: "none", borderRadius: T.r, height: phone ? 44 : 38, padding: 0, fontSize: 13.5, fontFamily: T.sans, fontWeight: 600, cursor: "pointer" }}>
+              Retry
+            </button>
+          ) : (
+            <button type="submit" disabled={loading || !pin.trim() || probe !== "ok"}
+              style={{ flex: 1, background: loading || !pin.trim() || probe !== "ok" ? T.accentSoft : T.accent, color: loading || !pin.trim() || probe !== "ok" ? T.muted : T.onAccent, border: "none", borderRadius: T.r, height: phone ? 44 : 38, padding: 0, fontSize: 13.5, fontFamily: T.sans, fontWeight: 600, cursor: loading || !pin.trim() || probe !== "ok" ? "not-allowed" : "pointer" }}>
+              {loading ? "..." : "Enter"}
+            </button>
+          )}
         </div>
       </form>
     </div>
@@ -483,12 +528,15 @@ function ManagerPinGate({ onSuccess, onCancel }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ surgeonId: "MANAGER", pin: pin.trim() }),
       });
-      const data = await res.json();
-      if (data.success) {
-        if (data.token) sessionStorage.setItem("vra_token", data.token);
+      let data = null;
+      try { data = await res.json(); } catch { data = null; }
+      if (data && data.success && data.token) {
+        sessionStorage.setItem("vra_token", data.token);
         onSuccess();
+      } else if (!data || (!res.ok && res.status !== 429)) {
+        setError("Could not connect to server.");
       } else {
-        setError("Incorrect PIN.");
+        setError(pinErrorText(data, "the Manager's Hub"));
         setPin("");
       }
     } catch {
