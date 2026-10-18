@@ -790,7 +790,7 @@ export default function OpNoteDictator({ onBack, embedded = false, backLabel = "
   const procFields = PROCEDURE_FIELDS[selectedProc] || [];
 
   // ── Call state ──────────────────────────────────────────────────
-  const [phoneNumber, setPhoneNumber] = useState("+18008686224");
+  const [phoneNumber] = useState("+18008686224"); // the dictation line (display only)
   const [callStatus, setCallStatus] = useState("idle");
   const [callSid, setCallSid] = useState(null);
   const [callError, setCallError] = useState(null);
@@ -943,8 +943,9 @@ export default function OpNoteDictator({ onBack, embedded = false, backLabel = "
                 style={styles.phoneInput}
                 type="tel"
                 value={phoneNumber}
-                onChange={e => setPhoneNumber(e.target.value)}
-                disabled={isCallActive}
+                readOnly
+                aria-readonly="true"
+                title="Approved dictation line"
               />
               <button
                 style={styles.dictateBtn(callStatus)}
