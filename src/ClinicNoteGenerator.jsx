@@ -458,8 +458,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const [newRule, setNewRule] = useState({ trigger: "", expansion: "", type: "inline" });
 
   // ── Load persistent data on mount ─────────────────────────────────
+  // saveMode: "ok" = loaded, changes are saved to this doctor's settings;
+  // "signin" = view-only (sign in with your PIN to save); "failed" = could not
+  // load, so nothing is saved (avoids overwriting saved settings with defaults).
+  const [saveMode, setSaveMode] = useState("pending");
+  const savedSnapshot = useRef(null); // settings as last loaded/saved
   useEffect(() => {
     async function load() {
+      let next = "failed";
       try {
         const res = await fetch(`${API_BASE}/api/user-data`);
         const json = await res.json();
@@ -468,27 +474,46 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           if (json.data.inlineRules?.length > 0) setInlineRules(json.data.inlineRules);
           if (json.data.planRules?.length > 0) setPlanRules(json.data.planRules);
           if (json.data.customInstructions) setCustomInstructions(json.data.customInstructions);
+          next = json.readOnly ? "signin" : "ok";
         }
       } catch (e) {
         console.log("Could not load user data, using defaults:", e.message);
       }
+      setSaveMode(next);
       setDataLoaded(true);
     }
     load();
   }, []);
 
   // ── Auto-save when data changes ───────────────────────────────────
+  // Only after a successful load, and only once something actually changed
+  // (loading alone never saves).
   useEffect(() => {
-    if (!dataLoaded) return;
-    const timer = setTimeout(() => {
-      fetch(`${API_BASE}/api/user-data`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ examples, inlineRules, planRules, customInstructions }),
-      }).catch(() => {});
+    if (!dataLoaded || saveMode !== "ok") return;
+    const snapshot = JSON.stringify({ examples, inlineRules, planRules, customInstructions });
+    if (savedSnapshot.current === null) { savedSnapshot.current = snapshot; return; }
+    if (snapshot === savedSnapshot.current) return;
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/user-data`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: snapshot,
+        });
+        if (res.status === 403) { setSaveMode("signin"); return; }
+        const json = await res.json().catch(() => null);
+        if (json && json.success) savedSnapshot.current = snapshot;
+      } catch { /* offline: the next change retries */ }
     }, 500);
     return () => clearTimeout(timer);
-  }, [examples, inlineRules, planRules, customInstructions, dataLoaded]);
+  }, [examples, inlineRules, planRules, customInstructions, dataLoaded, saveMode]);
+
+  const saveNote = saveMode === "signin"
+    ? "Sign in with your PIN to save your settings."
+    : saveMode === "failed"
+      ? "Settings could not be loaded — changes won't be saved."
+      : "";
+  const saveNoteEl = saveNote ? <div style={{ fontSize: 12, color: T.muted, margin: "0 0 10px" }}>{saveNote}</div> : null;
 
   // ── Copy to clipboard ─────────────────────────────────────────────
   const copyNote = useCallback(async () => {
@@ -1882,6 +1907,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         {/* ── EXAMPLES TAB ───────────────────────────────────────── */}
         {tab === "examples" && (
           <div>
+            {saveNoteEl}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Reference Examples</div>
@@ -1944,6 +1970,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         {/* ── RULES TAB ──────────────────────────────────────────── */}
         {tab === "rules" && (
           <div>
+            {saveNoteEl}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Expansion Rules</div>
@@ -2055,6 +2082,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         {/* ── MY INSTRUCTIONS TAB ─────────────────────────────────── */}
         {tab === "instructions" && (
           <div>
+            {saveNoteEl}
             <div style={{ marginBottom: 12 }}>
               <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>My Instructions</div>
               <div style={{ fontSize: "0.72rem", color: S.muted, marginTop: 2 }}>Tell Claude how you want your notes formatted. Write in plain English — these get sent directly to Claude with every note.</div>
