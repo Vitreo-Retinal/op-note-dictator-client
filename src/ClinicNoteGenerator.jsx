@@ -928,6 +928,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       <div key={key} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 12 }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", padding: "10px 16px", borderBottom: `1px solid ${T.line}` }}>
           <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>Coverage check</div>
+          {/* Oct 19 2026 (Mari): the coverage text is part of result.note, so Copy note carries it into NextGen/Epic — say so on screen. */}
+          <div style={{ fontSize: 11.5, color: T.muted, fontStyle: "italic" }}>Included when you copy the note</div>
           {meta && <div style={{ fontSize: 12, color: T.muted, minWidth: 0 }}>{meta}</div>}
         </div>
         <div style={{ padding: "12px 16px", display: "grid", gridTemplateColumns: "max-content 1fr", gap: "8px 16px", alignItems: "baseline" }}>
@@ -988,6 +990,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       <div key={key} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 12 }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", padding: "10px 16px", borderBottom: `1px solid ${T.line}` }}>
           <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>Coverage check</div>
+          {/* Oct 19 2026 (Mari): the coverage text is part of result.note, so Copy note carries it into NextGen/Epic — say so on screen. */}
+          <div style={{ fontSize: 11.5, color: T.muted, fontStyle: "italic" }}>Included when you copy the note</div>
           <div style={muted}>{meta}</div>
           {sub && <div style={muted}>{sub}</div>}
           {c.kind === "rule" && (
