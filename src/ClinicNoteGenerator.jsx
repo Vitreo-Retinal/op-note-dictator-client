@@ -10,6 +10,8 @@ import PhoneText from "./PhoneText.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, noteDisplayLines, coverageCardNotes } from "./lib/noteHelpers.js";
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
+import { fetchSchedule, scheduleOk, ymdOf } from "./lib/vraSchedule.js";
+import { computeFuWindow, fuFetchRange, fuSuggestionText } from "./lib/fuWindow.js";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL } from "./lib/retinaRx.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, input, RESPONSIVE_CSS, doctorColor } from "./theme.js";
@@ -403,6 +405,59 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     }
     return out;
   };
+
+  // ── F/U ± 6 days from the VRA calendar (all doctors, Oct 19 2026) ──
+  // "14 weeks = 14 weeks ± 6 days": the shared VRA Google calendar (GET
+  // /api/schedule) says whether the signed-in doctor has clinic on the target
+  // day and, if not, the nearest clinic days within ±6. One 13-day fetch per
+  // target (debounced while typing, cached by `from`, stale replies dropped).
+  // Fails silent: no surgeon id, any error/timeout or configured:false → the
+  // calculator renders exactly as before. Pure logic: ./lib/fuWindow.js.
+  const fuDoctor = surgeon && surgeon.id ? String(surgeon.id).toUpperCase() : "";
+  const fuTargetYmd = (() => {
+    const n = parseInt(fuWeeks);
+    if (!fuWeeks || !(n > 0)) return null;
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    return ymdOf(new Date(today.getTime() + n * 7 * 24 * 60 * 60 * 1000));
+  })();
+  const fuFrom = fuTargetYmd ? fuFetchRange(fuTargetYmd).from : null;
+  const fuCacheRef = useRef(new Map()); // from → payload (good responses only)
+  const [fuSched, setFuSched] = useState(null); // { from, data }
+  useEffect(() => {
+    if (!fuDoctor || !fuFrom) return;
+    const cached = fuCacheRef.current.get(fuFrom);
+    if (cached) { setFuSched({ from: fuFrom, data: cached }); return; }
+    let alive = true;
+    const timer = setTimeout(() => {
+      const timeout = new Promise((resolve) => setTimeout(() => resolve({ configured: true, error: "timeout", days: [] }), 10000));
+      Promise.race([fetchSchedule(fuFetchRange(fuTargetYmd).days, fuFrom), timeout])
+        .then((data) => {
+          if (!alive) return; // target changed meanwhile — ignore stale reply
+          if (scheduleOk(data)) fuCacheRef.current.set(fuFrom, data);
+          setFuSched({ from: fuFrom, data });
+        })
+        .catch(() => { /* fail silent */ });
+    }, 300);
+    return () => { alive = false; clearTimeout(timer); };
+  }, [fuDoctor, fuFrom]); // fuTargetYmd is a function of fuFrom
+
+  const fuWin = (() => {
+    if (!fuDoctor || !fuTargetYmd || !fuSched || fuSched.from !== fuFrom) return null;
+    try {
+      return computeFuWindow(fuTargetYmd, fuDoctor, fuSched.data, {
+        holiday: majorHoliday,
+        blackout: injectionBlackout,
+        isBlocked: (d) => !!scheduleHit(d).block, // MR's OR / no_clinic / vacation rows; empty for others
+      });
+    } catch {
+      return null;
+    }
+  })();
+  // First calendar reason (closed / vacation / no clinic) for a non-clinic target.
+  const fuCalReason = fuWin && !fuWin.target.clinic
+    ? fuWin.target.reasons.find((r) => r.code === "closed" || r.code === "vacation" || r.code === "noClinic") || null
+    : null;
 
   const injCalc = (() => {
     const today = new Date();
@@ -1141,7 +1196,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             {injCalc && injCalc.nextDate && (
               <div>
                 <span style={{ color: T.muted }}>Next appt: </span>
-                <b style={{ fontWeight: 600, color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
+                <b style={{ fontWeight: 600, color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) || (fuWin && !fuWin.target.clinic) ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
+                {/* VRA calendar: the doctor's site that day (+ AM/PM for a half day) */}
+                {fuWin && fuWin.target.clinic && (
+                  <span style={{ color: T.ink2 }}> · {fuWin.target.site}{fuWin.target.half ? ` ${fuWin.target.half}` : ""}</span>
+                )}
               </div>
             )}
             {/* Notes about that date — each on its own line */}
@@ -1160,6 +1219,13 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   : `⚠ OR day: ${injCalc.sched.block.title}`}
               </div>
             )}
+            {/* VRA calendar reason (vacation / no clinic / closed) — only when the
+                holiday and MR-schedule lines above haven't already said why. */}
+            {injCalc && injCalc.nextDate && !injCalc.holiday && !(injCalc.sched && injCalc.sched.block) && fuCalReason && (
+              <div style={{ color: T.amber, fontWeight: 600, fontSize: 12.5 }}>
+                ⚠ {fuCalReason.text}
+              </div>
+            )}
             {/* Day before Thanksgiving — open, usually a half day. Note only. */}
             {injCalc && injCalc.nextDate && injCalc.halfDay && (
               <div style={{ color: T.amber, fontSize: 12.5 }}>{injCalc.halfDay}</div>
@@ -1174,6 +1240,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             {injCalc && injCalc.nextDate && injCalc.blackout && (
               <div style={{ color: T.red, fontWeight: 600, fontSize: 12.5 }}>
                 🚫 {injCalc.blackout}
+              </div>
+            )}
+            {/* Not a clinic day → nearest clinic days within ±6 (VRA calendar) */}
+            {injCalc && injCalc.nextDate && fuWin && !fuWin.target.clinic && (
+              <div style={{ fontSize: 12.5, color: T.ink2 }}>
+                {fuWin.suggestions.length > 0
+                  ? <><span style={{ color: T.muted }}>Nearest clinic days: </span>{fuWin.suggestions.map(fuSuggestionText).join(" · ")}</>
+                  : <span style={{ color: T.amber }}>No clinic day within ±6 days — check the schedule.</span>}
               </div>
             )}
           </div>
