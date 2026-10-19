@@ -5,6 +5,8 @@ import { T, SITE_TINTS, TRANSLATOR, IMAGING, doctorColor } from "./theme.js";
 import { AlertIcon } from "./icons.jsx";
 import DayStepper, { scheduleRange } from "./DayStepper.jsx";
 import PhoneText from "./PhoneText.jsx";
+import { useFuWindow, FuSiteNodes, FuSuggestions, fuReasonColor } from "./FuSuggestions.jsx";
+import { fuCalReason } from "./lib/fuWindow.js";
 
 // ── Call Board — practice-wide, homepage header card (Sep 2026, per Mari) ─
 // "Wire the call schedule somewhere in the front. Put the date on the site as
@@ -142,11 +144,38 @@ export function StaffLine({ label, people, extra, style, labelStyle, stacked = f
 // Front desk are not shown. LEA passes its own loaded schedule as `sched`
 // (the server already sends LEA tokens the doctor-only view).
 // VRA (Oct 2026, per Mari): an Imaging row from Nana's sheet (Tami most days).
-export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given }) {
+//
+// F/U clinic days (Oct 2026): the counter shows the same clinic-day check and
+// "Nearest clinic days" pills as the note page's F/U calculator (shared code in
+// ./FuSuggestions.jsx + ./lib/fuWindow.js), for ONE doctor:
+//   · signedInDoctor (a doctor who passed the PIN and is still unlocked) → that
+//     doctor, shown as a fixed chip;
+//   · otherwise a compact initials picker (from `doctors`, the hub's SURGEONS),
+//     remembered per device and hub in localStorage; first default =
+//     `doctorHint` (VRA: the doctor who last passed the PIN on this device).
+// No doctor chosen (or no `doctors` passed) → the counter is exactly as before.
+// Practice calendar only — the personal hub_surgeon_schedule blocks the note
+// page also checks for MR are not read here.
+const fuDocKey = (hub) => `${hub === "lea" ? "lea" : "vra"}-hub-fu-doctor`;
+function readFuDoc(key) { try { return localStorage.getItem(key); } catch { return null; } }
+function writeFuDoc(key, v) { try { localStorage.setItem(key, v); } catch { /* private mode */ } }
+
+export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given, doctors, signedInDoctor = null, doctorHint = null }) {
   const lea = hub === "lea";
   const [fetched, setFetched] = useState(null); // null = loading
   const sched = given !== undefined ? given : fetched;
   const [fuWeeks, setFuWeeks] = useState("");
+  const doctorIds = (doctors || []).map((d) => d.id);
+  const signedIn = signedInDoctor && doctorIds.includes(signedInDoctor) ? signedInDoctor : null;
+  // Picked doctor for the F/U clinic days; "" = none. A stored "" (explicit
+  // "Doctor…" pick) wins over the hint; never stored → the hint.
+  const [fuPick, setFuPick] = useState(() => {
+    const stored = readFuDoc(fuDocKey(hub));
+    if (stored !== null) return doctorIds.includes(stored) ? stored : "";
+    return doctorHint && doctorIds.includes(doctorHint) ? doctorHint : "";
+  });
+  const pickFuDoc = (id) => { setFuPick(id); writeFuDoc(fuDocKey(hub), id); };
+  const fuDoctor = signedIn || (doctorIds.includes(fuPick) ? fuPick : "");
   const [picked, setPicked] = useState(null); // YYYY-MM-DD, null = today
 
   // Fetch once on mount. Never throws — a dead feed must never blank the card.
@@ -191,6 +220,13 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given })
   const fuCall = fuDate ? callFor(fuDate) : null;
   // Injection blackout banner — shown when TODAY or the computed F/U date is Jan 1–14.
   const blackout = injectionBlackout(fuDate) || injectionBlackout(today);
+  // That doctor's clinic day / nearest clinic days (null → plain counter).
+  const fuWin = useFuWindow({ doctor: fuDoctor, targetYmd: fuDate ? ymdOf(fuDate) : null, hub, todaySched: sched });
+  const fuOff = !!(fuWin && !fuWin.target.clinic);
+  const fuReason = fuCalReason(fuWin);
+  // "You're on vacation" reads wrong to a tech picking a doctor.
+  const fuReasonText = fuReason && fuReason.code === "vacation" && !signedIn ? `${fuDoctor} is on vacation` : fuReason && fuReason.text;
+  const fuSelect = { height: 26, boxSizing: "border-box", background: T.surface, border: `1px solid ${T.line}`, borderRadius: 5, padding: "0 4px", fontFamily: T.sans, fontSize: 12.5, fontWeight: 600, outline: "none", cursor: "pointer", color: fuDoctor ? doctorColor(fuDoctor).fg : T.muted };
 
   const sites = shownDay ? sessionsBySite(shownDay.sessions) : [];
   const techs = shownDay && !lea ? shownDay.techs : null;
@@ -255,8 +291,9 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given })
   return (
     <div style={{ marginTop: 24 }}>
       <div style={{ border: `1px solid ${T.line}`, borderRadius: T.rLg, background: T.surface, overflow: "hidden" }}>
+        <div style={{ borderBottom: `1px solid ${T.line}` }}>
         {/* Header row — day stepper (today by default) + practice holiday · F/U counter (always from today) on the right */}
-        <div style={{ display: "flex", alignItems: "center", gap: "4px 10px", flexWrap: "wrap", padding: "8px 16px", borderBottom: `1px solid ${T.line}`, fontFamily: T.sans, fontSize: 12.5, color: T.muted }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "4px 10px", flexWrap: "wrap", padding: "8px 16px", fontFamily: T.sans, fontSize: 12.5, color: T.muted }}>
           <span>Call Board</span>
           <DayStepper value={shownYmd} todayYmd={todayYmd} min={minYmd} max={maxYmd} onChange={pickDay} />
           {dayHoliday && (
@@ -280,10 +317,33 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given })
               style={{ width: 52, height: 26, boxSizing: "border-box", background: T.surface, border: `1px solid ${T.line}`, borderRadius: 5, padding: "0 6px", color: T.ink, fontFamily: T.sans, fontSize: 12.5, textAlign: "center", outline: "none" }}
             />
             <span>weeks</span>
+            {doctorIds.length > 0 && (
+              signedIn ? (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }} title="Clinic days for the signed-in doctor">
+                  for <DocChip doctor={signedIn} />
+                </span>
+              ) : (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  for
+                  <select value={fuDoctor} onChange={(e) => pickFuDoc(e.target.value)} aria-label="Whose clinic days" title="Show this doctor's clinic days" className="vra-input" style={fuSelect}>
+                    <option value="" style={{ color: T.muted }}>Dr…</option>
+                    {doctorIds.map((id) => <option key={id} value={id} style={{ color: doctorColor(id).fg }}>{id}</option>)}
+                  </select>
+                </span>
+              )
+            )}
             {fuDate && (
               <>
-                <span style={{ fontWeight: 600, color: fuHoliday ? T.amber : T.ink, whiteSpace: "nowrap" }}>→ {longDate(fuDate)}</span>
+                <span style={{ fontWeight: 600, color: fuHoliday || fuOff ? T.amber : T.ink, whiteSpace: "nowrap" }}>→ {longDate(fuDate)}</span>
+                {/* VRA calendar: the doctor's site that day (+ AM/PM for a half day) */}
+                {fuWin && fuWin.target.clinic && (
+                  <span style={{ color: T.ink2, whiteSpace: "nowrap" }}><FuSiteNodes segments={fuWin.target.segments} /></span>
+                )}
                 {fuHoliday && <span style={{ color: T.amber }}>⚠ {fuHoliday} — office closed</span>}
+                {/* Not that doctor's clinic day → why (unless the holiday already said), same as the note page */}
+                {!fuHoliday && fuReason && (
+                  <span style={{ color: fuReasonColor(fuReason), fontWeight: 600, whiteSpace: "nowrap" }}>⚠ {fuReasonText}</span>
+                )}
                 {fuHalf && <span style={{ color: T.amber, fontSize: 12 }}>{fuHalf}</span>}
                 {fuCall ? (
                   <span style={{ color: T.muted }}>(on call that week: {fuCall.doctor})</span>
@@ -296,6 +356,13 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given })
               </>
             )}
           </span>
+        </div>
+        {/* Not that doctor's clinic day → nearest clinic days, same as the note page */}
+        {fuDate && fuOff && (
+          <div style={{ padding: "0 16px 8px", marginTop: -2, fontFamily: T.sans, fontSize: 12.5, color: T.ink2, textAlign: "right" }}>
+            <FuSuggestions win={fuWin} hub={hub} />
+          </div>
+        )}
         </div>
 
         <div className="vra-callband" style={{ display: "grid", gridTemplateColumns: ".7fr 1.6fr 2fr" }}>

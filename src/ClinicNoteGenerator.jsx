@@ -10,11 +10,11 @@ import PhoneText from "./PhoneText.jsx";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, noteDisplayLines, coverageCardNotes } from "./lib/noteHelpers.js";
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
-import { fetchSchedule, scheduleOk, ymdOf, doctorHalves } from "./lib/vraSchedule.js";
-import { computeFuWindow, fuFetchRange, fuSiteName } from "./lib/fuWindow.js";
+import { fuTargetYmdOf, fuCalReason as fuCalReasonOf } from "./lib/fuWindow.js";
+import { useFuWindow, FuSiteNodes, FuSuggestions, fuReasonColor } from "./FuSuggestions.jsx";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL, isLeaPath } from "./lib/retinaRx.js";
-import { S, T, SITE_TINTS, appBar, avatar, btn, btnSm, field, fieldLabel, chip, input, RESPONSIVE_CSS, doctorColor } from "./theme.js";
+import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, input, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { usePhone, TABBAR_H } from "./phone.jsx";
@@ -418,115 +418,17 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // ./lib/fuWindow.js.
   const fuHub = isLeaPath() ? "lea" : "vra";
   const fuDoctor = surgeon && surgeon.id ? String(surgeon.id).toUpperCase() : "";
-  const fuTargetYmd = (() => {
-    const n = parseInt(fuWeeks);
-    if (!fuWeeks || !(n > 0)) return null;
-    const today = new Date();
-    today.setHours(12, 0, 0, 0);
-    return ymdOf(new Date(today.getTime() + n * 7 * 24 * 60 * 60 * 1000));
-  })();
-  const fuRange = fuTargetYmd ? fuFetchRange(fuTargetYmd, fuHub) : null; // { from, days }
-  // Cache / stale-check key: from + day count, so a 13-day (VRA) payload can
-  // never stand in for a 15-day (LEA) request that happens to share `from`.
-  const fuKey = fuRange ? `${fuRange.from}|${fuRange.days}` : null;
-  const fuCacheRef = useRef(new Map()); // key → payload (good responses only)
-  const [fuSched, setFuSched] = useState(null); // { key, data }
-  useEffect(() => {
-    if (!fuDoctor || !fuKey) return;
-    const cached = fuCacheRef.current.get(fuKey);
-    if (cached) { setFuSched({ key: fuKey, data: cached }); return; }
-    let alive = true;
-    const { from, days } = fuRange;
-    const timer = setTimeout(() => {
-      const timeout = new Promise((resolve) => setTimeout(() => resolve({ configured: true, error: "timeout", days: [] }), 10000));
-      Promise.race([fetchSchedule(days, from), timeout])
-        .then((data) => {
-          if (!alive) return; // target changed meanwhile — ignore stale reply
-          if (scheduleOk(data)) fuCacheRef.current.set(fuKey, data);
-          setFuSched({ key: fuKey, data });
-        })
-        .catch(() => { /* fail silent */ });
-    }, 300);
-    return () => { alive = false; clearTimeout(timer); };
-  }, [fuDoctor, fuKey]); // fuRange is a function of fuKey
-
-  // ── Today's site → preferred site for suggestions (VRA hub only; Mari, Oct 19
-  // 2026: "if I'm typing in Worcester (I'm only in Leominster on Wednesdays)
-  // Worcester should be preferred"). One 1-day fetch per mount and doctor
-  // (cached by doctor + date), 10 s timeout, fail silent → null, and the pure
-  // layer then defaults to WORC. The LEA hub never prefers (only LEA counts).
-  const fuTodayYmd = ymdOf(new Date());
-  const fuTodayKey = fuDoctor && fuHub === "vra" ? `${fuDoctor}|${fuTodayYmd}` : null;
-  const fuTodayRef = useRef(new Map()); // key → payload (good responses only)
-  const [fuToday, setFuToday] = useState(null); // { key, data }
-  useEffect(() => {
-    if (!fuTodayKey) return;
-    const cached = fuTodayRef.current.get(fuTodayKey);
-    if (cached) { setFuToday({ key: fuTodayKey, data: cached }); return; }
-    let alive = true;
-    const timeout = new Promise((resolve) => setTimeout(() => resolve({ configured: true, error: "timeout", days: [] }), 10000));
-    Promise.race([fetchSchedule(1, fuTodayYmd), timeout])
-      .then((data) => {
-        if (!alive || !scheduleOk(data)) return;
-        fuTodayRef.current.set(fuTodayKey, data);
-        setFuToday({ key: fuTodayKey, data });
-      })
-      .catch(() => { /* fail silent */ });
-    return () => { alive = false; };
-  }, [fuTodayKey]); // fuTodayYmd is part of the key
-  // The doctor's non-Valeda VRA-hub site for the current half (before 12:30 → AM,
-  // else PM; that half empty → the other half; nothing today → null).
-  const fuTodaySite = (() => {
-    if (!fuTodayKey || !fuToday || fuToday.key !== fuTodayKey) return null;
-    try {
-      const day = fuToday.data.days.find((d) => d && d.date === fuTodayYmd);
-      if (!day || !Array.isArray(day.sessions)) return null;
-      const sessions = day.sessions.filter((s) => s && !/^(LEX|VALEDA)$/i.test(String(s.site || "")));
-      const h = doctorHalves(sessions, fuDoctor);
-      const now = new Date();
-      const half = now.getHours() * 60 + now.getMinutes() < 12 * 60 + 30 ? "AM" : "PM";
-      const other = half === "AM" ? "PM" : "AM";
-      return h[half][0] || h[other][0] || null;
-    } catch {
-      return null;
-    }
-  })();
-
-  const fuWin = (() => {
-    if (!fuDoctor || !fuTargetYmd || !fuSched || fuSched.key !== fuKey) return null;
-    try {
-      return computeFuWindow(fuTargetYmd, fuDoctor, fuSched.data, {
-        holiday: majorHoliday,
-        blackout: injectionBlackout,
-        isBlocked: (d) => !!scheduleHit(d).block, // MR's OR / no_clinic / vacation rows; empty for others
-      }, fuHub, { preferSite: fuTodaySite });
-    } catch {
-      return null;
-    }
-  })();
-  // Site pills (Mari, Oct 19 2026) — each site code in the hub's site tint,
-  // consistent with the Call Board / schedule: LEOM yellow, WORC steel-blue
-  // (text in T.accentInk — SITE_TINTS.WORC.text is the muted gray, too faint
-  // for a pill). Other sites (LEA, UMass…) stay plain text.
-  const fuPillStyle = (code) => {
-    const tint = code === "WORC" || code === "LEOM" ? SITE_TINTS[code] : null;
-    if (!tint) return undefined;
-    return { background: tint.bg, color: code === "WORC" ? T.accentInk : tint.text, border: `1px solid ${tint.line}`, borderRadius: 6, padding: "0 5px", fontWeight: 600 };
-  };
-  // A day's site as pill(s) + half: "[WORC]", "[LEOM] AM", "[WORC] AM / [LEOM] PM".
-  const fuSiteNodes = (segments) => (segments || []).map((g, i) => (
-    <span key={i}>
-      {i > 0 ? " / " : ""}
-      {g.codes.map((c, j) => (
-        <span key={c}>{j > 0 ? " + " : ""}<span style={fuPillStyle(c)}>{fuSiteName(c)}</span></span>
-      ))}
-      {g.half ? ` ${g.half}` : ""}
-    </span>
-  ));
+  const fuTargetYmd = fuTargetYmdOf(fuWeeks);
+  // Fetch + today's-site preference + computeFuWindow — shared with the
+  // homepage Call Board (./FuSuggestions.jsx).
+  const fuWin = useFuWindow({
+    doctor: fuDoctor,
+    targetYmd: fuTargetYmd,
+    hub: fuHub,
+    isBlocked: (d) => !!scheduleHit(d).block, // MR's OR / no_clinic / vacation rows; empty for others
+  });
   // First calendar reason (closed / vacation / no clinic) for a non-clinic target.
-  const fuCalReason = fuWin && !fuWin.target.clinic
-    ? fuWin.target.reasons.find((r) => r.code === "closed" || r.code === "vacation" || r.code === "noClinic") || null
-    : null;
+  const fuCalReason = fuCalReasonOf(fuWin);
 
   const injCalc = (() => {
     const today = new Date();
@@ -1272,7 +1174,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 <b style={{ fontWeight: 600, color: injCalc.holiday || (injCalc.sched && injCalc.sched.block) || (fuWin && !fuWin.target.clinic) ? T.amber : T.green }}>{formatDate(injCalc.nextDate)}</b>
                 {/* VRA calendar: the doctor's site that day (+ AM/PM for a half day) */}
                 {fuWin && fuWin.target.clinic && (
-                  <span style={{ color: T.ink2 }}> · {fuSiteNodes(fuWin.target.segments)}</span>
+                  <span style={{ color: T.ink2 }}> · <FuSiteNodes segments={fuWin.target.segments} /></span>
                 )}
               </div>
             )}
@@ -1296,7 +1198,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 holiday and MR-schedule lines above haven't already said why.
                 "No clinic that day" in red; vacation / closed amber (Mari, Oct 19 2026). */}
             {injCalc && injCalc.nextDate && !injCalc.holiday && !(injCalc.sched && injCalc.sched.block) && fuCalReason && (
-              <div style={{ color: fuCalReason.code === "noClinic" ? T.red : T.amber, fontWeight: 600, fontSize: 12.5 }}>
+              <div style={{ color: fuReasonColor(fuCalReason), fontWeight: 600, fontSize: 12.5 }}>
                 ⚠ {fuCalReason.text}
               </div>
             )}
@@ -1319,14 +1221,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             {/* Not a clinic day → nearest clinic days within ±6 (VRA hub) / ±7 (LEA hub) */}
             {injCalc && injCalc.nextDate && fuWin && !fuWin.target.clinic && (
               <div style={{ fontSize: 12.5, color: T.ink2 }}>
-                {fuWin.suggestions.length > 0
-                  ? <><span style={{ color: T.muted }}>Nearest clinic days: </span>
-                      {fuWin.suggestions.map((s, i) => (
-                        <span key={s.ymd}>{i > 0 ? " · " : ""}{s.label} {fuSiteNodes(s.segments)} ({s.deltaText})</span>
-                      ))}</>
-                  : fuHub === "lea"
-                  ? <span style={{ color: T.amber }}>No LEA clinic within a week — the patient may need to see a partner.</span>
-                  : <span style={{ color: T.amber }}>No clinic day within ±6 days — check the schedule.</span>}
+                <FuSuggestions win={fuWin} hub={fuHub} />
               </div>
             )}
           </div>

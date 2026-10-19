@@ -35,7 +35,7 @@
 // sessions and no vacation anywhere in the window — i.e. not on the calendar),
 // so the calculator falls back to exactly its old behavior.
 
-import { scheduleOk, ymdOf, dateOfYmd, addDaysYmd, bySiteOrder } from "./vraSchedule.js";
+import { scheduleOk, ymdOf, dateOfYmd, addDaysYmd, bySiteOrder, doctorHalves } from "./vraSchedule.js";
 
 export const FU_HUBS = ["vra", "lea"];
 const hubOf = (hub) => (hub === "lea" ? "lea" : "vra"); // anything else → "vra"
@@ -211,3 +211,46 @@ export function computeFuWindow(target, doctor, schedule, fns = {}, hub = "vra",
 
 /** "Thu 1/21 WORC (+1 d)" / "Wed 1/27 LEOM AM (−4 d)" */
 export const fuSuggestionText = (s) => `${s.label} ${s.site}${s.half ? ` ${s.half}` : ""} (${s.deltaText})`;
+
+// ── Shared by the note page's F/U calculator and the homepage Call Board ──
+// (Oct 2026) so the two counters can't drift.
+
+/**
+ * "N weeks from today" as "YYYY-MM-DD", or null for an empty / non-positive
+ * entry. Today at local noon + N × 7 days — the same arithmetic both counters use.
+ */
+export function fuTargetYmdOf(weeks, now = new Date()) {
+  const n = parseInt(weeks, 10);
+  if (!weeks || !(n > 0)) return null;
+  const today = new Date(now.getTime());
+  today.setHours(12, 0, 0, 0);
+  return ymdOf(new Date(today.getTime() + n * 7 * 24 * 60 * 60 * 1000));
+}
+
+/**
+ * The doctor's preferred site right now (VRA hub): their non-LEX, non-Valeda
+ * site for the current half of `todayYmd` in `schedule` (before 12:30 → AM,
+ * else PM; that half empty → the other half; nothing today → null, and
+ * computeFuWindow then defaults to WORC). Never throws.
+ */
+export function fuTodaySiteOf(schedule, doctor, todayYmd, now = new Date()) {
+  try {
+    const doc = String(doctor || "").trim().toUpperCase();
+    if (!doc || !schedule || !Array.isArray(schedule.days)) return null;
+    const day = schedule.days.find((d) => d && d.date === todayYmd);
+    if (!day || !Array.isArray(day.sessions)) return null;
+    const sessions = day.sessions.filter((s) => s && !/^(LEX|VALEDA)$/i.test(String(s.site || "")));
+    const h = doctorHalves(sessions, doc);
+    const half = now.getHours() * 60 + now.getMinutes() < 12 * 60 + 30 ? "AM" : "PM";
+    const other = half === "AM" ? "PM" : "AM";
+    return h[half][0] || h[other][0] || null;
+  } catch {
+    return null;
+  }
+}
+
+/** First calendar reason (closed / vacation / no clinic) for a non-clinic target, else null. */
+export function fuCalReason(win) {
+  if (!win || !win.target || win.target.clinic) return null;
+  return win.target.reasons.find((r) => r.code === "closed" || r.code === "vacation" || r.code === "noClinic") || null;
+}

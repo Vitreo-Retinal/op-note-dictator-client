@@ -183,7 +183,8 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onOpenDay, 
       </header>
 
       <div className="vra-wrap" style={{ maxWidth: 880, margin: "0 auto", padding: "0 24px", boxSizing: "border-box" }}>
-        <CallBoard hub="lea" sched={sched} onOpenSchedule={(ymd) => onOpenDay(ymd)} />
+        <CallBoard hub="lea" sched={sched} onOpenSchedule={(ymd) => onOpenDay(ymd)}
+          doctors={LEA_SURGEONS} signedInDoctor={unlockedDoctor ? unlockedDoctor.id : null} />
 
         {role === "doctor" && (
           <>

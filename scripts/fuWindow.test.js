@@ -3,7 +3,7 @@
 // Fixtures are synthetic /api/schedule payloads: doctor initials + sites only.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { computeFuWindow, fuFetchRange, fuWindowDays, FU_WINDOW_DAYS, fuShortDate, fuDelta, fuSuggestionText, fuSiteName } from "../src/lib/fuWindow.js";
+import { computeFuWindow, fuFetchRange, fuWindowDays, FU_WINDOW_DAYS, fuShortDate, fuDelta, fuSuggestionText, fuSiteName, fuTargetYmdOf, fuTodaySiteOf, fuCalReason } from "../src/lib/fuWindow.js";
 import { majorHoliday, injectionBlackout, parseLocalNoon } from "../src/lib/practiceCalendar.js";
 import { addDaysYmd, dateOfYmd } from "../src/lib/vraSchedule.js";
 
@@ -465,4 +465,55 @@ test("LEA hub ignores preferSite: nearest 3, nothing appended, nothing preferred
     assert.deepEqual(computeFuWindow(FRI, "MR", p, FNS, "lea", { preferSite }), base);
   }
   assert.ok(base.suggestions.every((s) => s.preferred === false && s.codes.join() === "LEX"));
+});
+
+// ── Shared helpers (note page + homepage Call Board, Oct 2026) ──
+
+test("fuTargetYmdOf: today at noon + N weeks; empty / non-positive → null", () => {
+  const mon = new Date(2026, 9, 19, 8, 15); // Mon Oct 19 2026, 8:15 AM local
+  assert.equal(fuTargetYmdOf("14", mon), "2027-01-25");
+  assert.equal(fuTargetYmdOf("4", mon), "2026-11-16");
+  assert.equal(fuTargetYmdOf(4, new Date(2026, 9, 19, 23, 59)), "2026-11-16"); // late evening, same day
+  assert.equal(fuTargetYmdOf("1", new Date(2026, 9, 30, 9)), "2026-11-06"); // across the DST change
+  for (const w of ["", "0", "-2", "abc", null, undefined]) assert.equal(fuTargetYmdOf(w, mon), null);
+});
+
+test("fuTodaySiteOf: current half's site, the other half when empty, never LEX / Valeda", () => {
+  const T0 = "2026-10-21"; // Wed
+  const sched = (sessions) => ({ configured: true, days: [{ date: T0, closed: false, sessions, vacations: [] }] });
+  const am = new Date(2026, 9, 21, 9, 0), pm = new Date(2026, 9, 21, 12, 30), justBefore = new Date(2026, 9, 21, 12, 29);
+  const s1 = sched([{ doctor: "MR", site: "LEOM", part: "AM" }, { doctor: "MR", site: "WORC", part: "PM" }, { doctor: "BKH", site: "UMASS", part: "AM" }]);
+  assert.equal(fuTodaySiteOf(s1, "MR", T0, am), "LEOM");
+  assert.equal(fuTodaySiteOf(s1, "MR", T0, justBefore), "LEOM");
+  assert.equal(fuTodaySiteOf(s1, "MR", T0, pm), "WORC"); // 12:30 cutoff → PM
+  assert.equal(fuTodaySiteOf(s1, "mr", T0, am), "LEOM"); // initials case-insensitive
+  // AM at LEOM, PM Valeda → PM falls back to the AM site (Valeda never counts).
+  const s2 = sched([{ doctor: "MR", site: "LEOM", part: "AM" }, { doctor: "MR", site: "VALEDA", part: "PM" }]);
+  assert.equal(fuTodaySiteOf(s2, "MR", T0, pm), "LEOM");
+  // LEA-only day → null (computeFuWindow then defaults to WORC).
+  assert.equal(fuTodaySiteOf(sched([{ doctor: "MR", site: "LEX", part: "AM" }, { doctor: "MR", site: "LEX", part: "PM" }]), "MR", T0, am), null);
+  // Not on the calendar today / bad input → null, never throws.
+  assert.equal(fuTodaySiteOf(s1, "FJM", T0, am), null);
+  assert.equal(fuTodaySiteOf(s1, "MR", "2026-10-22", am), null);
+  assert.equal(fuTodaySiteOf(null, "MR", T0, am), null);
+  assert.equal(fuTodaySiteOf({ days: [{ date: T0, sessions: null }] }, "MR", T0, am), null);
+  assert.equal(fuTodaySiteOf(s1, "", T0, am), null);
+});
+
+test("fuCalReason: first of closed / vacation / noClinic for a non-clinic target", () => {
+  assert.equal(fuCalReason(null), null);
+  const clinic = computeFuWindow(MON, "MR", payload(MON), FNS);
+  assert.equal(fuCalReason(clinic), null);
+  const vac = computeFuWindow(MON, "MR", payload(MON, (d) => { if (d.date === MON) d.vacations.push("MR"); }), FNS);
+  assert.deepEqual(fuCalReason(vac), { code: "vacation", text: "You're on vacation" });
+  const none = computeFuWindow(MON, "MR", payload(MON, (d) => { if (d.date === MON) d.sessions = []; }), FNS);
+  assert.deepEqual(fuCalReason(none), { code: "noClinic", text: "No clinic that day" });
+  // Closed office → the closure, not noClinic.
+  const closed = computeFuWindow(MON, "MR", payload(MON, (d) => { if (d.date === MON) { d.closed = true; d.closureName = "Snow"; d.sessions = []; } }), FNS);
+  assert.deepEqual(fuCalReason(closed), { code: "closed", text: "Office closed (Snow)" });
+  // Weekend target (no sessions) → "No clinic that day", same line the note page shows.
+  const SAT = "2027-01-23";
+  const sat = computeFuWindow(SAT, "MR", payload(SAT), FNS);
+  assert.equal(sat.target.clinic, false);
+  assert.equal(fuCalReason(sat).code, "noClinic");
 });
