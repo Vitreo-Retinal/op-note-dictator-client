@@ -3,7 +3,7 @@
 // Fixtures are synthetic /api/schedule payloads: doctor initials + sites only.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { computeFuWindow, fuFetchRange, fuShortDate, fuDelta, fuSuggestionText } from "../src/lib/fuWindow.js";
+import { computeFuWindow, fuFetchRange, fuWindowDays, FU_WINDOW_DAYS, fuShortDate, fuDelta, fuSuggestionText } from "../src/lib/fuWindow.js";
 import { majorHoliday, injectionBlackout, parseLocalNoon } from "../src/lib/practiceCalendar.js";
 import { addDaysYmd, dateOfYmd } from "../src/lib/vraSchedule.js";
 
@@ -21,9 +21,9 @@ function usualSessions(ymd, doctor = "MR") {
   return [...full("WORC"), ...others];
 }
 
-/** 13-day payload centered on `target`; `edit(day)` customizes days. */
-function payload(target, edit = () => {}) {
-  const { from, days } = fuFetchRange(target);
+/** Payload centered on `target` (13 days VRA, 15 LEA); `edit(day)` customizes days. */
+function payload(target, edit = () => {}, hub = "vra") {
+  const { from, days } = fuFetchRange(target, hub);
   const out = [];
   for (let i = 0; i < days; i++) {
     const date = addDaysYmd(from, i);
@@ -64,11 +64,12 @@ test("target on vacation → reason + nearest clinic days (ties: later first)", 
   assert.equal(r.target.clinic, false);
   assert.deepEqual(r.target.reasons.map((x) => x.code), ["vacation"]);
   assert.equal(r.target.reasons[0].text, "You're on vacation");
-  // Wed 1/27 (+2) is also vacation. Tue 1/26 (+1); Fri 1/22 (−3) / Thu 1/28 (+3) tie → Thu first.
+  // Wed 1/27 (+2) is also vacation. Tue 1/26 (+1); Thu 1/28 (+3). Fri 1/22 (−3)
+  // and Fri 1/29 (+4) are LEA days → never suggested in the VRA hub. Thu 1/21 (−4).
   assert.deepEqual(r.suggestions.map(fuSuggestionText), [
     "Tue 1/26 Worcester (+1 d)",
     "Thu 1/28 Worcester (+3 d)",
-    "Fri 1/22 LEA (−3 d)",
+    "Thu 1/21 Worcester (−4 d)",
   ]);
 });
 
@@ -132,8 +133,13 @@ test("injection blackout (Jan 1–14) → not a clinic day; suggestions skip the
   const r = computeFuWindow(T, "MR", payload(T), FNS);
   assert.equal(r.target.clinic, false);
   assert.deepEqual(r.target.reasons.map((x) => x.code), ["blackout"]);
-  // Window 1/5 … 1/17: only Fri 1/15 (+4) is outside the blackout (1/16–17 weekend).
-  assert.deepEqual(r.suggestions.map(fuSuggestionText), ["Fri 1/15 LEA (+4 d)"]);
+  // Window 1/5 … 1/17: only Fri 1/15 (+4) is outside the blackout (1/16–17
+  // weekend), and it's an LEA day → nothing in the VRA hub.
+  assert.deepEqual(r.suggestions, []);
+  // Same target in the LEA hub (window 1/4 … 1/18): Fri 1/15 is the one LEA day out of the blackout.
+  const r2 = computeFuWindow(T, "MR", payload(T, undefined, "lea"), FNS, "lea");
+  assert.deepEqual(r2.target.reasons.map((x) => x.code), ["blackout", "noClinic"]);
+  assert.deepEqual(r2.suggestions.map(fuSuggestionText), ["Fri 1/15 LEA (+4 d)"]);
 });
 
 test("MR OR block (isBlocked) → not a clinic day", () => {
@@ -187,4 +193,137 @@ test("empty / failed / unconfigured payload, missing doctor or target → null",
   assert.equal(computeFuWindow("2027-03-01", "MR", payload(MON), FNS), null);
   // Doctor not on the calendar at all in the window → null (old behavior).
   assert.equal(computeFuWindow(MON, "BJB", payload(MON), FNS), null);
+});
+
+// ── Hub-aware site filter + LEA ±7 window (Mari, Oct 19 2026) ──
+
+const FRI = "2027-01-29"; // Friday, 14 weeks + 4 days out; Mari's usual LEA day
+const full = (site, doctor = "MR") => [{ doctor, site, part: "AM" }, { doctor, site, part: "PM" }];
+
+test("window size by hub; default hub = vra", () => {
+  assert.equal(fuWindowDays("vra"), 6);
+  assert.equal(fuWindowDays("lea"), 7);
+  assert.equal(fuWindowDays(), 6);
+  assert.equal(fuWindowDays("bogus"), 6);
+  assert.equal(FU_WINDOW_DAYS, 6);
+  assert.deepEqual(fuFetchRange(FRI, "lea"), { from: "2027-01-22", days: 15 });
+  assert.deepEqual(fuFetchRange(FRI, "vra"), fuFetchRange(FRI));
+  // Omitted hub → identical results to explicit "vra".
+  const p = payload(MON, (d) => { if (d.date === MON) d.vacations.push("MR"); });
+  assert.deepEqual(computeFuWindow(MON, "MR", p, FNS), computeFuWindow(MON, "MR", p, FNS, "vra"));
+});
+
+test("VRA hub: a Friday with only LEX → No clinic that day; LEX never suggested", () => {
+  const r = computeFuWindow(FRI, "MR", payload(FRI), FNS, "vra");
+  assert.equal(r.target.clinic, false);
+  assert.deepEqual(r.target.reasons.map((x) => x.code), ["noClinic"]);
+  assert.equal(r.target.reasons[0].text, "No clinic that day");
+  assert.ok(r.suggestions.length > 0);
+  for (const s of r.suggestions) {
+    assert.notEqual(dateOfYmd(s.ymd).getDay(), 5, `Friday suggested: ${s.ymd}`);
+    assert.ok(!/LEA/.test(s.site), s.site);
+  }
+  // Nearest first: Thu 1/28 (−1), Wed 1/27 (−2), then the +3 / −3 tie → Mon 2/1 (+3) first.
+  assert.deepEqual(r.suggestions.map(fuSuggestionText), [
+    "Thu 1/28 Worcester (−1 d)",
+    "Wed 1/27 Leominster AM (−2 d)",
+    "Mon 2/1 Worcester (+3 d)",
+  ]);
+});
+
+test("VRA hub: WORC AM + LEX PM → only Worcester AM", () => {
+  const p = payload(MON, (d) => { if (d.date === MON) d.sessions = [{ doctor: "MR", site: "WORC", part: "AM" }, { doctor: "MR", site: "LEX", part: "PM" }]; });
+  const r = computeFuWindow(MON, "MR", p, FNS);
+  assert.equal(r.target.clinic, true);
+  assert.equal(r.target.site, "Worcester");
+  assert.equal(r.target.half, "AM");
+});
+
+test("VRA hub: doctor with only LEX sessions in the window → null (not on this hub's calendar)", () => {
+  const p = payload(FRI, (d) => { d.sessions = dateOfYmd(d.date).getDay() === 5 ? full("LEX") : []; });
+  assert.equal(computeFuWindow(FRI, "MR", p, FNS, "vra"), null);
+});
+
+test("LEA hub: only LEX counts — WORC-only day → noClinic; LEX day → LEA", () => {
+  const pf = payload(FRI, undefined, "lea");
+  const r = computeFuWindow(FRI, "MR", pf, FNS, "lea");
+  assert.equal(r.target.clinic, true);
+  assert.equal(r.target.site, "LEA");
+  assert.equal(r.target.half, null);
+  assert.deepEqual(r.suggestions, []);
+  // A Monday (WORC all day) is not a clinic day in the LEA hub; only Fridays are suggested.
+  const pm = payload(MON, undefined, "lea");
+  const r2 = computeFuWindow(MON, "MR", pm, FNS, "lea");
+  assert.equal(r2.target.clinic, false);
+  assert.deepEqual(r2.target.reasons.map((x) => x.code), ["noClinic"]);
+  // Window 1/18 … 2/1: Fridays 1/22 (−3) and 1/29 (+4).
+  assert.deepEqual(r2.suggestions.map(fuSuggestionText), ["Fri 1/22 LEA (−3 d)", "Fri 1/29 LEA (+4 d)"]);
+});
+
+test("LEA hub: WORC AM + LEX PM → LEA PM", () => {
+  const p = payload(FRI, (d) => { if (d.date === FRI) d.sessions = [{ doctor: "MR", site: "WORC", part: "AM" }, { doctor: "MR", site: "LEX", part: "PM" }]; }, "lea");
+  const r = computeFuWindow(FRI, "MR", p, FNS, "lea");
+  assert.equal(r.target.site, "LEA");
+  assert.equal(r.target.half, "PM");
+});
+
+test("LEA hub: ±7 boundary — days at ±7 count, ±8 don't", () => {
+  // Wide 17-day payload (target ± 8) so ±8 days are present but must be ignored.
+  const wide = (target, edit) => {
+    const out = [];
+    for (let i = -8; i <= 8; i++) {
+      const date = addDaysYmd(target, i);
+      const day = { date, closed: false, closureName: null, sessions: [], vacations: [] };
+      edit(day, i);
+      out.push(day);
+    }
+    return { configured: true, from: addDaysYmd(target, -8), days: out };
+  };
+  const W = "2027-01-27"; // Wed: −7 = Wed 1/20, +7 = Wed 2/3, ±8 = Tue 1/19 / Thu 2/4
+  const p = wide(W, (d, i) => { if (Math.abs(i) >= 7) d.sessions = full("LEX"); });
+  const r = computeFuWindow(W, "MR", p, FNS, "lea");
+  assert.equal(r.target.clinic, false);
+  assert.deepEqual(r.suggestions.map(fuSuggestionText), ["Wed 2/3 LEA (+7 d)", "Wed 1/20 LEA (−7 d)"]);
+  // Only ±8 → nothing; and the doctor isn't on the LEA calendar in the window → null.
+  const p2 = wide(W, (d, i) => { if (Math.abs(i) === 8) d.sessions = full("LEX"); });
+  assert.equal(computeFuWindow(W, "MR", p2, FNS, "lea"), null);
+  // VRA hub on the same shape still stops at ±6.
+  const p3 = wide(W, (d, i) => { if (Math.abs(i) === 7) d.sessions = full("WORC"); if (i === 0) d.sessions = [{ doctor: "MR", site: "VALEDA", part: "AM" }]; });
+  assert.deepEqual(computeFuWindow(W, "MR", p3, FNS, "vra").suggestions, []);
+});
+
+test("LEA hub: vacation Friday → Fri +7 then Fri −7 (ties: later first)", () => {
+  const p = payload(FRI, (d) => { if (d.date === FRI) d.vacations.push("MR"); }, "lea");
+  const r = computeFuWindow(FRI, "MR", p, FNS, "lea");
+  assert.equal(r.target.clinic, false);
+  assert.deepEqual(r.target.reasons.map((x) => x.code), ["vacation"]);
+  assert.equal(r.target.reasons[0].text, "You're on vacation");
+  assert.deepEqual(r.suggestions.map(fuSuggestionText), ["Fri 2/5 LEA (+7 d)", "Fri 1/22 LEA (−7 d)"]);
+});
+
+test("LEA hub: two weeks of vacation → reason, no suggestions", () => {
+  // Off Fri 1/22 … Fri 1/29 (both Fridays); Fri 2/5 is still in clinic.
+  const p = payload(FRI, (d) => { if (d.date <= FRI) d.vacations.push("MR"); }, "lea");
+  const r = computeFuWindow(FRI, "MR", p, FNS, "lea");
+  assert.deepEqual(r.target.reasons.map((x) => x.code), ["vacation"]);
+  assert.deepEqual(r.suggestions.map((s) => s.ymd), ["2027-02-05"]);
+  // Off all three Fridays → nothing within ±7.
+  const p2 = payload(FRI, (d) => d.vacations.push("MR"), "lea");
+  const r2 = computeFuWindow(FRI, "MR", p2, FNS, "lea");
+  assert.equal(r2.target.clinic, false);
+  assert.equal(r2.target.reasons[0].text, "You're on vacation");
+  assert.deepEqual(r2.suggestions, []);
+});
+
+test("LEA hub: holiday / closure / isBlocked still apply", () => {
+  const p = payload(FRI, (d) => { if (d.date === "2027-02-05") { d.closed = true; d.closureName = "Snow day"; } }, "lea");
+  const fns = { ...FNS, isBlocked: (d) => d.getDate() === 29 && d.getMonth() === 0 };
+  const r = computeFuWindow(FRI, "MR", p, fns, "lea");
+  assert.deepEqual(r.target.reasons.map((x) => x.code), ["block"]);
+  assert.deepEqual(r.suggestions.map((s) => s.ymd), ["2027-01-22"]);
+});
+
+test("LEA hub: doctor who never works at LEA → null (calculator unchanged)", () => {
+  // BKH has only Leominster AM sessions in the fixture.
+  assert.equal(computeFuWindow(FRI, "BKH", payload(FRI, undefined, "lea"), FNS, "lea"), null);
 });
