@@ -12,7 +12,7 @@ import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaq
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
 import { fuTargetYmdOf, fuCalReason as fuCalReasonOf } from "./lib/fuWindow.js";
 import { useFuWindow, FuSiteNodes, FuSuggestions, fuReasonColor } from "./FuSuggestions.jsx";
-import { supabase } from "./supabaseClient.js";
+import { hubRpc } from "./lib/hubRpc.js";
 import { COVERAGE_URL, isLeaPath } from "./lib/retinaRx.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, input, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
@@ -371,12 +371,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   useEffect(() => {
     if (!isMR) { setSchedule([]); setCallSchedule([]); return; }
     let alive = true;
-    supabase
-      .rpc("hub_surgeon_schedule", { p_surgeon: "MR" })
+    hubRpc("hub_surgeon_schedule", { p_surgeon: "MR" })
       .then(({ data, error }) => { if (alive && !error) setSchedule(data || []); })
       .catch(() => { /* fail silent — calculator must never break */ });
-    supabase
-      .rpc("hub_call_schedule")
+    hubRpc("hub_call_schedule")
       .then(({ data, error }) => { if (alive && !error) setCallSchedule(data || []); })
       .catch(() => { /* fail silent */ });
     return () => { alive = false; };
