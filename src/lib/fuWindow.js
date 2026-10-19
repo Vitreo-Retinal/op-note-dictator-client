@@ -13,6 +13,14 @@
 //     Fridays at ±7.
 // Valeda never counts, in either hub.
 //
+// PREFERRED SITE (Mari, Oct 19 2026 — "if I'm typing in Worcester (I'm only in
+// Leominster on Wednesdays) Worcester should be preferred"). VRA hub only:
+// opts.preferSite (the site the doctor is at right now, or null → "WORC").
+// Suggestions list up to 3 preferred-site days first, then the single nearest
+// other-site day, so a Leominster Wednesday still shows (max 4). No
+// preferred-site day in the window → plain nearest 3. The LEA hub has no
+// preference (only LEA counts there).
+//
 // A CLINIC DAY for the doctor is a weekday where:
 //   · the doctor has at least one session at a site this hub counts (above),
 //   · the doctor is not in that day's `vacations`,
@@ -45,9 +53,9 @@ const hubSite = (site, hub) => {
 /** Does a session at this site make a clinic day in this hub? (Valeda never does.) */
 const clinicSite = (site, hub) => hubSite(site, hub) && String(site || "").toUpperCase() !== "VALEDA";
 
-// Calendar site code → display name. LEX is LEA (Lexington Eye, Concord for
-// Mari). Unknown codes show as-is.
-export const FU_SITE_NAME = { WORC: "Worcester", LEOM: "Leominster", LEX: "LEA", UMASS: "UMass", WSC: "WSC", VALEDA: "Valeda" };
+// Calendar site code → short display label (Mari, Oct 19 2026: "WORC AM / LEOM PM").
+// LEX is LEA (Lexington Eye, Concord for Mari). Unknown codes show as-is.
+export const FU_SITE_NAME = { WORC: "WORC", LEOM: "LEOM", LEX: "LEA", UMASS: "UMass", WSC: "WSC", VALEDA: "Valeda" };
 export const fuSiteName = (s) => FU_SITE_NAME[s] || s;
 
 const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -83,23 +91,32 @@ function clinicHalves(day, doctor, hub) {
 }
 
 /**
- * Site text for a clinic day: "Worcester", "Leominster AM",
- * "Worcester AM / Leominster PM". half = "AM" | "PM" | null (full day).
+ * Site text for a clinic day: "WORC", "LEOM AM", "WORC AM / LEOM PM".
+ * half = "AM" | "PM" | null (full day).
+ * Also the site CODES, so the UI can tint by code without parsing the text:
+ *   codes:    flat, unique, in site order — ["WORC", "LEOM"]
+ *   segments: [{ codes, half }] — the text as pieces: segment codes joined
+ *             " + ", then " AM"/" PM" when the segment has a half, segments
+ *             joined " / ". Rebuilds exactly `site` + (`half` ? " " + half : "").
  */
 function siteText(h) {
   const name = (codes) => codes.map(fuSiteName).join(" + ");
+  const codes = [...new Set([...h.AM, ...h.PM])].sort(bySiteOrder);
   if (h.AM.length && h.PM.length) {
     const same = h.AM.length === h.PM.length && h.AM.every((s, i) => s === h.PM[i]);
-    return { site: same ? name(h.AM) : `${name(h.AM)} AM / ${name(h.PM)} PM`, half: null };
+    return same
+      ? { site: name(h.AM), half: null, codes, segments: [{ codes: [...h.AM], half: null }] }
+      : { site: `${name(h.AM)} AM / ${name(h.PM)} PM`, half: null, codes,
+          segments: [{ codes: [...h.AM], half: "AM" }, { codes: [...h.PM], half: "PM" }] };
   }
-  if (h.AM.length) return { site: name(h.AM), half: "AM" };
-  if (h.PM.length) return { site: name(h.PM), half: "PM" };
-  return { site: null, half: null };
+  if (h.AM.length) return { site: name(h.AM), half: "AM", codes, segments: [{ codes: [...h.AM], half: "AM" }] };
+  if (h.PM.length) return { site: name(h.PM), half: "PM", codes, segments: [{ codes: [...h.PM], half: "PM" }] };
+  return { site: null, half: null, codes: [], segments: [] };
 }
 
 /**
  * Evaluate one calendar day for the doctor.
- * → { ymd, clinic, site, half, reasons: [{ code, text }] }
+ * → { ymd, clinic, site, half, codes, segments, reasons: [{ code, text }] }
  * Reason codes: "weekend", "holiday", "blackout", "block" (caller's isBlocked),
  * "closed", "vacation", "noClinic". Calendar reasons come in that order;
  * "noClinic" is only added when neither "closed" nor "vacation" applies.
@@ -120,9 +137,9 @@ export function evalFuDay(day, doctor, fns = {}, hub = "vra") {
   const vac = Array.isArray(day.vacations) && day.vacations.some((v) => String(v).toUpperCase() === doctor);
   if (vac) reasons.push({ code: "vacation", text: "You're on vacation" });
   const h = clinicHalves(day, doctor, hub);
-  const { site, half } = siteText(h);
+  const { site, half, codes, segments } = siteText(h);
   if (!site && !day.closed && !vac) reasons.push({ code: "noClinic", text: "No clinic that day" });
-  return { ymd, clinic: !!site && reasons.length === 0, site, half, reasons };
+  return { ymd, clinic: !!site && reasons.length === 0, site, half, codes, segments, reasons };
 }
 
 /**
@@ -131,11 +148,17 @@ export function evalFuDay(day, doctor, fns = {}, hub = "vra") {
  * schedule: GET /api/schedule payload
  * fns:      { holiday(Date), blackout(Date), isBlocked(Date) }
  * hub:      "vra" (default) | "lea" — which sites count and the window size
- * → null | { target: { ymd, clinic, site, half, reasons }, suggestions: [{ ymd, label, site, half, delta, deltaText }] }
- * suggestions (only when the target is not a clinic day): up to 3 clinic days
- * within ±6 (VRA) / ±7 (LEA), nearest first, ties → the later day first.
+ * opts:     { preferSite } — site code the doctor is at today (VRA hub only;
+ *           null/omitted → "WORC"; ignored in the LEA hub)
+ * → null | { target: { ymd, clinic, site, half, codes, segments, reasons },
+ *            suggestions: [{ ymd, label, site, half, codes, segments, delta, deltaText, preferred }] }
+ * suggestions (only when the target is not a clinic day), from the clinic days
+ * within ±6 (VRA) / ±7 (LEA), each group nearest first, ties → the later day first:
+ *   · VRA hub: up to 3 days at the preferred site, then the single nearest
+ *     day elsewhere (max 4). No preferred-site day → the nearest 3.
+ *   · LEA hub: the nearest 3.
  */
-export function computeFuWindow(target, doctor, schedule, fns = {}, hub = "vra") {
+export function computeFuWindow(target, doctor, schedule, fns = {}, hub = "vra", opts = {}) {
   const W = fuWindowDays(hub);
   const doc = String(doctor || "").trim().toUpperCase();
   if (!doc || !target || !scheduleOk(schedule)) return null;
@@ -160,19 +183,31 @@ export function computeFuWindow(target, doctor, schedule, fns = {}, hub = "vra")
   if (!known) return null;
 
   const t = evalFuDay(tDay, doc, fns, hub);
-  const suggestions = [];
+  let suggestions = [];
   if (!t.clinic) {
+    const pref = hubOf(hub) === "lea" ? null : String((opts && opts.preferSite) || "WORC").trim().toUpperCase();
+    const cands = [];
     for (const { off, day } of win) {
       if (off === 0) continue;
       const e = evalFuDay(day, doc, fns, hub);
       if (!e.clinic) continue;
-      suggestions.push({ ymd: e.ymd, label: fuShortDate(e.ymd), site: e.site, half: e.half, delta: off, deltaText: fuDelta(off) });
+      cands.push({
+        ymd: e.ymd, label: fuShortDate(e.ymd), site: e.site, half: e.half, codes: e.codes, segments: e.segments,
+        delta: off, deltaText: fuDelta(off), preferred: !!pref && e.codes.includes(pref),
+      });
     }
-    suggestions.sort((a, b) => Math.abs(a.delta) - Math.abs(b.delta) || b.delta - a.delta);
-    suggestions.length = Math.min(suggestions.length, 3);
+    const nearest = (a, b) => Math.abs(a.delta) - Math.abs(b.delta) || b.delta - a.delta;
+    cands.sort(nearest);
+    const preferred = cands.filter((c) => c.preferred);
+    if (preferred.length) {
+      const other = cands.find((c) => !c.preferred); // nearest non-preferred-site day
+      suggestions = [...preferred.slice(0, 3), ...(other ? [other] : [])];
+    } else {
+      suggestions = cands.slice(0, 3);
+    }
   }
   return { target: t, suggestions };
 }
 
-/** "Thu 1/21 Worcester (+1 d)" / "Wed 1/27 Leominster AM (−4 d)" */
+/** "Thu 1/21 WORC (+1 d)" / "Wed 1/27 LEOM AM (−4 d)" */
 export const fuSuggestionText = (s) => `${s.label} ${s.site}${s.half ? ` ${s.half}` : ""} (${s.deltaText})`;

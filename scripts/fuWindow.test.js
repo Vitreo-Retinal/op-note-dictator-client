@@ -3,7 +3,7 @@
 // Fixtures are synthetic /api/schedule payloads: doctor initials + sites only.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { computeFuWindow, fuFetchRange, fuWindowDays, FU_WINDOW_DAYS, fuShortDate, fuDelta, fuSuggestionText } from "../src/lib/fuWindow.js";
+import { computeFuWindow, fuFetchRange, fuWindowDays, FU_WINDOW_DAYS, fuShortDate, fuDelta, fuSuggestionText, fuSiteName } from "../src/lib/fuWindow.js";
 import { majorHoliday, injectionBlackout, parseLocalNoon } from "../src/lib/practiceCalendar.js";
 import { addDaysYmd, dateOfYmd } from "../src/lib/vraSchedule.js";
 
@@ -45,14 +45,14 @@ test("format helpers", () => {
   assert.equal(fuShortDate("2027-01-21"), "Thu 1/21");
   assert.equal(fuDelta(1), "+1 d");
   assert.equal(fuDelta(-4), "−4 d");
-  assert.equal(fuSuggestionText({ label: "Wed 1/27", site: "Leominster", half: "AM", deltaText: "+2 d" }), "Wed 1/27 Leominster AM (+2 d)");
+  assert.equal(fuSuggestionText({ label: "Wed 1/27", site: "LEOM", half: "AM", deltaText: "+2 d" }), "Wed 1/27 LEOM AM (+2 d)");
 });
 
 test("target is a clinic day → site, no suggestions", () => {
   const r = computeFuWindow(parseLocalNoon(MON), "MR", payload(MON), FNS);
   assert.equal(r.target.ymd, MON);
   assert.equal(r.target.clinic, true);
-  assert.equal(r.target.site, "Worcester");
+  assert.equal(r.target.site, "WORC");
   assert.equal(r.target.half, null);
   assert.deepEqual(r.target.reasons, []);
   assert.deepEqual(r.suggestions, []);
@@ -66,10 +66,12 @@ test("target on vacation → reason + nearest clinic days (ties: later first)", 
   assert.equal(r.target.reasons[0].text, "You're on vacation");
   // Wed 1/27 (+2) is also vacation. Tue 1/26 (+1); Thu 1/28 (+3). Fri 1/22 (−3)
   // and Fri 1/29 (+4) are LEA days → never suggested in the VRA hub. Thu 1/21 (−4).
+  // Then the nearest non-WORC day: Wed 1/20 LEOM AM (−5).
   assert.deepEqual(r.suggestions.map(fuSuggestionText), [
-    "Tue 1/26 Worcester (+1 d)",
-    "Thu 1/28 Worcester (+3 d)",
-    "Thu 1/21 Worcester (−4 d)",
+    "Tue 1/26 WORC (+1 d)",
+    "Thu 1/28 WORC (+3 d)",
+    "Thu 1/21 WORC (−4 d)",
+    "Wed 1/20 LEOM AM (−5 d)",
   ]);
 });
 
@@ -94,7 +96,7 @@ test("AM-only (Leominster AM + Valeda PM) → half day AM", () => {
   const WED = "2027-01-27";
   const r = computeFuWindow(WED, "MR", payload(WED), FNS);
   assert.equal(r.target.clinic, true);
-  assert.equal(r.target.site, "Leominster");
+  assert.equal(r.target.site, "LEOM");
   assert.equal(r.target.half, "AM");
 });
 
@@ -104,10 +106,10 @@ test("PM-only half day; different sites AM vs PM", () => {
     if (d.date === "2027-01-26") d.sessions = [{ doctor: "MR", site: "WORC", part: "AM" }, { doctor: "MR", site: "LEOM", part: "PM" }];
   });
   const r = computeFuWindow(MON, "MR", p, FNS);
-  assert.equal(r.target.site, "Worcester");
+  assert.equal(r.target.site, "WORC");
   assert.equal(r.target.half, "PM");
   const r2 = computeFuWindow("2027-01-26", "MR", p, FNS);
-  assert.equal(r2.target.site, "Worcester AM / Leominster PM");
+  assert.equal(r2.target.site, "WORC AM / LEOM PM");
   assert.equal(r2.target.half, null);
 });
 
@@ -166,7 +168,7 @@ test("±6 boundary: days ±6 count, nothing beyond; none → empty suggestions",
     d.sessions = d.date === "2027-02-02" ? [{ doctor: "MR", site: "LEOM", part: "AM" }] : [];
   });
   const r2 = computeFuWindow(W, "MR", p2, FNS);
-  assert.deepEqual(r2.suggestions.map(fuSuggestionText), ["Tue 2/2 Leominster AM (+6 d)"]);
+  assert.deepEqual(r2.suggestions.map(fuSuggestionText), ["Tue 2/2 LEOM AM (+6 d)"]);
   // Vacation the whole window → known doctor, no clinic day at all.
   const p3 = payload(MON, (d) => d.vacations.push("MR"));
   const r3 = computeFuWindow(MON, "MR", p3, FNS);
@@ -178,7 +180,7 @@ test("each doctor sees only their own sessions", () => {
   // BKH has only Leominster AM sessions in the fixture.
   const r = computeFuWindow(MON, "BKH", payload(MON), FNS);
   assert.equal(r.target.clinic, true);
-  assert.equal(r.target.site, "Leominster");
+  assert.equal(r.target.site, "LEOM");
   assert.equal(r.target.half, "AM");
 });
 
@@ -223,19 +225,22 @@ test("VRA hub: a Friday with only LEX → No clinic that day; LEX never suggeste
     assert.notEqual(dateOfYmd(s.ymd).getDay(), 5, `Friday suggested: ${s.ymd}`);
     assert.ok(!/LEA/.test(s.site), s.site);
   }
-  // Nearest first: Thu 1/28 (−1), Wed 1/27 (−2), then the +3 / −3 tie → Mon 2/1 (+3) first.
+  // WORC preferred (default): Thu 1/28 (−1), then the +3 / −3 tie → Mon 2/1 (+3)
+  // first, Tue 1/26 (−3); then the nearest LEOM day, Wed 1/27 (−2), last.
   assert.deepEqual(r.suggestions.map(fuSuggestionText), [
-    "Thu 1/28 Worcester (−1 d)",
-    "Wed 1/27 Leominster AM (−2 d)",
-    "Mon 2/1 Worcester (+3 d)",
+    "Thu 1/28 WORC (−1 d)",
+    "Mon 2/1 WORC (+3 d)",
+    "Tue 1/26 WORC (−3 d)",
+    "Wed 1/27 LEOM AM (−2 d)",
   ]);
 });
 
-test("VRA hub: WORC AM + LEX PM → only Worcester AM", () => {
+test("VRA hub: WORC AM + LEX PM → only WORC AM", () => {
   const p = payload(MON, (d) => { if (d.date === MON) d.sessions = [{ doctor: "MR", site: "WORC", part: "AM" }, { doctor: "MR", site: "LEX", part: "PM" }]; });
   const r = computeFuWindow(MON, "MR", p, FNS);
   assert.equal(r.target.clinic, true);
-  assert.equal(r.target.site, "Worcester");
+  assert.equal(r.target.site, "WORC");
+  assert.deepEqual(r.target.codes, ["WORC"]);
   assert.equal(r.target.half, "AM");
 });
 
@@ -326,4 +331,138 @@ test("LEA hub: holiday / closure / isBlocked still apply", () => {
 test("LEA hub: doctor who never works at LEA → null (calculator unchanged)", () => {
   // BKH has only Leominster AM sessions in the fixture.
   assert.equal(computeFuWindow(FRI, "BKH", payload(FRI, undefined, "lea"), FNS, "lea"), null);
+});
+
+// ── Short site labels, site codes, preferred site (Mari, Oct 19 2026 10:51 AM) ──
+
+const fuSegText = (x) => x.segments.map((g) => `${g.codes.join(" + ")}${g.half ? ` ${g.half}` : ""}`).join(" / ");
+
+test("site codes + segments exposed on target and suggestions; Valeda / LEX never in codes", () => {
+  const TUE = "2027-01-26";
+  const p = payload(TUE, (d) => {
+    if (d.date === TUE) d.sessions = [{ doctor: "MR", site: "WORC", part: "AM" }, { doctor: "MR", site: "LEOM", part: "PM" }];
+    if (d.date === "2027-01-25") d.sessions = [{ doctor: "MR", site: "UMASS", part: "AM" }, { doctor: "MR", site: "WORC", part: "AM" }, { doctor: "MR", site: "LEX", part: "PM" }];
+  });
+  // Two sites, AM vs PM → two codes, two segments.
+  const r = computeFuWindow(TUE, "MR", p, FNS);
+  assert.equal(r.target.site, "WORC AM / LEOM PM");
+  assert.deepEqual(r.target.codes, ["WORC", "LEOM"]);
+  assert.deepEqual(r.target.segments, [{ codes: ["WORC"], half: "AM" }, { codes: ["LEOM"], half: "PM" }]);
+  // Two sites in one half (site order) + LEX ignored in the VRA hub.
+  const r2 = computeFuWindow("2027-01-25", "MR", p, FNS);
+  assert.equal(r2.target.site, "WORC + UMass");
+  assert.equal(r2.target.half, "AM");
+  assert.deepEqual(r2.target.codes, ["WORC", "UMASS"]);
+  assert.deepEqual(r2.target.segments, [{ codes: ["WORC", "UMASS"], half: "AM" }]);
+  // Full day at one site → one segment, half null.
+  const r3 = computeFuWindow("2027-01-28", "MR", p, FNS);
+  assert.deepEqual(r3.target.codes, ["WORC"]);
+  assert.deepEqual(r3.target.segments, [{ codes: ["WORC"], half: null }]);
+  // Wed: LEOM AM + Valeda PM → Valeda not in codes.
+  const r4 = computeFuWindow("2027-01-27", "MR", payload("2027-01-27"), FNS);
+  assert.deepEqual(r4.target.codes, ["LEOM"]);
+  assert.deepEqual(r4.target.segments, [{ codes: ["LEOM"], half: "AM" }]);
+  // Non-clinic target (Fri, LEX only) → empty codes; every suggestion carries codes
+  // and segments that rebuild site + half exactly.
+  const r5 = computeFuWindow(FRI, "MR", payload(FRI), FNS);
+  assert.deepEqual(r5.target.codes, []);
+  assert.deepEqual(r5.target.segments, []);
+  assert.ok(r5.suggestions.length > 0);
+  for (const s of r5.suggestions) {
+    assert.ok(Array.isArray(s.codes) && s.codes.length > 0, s.ymd);
+    assert.equal(fuSegText(s).replace(/UMASS/g, "UMass"), `${s.site}${s.half ? ` ${s.half}` : ""}`);
+    assert.equal(typeof s.preferred, "boolean");
+  }
+});
+
+test("FU_SITE_NAME: short labels; LEX stays LEA", () => {
+  assert.equal(fuSiteName("WORC"), "WORC");
+  assert.equal(fuSiteName("LEOM"), "LEOM");
+  assert.equal(fuSiteName("LEX"), "LEA");
+  assert.equal(fuSiteName("UMASS"), "UMass");
+  assert.equal(fuSiteName("WSC"), "WSC");
+  assert.equal(fuSiteName("VALEDA"), "Valeda");
+  assert.equal(fuSiteName("XYZ"), "XYZ");
+});
+
+test("preferSite default (VRA hub) = WORC: WORC days before a nearer LEOM day; nearest LEOM appended last; max 3 + 1", () => {
+  // Fri 1/29 (LEX only → no VRA clinic). Window 1/23 … 2/4:
+  // WORC: Thu 1/28 −1, Mon 2/1 +3, Tue 1/26 −3, Mon 1/25 −4, Tue 2/2 +4, Thu 2/4 +6 (6 days)
+  // LEOM: Wed 1/27 −2 (nearer than all but one WORC day), Wed 2/3 +5.
+  const p = payload(FRI);
+  const r = computeFuWindow(FRI, "MR", p, FNS);
+  assert.deepEqual(r.suggestions.map(fuSuggestionText), [
+    "Thu 1/28 WORC (−1 d)",
+    "Mon 2/1 WORC (+3 d)",
+    "Tue 1/26 WORC (−3 d)",
+    "Wed 1/27 LEOM AM (−2 d)",
+  ]);
+  assert.deepEqual(r.suggestions.map((s) => s.preferred), [true, true, true, false]);
+  assert.equal(r.suggestions.length, 4); // only 3 of the 6 WORC days, only 1 of the 2 LEOM days
+  // Omitted opts, {}, preferSite null and preferSite "WORC" are all the same.
+  for (const opts of [{}, { preferSite: null }, { preferSite: "WORC" }, { preferSite: "worc" }]) {
+    assert.deepEqual(computeFuWindow(FRI, "MR", p, FNS, "vra", opts), r);
+  }
+  assert.deepEqual(computeFuWindow(FRI, "MR", p, FNS, undefined, { preferSite: null }), r);
+});
+
+test("preferSite = LEOM (typing in Leominster on a Wednesday) flips the order", () => {
+  const p = payload(FRI);
+  const r = computeFuWindow(FRI, "MR", p, FNS, "vra", { preferSite: "LEOM" });
+  // Both LEOM days first (nearest first), then the single nearest WORC day.
+  assert.deepEqual(r.suggestions.map(fuSuggestionText), [
+    "Wed 1/27 LEOM AM (−2 d)",
+    "Wed 2/3 LEOM AM (+5 d)",
+    "Thu 1/28 WORC (−1 d)",
+  ]);
+  assert.deepEqual(r.suggestions.map((s) => s.preferred), [true, true, false]);
+  // A mixed day (WORC AM / LEOM PM) counts as a LEOM day.
+  const p2 = payload(FRI, (d) => {
+    if (d.date === "2027-02-01") d.sessions = [{ doctor: "MR", site: "WORC", part: "AM" }, { doctor: "MR", site: "LEOM", part: "PM" }];
+  });
+  const r2 = computeFuWindow(FRI, "MR", p2, FNS, "vra", { preferSite: "LEOM" });
+  assert.deepEqual(r2.suggestions.map(fuSuggestionText), [
+    "Wed 1/27 LEOM AM (−2 d)",
+    "Mon 2/1 WORC AM / LEOM PM (+3 d)",
+    "Wed 2/3 LEOM AM (+5 d)",
+    "Thu 1/28 WORC (−1 d)",
+  ]);
+});
+
+test("no preferred-site day in the window → plain nearest 3 (ties later first)", () => {
+  // MR has no UMass days → nearest 3 of everything, nothing marked preferred.
+  const r = computeFuWindow(FRI, "MR", payload(FRI), FNS, "vra", { preferSite: "UMASS" });
+  assert.deepEqual(r.suggestions.map(fuSuggestionText), [
+    "Thu 1/28 WORC (−1 d)",
+    "Wed 1/27 LEOM AM (−2 d)",
+    "Mon 2/1 WORC (+3 d)",
+  ]);
+  assert.deepEqual(r.suggestions.map((s) => s.preferred), [false, false, false]);
+  // Default WORC preference but no WORC day in the window → nearest 3 LEOM days.
+  const W = "2027-01-27";
+  const p = payload(W, (d) => {
+    const dow = dateOfYmd(d.date).getDay();
+    d.sessions = dow >= 1 && dow <= 5 && d.date !== W ? [{ doctor: "MR", site: "LEOM", part: "AM" }] : [];
+    if (d.date === W) d.vacations.push("MR");
+  });
+  const r2 = computeFuWindow(W, "MR", p, FNS);
+  assert.deepEqual(r2.suggestions.map((s) => [s.ymd, s.delta]), [["2027-01-28", 1], ["2027-01-26", -1], ["2027-01-29", 2]]);
+  assert.ok(r2.suggestions.every((s) => s.preferred === false));
+});
+
+test("LEA hub ignores preferSite: nearest 3, nothing appended, nothing preferred", () => {
+  // Every weekday LEX in a 15-day payload; target Fri on vacation.
+  const p = payload(FRI, (d) => {
+    const dow = dateOfYmd(d.date).getDay();
+    d.sessions = dow >= 1 && dow <= 5 ? full("LEX") : [];
+    if (d.date === FRI) d.vacations.push("MR");
+  }, "lea");
+  const base = computeFuWindow(FRI, "MR", p, FNS, "lea");
+  // Thu 1/28 (−1), Wed 1/27 (−2), then the ±3 tie → Mon 2/1 (+3) before Tue 1/26.
+  assert.deepEqual(base.suggestions.map((s) => [s.ymd, s.delta]), [["2027-01-28", -1], ["2027-01-27", -2], ["2027-02-01", 3]]);
+  assert.equal(base.suggestions.length, 3);
+  for (const preferSite of ["WORC", "LEOM", "LEX", null]) {
+    assert.deepEqual(computeFuWindow(FRI, "MR", p, FNS, "lea", { preferSite }), base);
+  }
+  assert.ok(base.suggestions.every((s) => s.preferred === false && s.codes.join() === "LEX"));
 });
