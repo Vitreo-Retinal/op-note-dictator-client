@@ -98,105 +98,22 @@ export function jCodeText(card) {
 /** Leading emoji / symbols on DB alert text ("⚠️ PRACTICE RULE: …") — the card draws one alert icon. */
 export const stripLeadingSymbols = (s) => String(s || "").replace(/^[^A-Za-z0-9"'($]+/, "");
 
-// ── Step-therapy pathway — port of Retina-Rx getStepTherapyHtml (data, not HTML) ──
-// Returns null (no strip) or { steps: [{ label, drug, desc, active }], thisStep, priorSteps }.
-// One difference: Retina-Rx's Step 1 "PA required / No PA needed" comes from a
-// separate Avastin lookup the hub does not have, so Step 1 says "First line".
-function canonDrug(nm) {
-  const x = String(nm || "").toLowerCase();
-  if (x.includes("pavblu")) return "pavblu";
-  if (x.includes("cimerli")) return "cimerli";
-  if (x.includes("byooviz")) return "byooviz";
-  if (x.includes("eylea hd") || x.includes("eylea 8") || x.includes("8mg") || x.includes("(hd)") || /\bhd\b/.test(x)) return "eylea hd";
-  if (x.includes("eylea") || x.includes("aflibercept")) return "eylea 2mg";
-  if (x.includes("lucentis") || x.includes("ranibizumab")) return "lucentis";
-  if (x.includes("vabysmo") || x.includes("faricimab")) return "vabysmo";
-  if (x.includes("beovu") || x.includes("brolucizumab")) return "beovu";
-  if (x.includes("avastin") || x.includes("bevacizumab")) return "avastin";
-  return x.trim();
+// ── Step-therapy pathway (server-built, Oct 20 2026, Mari 1:55/1:56 PM) ─────────
+// The server (lib/step-pathway.js) parses the rule into card.steps and looks up every
+// step drug's REAL rule for the same plan: drug.pa = "none" | "required" | "unknown",
+// step.pa = the drugs' common value or "mixed". Per-drug PA status is the key output.
+export function cardSteps(card) {
+  const p = card && card.steps;
+  return p && Array.isArray(p.steps) && p.steps.length ? p : null;
 }
-function parseStepDrugs(text, drugName) {
-  const drugs = [], t = String(text).toLowerCase();
-  if (t.includes("this drug") || t.includes("this agent")) return [drugName || "This drug"];
-  if (t.includes("eylea hd") || t.includes("eylea 8") || t.includes("r/hd") || t.includes("ehd")) drugs.push("Eylea HD");
-  const tClean = t.replace(/eylea\s*hd/gi, "").replace(/eylea\s*8/gi, "").replace(/r\/hd/gi, "")
-    .replace(/pavblu(\s*\(aflibercept[^)]*\))?/gi, "").replace(/cimerli(\s*\(ranibizumab[^)]*\))?/gi, "").replace(/byooviz(\s*\(ranibizumab[^)]*\))?/gi, "");
-  if (tClean.includes("eylea") || tClean.includes("aflibercept")) drugs.push("Eylea 2mg");
-  if (t.includes("pavblu")) drugs.push("Pavblu");
-  if (t.includes("byooviz")) drugs.push("Byooviz");
-  if (t.includes("cimerli")) drugs.push("Cimerli");
-  if (tClean.includes("lucentis") || tClean.includes("ranibizumab")) drugs.push("Lucentis");
-  if (t.includes("vabysmo") || t.includes("faricimab")) drugs.push("Vabysmo");
-  if (t.includes("beovu") || t.includes("brolucizumab")) drugs.push("Beovu");
-  return drugs.length ? drugs : null;
+/** Screen words for a PA status. Unknown is never guessed: "Check Avastin rule" / "Check rule". */
+export function paLabel(pa, drugName) {
+  if (pa === "none") return "No PA needed";
+  if (pa === "required") return "PA required";
+  return /avastin/i.test(String(drugName || "")) ? "Check Avastin rule" : "Check rule";
 }
-export function stepPathway(notes, drugName, requirements, billingAlert) {
-  if (!notes) return null;
-  const reqText = Array.isArray(requirements) && requirements.length ? requirements.join(" ").toLowerCase() : "";
-  const alertText = String(billingAlert || "").toLowerCase();
-  const allText = String(notes).toLowerCase() + " " + reqText;
-  if (allText.includes("no step therapy")) return null;
-  if (!["step therapy", "step 1", "step 2", "step 3", "must trial and fail", "must fail", "two-step", "2-step", "avastin per eye", "eylea per eye", "byooviz per eye"]
-    .some((k) => allText.includes(k))) return null;
-  const drug = String(drugName || "").toLowerCase();
-  const combinedText = notes + " " + (requirements || []).join(" ");
-  const dm = combinedText.match(/(\d+)\s*(?:consecutive\s+monthly\s+)?(?:doses?\s*(?:of\s*)?)?(?:per\s*eye\s*(?:of\s*)?)?avastin/i)
-    || combinedText.match(/avastin\s*\((\d+)\s*doses?\)/i) || combinedText.match(/(\d+)\s*avastin\s*per\s*eye/i)
-    || combinedText.match(/(\d+)\s*consecutive\s*monthly\s*doses/i) || combinedText.match(/avastin\s*x(\d+)/i);
-  const avastinDoses = dm ? dm[1] : "";
-  const em = combinedText.match(/(\d+)\s*eylea\s*per\s*eye/i) || combinedText.match(/eylea\s*x(\d+)/i);
-  const eyleaDoses = em ? em[1] : "";
-  const bm = combinedText.match(/(\d+)\s*byooviz\s*per\s*eye/i);
-  const byoovizDoses = bm ? bm[1] : "";
-  if (drug.includes("avastin")) return null;   // Avastin IS Step 1 — no pathway
-  const s1pool = String(notes).match(/Step\s*1\s*:\s*([^.]+?)\s*(?:Step\s*2\s*:|Step\s*3\s*:|\.)/i);
-  if (s1pool) {
-    const poolText = s1pool[1].replace(/x\d+\s*\/?\s*eye/gi, "").replace(/\bx\d+\b/gi, "").replace(/\/eye/gi, "");
-    if (/[,/]/.test(poolText) && poolText.split(/[,/]/).map(canonDrug).filter(Boolean).includes(canonDrug(drug))) return null;
-  }
-  let needsAvastin = false, needsStep2 = false;
-  if (allText.includes("this is a step 2 drug") || allText.includes("this is a step 2 agent") || allText.includes("step 2 drug")) { needsAvastin = true; }
-  else if (allText.includes("this is a step 3 drug") || allText.includes("this is a step 3 agent") || allText.includes("step 3 drug")) { needsAvastin = true; needsStep2 = true; }
-  else if (allText.includes("two-step") || allText.includes("2-step")) { needsAvastin = true; }
-  else if (allText.includes("step 3:") || allText.includes("step 3 agent") || allText.includes("step 3.")) { needsAvastin = true; needsStep2 = true; }
-  else if (eyleaDoses || byoovizDoses) { needsAvastin = true; needsStep2 = true; }
-  else if (/must\s+(?:trial\s+and\s+)?fail\s+avastin.*?\s+and\s+/i.test(combinedText) || /must\s+(?:trial\s+and\s+)?fail\s+avastin.*?,\s*then\s+/i.test(combinedText)) { needsAvastin = true; needsStep2 = true; }
-  else if (/must\s+(?:trial\s+and\s+)?fail\s+(?:eylea|aflibercept|lucentis|ranibizumab|pavblu|byooviz)/i.test(combinedText) && !allText.includes("fail avastin")) { needsAvastin = true; needsStep2 = true; }
-  else if (allText.includes("must trial and fail") || allText.includes("must fail") || allText.includes("step therapy")) { needsAvastin = true; }
-  const s2Match = allText.match(/step\s*2\s*:\s*([^→]+?)(?:\s*→|\.\s*this|\.\s*pa|\.\s*step\s*3|\.\s*\d+|\s*$)/i);
-  const s3Match = allText.match(/step\s*3\s*:\s*([^→]+?)(?:\s*→|\.\s*this|\.\s*pa|\.\s*\d+|\s*$)/i);
-  const parsedStep2Drugs = s2Match ? parseStepDrugs(s2Match[1], drugName) : null;
-  const parsedStep3Drugs = s3Match ? parseStepDrugs(s3Match[1], drugName) : null;
-  if (allText.includes("step 1:") || allText.includes("step 2:")) {
-    needsAvastin = true;
-    if (allText.includes("step 3:") || parsedStep3Drugs) {
-      const cur = canonDrug(drugName);
-      needsStep2 = !(parsedStep2Drugs && parsedStep2Drugs.some((d) => canonDrug(d) === cur));
-    } else needsStep2 = false;
-  }
-  const thisStep = needsStep2 ? 3 : needsAvastin ? 2 : 0;
-  if (!thisStep) return null;
-  let step1Drug = avastinDoses ? `Avastin (${avastinDoses}/eye)` : "Avastin";
-  const s1Match = String(notes).match(/Step\s*1\s*:\s*([^.]+?)\s*(?:Step\s*2\s*:|Step\s*3\s*:|\.)/i);
-  if (s1Match) {
-    const s1clean = s1Match[1].replace(/x\d+\s*\/?\s*eye/gi, "").replace(/\bx\d+\b/gi, "").replace(/\/eye/gi, "")
-      .replace(/\s*,\s*/g, ", ").replace(/\s{2,}/g, " ").trim().replace(/[,\s]+$/, "");
-    if (/[,/]/.test(s1clean) || /eylea|lucentis|vabysmo|byooviz|beovu/i.test(s1clean)) step1Drug = s1clean;
-  }
-  const steps = [{ label: "Step 1", drug: step1Drug, desc: "First line", active: false }];
-  let s2display = [];
-  if (thisStep === 2) s2display = [drugName || "This drug"];
-  else if (parsedStep2Drugs) s2display = parsedStep2Drugs.slice();
-  else if (byoovizDoses) s2display = [`Byooviz (${byoovizDoses}/eye)`];
-  else s2display = eyleaDoses ? [`Eylea 2mg (${eyleaDoses}/eye)`, "Lucentis"] : ["Eylea 2mg", "Eylea HD", "Lucentis", "Vabysmo"];
-  const paPerEye = ["pa is per eye", "pa per eye"].some((k) => alertText.includes(k) || allText.includes(k));
-  steps.push({ label: "Step 2", drug: s2display.join(", "), desc: paPerEye ? "PA required (per eye)" : "PA required", active: thisStep === 2 });
-  if (needsStep2) {
-    const s3display = thisStep === 3 ? [drugName || "This drug"] : parsedStep3Drugs ? parsedStep3Drugs : [drugName || "This drug"];
-    steps.push({ label: "Step 3", drug: s3display.join(", "), desc: "PA required", active: thisStep === 3 });
-  }
-  return { steps, thisStep, priorSteps: thisStep > 1 ? (needsStep2 ? "Steps 1–2" : "Step 1") : "" };
-}
+/** Step drug as shown in its box: "Avastin (3/eye)". */
+export const stepDrugText = (d) => (d && d.perEye ? `${d.name} (${d.perEye}/eye)` : (d && d.name) || "");
 
 // ── ASCII fold for the copied coverage block (owner decision B) ─────────────
 // Client twin of server lib/ascii-safe.js — a defensive pass in copyableNoteText,

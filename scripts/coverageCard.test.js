@@ -7,7 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { copyableNoteText, parseResponse } from "../src/lib/noteHelpers.js";
-import { coverageTier, reqTagClass, requirementTags, keyRequirement, jCodeText, stepPathway, asciiFold, COVERAGE_FENCE_RX, COVERAGE_TIERS, stripLeadingSymbols } from "../src/lib/coverageCard.js";
+import { coverageTier, reqTagClass, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, asciiFold, COVERAGE_FENCE_RX, COVERAGE_TIERS, stripLeadingSymbols } from "../src/lib/coverageCard.js";
 
 const CASES = JSON.parse(readFileSync(new URL("./fixtures/coverage-cases.json", import.meta.url), "utf8"));
 const ASCII_ONLY = /^[\x09\x0A\x0D\x20-\x7E]*$/;
@@ -84,18 +84,39 @@ test("tier → label mapping (Retina-Rx), incl. orange as its own tier", () => {
   assert.deepEqual(coverageTier({ kind: "rule", status: "orange" }).phone, ["Partial coverage", "patient has out-of-pocket cost"]);
 });
 
-test("step pathway: 3 Avastin + 1 Eylea before Vabysmo → Step 1 → 2 → 3, Vabysmo active at Step 3", () => {
-  const c = CASES["commercial-pa-yellow"].cards[0];
-  const p = stepPathway(c.notes, c.drug, c.requirements, c.billing_alert);
-  assert.deepEqual(p.steps.map((s) => [s.label, s.drug, s.desc, s.active]),
-    [["Step 1", "Avastin (3/eye)", "First line", false], ["Step 2", "Eylea 2mg (1/eye), Lucentis", "PA required", false], ["Step 3", "Vabysmo", "PA required", true]]);
-  assert.equal(p.priorSteps, "Steps 1–2");
-  assert.equal(stepPathway("No step therapy. PA required.", "Vabysmo", ["PA required"], ""), null);
-  assert.equal(stepPathway("Step therapy: Avastin first.", "Avastin", [], ""), null);   // Avastin is Step 1
-  assert.equal(stepPathway("Medicare Part B. No PA required.", "Eylea 2mg", ["No PA required"], ""), null);
-  assert.equal(stepPathway("Step 1: Avastin, Eylea, Vabysmo. Step 2: Beovu.", "Vabysmo", [], ""), null);   // in the Step 1 pool
-  const two = stepPathway("Step 1: Avastin x3/eye. Step 2: This drug. PA is per eye.", "Eylea 2mg", ["PA required"], "");
-  assert.deepEqual(two.steps.map((s) => [s.label, s.drug, s.desc, s.active]), [["Step 1", "Avastin (3/eye)", "First line", false], ["Step 2", "Eylea 2mg", "PA required (per eye)", true]]);
+test("step pathway comes from the server with each drug's real PA status (Avastin no PA vs PA)", () => {
+  const ok = cardSteps(CASES["commercial-pa-yellow"].cards[0]);
+  assert.deepEqual(ok.steps.map((st) => [st.n, st.pa, st.drugs.map((d) => [stepDrugText(d), paLabel(d.pa, d.name)])]), [
+    [1, "none", [["Avastin (3/eye)", "No PA needed"]]],
+    [2, "required", [["Eylea 2mg (1/eye)", "PA required"], ["Lucentis", "PA required"]]],
+    [3, "required", [["Vabysmo", "PA required"]]],
+  ]);
+  const pa = cardSteps(CASES["avastin-pa-yellow"].cards[0]);
+  assert.deepEqual(pa.steps.map((st) => [st.pa, st.drugs.map((d) => paLabel(d.pa, d.name))]),
+    [["required", ["PA required"]], ["mixed", ["PA required", "No PA needed"]], ["required", ["PA required"]]]);
+  assert.equal(paLabel("unknown", "Avastin"), "Check Avastin rule");   // never guessed
+  assert.equal(paLabel("unknown", "Lucentis"), "Check rule");
+  assert.equal(paLabel(undefined, "Eylea 2mg"), "Check rule");
+  assert.equal(cardSteps(CASES["medicare-green"].cards[0]), null);
+  assert.equal(cardSteps({ kind: "rule", steps: { steps: [] } }), null);
+});
+
+test("copied step line: one ASCII line with every drug's PA status; no Notes line in any copied block", () => {
+  const line = (k) => (copyableNoteText(parseResponse(CASES[k].after).note).match(/^Step therapy: .*$/m) || [""])[0];
+  assert.equal(line("commercial-pa-yellow"), "Step therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye or Lucentis (PA) > 3) Vabysmo (PA)");
+  assert.equal(line("avastin-pa-yellow"), "Step therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg x1/eye (PA) or Lucentis (no PA) > 3) Vabysmo (PA)");
+  for (const [k, c] of Object.entries(CASES)) {
+    const copied = copyableNoteText(parseResponse(c.after).note);
+    assert.doesNotMatch(copied, /^Notes:/m, k);
+    assert.doesNotMatch(copied, /Availity|fax 1-888/i, k);
+  }
+});
+
+test("screen card shows no rule notes (source guard)", () => {
+  const card = readFileSync(new URL("../src/CoverageCard.jsx", import.meta.url), "utf8");
+  assert.ok(!/c\.notes/.test(card), "the card must not render c.notes");
+  assert.match(card, /cardSteps\(c\)/);
+  assert.match(card, /paLabel\(d\.pa, d\.name\)/);
 });
 
 test("J-code box text and leading-emoji strip", () => {

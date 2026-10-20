@@ -2,7 +2,7 @@
 // The hub's coverage card looks like Retina-Rx's result card (retina-rx
 // public/index.html .result-card / buildCard): whole card tinted by tier, a solid
 // icon circle + status label + headline, requirement tags in Retina-Rx's colors,
-// the step-therapy pathway strip, small Drug / Plan boxes (no patient data), one
+// the step-therapy pathway strip (each drug with its real PA status; no rule notes), small Drug / Plan boxes (no patient data), one
 // billing-alert box with a single icon, Retina-Rx's dual-insurance banner, and a
 // yellow "No Data" card when the plan is not identified or no rule is on file.
 // Phone (max-width 600px): Retina-Rx's one-line status, the key requirement and the
@@ -11,7 +11,7 @@
 import { useState } from "react";
 import { T } from "./theme.js";
 import PhoneText from "./PhoneText.jsx";
-import { coverageTier, requirementTags, keyRequirement, jCodeText, stepPathway, stripLeadingSymbols } from "./lib/coverageCard.js";
+import { coverageTier, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stripLeadingSymbols } from "./lib/coverageCard.js";
 
 // Tier tone → [solid, soft, line] (Retina-Rx --green/--amber/--orange/--red + -soft/-line).
 const TONE = {
@@ -80,8 +80,10 @@ export const COVERAGE_CSS = `
 .cov-st-row{display:flex;align-items:stretch}
 .cov-st-step{flex:1 1 0;min-width:0;border-radius:8px;padding:8px 10px;border:1px solid}
 .cov-st-pill{display:inline-block;font-size:11px;font-weight:600;line-height:1.5;border-radius:999px;padding:0 8px;margin-bottom:5px;white-space:nowrap;color:#fff}
+.cov-st-drugs{display:flex;flex-direction:column;gap:4px}
+.cov-st-drugline{display:flex;flex-direction:column}
 .cov-st-drug{font-size:13px;font-weight:500;color:${T.ink};line-height:1.35;overflow-wrap:anywhere}
-.cov-st-desc{font-size:11.5px;margin-top:2px}
+.cov-st-desc{font-size:11.5px;margin-top:1px;font-weight:500}
 .cov-st-arrow{display:flex;align-items:center;color:${T.accentLine};font-size:16px;padding:0 6px}
 .cov-foot{padding:8px 18px;border-top:1px solid ${T.line};background:${T.surface};font-size:11.5px;color:${T.muted};display:flex;gap:8px;flex-wrap:wrap}
 .cov-foot b{font-weight:600;color:${T.ink2}}
@@ -103,8 +105,10 @@ export const COVERAGE_CSS = `
   .cov-st-arrow,.cov-st-word,.cov-st-here{display:none}
   .cov-st-step{display:flex;align-items:center;gap:9px;padding:7px 10px}
   .cov-st-pill{display:grid;place-items:center;flex:none;width:20px;height:20px;padding:0;margin:0;border-radius:50%}
+  .cov-st-drugs{flex:1 1 0;min-width:0}
+  .cov-st-drugline{flex-direction:row;align-items:baseline;gap:8px}
   .cov-st-drug{flex:1 1 0;min-width:0}
-  .cov-st-desc{flex:none;margin:0;text-align:right;max-width:45%}
+  .cov-st-desc{flex:none;margin:0;text-align:right;max-width:50%}
   .cov-boxes{display:flex;gap:8px}
   .cov-box{flex:1 1 0;min-width:0;background:${T.surface};border:1px solid ${T.line};border-radius:8px;padding:7px 10px}
   .cov-box span:first-child{display:block;font-size:11.5px;color:${T.muted}}
@@ -117,32 +121,45 @@ export const COVERAGE_CSS = `
 }
 `;
 
-// Retina-Rx step colors: no PA = green; each later PA step one yellow deeper.
+// Retina-Rx step colors: no PA = green; each later PA step one yellow deeper; unknown ("check") =
+// neutral grey; a step whose drugs differ = white box, each drug in its own color.
 const ST_YELLOWS = [
   { bg: "#FDF6DF", line: "#EEDFAE", pill: "#B08A1A", text: "#8A6D0B" },
   { bg: "#F8E7B0", line: "#E2C56A", pill: "#8A6D0B", text: "#6E5608" },
   { bg: "#F3D98A", line: "#D4AF3F", pill: "#725A08", text: "#5A4706" },
 ];
+const GREEN_STEP = { bg: T.greenSoft, line: T.greenLine, pill: T.green, text: T.green };
+const GREY_STEP = { bg: T.paper, line: T.line, pill: T.muted, text: T.muted };
+const MIXED_STEP = { bg: T.surface, line: T.line, pill: T.accent, text: T.ink2 };
+const PA_TEXT = { none: T.green, required: T.amber, unknown: T.muted };
 function Pathway({ path, drug }) {
   let paSeen = 0;
   const colors = path.steps.map((s) => {
-    if (!/pa required/i.test(s.desc)) return { bg: T.greenSoft, line: T.greenLine, pill: T.green, text: T.green };
-    const c = ST_YELLOWS[Math.min(paSeen, ST_YELLOWS.length - 1)]; paSeen++; return c;
+    if (s.pa === "none") return GREEN_STEP;
+    if (s.pa === "required") { const c = ST_YELLOWS[Math.min(paSeen, ST_YELLOWS.length - 1)]; paSeen++; return c; }
+    return s.pa === "mixed" ? MIXED_STEP : GREY_STEP;
   });
   return (
     <div className="cov-st" data-cov-pathway={path.steps.length}>
       <div className="cov-st-title">
-        Step Therapy Pathway{path.priorSteps && <> — <span style={{ color: T.red, fontWeight: 500 }}>Patient must complete {path.priorSteps} before {drug || "this drug"}</span></>}
+        Step Therapy Pathway{path.priorSteps && <> — <span style={{ color: T.red, fontWeight: 500 }}>Patient must complete {path.priorSteps.replace("-", "–")} before {drug || "this drug"}</span></>}
       </div>
       <div className="cov-st-row">
         {path.steps.map((s, i) => (
           <div key={i} style={{ display: "contents" }}>
-            <div className="cov-st-step" style={{ background: colors[i].bg, borderColor: colors[i].line, ...(s.active ? { outline: `2px solid ${T.accent}`, outlineOffset: 1 } : {}) }}>
+            <div className="cov-st-step" data-cov-step-pa={s.pa} style={{ background: colors[i].bg, borderColor: colors[i].line, ...(s.active ? { outline: `2px solid ${T.accent}`, outlineOffset: 1 } : {}) }}>
               <div className="cov-st-pill" style={{ background: colors[i].pill }}>
-                <span className="cov-st-word">Step </span>{s.label.replace(/^Step\s*/, "")}{s.active && <span className="cov-st-here"> ←</span>}
+                <span className="cov-st-word">Step </span>{s.n || s.label.replace(/^Step\s*/, "")}{s.active && <span className="cov-st-here"> ←</span>}
               </div>
-              <div className="cov-st-drug">{s.drug}</div>
-              <div className="cov-st-desc" style={{ color: colors[i].text }}>{s.desc}</div>
+              {/* Every drug shows its own PA status (Mari, 1:56 PM: "whether a PA is needed for that particular drug or not"). */}
+              <div className="cov-st-drugs">
+                {s.drugs.map((d, j) => (
+                  <div key={j} className="cov-st-drugline" data-cov-drug-pa={d.pa}>
+                    <span className="cov-st-drug">{stepDrugText(d)}</span>
+                    <span className="cov-st-desc" style={{ color: s.pa === "mixed" ? PA_TEXT[d.pa] || T.muted : colors[i].text }}>{paLabel(d.pa, d.name)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             {i < path.steps.length - 1 && <div className="cov-st-arrow" aria-hidden="true">→</div>}
           </div>
@@ -159,7 +176,7 @@ export default function CoverageCard({ card, dualNote }) {
   const tier = coverageTier(c);
   const [solid, soft, line] = TONE[tier.tone] || TONE.amber;
   const isRule = c.kind === "rule";
-  const path = isRule ? stepPathway(c.notes, c.drug, c.requirements, c.billing_alert) : null;
+  const path = isRule ? cardSteps(c) : null;   // server-built, each drug with its real PA status
   const tags = isRule ? requirementTags(c, !!path) : [];
   const keyReq = keyRequirement(tags);
   const jText = jCodeText(c);
@@ -239,14 +256,13 @@ export default function CoverageCard({ card, dualNote }) {
           </div>
         )}
         <button type="button" className="cov-more-btn" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-          {open ? "Less" : "More: drug, plan, requirements, notes"} <span className="cov-caret">▾</span>
+          {open ? "Less" : "More: drug, plan, requirements"} <span className="cov-caret">▾</span>
         </button>
         <div className="cov-more">
           {ctx}
           {tags.length > 0 && (
             <div className="cov-tags">{tags.map((t, i) => <span key={i} className={`cov-tag ${t.cls}`} data-cov-tag={t.cls}><PhoneText text={t.text} /></span>)}</div>
           )}
-          {isRule && c.notes && <p className="cov-notes"><PhoneText text={c.notes} /></p>}
           {dualNote && <div className="cov-dualnote">{dualNote}</div>}
         </div>
       </div>
