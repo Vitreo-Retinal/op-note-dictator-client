@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { NEXTGEN_URL } from "./hubData.js";
+import { NEXTGEN_URL, UMASS_EPIC_URL, UMASS_EPIC_TIP } from "./hubData.js";
 import { AICodingAssistant } from "./CptReference.jsx";
 import RateComparison from "./RateComparison.jsx";
 import PatientEducation from "./PatientEducation.jsx";
@@ -1268,11 +1268,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             </div>
             {phone && <span style={{ flexShrink: 0, marginTop: 4, fontSize: 11.5, fontWeight: 600, color: T.amber, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: 999, padding: "2px 8px", whiteSpace: "nowrap" }}>No PHI</span>}
             {/* NextGen (desktop only, per Mari Oct 2026): opens the AWS remote-desktop sign-in in a new tab. Nothing passes through the hub. */}
+            {/* UMass Epic (Mari Oct 20 2026): UMass "FollowMe Desktop" sign-in, beside NextGen. */}
             {!phone && (
-              <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in) in a new tab"
-                style={{ marginLeft: "auto", marginTop: 4, display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
-                NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
-              </a>
+              <div style={{ marginLeft: "auto", marginTop: 4, display: "flex", gap: 8, flexShrink: 0 }}>
+                <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in) in a new tab"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                  NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                </a>
+                <a href={UMASS_EPIC_URL} target="_blank" rel="noopener noreferrer" title={UMASS_EPIC_TIP}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                  UMass Epic <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                </a>
+              </div>
             )}
             </div>
 
@@ -1318,10 +1325,16 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 </span>
                 {/* NextGen (phone, per Mari Oct 2026): same remote-desktop sign-in link as desktop, beside where the note is typed. */}
                 {!isRecording && (
-                  <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in)"
-                    style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5, height: 34, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
-                    NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
-                  </a>
+                  <div style={{ marginLeft: "auto", display: "flex", gap: 6, flexShrink: 0 }}>
+                    <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in)"
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 34, padding: "0 10px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                    </a>
+                    <a href={UMASS_EPIC_URL} target="_blank" rel="noopener noreferrer" title={UMASS_EPIC_TIP}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 34, padding: "0 10px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      UMass <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                    </a>
+                  </div>
                 )}
               </div>
             )}
