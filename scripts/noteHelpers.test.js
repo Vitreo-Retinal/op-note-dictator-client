@@ -246,13 +246,13 @@ test("copy output is byte-identical with or without coverage cards / dualNote (c
   assert.ok(!copied.includes(DUAL_NOTE));
 });
 
-test("dualNote is rendered only inside renderCoverageJsonCard — no copy path reads it", () => {
+test("dualNote is rendered only inside the coverage card (src/CoverageCard.jsx) — no copy path reads it", () => {
+  // Oct 20 2026: the card moved to src/CoverageCard.jsx; ClinicNoteGenerator only hands it the notes.
   const src = readFileSync(new URL("../src/ClinicNoteGenerator.jsx", import.meta.url), "utf8");
-  const start = src.indexOf("function renderCoverageJsonCard(");
-  const end = src.indexOf("\n  }\n", start);
-  assert.ok(start > 0 && end > start);
-  const outside = src.slice(0, start) + src.slice(end);
-  assert.ok(!/dualNote/.test(outside.replace(/renderCoverageJsonCard\(c, i, notes\[i\]\)/, "")), "dualNote used outside the card renderer");
+  assert.ok(!/dualNote/.test(src), "dualNote used in ClinicNoteGenerator");
+  assert.match(src, /<CoverageCards cards=\{result\.coverage\} notes=\{coverageCardNotes\(result\.coverage\)\} \/>/);
+  const card = readFileSync(new URL("../src/CoverageCard.jsx", import.meta.url), "utf8");
+  assert.ok(!/clipboard|writeText|copyableNoteText/.test(card), "the card never copies");
   for (const fn of ["const copyNote = useCallback", "const copyHpi = useCallback"]) {
     const a = src.indexOf(fn);
     const body = src.slice(a, src.indexOf("}, [", a));

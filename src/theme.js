@@ -19,10 +19,22 @@ export const T = {
   goldSoft: "#F4E3A7",
   amber: "#8A6D0B",       // warnings
   amberSoft: "#FBF3DC",
+  amberLine: "#F4E3A7",
   red: "#B04A3B",         // errors, recording
   redSoft: "#F8E7E4",
+  redLine: "#EBC1BA",
   green: "#2E6B47",       // success
   greenSoft: "#E6F3EA",
+  greenLine: "#B9DCC5",
+  // Oct 20 2026 (Mari): Retina-Rx's tier + tag colors (retina-rx public/index.html :root),
+  // so the hub coverage card matches Retina-Rx. Orange = partial coverage (never amber);
+  // plum = PCP referral (a plan rule, not a drug rule).
+  orange: "#A0521D",
+  orangeSoft: "#FBEBDD",
+  orangeLine: "#EFC9A8",
+  plum: "#5B3F80",
+  plumSoft: "#EFE9F6",
+  plumLine: "#C9B8DC",
   onAccent: "#FFFFFF",    // text on a solid accent / red / green / amber fill
   sans: '"IBM Plex Sans", system-ui, sans-serif',
   mono: '"IBM Plex Mono", ui-monospace, Menlo, monospace',
@@ -71,7 +83,7 @@ export const S = {
   amber: T.amber,
   yellow: T.amber,
   red: T.red,
-  orange: T.amber,
+  orange: T.orange,      // Oct 20 2026: its own color (was amber)
   blue: T.accent,        // RateComparison
   gray: T.muted,         // RateComparison
   font: T.sans,
@@ -124,6 +136,8 @@ const TONES = {
   green: [T.greenSoft, T.green, T.green],
   amber: [T.amberSoft, T.amber, T.gold],
   red: [T.redSoft, T.red, T.red],
+  orange: [T.orangeSoft, T.orange, T.orangeLine],
+  plum: [T.plumSoft, T.plum, T.plumLine],
   gold: [T.goldSoft, T.goldInk, T.gold],
   muted: [T.paper, T.muted, T.line],
 };

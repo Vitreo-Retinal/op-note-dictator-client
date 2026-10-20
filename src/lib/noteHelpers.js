@@ -1,3 +1,4 @@
+import { asciiFold, COVERAGE_FENCE_RX } from "./coverageCard.js";
 // ── Response parser ─────────────────────────────────────────────────
 function parseResponse(text) {
   const sec = (a, b) => {
@@ -202,11 +203,16 @@ function copyableIcdText(codes) {
   return (Array.isArray(codes) ? codes : []).filter(c => !isIcdWarning(c)).map(c => `${c.code} — ${c.description}`).join("\n");
 }
 
-// ── "Copy note" text (unchanged since Sep 2026) ──────────────────────────────
+// ── "Copy note" text ─────────────────────────────────────────────────────────
 // What goes on the clipboard for NextGen/Epic: the note with the "[+] " billing badges
-// and any markdown "**" removed — nothing else. Display formatting below never touches it.
+// and any markdown "**" removed. Display formatting below never touches it.
+// Oct 20 2026 (owner decision B): the COVERAGE REFERENCE block(s) — and only those —
+// also get an ASCII fold (no emoji / em dashes / box-drawing rulers that NextGen shows
+// as "?"). The server already sends them ASCII; this is the defensive second pass, and
+// it also cleans blocks from an older server. The rest of the note is never altered.
 function copyableNoteText(note) {
-  return String(note == null ? "" : note).replace(/\[\+\]\s*/g, "").replace(/\*\*/g, "");
+  const text = String(note == null ? "" : note).replace(/\[\+\]\s*/g, "").replace(/\*\*/g, "");
+  return text.replace(new RegExp(COVERAGE_FENCE_RX.source, "g"), (block) => asciiFold(block));
 }
 
 // ── Bold diagnosis headers — SCREEN ONLY (owner, Oct 12 2026) ────────────────

@@ -7,6 +7,8 @@ import DropSchedule from "./DropSchedule.jsx";
 import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 import PhoneText from "./PhoneText.jsx";
+import { CoverageCards } from "./CoverageCard.jsx";
+import { COVERAGE_FENCE_RX, reqTagClass } from "./lib/coverageCard.js";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, noteDisplayLines, coverageCardNotes } from "./lib/noteHelpers.js";
 import { majorHoliday, halfDayNote, parseLocalNoon, injectionBlackout } from "./lib/practiceCalendar.js";
@@ -800,19 +802,23 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // ── Coverage reference display (Phase 2 redesign, display only) ──────
   // The server (routes/notes.js renderCoverageBlock / renderBiosimilarBlock /
   // renderAmbiguousInsuranceBlock) appends each coverage block to the END of the
-  // note text, fenced by a line of "─" characters. Here we only split it out to
+  // note text, fenced by a line of "=" characters (Oct 20 2026: plain ASCII, so it
+  // pastes into NextGen; older servers used "─"). Here we only split it out to
   // render as a card; result.note itself (and copyNote) are untouched. If the
   // fence isn't found, the whole note renders exactly as before.
   function splitCoverage(text) {
     if (!text) return { body: text, blocks: [] };
-    const rx = /\n*─{10,}\n([\s\S]*?)\n─{10,}/g;
+    const rx = new RegExp(COVERAGE_FENCE_RX.source, "g");   // src/lib/coverageCard.js — same fence the copy fold uses
     const blocks = [];
     const body = text.replace(rx, (_, inner) => { blocks.push(inner); return ""; });
     if (blocks.length === 0) return { body: text, blocks: [] };
     return { body: body.replace(/\s+$/, ""), blocks };
   }
 
-  const statusTone = (v) => /\bGREEN\b/i.test(v) ? "green" : /\b(YELLOW|ORANGE)\b/i.test(v) ? "amber" : /\bRED\b/i.test(v) ? "red" : "muted";
+  // Status words: Oct 20 2026 server text ("APPROVED - …", "VERIFY FIRST - …", "PARTIAL COVERAGE - …",
+  // "NOT COVERED - …") and the older color words (GREEN / YELLOW / ORANGE / RED).
+  const statusTone = (v) => /\b(GREEN|APPROVED)\b/i.test(v) ? "green" : /\b(ORANGE|PARTIAL)\b/i.test(v) ? "orange"
+    : /\b(YELLOW|VERIFY|NO DATA)\b/i.test(v) ? "amber" : /\b(RED|NOT COVERED)\b/i.test(v) ? "red" : "muted";
 
   function renderCoverageCard(block, key) {
     const lines = String(block).split("\n").map(l => l.trim()).filter(Boolean);
@@ -820,11 +826,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     const rows = [];   // [label, value]
     const plain = [];  // lines that aren't "Label: value"
     for (const line of lines) {
-      const head = line.match(/^📋\s*COVERAGE REFERENCE\s*—\s*(.*)$/);
+      const head = line.match(/^(?:📋\s*)?COVERAGE REFERENCE\s*[—-]\s*(.*)$/);
       if (head) { meta = head[1]; continue; }
       const kv = line.match(/^(?:⚡\s*)?([A-Z][A-Za-z ]{1,24}):\s+(.*)$/);
       if (kv) rows.push([kv[1], kv[2]]);
-      else plain.push(line.replace(/^ℹ️\s*/, ""));
+      else plain.push(line.replace(/^(?:ℹ️|Info:)\s*/, ""));
     }
     return (
       <div key={key} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 12 }}>
@@ -846,7 +852,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
               value = (
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {items.map((it, j) => (
-                    <span key={j} style={chip(/not required|^no\b/i.test(it) ? "green" : "accent", { fontSize: 12, padding: "2px 10px", borderRadius: T.r })}>{it}</span>
+                    <span key={j} style={chip(reqTagClass(it) === "pa-no" ? "green" : "accent", { fontSize: 12, padding: "2px 10px", borderRadius: T.r })}>{it}</span>
                   ))}
                 </div>
               );
@@ -863,102 +869,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     );
   }
 
-  // ── Structured coverage card (Oct 2026) — renders one entry of the server's
-  // data.coverage array (routes/notes.js ruleCard / biosimilarCard / ambiguousCard).
-  // Strings are shown verbatim; when result.coverage is absent the text parser
-  // above (renderCoverageCard) is used instead.
-  const COV_STATUS = { green: ["Green", "green"], yellow: ["Yellow", "amber"], orange: ["Orange", "amber"], red: ["Red", "red"] };
-  const reqTag = (r) => /prior auth/i.test(r) || /\bPA required\b/i.test(r) ? "Prior auth"
-    : /step therapy|step [0-9]|first-line|trial of|must try|before/i.test(r) ? "Step therapy" : null;
-
-  // Oct 19 2026: dual insurance follows Retina-Rx (server lib/dual-coverage.js) —
-  // one card per Retina-Rx card, carrying Retina-Rx's banner sentence (c.banner).
-  const BANNER_TONE = { info: "accent", green: "green", yellow: "amber", orange: "amber", red: "red" };
-  function renderCoverageJsonCard(c, key, dualNote) {
-    const muted = { fontSize: 12, color: T.muted, minWidth: 0 };
-    const subs = [];
-    const pair = c.primary && c.secondary ? `Primary: ${c.primary} / Secondary: ${c.secondary}` : null;
-    if (c.kind === "rule") {
-      if (c.carrierLevel && c.ambiguousAlias) subs.push(`("${c.ambiguousAlias}" matches ${c.planCount} ${c.carrier} plans — merged; specify the plan for exact rules)`);
-      else if (c.carrierLevel) subs.push(`(plan not specified — merged across ${c.planCount} plans)`);
-      if (pair) subs.push(pair);
-      else if (c.isCombinedRule) subs.push(`Primary: ${c.insurance} / Secondary: ${c.secondaryInsurance}`);
-      else if (c.secondaryInsurance && !c.carrierLevel) subs.push(`(Secondary: ${c.secondaryInsurance} — no combined rule found, showing primary only)`);
-    } else if (pair) {
-      subs.push(pair);
-    }
-    const meta = c.kind === "rule"
-      ? `${c.drug} · ${(c.carrierLevel ? c.carrier : c.insurance) || c.carrier || ""}`
-      : c.kind === "biosimilar" ? `${c.drug} (biosimilar) · ${c.label || ""}`
-      : c.kind === "invalid" ? c.drug
-      : `${c.drug} · "${c.alias || ""}"`;
-    const [statusWord, statusTone] = COV_STATUS[c.status] || ["Unknown", "muted"];
-    const reqs = Array.isArray(c.requirements) ? c.requirements : [];
-    const banner = c.banner && typeof c.banner.text === "string" && c.banner.text.trim() ? c.banner : null;
-    const alerts = String(c.billing_alert || "").split("\n").map(s => s.trim()).filter(Boolean);
-    return (
-      <div key={key} style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, marginTop: 12 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap", padding: "10px 16px", borderBottom: `1px solid ${T.line}` }}>
-          <div style={{ fontSize: 14, color: T.accent, fontWeight: 600 }}>Coverage check</div>
-          {/* Oct 19 2026 (Mari): the coverage text is part of result.note, so Copy note carries it into NextGen/Epic — say so on screen. */}
-          <div style={{ fontSize: 11.5, color: T.muted, fontStyle: "italic" }}>Included when you copy the note</div>
-          <div style={muted}>{meta}</div>
-          {subs.map((s, i) => <div key={i} style={muted}>{s}</div>)}
-          {c.kind === "rule" && (
-            <span style={chip(statusTone, { fontSize: 12, padding: "2px 10px", marginLeft: "auto", alignSelf: "center" })}>{statusWord}</span>
-          )}
-        </div>
-        <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
-          {/* Retina-Rx's banner sentence (dual insurance). Also a line of the copied coverage text. */}
-          {banner && (
-            <div data-cov-banner={banner.tone} style={chip(BANNER_TONE[banner.tone] || "accent", {
-              display: "block", borderRadius: T.r, padding: "8px 12px", fontSize: 13, lineHeight: 1.5,
-              fontWeight: c.kind === "invalid" ? 600 : 500 })}>
-              <PhoneText text={banner.text} />
-            </div>
-          )}
-          {c.kind === "rule" && reqs.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ fontSize: 12.5, color: T.muted }}>Requirements</div>
-              {reqs.map((r, i) => {
-                const tag = reqTag(String(r));
-                return (
-                  <div key={i} style={tag ? { borderLeft: `3px solid ${T.accent}`, paddingLeft: 10 } : { paddingLeft: 13 }}>
-                    {tag && <div style={{ fontSize: 11.5, fontWeight: 600, color: T.accent, marginBottom: 1 }}>{tag}</div>}
-                    <div style={{ display: "flex", gap: 8, alignItems: "baseline", fontSize: 13.5, lineHeight: 1.5, color: T.ink }}>
-                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.accent, flexShrink: 0, transform: "translateY(-2px)" }} />
-                      <span style={{ minWidth: 0 }}><PhoneText text={String(r)} /></span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          {c.kind === "rule" && c.notes && (
-            <p style={{ margin: 0, fontSize: 13, color: T.ink2, lineHeight: 1.5 }}><PhoneText text={c.notes} /></p>
-          )}
-          {c.kind === "rule" && alerts.map((a, i) => (
-            <div key={`ba${i}`} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "8px 12px", borderRadius: T.r, fontSize: 13, lineHeight: 1.5, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, color: T.amber }}>
-              <span style={{ marginTop: 1, flexShrink: 0 }}><AlertIcon /></span>
-              <div style={{ minWidth: 0 }}><b style={{ fontWeight: 600 }}>Billing alert:</b> <PhoneText text={a} /></div>
-            </div>
-          ))}
-          {c.kind !== "rule" && c.message && !(banner && c.message === banner.text) && (
-            <div style={{ fontSize: 13.5, color: T.ink, lineHeight: 1.5 }}><PhoneText text={c.message} /></div>
-          )}
-          {c.kind === "ambiguous" && Array.isArray(c.plans) && c.plans.length > 0 && (
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {c.plans.map((pl, i) => <span key={i} style={chip("muted", { fontSize: 12, padding: "2px 10px" })}>{pl}</span>)}
-            </div>
-          )}
-          {/* Oct 17 2026: dual coverage, no combined rule — screen only, never copied */}
-          {dualNote && (
-            <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.45 }}>{dualNote}</div>
-          )}
-        </div>
-      </div>
-    );
-  }
+  // ── Structured coverage card — src/CoverageCard.jsx (Oct 20 2026, owner decision A):
+  // Retina-Rx's result card look, one card per entry of the server's data.coverage
+  // array (routes/notes.js ruleCard / dual cards / biosimilar / ambiguous / invalid).
+  // When result.coverage is absent (older server) the text parser above is used instead.
 
   // Code chip in the note's codes strip (mockup .code)
   const codeChip = (extra = {}) => ({
@@ -1839,7 +1753,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
 
                 {/* Coverage reference(s) — server appends these to the note text */}
                 {Array.isArray(result.coverage) && result.coverage.length > 0
-                  ? (() => { const notes = coverageCardNotes(result.coverage); return result.coverage.map((c, i) => renderCoverageJsonCard(c, i, notes[i])); })()
+                  ? <CoverageCards cards={result.coverage} notes={coverageCardNotes(result.coverage)} />
                   : coverageBlocks.map((blk, i) => renderCoverageCard(blk, i))}
 
                 {/* Coding additions */}
