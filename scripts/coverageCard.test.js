@@ -112,6 +112,26 @@ test("copied step line: one ASCII line with every drug's PA status; no Notes lin
   }
 });
 
+test("copied block format (Mari, Oct 20 2026, 2:11 PM): header + ONE coverage line (+ step line), nothing else", () => {
+  const want = {
+    "medicare-green": ["COVERAGE REFERENCE - Eylea 2mg / Medicare", "No PA required"],
+    "commercial-pa-yellow": ["COVERAGE REFERENCE - Vabysmo / BCBS MA PPO", "PA required",
+      "Step therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye or Lucentis (PA) > 3) Vabysmo (PA)"],
+    "dual-medigap": ["COVERAGE REFERENCE - Eylea 2mg / Medicare", "No PA required"],
+    "unknown-plan": ["COVERAGE REFERENCE - Eylea 2mg / \"united healthcare\"", "Plan not identified - check"],
+    "masshealth-red": ["COVERAGE REFERENCE - Eylea 8mg (HD) / MassHealth Standard", "Not covered"],
+    "avastin-pa-yellow": ["COVERAGE REFERENCE - Vabysmo / Example Commercial PPO", "PA required",
+      "Step therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg x1/eye (PA) or Lucentis (no PA) > 3) Vabysmo (PA)"],
+    "dual-masshealth-aco": ["COVERAGE REFERENCE - Avastin / Humana Medicare PPO", "No PA required"],
+  };
+  for (const [k, lines] of Object.entries(want)) {
+    const block = blocksOf(copyableNoteText(parseResponse(CASES[k].after).note))[0];
+    const R = "=======================================";
+    assert.equal(block.trim(), [R, ...lines, R].join("\n"), k);
+    assert.match(block, ASCII_ONLY, k);
+  }
+});
+
 test("screen card shows no rule notes (source guard)", () => {
   const card = readFileSync(new URL("../src/CoverageCard.jsx", import.meta.url), "utf8");
   assert.ok(!/c\.notes/.test(card), "the card must not render c.notes");
