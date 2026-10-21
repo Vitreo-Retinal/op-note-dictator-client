@@ -47,15 +47,19 @@ export function coverageTier(card) {
  * Negations are tested first, so "No PA required" is never tagged as prior auth
  * (the hub's old reqTag bug, and Retina-Rx's /^no prior auth/ miss).
  */
+// ONE no-PA rule shared with Retina-Rx (public/index.html NO_PA_RX) and the hub server (lib/step-pathway.js
+// NO_PA_RX); keep the three identical (Oct 21 2026). Real DB wordings it must catch: "No PA required",
+// "No PA required — Medigap plan", "No prior authorization required", "No PA typically required for Avastin",
+// "Covered under Medicare Part B — no PA required" (that last one used to tag yellow here: it does not START with "no").
+export const NO_PA_RX = /\bno\s+(?:typically\s+)?(?:pa|prior\s+auth(?:orization)?|precert(?:ification)?|auth(?:orization)?)\b|\b(?:pa|prior\s+auth(?:orization)?|precert(?:ification)?|auth(?:orization)?)\s+(?:is\s+)?not\s+(?:required|needed)\b/i;
+
 export function reqTagClass(text) {
   const r = String(text || "").trim();
   if (/\b(?:out[- ]of[- ]network|not covered|non[- ]?covered|excluded)\b/i.test(r)) return "oon";
   if (/\breferral\b/i.test(r)) {
     return /\b(?:no|not)\b[^.]*\breferral\b|\breferral\b[^.]*\bnot (?:required|needed)\b/i.test(r) ? "ref-no" : "ref-yes";
   }
-  if (/^\s*no\b[^.]*\b(?:pa|prior auth(?:orization)?|precert(?:ification)?|auth(?:orization)?)\b/i.test(r)
-    || /\b(?:pa|prior auth(?:orization)?|precert(?:ification)?|auth(?:orization)?)\s+(?:is\s+)?not\s+(?:required|needed)\b/i.test(r)
-    || /^\s*no\s+(?:pa|prior auth)/i.test(r)) return "pa-no";
+  if (NO_PA_RX.test(r)) return "pa-no";
   if (/\b(?:pa|prior auth(?:orization)?|precert(?:ification)?)\b/i.test(r)) return "pa-yes";
   if (/\bstep\s*therapy\b|\bstep\s*[0-9]\b|\bmust (?:trial|try|fail)\b/i.test(r)) return "pa-yes";
   return "info";

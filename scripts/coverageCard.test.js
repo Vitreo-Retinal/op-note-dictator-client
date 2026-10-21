@@ -45,9 +45,13 @@ test("copy fold never touches non-ASCII outside the coverage block", () => {
 });
 
 test("requirement tags: 'No PA required' is no-PA (green), never 'Prior auth' (owner decision C)", () => {
-  for (const r of ["No PA required", "No PA needed", "No prior authorization required", "No prior auth", "PA not required", "Prior auth not required", "no pa required"])
+  for (const r of ["No PA required", "No PA needed", "No prior authorization required", "No prior auth", "PA not required", "Prior auth not required", "no pa required",
+    // Oct 21 2026: the shared rule (same as Retina-Rx and the hub server) + the real DB wordings
+    "No PA", "PA is not needed", "No PA required — Medigap plan", "No PA typically required for Avastin", "No PA required for Avastin",
+    "Covered under Medicare Part B — no PA required"])
     assert.equal(reqTagClass(r), "pa-no", r);
-  for (const r of ["PA required", "PA required (per eye)", "Prior authorization required", "Precert required", "Step therapy"])
+  for (const r of ["PA required", "PA required (per eye)", "Prior authorization required", "Precert required", "Step therapy",
+    "Prior auth required", "PA required for all drugs", "PA required for Eylea HD", "PA may be required", "Prior Authorization"])
     assert.equal(reqTagClass(r), "pa-yes", r);
   assert.equal(reqTagClass("PCP referral required"), "ref-yes");
   assert.equal(reqTagClass("Referral required"), "ref-yes");
