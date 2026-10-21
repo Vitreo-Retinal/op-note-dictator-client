@@ -199,7 +199,8 @@ test("source guard: every copy path writes the same text as before; display help
   assert.equal((src.match(/noteDisplayLines\(/g) || []).length, 1, "only renderNote uses the display lines");
   assert.match(src, /const text = copyableIcdText\(icd10Codes\);/);
   assert.match(src, /writeText\(pbmNote\)/);
-  assert.match(src, /phoneFooter\(\(\) => \{ setTab\("input"\); setResult\(null\); \}, "New note", copyNote, copied\)/);
+  // Oct 21 2026: "New note" goes through newNote() (sends a typed flag first); the copy half is unchanged.
+  assert.match(src, /phoneFooter\(newNote, "New note", copyNote, copied\)/);
   // Every clipboard write in the component is one of the known, unchanged paths.
   const writes = [...src.matchAll(/writeText\(([^)]*)\)/g)].map((m) => m[1]);
   assert.deepEqual(writes.sort(), ["clean", "clean", "pbmNote", "text"].sort());

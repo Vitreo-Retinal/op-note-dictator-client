@@ -16,6 +16,7 @@ import { fuTargetYmdOf, fuCalReason as fuCalReasonOf } from "./lib/fuWindow.js";
 import { useFuWindow, FuSiteNodes, FuSuggestions, fuReasonColor } from "./FuSuggestions.jsx";
 import { supabase } from "./supabaseClient.js";
 import { COVERAGE_URL, isLeaPath } from "./lib/retinaRx.js";
+import { flagPayload, pendingFlagToSend, sendNoteFlag, flagErrorText, upsertFlagFailure, removeFlagFailure, markFlagFailureSending } from "./lib/noteFlag.js";
 import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, input, RESPONSIVE_CSS, doctorColor } from "./theme.js";
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
@@ -182,7 +183,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const [flagOpen, setFlagOpen] = useState(false);
   const [flagReason, setFlagReason] = useState("");
   const [flagSending, setFlagSending] = useState(false);
-  const [flagErr, setFlagErr] = useState("");
+  // Oct 21 2026 (Mari lost a flag): failed sends stay on screen until dismissed or a
+  // retry works — one entry per note id: { noteId, reason, message, sending }.
+  const [flagFails, setFlagFails] = useState([]);
+  const [flagNotice, setFlagNotice] = useState(false); // brief "previous note flagged" confirmation
+  const flagNoticeTimer = useRef(null);
+  const flagInFlightRef = useRef(new Set());  // note ids with a send in flight (no duplicate request)
+  const resultNoteIdRef = useRef(null);       // the note on screen right now (async callbacks compare against it)
+  const pendingFlagRef = useRef(null);        // the typed-but-unsent flag, for the unmount send below
   const [copiedCodes, setCopiedCodes] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -643,8 +651,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   async function run(editInstruction) {
     const edit = typeof editInstruction === "string" ? editInstruction.trim() : "";
     if (!note.trim()) return;
+    sendPendingFlag(); // typed flag for the note being replaced goes out first (not awaited)
     setLoading(true); setError(""); setResult(null);
-    setFlagOpen(false); setFlagReason(""); setFlagErr("");
+    setFlagOpen(false); setFlagReason("");
     try {
       // System prompt now lives server-side (server/prompts/note-generator-prompt.js, July 2026).
       // The server builds it from mode + examples + customInstructions sent below.
@@ -709,28 +718,69 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     }
   }
   // ── Flag for review (shadow coder v1, Oct 2026) ── codes/modifiers only, no PHI.
+  // Oct 21 2026: delivery lives in src/lib/noteFlag.js (one auto-retry on a network
+  // failure, none on a 4xx/5xx). Every failure lands in flagFails and stays visible.
+  resultNoteIdRef.current = result?.noteId || null;
+  pendingFlagRef.current = pendingFlagToSend({
+    noteId: result?.noteId, flagOpen, flagReason, flagged: !!result?.flagged,
+    sending: !!(result?.noteId && flagInFlightRef.current.has(result.noteId)),
+  });
+
+  async function deliverFlag(noteId, reason) {
+    flagInFlightRef.current.add(noteId);
+    const out = await sendNoteFlag({ noteId, reason }, { url: `${API_BASE}/api/note-flag` });
+    flagInFlightRef.current.delete(noteId);
+    if (out.ok) {
+      setFlagFails((l) => removeFlagFailure(l, noteId));
+      setResult((r) => (r && r.noteId === noteId ? { ...r, flagged: true } : r));
+      if (resultNoteIdRef.current !== noteId) { // a note that is no longer on screen
+        setFlagNotice(true);
+        clearTimeout(flagNoticeTimer.current);
+        flagNoticeTimer.current = setTimeout(() => setFlagNotice(false), 5000);
+      }
+    } else {
+      setFlagFails((l) => upsertFlagFailure(l, { noteId, reason, message: flagErrorText(out) }));
+    }
+    return out;
+  }
+
   async function sendFlag() {
     if (!result?.noteId || flagSending) return;
-    setFlagSending(true); setFlagErr("");
-    try {
-      const res = await fetch(`${API_BASE}/api/note-flag`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ noteId: result.noteId, reason: flagReason.trim().slice(0, 140) }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (data.ok) {
-        setResult((r) => (r ? { ...r, flagged: true } : r));
-        setFlagOpen(false); setFlagReason("");
-      } else {
-        setFlagErr("Couldn't flag this note — try again.");
-      }
-    } catch {
-      setFlagErr("Couldn't flag this note — try again.");
-    } finally {
-      setFlagSending(false);
-    }
+    const { noteId, reason } = flagPayload(result.noteId, flagReason);
+    setFlagSending(true);
+    await deliverFlag(noteId, reason);
+    setFlagSending(false);
+    // Success → the chip shows. Failure → the red banner keeps the reason, with Try again.
+    if (resultNoteIdRef.current === noteId) { setFlagOpen(false); setFlagReason(""); }
   }
+
+  // Before anything replaces the note on screen: an open flag box with typed text is
+  // sent for THAT note (same request as Send). Fire and continue — never blocks.
+  function sendPendingFlag() {
+    const p = pendingFlagRef.current;
+    if (p) deliverFlag(p.noteId, p.reason);
+  }
+
+  function retryFlag(f) {
+    if (f.sending || flagInFlightRef.current.has(f.noteId)) return;
+    setFlagFails((l) => markFlagFailureSending(l, f.noteId, true));
+    deliverFlag(f.noteId, f.reason);
+  }
+
+  // "← New note" (desktop header and phone footer).
+  function newNote() {
+    sendPendingFlag();
+    setFlagOpen(false); setFlagReason("");
+    setTab("input"); setResult(null);
+  }
+
+  // Leaving the page (Back to hub/doctors, phone tab bar) unmounts this screen:
+  // a typed flag still goes out. Nothing can be shown afterwards, so this is best effort.
+  useEffect(() => () => {
+    clearTimeout(flagNoticeTimer.current);
+    const p = pendingFlagRef.current;
+    if (p) sendNoteFlag(p, { url: `${API_BASE}/api/note-flag` });
+  }, []);
 
   runRef.current = run; // lets the dictation pipeline auto-trigger a regenerate with a spoken edit
 
@@ -959,24 +1009,41 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   );
   const flagForm = () => (
     <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: phone ? "8px 14px" : "8px 12px 8px 16px", borderBottom: `1px solid ${T.line}`, background: T.paper, fontSize: 13 }}>
-      {flagOpen && (
-        <>
-          <input
-            value={flagReason}
-            onChange={(e) => setFlagReason(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") sendFlag(); if (e.key === "Escape") setFlagOpen(false); }}
-            maxLength={140}
-            placeholder="What's off? Codes/modifiers only — no patient names"
-            autoFocus
-            style={input({ flex: 1, minWidth: 200 })}
-          />
-          <button onClick={sendFlag} disabled={flagSending} style={btnSm("secondary", phoneBtn)}>{flagSending ? "Sending…" : "Send"}</button>
-          <button onClick={() => { setFlagOpen(false); setFlagErr(""); }} style={btnSm("ghost", phoneBtn)}>Cancel</button>
-        </>
-      )}
-      {flagErr && <span style={{ color: T.red, fontSize: 12 }}>{flagErr}</span>}
+      <input
+        value={flagReason}
+        onChange={(e) => setFlagReason(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") sendFlag(); if (e.key === "Escape") setFlagOpen(false); }}
+        maxLength={140}
+        placeholder="What's off? Codes/modifiers only — no patient names"
+        autoFocus
+        style={input({ flex: 1, minWidth: 200 })}
+      />
+      <button onClick={sendFlag} disabled={flagSending} style={btnSm("secondary", phoneBtn)}>{flagSending ? "Sending…" : "Send"}</button>
+      <button onClick={() => setFlagOpen(false)} style={btnSm("ghost", phoneBtn)}>Cancel</button>
     </div>
   );
+  // Oct 21 2026: a flag that did not save. Same red as the Input tab's error box.
+  // In the note card for the note on screen; at the top of the page for an older note.
+  const flagFailBanner = (f, inCard) => (
+    <div key={f.noteId} role="alert" data-flag-fail={f.noteId} style={{
+      display: "flex", gap: 10, alignItems: "flex-start", color: T.red, fontSize: 13.5, lineHeight: 1.5,
+      background: T.redSoft, padding: phone ? "10px 14px" : "10px 16px", boxSizing: "border-box", minWidth: 0,
+      ...(inCard ? { borderBottom: `1px solid ${T.redLine}` } : { border: `1px solid ${T.redLine}`, borderRadius: T.r, marginBottom: 12 }),
+    }}>
+      <span style={{ marginTop: 2, flexShrink: 0 }}><AlertIcon /></span>
+      <div style={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>
+        <b style={{ fontWeight: 600, display: "block" }}>{inCard ? "Flag not sent for this note" : "Flag not sent for the previous note"}</b>
+        <div style={{ color: T.ink2 }}>{f.message}</div>
+        {f.reason && <div style={{ color: T.ink2 }}>Reason: &ldquo;{f.reason}&rdquo;</div>}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+          <button onClick={() => retryFlag(f)} disabled={f.sending} style={btnSm("secondary", { borderColor: T.redLine, color: T.red, ...phoneBtn })}>{f.sending ? "Sending…" : "Try again"}</button>
+          <button onClick={() => setFlagFails((l) => removeFlagFailure(l, f.noteId))} style={btnSm("ghost", phoneBtn)}>Dismiss</button>
+        </div>
+      </div>
+    </div>
+  );
+  const otherFlagFails = flagFails.filter((f) => f.noteId !== result?.noteId);
+  const currentFlagFails = flagFails.filter((f) => f.noteId === result?.noteId);
 
   return (
     <div style={{ minHeight: "100vh", background: S.bg, color: S.text, fontFamily: S.font }}>
@@ -1159,6 +1226,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       </div>}
 
       <div className="vra-wrap" style={{ padding: phone ? "10px 16px 28px" : "20px 24px 40px", maxWidth: 880, margin: "0 auto", boxSizing: "border-box", ...(phone ? { overflowWrap: "anywhere" } : {}) }}>
+
+        {/* Flags for an earlier note that did not save — on every tab until dismissed or resent */}
+        {otherFlagFails.map((f) => flagFailBanner(f, false))}
+        {flagNotice && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 12, fontSize: 13, color: T.muted }}>
+            Previous note: <span style={chip("amber")}>Flagged for weekly review</span>
+          </div>
+        )}
 
         {/* ── INPUT TAB ──────────────────────────────────────────── */}
         {tab === "input" && (
@@ -1681,7 +1756,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     </div>
                     <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
                       {result.noteId && flagTrigger()}
-                      <button onClick={() => { setTab("input"); setResult(null); }} style={btnSm("secondary", phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {})}>
+                      <button onClick={newNote} style={btnSm("secondary", phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {})}>
                         &#8592; New note
                       </button>
                       <button onClick={copyNote} style={btnSm("primary", { ...(phone ? { height: 44, padding: "0 14px", fontSize: 14 } : {}), ...(copied ? { background: T.green, borderColor: T.green } : {}) })}>
@@ -1689,7 +1764,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                       </button>
                     </div>
                   </div>}
-                  {result.noteId && !result.flagged && (flagOpen || flagErr) && flagForm()}
+                  {result.noteId && !result.flagged && flagOpen && flagForm()}
+                  {result.noteId && currentFlagFails.map((f) => flagFailBanner(f, true))}
                   <div style={{ fontFamily: T.mono, fontSize: 13.5, lineHeight: 1.75, color: T.ink, whiteSpace: "pre-wrap", padding: phone ? "12px 14px" : "16px 18px" }}>
                     {renderNote(noteBody)}
                   </div>
@@ -1749,7 +1825,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     )}
                   </div>
                 </div>
-                {phone && phoneFooter(() => { setTab("input"); setResult(null); }, "New note", copyNote, copied)}
+                {phone && phoneFooter(newNote, "New note", copyNote, copied)}
 
                 {/* Coverage reference(s) — server appends these to the note text */}
                 {Array.isArray(result.coverage) && result.coverage.length > 0
