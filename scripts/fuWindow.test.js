@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { computeFuWindow, fuFetchRange, fuWindowDays, FU_WINDOW_DAYS, fuShortDate, fuDelta, fuSuggestionText, fuSiteName, fuTargetYmdOf, fuTodaySiteOf, fuCalReason } from "../src/lib/fuWindow.js";
 import { majorHoliday, injectionBlackout, parseLocalNoon } from "../src/lib/practiceCalendar.js";
 import { addDaysYmd, dateOfYmd } from "../src/lib/vraSchedule.js";
+import { readFileSync } from "node:fs";
 
 const FNS = { holiday: majorHoliday, blackout: injectionBlackout, isBlocked: () => false };
 
@@ -289,9 +290,14 @@ test("LEA hub: ±7 boundary — days at ±7 count, ±8 don't", () => {
   const r = computeFuWindow(W, "MR", p, FNS, "lea");
   assert.equal(r.target.clinic, false);
   assert.deepEqual(r.suggestions.map(fuSuggestionText), ["Wed 2/3 LEA (+7 d)", "Wed 1/20 LEA (−7 d)"]);
-  // Only ±8 → nothing; and the doctor isn't on the LEA calendar in the window → null.
+  // Only ±8 → no LEA day in the window and no vacation → "nothing within a
+  // week" (Oct 21 2026: was null = silent calculator), no calendar reason line.
   const p2 = wide(W, (d, i) => { if (Math.abs(i) === 8) d.sessions = full("LEX"); });
-  assert.equal(computeFuWindow(W, "MR", p2, FNS, "lea"), null);
+  const r2 = computeFuWindow(W, "MR", p2, FNS, "lea");
+  assert.equal(r2.target.clinic, false);
+  assert.deepEqual(r2.suggestions, []);
+  assert.equal(r2.offCalendar, true);
+  assert.equal(fuCalReason(r2), null);
   // VRA hub on the same shape still stops at ±6.
   const p3 = wide(W, (d, i) => { if (Math.abs(i) === 7) d.sessions = full("WORC"); if (i === 0) d.sessions = [{ doctor: "MR", site: "VALEDA", part: "AM" }]; });
   assert.deepEqual(computeFuWindow(W, "MR", p3, FNS, "vra").suggestions, []);
@@ -328,9 +334,71 @@ test("LEA hub: holiday / closure / isBlocked still apply", () => {
   assert.deepEqual(r.suggestions.map((s) => s.ymd), ["2027-01-22"]);
 });
 
-test("LEA hub: doctor who never works at LEA → null (calculator unchanged)", () => {
-  // BKH has only Leominster AM sessions in the fixture.
-  assert.equal(computeFuWindow(FRI, "BKH", payload(FRI, undefined, "lea"), FNS, "lea"), null);
+// ── LEA hub, no LEX session + no vacation in the window (roadmap bug, Oct 21 2026) ──
+// Was null → silent calculator. Now: no suggestions, offCalendar, no reason
+// line → FuSuggestions shows "No LEA clinic within a week — …".
+
+test("LEA hub: no LEX session and no vacation in the window → nothing-nearby, no reason line", () => {
+  // BKH has only Leominster AM sessions in the fixture (no LEX, no vacation).
+  const r = computeFuWindow(FRI, "BKH", payload(FRI, undefined, "lea"), FNS, "lea");
+  assert.notEqual(r, null);
+  assert.equal(r.target.ymd, FRI);
+  assert.equal(r.target.clinic, false);
+  assert.equal(r.target.site, null);
+  assert.deepEqual(r.suggestions, []);
+  assert.equal(r.offCalendar, true);
+  assert.equal(fuCalReason(r), null);
+  // MR with every LEX session removed from the window → same.
+  const p = payload(FRI, (d) => { d.sessions = d.sessions.filter((s) => s.site !== "LEX"); }, "lea");
+  const r2 = computeFuWindow(FRI, "MR", p, FNS, "lea");
+  assert.deepEqual(r2.suggestions, []);
+  assert.equal(r2.offCalendar, true);
+  assert.equal(fuCalReason(r2), null);
+});
+
+test("LEA hub: vacation in the window → unchanged (known doctor, reason line, no offCalendar)", () => {
+  // No LEX sessions at all, but MR is on vacation on the target → known.
+  const p = payload(FRI, (d) => {
+    d.sessions = d.sessions.filter((s) => s.site !== "LEX");
+    if (d.date === FRI) d.vacations.push("MR");
+  }, "lea");
+  const r = computeFuWindow(FRI, "MR", p, FNS, "lea");
+  assert.equal(r.offCalendar, undefined);
+  assert.deepEqual(r.suggestions, []);
+  assert.equal(fuCalReason(r).code, "vacation");
+  assert.equal(fuCalReason(r).text, "You're on vacation");
+  // Vacation Friday with LEX elsewhere → existing suggestions, no offCalendar.
+  const p2 = payload(FRI, (d) => { if (d.date === FRI) d.vacations.push("MR"); }, "lea");
+  const r2 = computeFuWindow(FRI, "MR", p2, FNS, "lea");
+  assert.equal(r2.offCalendar, undefined);
+  assert.deepEqual(r2.suggestions.map(fuSuggestionText), ["Fri 2/5 LEA (+7 d)", "Fri 1/22 LEA (−7 d)"]);
+});
+
+test("VRA hub: doctor not on the VRA calendar in the window → still null (unchanged)", () => {
+  // Only LEX sessions (ignored by VRA), no vacation.
+  const p = payload(MON, (d) => { d.sessions = d.sessions.map((s) => (s.doctor === "MR" ? { ...s, site: "LEX" } : s)); });
+  assert.equal(computeFuWindow(MON, "MR", p, FNS, "vra"), null);
+  assert.equal(computeFuWindow(MON, "ZZ", payload(MON), FNS), null);
+  // A known VRA doctor never gets offCalendar.
+  assert.equal(computeFuWindow(MON, "MR", payload(MON), FNS).offCalendar, undefined);
+});
+
+test("load failure / no data → still null in both hubs (unchanged)", () => {
+  for (const hub of ["vra", "lea"]) {
+    assert.equal(computeFuWindow(FRI, "MR", null, FNS, hub), null);
+    assert.equal(computeFuWindow(FRI, "MR", { configured: false, days: [] }, FNS, hub), null);
+    assert.equal(computeFuWindow(FRI, "MR", { configured: true, error: "timeout", days: [] }, FNS, hub), null);
+    // Payload that doesn't contain the target day.
+    const p = payload(FRI, undefined, hub);
+    p.days = p.days.filter((d) => d.date !== FRI);
+    assert.equal(computeFuWindow(FRI, "MR", p, FNS, hub), null);
+    assert.equal(computeFuWindow(FRI, "", payload(FRI, undefined, hub), FNS, hub), null);
+  }
+});
+
+test("FuSuggestions: empty suggestions in the LEA hub render the partner line", () => {
+  const src = readFileSync(new URL("../src/FuSuggestions.jsx", import.meta.url), "utf8");
+  assert.match(src, /hub === "lea"\s*\?\s*<span[^>]*>No LEA clinic within a week — the patient may need to see a partner\.<\/span>/);
 });
 
 // ── Short site labels, site codes, preferred site (Mari, Oct 19 2026 10:51 AM) ──

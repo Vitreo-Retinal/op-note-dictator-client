@@ -31,9 +31,11 @@
 // The day before Thanksgiving (halfDayNote) still counts; the UI shows its note.
 //
 // Returns null whenever the calendar can't answer (no doctor, failed or
-// unconfigured payload, target missing from the payload, or the doctor has no
-// sessions and no vacation anywhere in the window — i.e. not on the calendar),
-// so the calculator falls back to exactly its old behavior.
+// unconfigured payload, target missing from the payload, or — VRA hub only —
+// the doctor has no sessions and no vacation anywhere in the window), so the
+// calculator falls back to exactly its old behavior. In the LEA hub that last
+// case instead returns no suggestions + offCalendar: true (Oct 21 2026), so the
+// "No LEA clinic within a week" line shows.
 
 import { scheduleOk, ymdOf, dateOfYmd, addDaysYmd, bySiteOrder, doctorHalves } from "./vraSchedule.js";
 
@@ -151,7 +153,8 @@ export function evalFuDay(day, doctor, fns = {}, hub = "vra") {
  * opts:     { preferSite } — site code the doctor is at today (VRA hub only;
  *           null/omitted → "WORC"; ignored in the LEA hub)
  * → null | { target: { ymd, clinic, site, half, codes, segments, reasons },
- *            suggestions: [{ ymd, label, site, half, codes, segments, delta, deltaText, preferred }] }
+ *            suggestions: [{ ymd, label, site, half, codes, segments, delta, deltaText, preferred }],
+ *            offCalendar?: true }  (LEA hub only: no LEX session / vacation in the window)
  * suggestions (only when the target is not a clinic day), from the clinic days
  * within ±6 (VRA) / ±7 (LEA), each group nearest first, ties → the later day first:
  *   · VRA hub: up to 3 days at the preferred site, then the single nearest
@@ -175,12 +178,21 @@ export function computeFuWindow(target, doctor, schedule, fns = {}, hub = "vra",
     if (d) win.push({ off, day: d });
   }
   // Doctor not on this hub's calendar at all in this window (no session at a
-  // site this hub sees — Valeda included in VRA — and no vacation) → can't say
-  // anything. Keeps the LEA hub silent for doctors who never work at LEA.
+  // site this hub sees — Valeda included in VRA — and no vacation).
+  //   · VRA hub → can't say anything → null (calculator unchanged).
+  //   · LEA hub → the schedule DID load; the doctor simply has no LEA clinic
+  //     within ±7 → { target, suggestions: [], offCalendar: true }, so the UI
+  //     shows "No LEA clinic within a week — …" with NO calendar reason line
+  //     (fuCalReason → null). Was null (silent calculator) before Oct 21 2026.
+  //     The LEA hub only lists LEA surgeons, so this never fires for a doctor
+  //     who doesn't work there.
   const known = win.some(({ day }) =>
     (Array.isArray(day.sessions) && day.sessions.some((s) => s && s.doctor === doc && hubSite(s.site, hub))) ||
     (Array.isArray(day.vacations) && day.vacations.some((v) => String(v).toUpperCase() === doc)));
-  if (!known) return null;
+  if (!known) {
+    if (hubOf(hub) !== "lea") return null;
+    return { target: evalFuDay(tDay, doc, fns, hub), suggestions: [], offCalendar: true };
+  }
 
   const t = evalFuDay(tDay, doc, fns, hub);
   let suggestions = [];
@@ -251,6 +263,6 @@ export function fuTodaySiteOf(schedule, doctor, todayYmd, now = new Date()) {
 
 /** First calendar reason (closed / vacation / no clinic) for a non-clinic target, else null. */
 export function fuCalReason(win) {
-  if (!win || !win.target || win.target.clinic) return null;
+  if (!win || !win.target || win.target.clinic || win.offCalendar) return null;
   return win.target.reasons.find((r) => r.code === "closed" || r.code === "vacation" || r.code === "noClinic") || null;
 }
