@@ -26,7 +26,7 @@
  },
  "commercial-pa-yellow": {
   "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n───────────────────────────────────────\n📋 COVERAGE REFERENCE — Vabysmo / BCBS MA PPO\nStatus: ⚠️ YELLOW\nRequirements: PA required, Step therapy, 3 Avastin per Eye, 1 Eylea per Eye\nNotes: Step therapy applies: must trial and fail 3 Avastin per eye, then 1 Eylea per eye, before Vabysmo. PA via Availity, fax 1-888-282-1315.\n⚡ Billing Alert: Must trial 3 Avastin per eye before Step 2 drugs.\n───────────────────────────────────────\n\n---END---",
-  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / BCBS MA PPO\nPA required\nStep therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye or Lucentis (PA) > 3) Vabysmo (PA)\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / BCBS MA PPO\nPA required\nStep therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye (PA) > 3) Vabysmo [today] (PA)\n=======================================\n\n---END---",
   "cards": [
    {
     "kind": "rule",
@@ -49,10 +49,13 @@
     "billing_alert": "Must trial 3 Avastin per eye before Step 2 drugs.",
     "steps": {
      "thisStep": 3,
+     "todayAppended": false,
      "priorSteps": "Steps 1-2",
      "steps": [
       {
        "n": 1,
+       "label": "Step 1",
+       "active": false,
        "drugs": [
         {
          "name": "Avastin",
@@ -62,12 +65,12 @@
          "source": "rule"
         }
        ],
-       "label": "Step 1",
-       "active": false,
        "pa": "none"
       },
       {
        "n": 2,
+       "label": "Step 2",
+       "active": false,
        "drugs": [
         {
          "name": "Eylea 2mg",
@@ -75,32 +78,24 @@
          "lookup": "Eylea 2mg",
          "pa": "required",
          "source": "rule"
-        },
-        {
-         "name": "Lucentis",
-         "perEye": "",
-         "lookup": "Lucentis 0.5",
-         "pa": "required",
-         "source": "rule"
         }
        ],
-       "label": "Step 2",
-       "active": false,
        "pa": "required"
       },
       {
        "n": 3,
+       "label": "Step 3",
+       "active": true,
        "drugs": [
         {
          "name": "Vabysmo",
          "perEye": "",
+         "today": true,
          "lookup": "Vabysmo",
          "pa": "required",
          "source": "rule"
         }
        ],
-       "label": "Step 3",
-       "active": true,
        "pa": "required"
       }
      ]
@@ -189,7 +184,7 @@
  },
  "avastin-pa-yellow": {
   "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n───────────────────────────────────────\n📋 COVERAGE REFERENCE — Vabysmo / Example Commercial PPO\nStatus: ⚠️ YELLOW\nRequirements: PA required, Step therapy, 3 Avastin per Eye, 1 Eylea per Eye\nNotes: Step therapy applies: must trial and fail 3 Avastin per eye, then 1 Eylea per eye, before Vabysmo. PA via Availity, fax 1-888-282-1315.\n⚡ Billing Alert: Must trial 3 Avastin per eye before Step 2 drugs.\n───────────────────────────────────────\n\n---END---",
-  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / Example Commercial PPO\nPA required\nStep therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg x1/eye (PA) or Lucentis (no PA) > 3) Vabysmo (PA)\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / Example Commercial PPO\nPA required\nStep therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg (PA) or Lucentis (no PA) > 3) Eylea HD (check) or Vabysmo [today] (PA)\n=======================================\n\n---END---",
   "cards": [
    {
     "kind": "rule",
@@ -205,17 +200,19 @@
     "requirements": [
      "PA required",
      "Step therapy",
-     "3 Avastin per Eye",
-     "1 Eylea per Eye"
+     "3 Avastin per Eye"
     ],
-    "notes": "Step therapy applies: must trial and fail 3 Avastin per eye, then 1 Eylea per eye, before Vabysmo. PA via Availity, fax 1-888-282-1315.",
+    "notes": "PA required. Step 1: Avastin x3/eye. Step 2: Eylea, Lucentis. Step 3: Eylea HD, Vabysmo. 365-day restart. PA via Availity, fax 1-888-282-1315.",
     "billing_alert": "Must trial 3 Avastin per eye before Step 2 drugs.",
     "steps": {
      "thisStep": 3,
+     "todayAppended": false,
      "priorSteps": "Steps 1-2",
      "steps": [
       {
        "n": 1,
+       "label": "Step 1",
+       "active": false,
        "drugs": [
         {
          "name": "Avastin",
@@ -225,16 +222,16 @@
          "source": "rule"
         }
        ],
-       "label": "Step 1",
-       "active": false,
        "pa": "required"
       },
       {
        "n": 2,
+       "label": "Step 2",
+       "active": false,
        "drugs": [
         {
          "name": "Eylea 2mg",
-         "perEye": "1",
+         "perEye": "",
          "lookup": "Eylea 2mg",
          "pa": "required",
          "source": "rule"
@@ -247,24 +244,30 @@
          "source": "rule"
         }
        ],
-       "label": "Step 2",
-       "active": false,
        "pa": "mixed"
       },
       {
        "n": 3,
+       "label": "Step 3",
+       "active": true,
        "drugs": [
+        {
+         "name": "Eylea HD",
+         "perEye": "",
+         "lookup": "Eylea 8mg (HD)",
+         "pa": "unknown",
+         "source": "norule"
+        },
         {
          "name": "Vabysmo",
          "perEye": "",
+         "today": true,
          "lookup": "Vabysmo",
          "pa": "required",
          "source": "rule"
         }
        ],
-       "label": "Step 3",
-       "active": true,
-       "pa": "required"
+       "pa": "mixed"
       }
      ]
     },

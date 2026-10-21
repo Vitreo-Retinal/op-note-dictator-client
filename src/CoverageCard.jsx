@@ -11,7 +11,7 @@
 import { useState } from "react";
 import { T } from "./theme.js";
 import PhoneText from "./PhoneText.jsx";
-import { coverageTier, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stripLeadingSymbols } from "./lib/coverageCard.js";
+import { coverageTier, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, stripLeadingSymbols } from "./lib/coverageCard.js";
 
 // Tier tone → [solid, soft, line] (Retina-Rx --green/--amber/--orange/--red + -soft/-line).
 const TONE = {
@@ -83,6 +83,8 @@ export const COVERAGE_CSS = `
 .cov-st-drugs{display:flex;flex-direction:column;gap:4px}
 .cov-st-drugline{display:flex;flex-direction:column}
 .cov-st-drug{font-size:13px;font-weight:500;color:${T.ink};line-height:1.35;overflow-wrap:anywhere}
+.cov-st-drug.today{font-weight:700}
+.cov-st-today{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:600;line-height:1.5;padding:0 6px;border-radius:999px;background:${T.accent};color:#fff;vertical-align:1px;white-space:nowrap}
 .cov-st-desc{font-size:11.5px;margin-top:1px;font-weight:500}
 .cov-st-arrow{display:flex;align-items:center;color:${T.accentLine};font-size:16px;padding:0 6px}
 .cov-foot{padding:8px 18px;border-top:1px solid ${T.line};background:${T.surface};font-size:11.5px;color:${T.muted};display:flex;gap:8px;flex-wrap:wrap}
@@ -134,6 +136,7 @@ const MIXED_STEP = { bg: T.surface, line: T.line, pill: T.accent, text: T.ink2 }
 const PA_TEXT = { none: T.green, required: T.amber, unknown: T.muted };
 function Pathway({ path, drug }) {
   let paSeen = 0;
+  const head = stepHeader(path, drug);
   const colors = path.steps.map((s) => {
     if (s.pa === "none") return GREEN_STEP;
     if (s.pa === "required") { const c = ST_YELLOWS[Math.min(paSeen, ST_YELLOWS.length - 1)]; paSeen++; return c; }
@@ -142,7 +145,8 @@ function Pathway({ path, drug }) {
   return (
     <div className="cov-st" data-cov-pathway={path.steps.length}>
       <div className="cov-st-title">
-        Step Therapy Pathway{path.priorSteps && <> — <span style={{ color: T.red, fontWeight: 500 }}>Patient must complete {path.priorSteps.replace("-", "–")} before {drug || "this drug"}</span></>}
+        {/* The plan's WHOLE tree (Mari, Oct 21 2026, 2:55 PM); today's drug is in the outlined box with a "today" tag. */}
+        Step Therapy Pathway{head && <> — <span style={head.must ? { color: T.red, fontWeight: 500 } : { color: T.ink2, fontWeight: 500 }}>{head.text}</span></>}
       </div>
       <div className="cov-st-row">
         {path.steps.map((s, i) => (
@@ -155,7 +159,7 @@ function Pathway({ path, drug }) {
               <div className="cov-st-drugs">
                 {s.drugs.map((d, j) => (
                   <div key={j} className="cov-st-drugline" data-cov-drug-pa={d.pa}>
-                    <span className="cov-st-drug">{stepDrugText(d)}</span>
+                    <span className={isTodayDrug(d) ? "cov-st-drug today" : "cov-st-drug"} data-cov-today={isTodayDrug(d) ? "1" : undefined}>{stepDrugText(d)}{isTodayDrug(d) && <span className="cov-st-today">today</span>}</span>
                     <span className="cov-st-desc" style={{ color: s.pa === "mixed" ? PA_TEXT[d.pa] || T.muted : colors[i].text }}>{paLabel(d.pa, d.name)}</span>
                   </div>
                 ))}

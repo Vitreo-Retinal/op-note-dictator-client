@@ -118,6 +118,19 @@ export function paLabel(pa, drugName) {
 }
 /** Step drug as shown in its box: "Avastin (3/eye)". */
 export const stepDrugText = (d) => (d && d.perEye ? `${d.name} (${d.perEye}/eye)` : (d && d.name) || "");
+/**
+ * Pathway header after "Step Therapy Pathway — " (Oct 21 2026, 2:55 PM: the card shows the plan's WHOLE tree, today's
+ * drug marked). Today's drug in a later step -> { must: true, "Patient must complete Step 1 before Eylea 2mg" };
+ * today's drug in Step 1 -> { must: false, "Avastin is Step 1 for this plan" }.
+ */
+export function stepHeader(path, drug) {
+  const name = drug || "this drug";
+  if (!path) return null;
+  if (path.priorSteps) return { must: true, text: `Patient must complete ${String(path.priorSteps).replace("-", "\u2013")} before ${name}` };
+  return { must: false, text: `${name} is Step 1 for this plan` };
+}
+/** Today's drug inside its step box (server lib/step-pathway.js sets drug.today; the copied line says "[today]"). */
+export const isTodayDrug = (d) => !!(d && d.today);
 
 // ── ASCII fold for the copied coverage block (owner decision B) ─────────────
 // Client twin of server lib/ascii-safe.js — a defensive pass in copyableNoteText,

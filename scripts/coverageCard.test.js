@@ -7,7 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { copyableNoteText, parseResponse } from "../src/lib/noteHelpers.js";
-import { coverageTier, reqTagClass, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, asciiFold, COVERAGE_FENCE_RX, COVERAGE_TIERS, stripLeadingSymbols } from "../src/lib/coverageCard.js";
+import { coverageTier, reqTagClass, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, asciiFold, COVERAGE_FENCE_RX, COVERAGE_TIERS, stripLeadingSymbols } from "../src/lib/coverageCard.js";
 
 const CASES = JSON.parse(readFileSync(new URL("./fixtures/coverage-cases.json", import.meta.url), "utf8"));
 const ASCII_ONLY = /^[\x09\x0A\x0D\x20-\x7E]*$/;
@@ -92,12 +92,12 @@ test("step pathway comes from the server with each drug's real PA status (Avasti
   const ok = cardSteps(CASES["commercial-pa-yellow"].cards[0]);
   assert.deepEqual(ok.steps.map((st) => [st.n, st.pa, st.drugs.map((d) => [stepDrugText(d), paLabel(d.pa, d.name)])]), [
     [1, "none", [["Avastin (3/eye)", "No PA needed"]]],
-    [2, "required", [["Eylea 2mg (1/eye)", "PA required"], ["Lucentis", "PA required"]]],
+    [2, "required", [["Eylea 2mg (1/eye)", "PA required"]]],   // only drugs the rule names (no invented Lucentis)
     [3, "required", [["Vabysmo", "PA required"]]],
   ]);
   const pa = cardSteps(CASES["avastin-pa-yellow"].cards[0]);
   assert.deepEqual(pa.steps.map((st) => [st.pa, st.drugs.map((d) => paLabel(d.pa, d.name))]),
-    [["required", ["PA required"]], ["mixed", ["PA required", "No PA needed"]], ["required", ["PA required"]]]);
+    [["required", ["PA required"]], ["mixed", ["PA required", "No PA needed"]], ["mixed", ["Check rule", "PA required"]]]);
   assert.equal(paLabel("unknown", "Avastin"), "Check Avastin rule");   // never guessed
   assert.equal(paLabel("unknown", "Lucentis"), "Check rule");
   assert.equal(paLabel(undefined, "Eylea 2mg"), "Check rule");
@@ -107,8 +107,8 @@ test("step pathway comes from the server with each drug's real PA status (Avasti
 
 test("copied step line: one ASCII line with every drug's PA status; no Notes line in any copied block", () => {
   const line = (k) => (copyableNoteText(parseResponse(CASES[k].after).note).match(/^Step therapy: .*$/m) || [""])[0];
-  assert.equal(line("commercial-pa-yellow"), "Step therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye or Lucentis (PA) > 3) Vabysmo (PA)");
-  assert.equal(line("avastin-pa-yellow"), "Step therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg x1/eye (PA) or Lucentis (no PA) > 3) Vabysmo (PA)");
+  assert.equal(line("commercial-pa-yellow"), "Step therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye (PA) > 3) Vabysmo [today] (PA)");
+  assert.equal(line("avastin-pa-yellow"), "Step therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg (PA) or Lucentis (no PA) > 3) Eylea HD (check) or Vabysmo [today] (PA)");
   for (const [k, c] of Object.entries(CASES)) {
     const copied = copyableNoteText(parseResponse(c.after).note);
     assert.doesNotMatch(copied, /^Notes:/m, k);
@@ -120,12 +120,12 @@ test("copied block format (Mari, Oct 20 2026, 2:11 PM): header + ONE coverage li
   const want = {
     "medicare-green": ["COVERAGE REFERENCE - Eylea 2mg / Medicare", "No PA required"],
     "commercial-pa-yellow": ["COVERAGE REFERENCE - Vabysmo / BCBS MA PPO", "PA required",
-      "Step therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye or Lucentis (PA) > 3) Vabysmo (PA)"],
+      "Step therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye (PA) > 3) Vabysmo [today] (PA)"],
     "dual-medigap": ["COVERAGE REFERENCE - Eylea 2mg / Medicare", "No PA required"],
     "unknown-plan": ["COVERAGE REFERENCE - Eylea 2mg / \"united healthcare\"", "Plan not identified - check"],
     "masshealth-red": ["COVERAGE REFERENCE - Eylea 8mg (HD) / MassHealth Standard", "Not covered"],
     "avastin-pa-yellow": ["COVERAGE REFERENCE - Vabysmo / Example Commercial PPO", "PA required",
-      "Step therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg x1/eye (PA) or Lucentis (no PA) > 3) Vabysmo (PA)"],
+      "Step therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg (PA) or Lucentis (no PA) > 3) Eylea HD (check) or Vabysmo [today] (PA)"],
     "dual-masshealth-aco": ["COVERAGE REFERENCE - Avastin / Humana Medicare PPO", "No PA required"],
   };
   for (const [k, lines] of Object.entries(want)) {
@@ -166,4 +166,24 @@ test("source guard: the fence regex in ClinicNoteGenerator is the shared one, an
   assert.ok(!/const reqTag = /.test(src), "old reqTag removed");
   assert.ok(!/\\bPA required\\b\/i\.test\(r\) \? "Prior auth"/.test(src));
   assert.match(src, /<CoverageCards cards=\{result\.coverage\}/);
+});
+
+// Oct 21 2026, 2:55 PM (Mari): the card draws the plan's WHOLE tree; today's drug is marked wherever it sits.
+// Server shape (lib/step-pathway.js) for Harvard Pilgrim Choice Net HMO + Eylea 2mg.
+const HPHC_EYLEA = { thisStep: 2, priorSteps: "Step 1", todayAppended: false, steps: [
+  { n: 1, active: false, pa: "none", drugs: [{ name: "Avastin", perEye: "3", pa: "none" }] },
+  { n: 2, active: true, pa: "mixed", drugs: ["Eylea 2mg", "Pavblu", "Lucentis", "Byooviz", "Cimerli", "Beovu"].map((name) => ({ name, perEye: "",
+    pa: /Pavblu|Byooviz|Cimerli/.test(name) ? "unknown" : "required", ...(name === "Eylea 2mg" ? { today: true } : {}) })) },
+  { n: 3, active: false, pa: "required", drugs: [{ name: "Eylea HD", perEye: "", pa: "required" }, { name: "Vabysmo", perEye: "", pa: "required" }] },
+] };
+test("whole step tree on the card: every step + drug in the rule's order, one today mark, header fits today's step", () => {
+  const p = cardSteps({ kind: "rule", steps: HPHC_EYLEA });
+  assert.deepEqual(p.steps.map((s) => s.drugs.map(stepDrugText)), [["Avastin (3/eye)"], ["Eylea 2mg", "Pavblu", "Lucentis", "Byooviz", "Cimerli", "Beovu"], ["Eylea HD", "Vabysmo"]]);
+  assert.deepEqual(p.steps.flatMap((s) => s.drugs.filter(isTodayDrug).map((d) => [s.n, d.name])), [[2, "Eylea 2mg"]]);
+  assert.deepEqual(stepHeader(p, "Eylea 2mg"), { must: true, text: "Patient must complete Step 1 before Eylea 2mg" });
+  assert.deepEqual(stepHeader({ ...p, thisStep: 3, priorSteps: "Steps 1-2" }, "Vabysmo"), { must: true, text: "Patient must complete Steps 1\u20132 before Vabysmo" });
+  assert.deepEqual(stepHeader({ ...p, thisStep: 1, priorSteps: null }, "Avastin"), { must: false, text: "Avastin is Step 1 for this plan" });
+  const card = readFileSync(new URL("../src/CoverageCard.jsx", import.meta.url), "utf8");
+  assert.match(card, /stepHeader\(path, drug\)/);
+  assert.match(card, /isTodayDrug\(d\) && <span className="cov-st-today">today<\/span>/);
 });
