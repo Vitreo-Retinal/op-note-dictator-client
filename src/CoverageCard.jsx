@@ -11,7 +11,7 @@
 import { useState } from "react";
 import { T } from "./theme.js";
 import PhoneText from "./PhoneText.jsx";
-import { coverageTier, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, stripLeadingSymbols } from "./lib/coverageCard.js";
+import { coverageTier, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, stepPossibleNote, nextOptionGroups, stripLeadingSymbols } from "./lib/coverageCard.js";
 
 // Tier tone → [solid, soft, line] (Retina-Rx --green/--amber/--orange/--red + -soft/-line).
 const TONE = {
@@ -87,6 +87,12 @@ export const COVERAGE_CSS = `
 .cov-st-today{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:600;line-height:1.5;padding:0 6px;border-radius:999px;background:${T.accent};color:#fff;vertical-align:1px;white-space:nowrap}
 .cov-st-desc{font-size:11.5px;margin-top:1px;font-weight:500}
 .cov-st-arrow{display:flex;align-items:center;color:${T.accentLine};font-size:16px;padding:0 6px}
+.cov-st-note{background:${T.surface};border:1px solid ${T.line};border-radius:10px;padding:9px 14px;font-size:13px;color:${T.ink2};line-height:1.45}
+.cov-next{background:${T.surface};border:1px solid ${T.line};border-radius:10px;padding:10px 14px}
+.cov-next-title{font-size:12.5px;color:${T.muted};margin-bottom:6px;line-height:1.45}
+.cov-next-row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;line-height:1.45}
+.cov-next-row b{font-weight:600}
+.cov-next-row span{color:${T.ink};overflow-wrap:anywhere}
 .cov-foot{padding:8px 18px;border-top:1px solid ${T.line};background:${T.surface};font-size:11.5px;color:${T.muted};display:flex;gap:8px;flex-wrap:wrap}
 .cov-foot b{font-weight:600;color:${T.ink2}}
 .cov-more{display:flex;flex-direction:column;gap:12px}
@@ -133,14 +139,15 @@ const ST_YELLOWS = [
 const GREEN_STEP = { bg: T.greenSoft, line: T.greenLine, pill: T.green, text: T.green };
 const GREY_STEP = { bg: T.paper, line: T.line, pill: T.muted, text: T.muted };
 const MIXED_STEP = { bg: T.surface, line: T.line, pill: T.accent, text: T.ink2 };
-const PA_TEXT = { none: T.green, required: T.amber, unknown: T.muted };
+const RED_STEP = { bg: T.redSoft, line: T.redLine, pill: T.red, text: T.red };
+const PA_TEXT = { none: T.green, required: T.amber, notcovered: T.red, unknown: T.muted };
 function Pathway({ path, drug }) {
   let paSeen = 0;
   const head = stepHeader(path, drug);
   const colors = path.steps.map((s) => {
     if (s.pa === "none") return GREEN_STEP;
     if (s.pa === "required") { const c = ST_YELLOWS[Math.min(paSeen, ST_YELLOWS.length - 1)]; paSeen++; return c; }
-    return s.pa === "mixed" ? MIXED_STEP : GREY_STEP;
+    return s.pa === "mixed" ? MIXED_STEP : s.pa === "notcovered" ? RED_STEP : GREY_STEP;
   });
   return (
     <div className="cov-st" data-cov-pathway={path.steps.length}>
@@ -173,6 +180,21 @@ function Pathway({ path, drug }) {
   );
 }
 
+// "Next options" (Mari, Oct 21 2026, 9:32 PM): the other anti-VEGF drugs on this plan, grouped by their own rule's
+// status, so she knows which drug needs a benefits investigation before a switch. Words, not colors alone.
+function NextOptions({ groups }) {
+  return (
+    <div className="cov-next" data-cov-next={groups.reduce((n, g) => n + g.drugs.length, 0)}>
+      <div className="cov-next-title">Next options on this plan</div>
+      <div className="cov-next-row">
+        {groups.map((g) => (
+          <div key={g.pa} data-cov-next-pa={g.pa}><b style={{ color: PA_TEXT[g.pa] || T.muted }}>{g.label}:</b> <span>{g.drugs.join(", ")}</span></div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** One entry of the server's data.coverage array (routes/notes.js ruleCard / dual cards / ambiguous / biosimilar / invalid / norule). */
 export default function CoverageCard({ card, dualNote }) {
   const [open, setOpen] = useState(false);
@@ -181,6 +203,8 @@ export default function CoverageCard({ card, dualNote }) {
   const [solid, soft, line] = TONE[tier.tone] || TONE.amber;
   const isRule = c.kind === "rule";
   const path = isRule ? cardSteps(c) : null;   // server-built, each drug with its real PA status
+  const possible = isRule ? stepPossibleNote(c) : null;   // step wording with no named order: no tree, a neutral note
+  const next = isRule ? nextOptionGroups(c) : [];
   const tags = isRule ? requirementTags(c, !!path) : [];
   const keyReq = keyRequirement(tags);
   const jText = jCodeText(c);
@@ -244,6 +268,8 @@ export default function CoverageCard({ card, dualNote }) {
           </div>
         )}
         {path && <Pathway path={path} drug={c.drug} />}
+        {possible && <div className="cov-st-note" data-cov-step-possible="1">{possible}</div>}
+        {next.length > 0 && <NextOptions groups={next} />}
         {message && <div style={{ fontSize: 13.5, color: T.ink, lineHeight: 1.5 }}><PhoneText text={message} /></div>}
         {noRuleText && <p className="cov-notes">{noRuleText}</p>}
         {c.kind === "ambiguous" && Array.isArray(c.plans) && c.plans.length > 0 && (

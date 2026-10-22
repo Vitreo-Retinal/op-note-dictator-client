@@ -26,7 +26,7 @@
  },
  "commercial-pa-yellow": {
   "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n───────────────────────────────────────\n📋 COVERAGE REFERENCE — Vabysmo / BCBS MA PPO\nStatus: ⚠️ YELLOW\nRequirements: PA required, Step therapy, 3 Avastin per Eye, 1 Eylea per Eye\nNotes: Step therapy applies: must trial and fail 3 Avastin per eye, then 1 Eylea per eye, before Vabysmo. PA via Availity, fax 1-888-282-1315.\n⚡ Billing Alert: Must trial 3 Avastin per eye before Step 2 drugs.\n───────────────────────────────────────\n\n---END---",
-  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / BCBS MA PPO\nPA required\nStep therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye (PA) > 3) Vabysmo [today] (PA)\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / BCBS MA PPO\nPA required\nStep therapy: 1) Avastin x3/eye (no PA) > 2) Eylea 2mg x1/eye (PA) > 3) Vabysmo [today] (PA)\nNext options: Lucentis: PA; Eylea HD, Beovu, Pavblu, Byooviz, Cimerli: check\n=======================================\n\n---END---",
   "cards": [
    {
     "kind": "rule",
@@ -48,6 +48,7 @@
     "notes": "Step therapy applies: must trial and fail 3 Avastin per eye, then 1 Eylea per eye, before Vabysmo. PA via Availity, fax 1-888-282-1315.",
     "billing_alert": "Must trial 3 Avastin per eye before Step 2 drugs.",
     "steps": {
+     "kind": "tree",
      "thisStep": 3,
      "todayAppended": false,
      "priorSteps": "Steps 1-2",
@@ -97,6 +98,44 @@
         }
        ],
        "pa": "required"
+      }
+     ],
+     "nextOptions": [
+      {
+       "name": "Eylea HD",
+       "lookup": "Eylea 8mg (HD)",
+       "pa": "unknown",
+       "source": "norule"
+      },
+      {
+       "name": "Lucentis",
+       "lookup": "Lucentis 0.5",
+       "pa": "required",
+       "source": "rule"
+      },
+      {
+       "name": "Beovu",
+       "lookup": "Beovu",
+       "pa": "unknown",
+       "source": "norule"
+      },
+      {
+       "name": "Pavblu",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      },
+      {
+       "name": "Byooviz",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      },
+      {
+       "name": "Cimerli",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
       }
      ]
     },
@@ -184,7 +223,7 @@
  },
  "avastin-pa-yellow": {
   "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n───────────────────────────────────────\n📋 COVERAGE REFERENCE — Vabysmo / Example Commercial PPO\nStatus: ⚠️ YELLOW\nRequirements: PA required, Step therapy, 3 Avastin per Eye, 1 Eylea per Eye\nNotes: Step therapy applies: must trial and fail 3 Avastin per eye, then 1 Eylea per eye, before Vabysmo. PA via Availity, fax 1-888-282-1315.\n⚡ Billing Alert: Must trial 3 Avastin per eye before Step 2 drugs.\n───────────────────────────────────────\n\n---END---",
-  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / Example Commercial PPO\nPA required\nStep therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg (PA) or Lucentis (no PA) > 3) Eylea HD (check) or Vabysmo [today] (PA)\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / Example Commercial PPO\nPA required\nStep therapy: 1) Avastin x3/eye (PA) > 2) Eylea 2mg: PA; Lucentis: no PA > 3) Eylea HD: check; Vabysmo [today]: PA\nNext options: Beovu (check), Pavblu (check), Byooviz (check), Cimerli (check)\n=======================================\n\n---END---",
   "cards": [
    {
     "kind": "rule",
@@ -205,6 +244,7 @@
     "notes": "PA required. Step 1: Avastin x3/eye. Step 2: Eylea, Lucentis. Step 3: Eylea HD, Vabysmo. 365-day restart. PA via Availity, fax 1-888-282-1315.",
     "billing_alert": "Must trial 3 Avastin per eye before Step 2 drugs.",
     "steps": {
+     "kind": "tree",
      "thisStep": 3,
      "todayAppended": false,
      "priorSteps": "Steps 1-2",
@@ -269,6 +309,32 @@
        ],
        "pa": "mixed"
       }
+     ],
+     "nextOptions": [
+      {
+       "name": "Beovu",
+       "lookup": "Beovu",
+       "pa": "unknown",
+       "source": "norule"
+      },
+      {
+       "name": "Pavblu",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      },
+      {
+       "name": "Byooviz",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      },
+      {
+       "name": "Cimerli",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      }
      ]
     },
     "jCode": "J2777"
@@ -304,6 +370,124 @@
      "text": "Dual-eligible — Humana Medicare PPO + Mass Health Steward ACO. Showing primary coverage rules. Mass Health Steward ACO covers remaining patient cost share — no out-of-pocket for the patient."
     },
     "title": "Primary Coverage (Dual-eligible)"
+   }
+  ]
+ },
+ "fallon-next-options": {
+  "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J9035\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Avastin / Fallon Navicare\nNo PA required\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J9035\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Avastin / Fallon Navicare\nNo PA required\nNext options: Eylea 2mg, Eylea HD, Lucentis, Vabysmo, Beovu: not covered; Pavblu, Byooviz, Cimerli: check\n=======================================\n\n---END---",
+  "cards": [
+   {
+    "kind": "rule",
+    "drug": "Avastin",
+    "insurance": "Fallon Navicare",
+    "carrier": null,
+    "carrierLevel": false,
+    "planCount": null,
+    "secondaryInsurance": null,
+    "isCombinedRule": false,
+    "ambiguousAlias": null,
+    "status": "green",
+    "requirements": [
+     "No PA required for Avastin"
+    ],
+    "notes": "Step 1: Avastin x1/eye. 365-day restart. [Fallon Navicare].",
+    "billing_alert": "",
+    "steps": {
+     "kind": "single",
+     "thisStep": 1,
+     "priorSteps": null,
+     "todayAppended": false,
+     "steps": [],
+     "list": [
+      "Avastin"
+     ],
+     "nextOptions": [
+      {
+       "name": "Eylea 2mg",
+       "lookup": "Eylea 2mg",
+       "pa": "notcovered",
+       "source": "rule"
+      },
+      {
+       "name": "Eylea HD",
+       "lookup": "Eylea 8mg (HD)",
+       "pa": "notcovered",
+       "source": "rule"
+      },
+      {
+       "name": "Lucentis",
+       "lookup": "Lucentis 0.5",
+       "pa": "notcovered",
+       "source": "rule"
+      },
+      {
+       "name": "Vabysmo",
+       "lookup": "Vabysmo",
+       "pa": "notcovered",
+       "source": "rule"
+      },
+      {
+       "name": "Beovu",
+       "lookup": "Beovu",
+       "pa": "notcovered",
+       "source": "rule"
+      },
+      {
+       "name": "Pavblu",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      },
+      {
+       "name": "Byooviz",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      },
+      {
+       "name": "Cimerli",
+       "lookup": null,
+       "pa": "unknown",
+       "source": "unresolved"
+      }
+     ]
+    },
+    "jCode": "J9035"
+   }
+  ]
+ },
+ "loose-step-possible": {
+  "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / Oscar Health Plan\nPA required\nStep therapy: 1) Avastin (no PA) > 2) Vabysmo [today] (PA)\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-LT, J2777 x60 units\n---G2211---\nNO\n---DIAGNOSES---\nH35.3221 Exudative AMD, left eye, with active CNV\nH35.3111 Nonexudative AMD, right eye, early dry stage\n---NOTE---\n1. Neovascular AMD OS, active with subretinal fluid\nOCT OS: SRF nasal to fovea, increased from last visit. CST 342.\n[+] Intravitreal injection OS today; risks, benefits and alternatives reviewed.\n2. Dry AMD OD, intermediate stage\nContinue AREDS2. Amsler grid daily.\n\nPlan:\n- Injection OS today\n- RTC 4 weeks, OCT OU, possible injection OS\n\n=======================================\nCOVERAGE REFERENCE - Vabysmo / Oscar Health Plan\nPA required\nStep therapy possible - check plan\n=======================================\n\n---END---",
+  "cards": [
+   {
+    "kind": "rule",
+    "drug": "Vabysmo",
+    "insurance": "Oscar Health Plan",
+    "carrier": null,
+    "carrierLevel": false,
+    "planCount": null,
+    "secondaryInsurance": null,
+    "isCombinedRule": false,
+    "ambiguousAlias": null,
+    "status": "yellow",
+    "requirements": [
+     "PA required",
+     "Step therapy"
+    ],
+    "notes": "PA required. Oscar Health Plan.",
+    "billing_alert": "",
+    "steps": {
+     "kind": "possible",
+     "note": "Step therapy possible - check plan",
+     "thisStep": null,
+     "priorSteps": null,
+     "todayAppended": false,
+     "steps": [],
+     "nextOptions": null
+    },
+    "jCode": "J2777"
    }
   ]
  }

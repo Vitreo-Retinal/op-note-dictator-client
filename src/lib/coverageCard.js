@@ -110,10 +110,11 @@ export function cardSteps(card) {
   const p = card && card.steps;
   return p && Array.isArray(p.steps) && p.steps.length ? p : null;
 }
-/** Screen words for a PA status. Unknown is never guessed: "Check Avastin rule" / "Check rule". */
+/** Screen words for a PA status. Unknown is never guessed: "Check Avastin rule" / "Check rule". "notcovered" = the drug's rule for this plan is red. */
 export function paLabel(pa, drugName) {
   if (pa === "none") return "No PA needed";
   if (pa === "required") return "PA required";
+  if (pa === "notcovered") return "Not covered";
   return /avastin/i.test(String(drugName || "")) ? "Check Avastin rule" : "Check rule";
 }
 /** Step drug as shown in its box: "Avastin (3/eye)". */
@@ -131,6 +132,24 @@ export function stepHeader(path, drug) {
 }
 /** Today's drug inside its step box (server lib/step-pathway.js sets drug.today; the copied line says "[today]"). */
 export const isTodayDrug = (d) => !!(d && d.today);
+
+// ── No fake trees + Next options (Mari, Oct 21 2026, 9:32 PM; server lib/step-pathway.js) ─────
+// card.steps.kind: "tree" (steps drawn) | "single" (a lone list holding today's drug: no tree) | "possible" (step
+// wording with no named order: no tree, one neutral note). card.steps.nextOptions: the other anti-VEGF drugs on the
+// SAME plan, each with its own rule's status, when the plan has one list or today's drug is in the last step.
+/** The neutral "Step therapy possible - check plan" note, or null. */
+export function stepPossibleNote(card) {
+  const p = card && card.steps;
+  return p && p.kind === "possible" ? String(p.note || "Step therapy possible - check plan") : null;
+}
+const OPTION_ORDER = ["none", "required", "notcovered", "unknown"];
+/** Next options grouped by status (no PA, PA, not covered, check), each group in the server's drug order; [] when none. */
+export function nextOptionGroups(card) {
+  const list = card && card.steps && Array.isArray(card.steps.nextOptions) ? card.steps.nextOptions : [];
+  const key = (o) => (OPTION_ORDER.includes(o && o.pa) ? o.pa : "unknown");
+  return OPTION_ORDER.map((pa) => ({ pa, label: paLabel(pa, ""), drugs: list.filter((o) => key(o) === pa).map((o) => String(o.name || "")) }))
+    .filter((g) => g.drugs.length);
+}
 
 // ── ASCII fold for the copied coverage block (owner decision B) ─────────────
 // Client twin of server lib/ascii-safe.js — a defensive pass in copyableNoteText,
