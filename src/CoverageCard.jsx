@@ -110,8 +110,8 @@ export const COVERAGE_CSS = `
   .cov-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:1px}
   .cov-body{padding:12px;gap:10px}
   .cov-alert{padding:7px 10px;gap:7px;font-size:12.5px;line-height:1.4}
-  .cov-ao{padding:7px 10px;font-size:12.5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cov-card.more-open .cov-ao{white-space:normal}
+  .cov-ao{padding:7px 10px;font-size:12.5px;line-height:1.4;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+  .cov-card.more-open .cov-ao{display:block;-webkit-line-clamp:unset;line-clamp:none}
   .cov-alert svg{width:14px;height:14px;margin-top:1px}
   .cov-banner{padding:8px 10px;font-size:12.5px;line-height:1.45}
   .cov-st{padding:10px 12px}
