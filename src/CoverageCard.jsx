@@ -5,13 +5,15 @@
 // the step-therapy pathway strip (each drug with its real PA status; no rule notes), small Drug / Plan boxes (no patient data), one
 // billing-alert box with a single icon, Retina-Rx's dual-insurance banner, and a
 // yellow "No Data" card when the plan is not identified or no rule is on file.
+// Avastin-only rules (Mari, Oct 22 2026) also show Retina-Rx's note text in one compact
+// line right under the status (one line on the phone, the whole text under "More").
 // Phone (max-width 600px): Retina-Rx's one-line status, the key requirement and the
 // J-code; everything else behind "More". Still at the bottom of the output, and the
 // on-screen icons are drawn SVG — the copied note text carries words only.
 import { useState } from "react";
 import { T } from "./theme.js";
 import PhoneText from "./PhoneText.jsx";
-import { coverageTier, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, stepPossibleNote, nextOptionGroups, stripLeadingSymbols } from "./lib/coverageCard.js";
+import { coverageTier, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, stepPossibleNote, nextOptionGroups, stripLeadingSymbols, avastinOnlyNoteText, mergedPlanSub } from "./lib/coverageCard.js";
 
 // Tier tone → [solid, soft, line] (Retina-Rx --green/--amber/--orange/--red + -soft/-line).
 const TONE = {
@@ -71,6 +73,8 @@ export const COVERAGE_CSS = `
 .cov-tag.ref-no{background:${T.surface};color:${T.muted};border-color:${T.line}}
 .cov-tag.oon{background:${T.redSoft};color:${T.red};border-color:${T.redLine}}
 .rc-pa-yes{color:${T.amber}}.rc-pa-no{color:${T.green}}.rc-ref-yes{color:${T.plum}}.rc-ref-no{color:${T.muted};font-weight:400}.rc-oon{color:${T.red}}.rc-info{color:${T.accent}}
+.cov-ao{background:${T.surface};border:1px solid ${T.line};border-radius:8px;padding:8px 12px;font-size:13.5px;line-height:1.5;color:${T.ink};overflow-wrap:anywhere}
+.cov-ao b{font-weight:600}
 .cov-notes{margin:0;font-size:13.5px;line-height:1.6;color:${T.ink2};overflow-wrap:anywhere}
 .cov-plans{display:flex;gap:6px;flex-wrap:wrap}
 .cov-plan{font-size:12px;padding:2px 10px;border-radius:999px;background:${T.surface};color:${T.ink2};border:1px solid ${T.line}}
@@ -106,6 +110,8 @@ export const COVERAGE_CSS = `
   .cov-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:1px}
   .cov-body{padding:12px;gap:10px}
   .cov-alert{padding:7px 10px;gap:7px;font-size:12.5px;line-height:1.4}
+  .cov-ao{padding:7px 10px;font-size:12.5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cov-card.more-open .cov-ao{white-space:normal}
   .cov-alert svg{width:14px;height:14px;margin-top:1px}
   .cov-banner{padding:8px 10px;font-size:12.5px;line-height:1.45}
   .cov-st{padding:10px 12px}
@@ -214,9 +220,8 @@ export default function CoverageCard({ card, dualNote }) {
   // Plan wording — names only, never patient data.
   const plan = isRule ? ((c.carrierLevel ? c.carrier : c.insurance) || c.carrier || "")
     : c.kind === "biosimilar" ? (c.label || "") : c.kind === "invalid" ? "" : (c.alias ? (c.kind === "ambiguous" ? `"${c.alias}"` : c.alias) : "");
-  const planSub = isRule && c.carrierLevel
-    ? (c.ambiguousAlias ? `"${c.ambiguousAlias}" matches ${c.planCount} ${c.carrier} plans — merged; specify the plan for exact rules` : `Plan not specified — merged across ${c.planCount} plans`)
-    : "";
+  const planSub = mergedPlanSub(c);   // "" when the merged plans all give the same answer (Oct 22 2026)
+  const aoNote = avastinOnlyNoteText(c);   // Retina-Rx's note, Avastin-only rules only
   const pair = c.primary && c.secondary ? [c.primary, c.secondary]
     : isRule && c.isCombinedRule && c.secondaryInsurance ? [c.insurance, c.secondaryInsurance] : null;
   const source = c.role === "secondary" ? "Secondary insurance" : c.role === "primary" ? "Primary insurance" : (c.title || "");
@@ -253,6 +258,9 @@ export default function CoverageCard({ card, dualNote }) {
         <div className="cov-phone"><span className="cov-dot" style={{ background: solid }} /><b>{tier.phone[0]}</b> — {tier.phone[1]}</div>
       </div>
       <div className="cov-body">
+        {aoNote && (
+          <div className="cov-ao" data-cov-avastin-only="1" title={aoNote}><b>Note:</b> <PhoneText text={aoNote} /></div>
+        )}
         {banner && (
           <div className="cov-banner" data-cov-banner={banner.tone} style={{ background: bTone[1], borderColor: bTone[2], color: bTone[0], fontWeight: c.kind === "invalid" ? 600 : 400 }}>
             <SmallIcon kind={BANNER_ICON[banner.tone] || "info"} />

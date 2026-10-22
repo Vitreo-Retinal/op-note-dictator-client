@@ -490,5 +490,59 @@
     "jCode": "J2777"
    }
   ]
+ },
+ "cca-carrier-avastin": {
+  "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-RT, J9035\n---TESTS---\n92137\n---G2211---\nNO\n---DIAGNOSES---\nWet AMD | OD | active\n---NOTE---\nA/P\n1. Wet AMD OD\n[+] Intravitreal injection OD today; risks, benefits and alternatives reviewed.\n[+] OCT-A reviewed OD.\n\nPlan:\n- RTC 4 weeks\nHealthy diet, non-smoking, Amsler grid provided, UV protection (sunglasses), AREDS2 supplementation\n\n\n\n=======================================\nCOVERAGE REFERENCE - Avastin / Commonwealth Care Alliance (plan not specified - merged across 2 plans)\nPA required\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-RT, J9035\n---TESTS---\n92137\n---G2211---\nNO\n---DIAGNOSES---\nWet AMD | OD | active\n---NOTE---\nA/P\n1. Wet AMD OD\n[+] Intravitreal injection OD today; risks, benefits and alternatives reviewed.\n[+] OCT-A reviewed OD.\n\nPlan:\n- RTC 4 weeks\nHealthy diet, non-smoking, Amsler grid provided, UV protection (sunglasses), AREDS2 supplementation\n\n\n\n=======================================\nCOVERAGE REFERENCE - Avastin / Commonwealth Care Alliance\nPA required\nNote: Avastin only. [Commonwealth Care Alliance].\n=======================================\n\n---END---",
+  "cards": [
+   {
+    "kind": "rule",
+    "drug": "Avastin",
+    "insurance": "Commonwealth Care Alliance",
+    "carrier": "Commonwealth Care Alliance",
+    "carrierLevel": true,
+    "planCount": 2,
+    "secondaryInsurance": null,
+    "isCombinedRule": false,
+    "ambiguousAlias": null,
+    "status": "yellow",
+    "requirements": [
+     "PA required"
+    ],
+    "notes": "PA required. Avastin only. [Commonwealth Care Alliance]. [all Commonwealth Care Alliance plans]",
+    "billing_alert": "⚠️ PRACTICE RULE: This plan underpays branded drugs — Avastin ONLY. Integrated Medicare-Medicaid plan (CCA): no secondary payer, $0 patient responsibility — do not bill the patient. Since 6/28/2026 CareSource runs CCA operations (same cards and plan names). Part B specialty drug PAs go to Care Continuum/EviCore, 888-933-2653. PA is per eye.",
+    "steps": null,
+    "sameAcrossPlans": true,
+    "avastinOnlyNote": "PA required. Avastin only. [Commonwealth Care Alliance].",
+    "jCode": "J9035"
+   }
+  ]
+ },
+ "cca-carrier-eylea": {
+  "before": "---CODE---\n99214-25\n---PROCEDURE---\n67028-RT, J0178\n---TESTS---\n92137\n---G2211---\nNO\n---DIAGNOSES---\nWet AMD | OD | active\n---NOTE---\nA/P\n1. Wet AMD OD\n[+] Intravitreal injection OD today; risks, benefits and alternatives reviewed.\n[+] OCT-A reviewed OD.\n\nPlan:\n- RTC 4 weeks\nHealthy diet, non-smoking, Amsler grid provided, UV protection (sunglasses), AREDS2 supplementation\n\n\n\n=======================================\nCOVERAGE REFERENCE - Eylea 2mg / Commonwealth Care Alliance (plan not specified - merged across 2 plans)\nNot covered\n=======================================\n\n---END---",
+  "after": "---CODE---\n99214-25\n---PROCEDURE---\n67028-RT, J0178\n---TESTS---\n92137\n---G2211---\nNO\n---DIAGNOSES---\nWet AMD | OD | active\n---NOTE---\nA/P\n1. Wet AMD OD\n[+] Intravitreal injection OD today; risks, benefits and alternatives reviewed.\n[+] OCT-A reviewed OD.\n\nPlan:\n- RTC 4 weeks\nHealthy diet, non-smoking, Amsler grid provided, UV protection (sunglasses), AREDS2 supplementation\n\n\n\n=======================================\nCOVERAGE REFERENCE - Eylea 2mg / Commonwealth Care Alliance\nNot covered\nNote: Commonwealth Care Alliance is Avastin-only. Eylea 2mg is not covered under this plan.\n=======================================\n\n---END---",
+  "cards": [
+   {
+    "kind": "rule",
+    "drug": "Eylea 2mg",
+    "insurance": "Commonwealth Care Alliance",
+    "carrier": "Commonwealth Care Alliance",
+    "carrierLevel": true,
+    "planCount": 2,
+    "secondaryInsurance": null,
+    "isCombinedRule": false,
+    "ambiguousAlias": null,
+    "status": "red",
+    "requirements": [
+     "Not covered — plan underpays"
+    ],
+    "notes": "One Care: Commonwealth Care Alliance One Care is Avastin-only. Eylea 2mg is not covered under this plan.; Sr Care: Commonwealth Care Alliance Sr Care is Avastin-only. Eylea 2mg is not covered under this plan.",
+    "billing_alert": "⚠️ PRACTICE RULE: This plan underpays branded drugs — Avastin ONLY. Integrated Medicare-Medicaid plan (CCA): no secondary payer, $0 patient responsibility — do not bill the patient. Since 6/28/2026 CareSource runs CCA operations (same cards and plan names). Part B specialty drug PAs go to Care Continuum/EviCore, 888-933-2653.",
+    "steps": null,
+    "sameAcrossPlans": true,
+    "avastinOnlyNote": "Commonwealth Care Alliance is Avastin-only. Eylea 2mg is not covered under this plan.",
+    "jCode": "J0178"
+   }
+  ]
  }
 }

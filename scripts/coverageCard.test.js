@@ -7,7 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { copyableNoteText, parseResponse } from "../src/lib/noteHelpers.js";
-import { coverageTier, reqTagClass, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, stepPossibleNote, nextOptionGroups, asciiFold, COVERAGE_FENCE_RX, COVERAGE_TIERS, stripLeadingSymbols } from "../src/lib/coverageCard.js";
+import { coverageTier, reqTagClass, requirementTags, keyRequirement, jCodeText, cardSteps, paLabel, stepDrugText, stepHeader, isTodayDrug, stepPossibleNote, nextOptionGroups, asciiFold, COVERAGE_FENCE_RX, COVERAGE_TIERS, stripLeadingSymbols, avastinOnlyNoteText, mergedPlanSub } from "../src/lib/coverageCard.js";
 
 const CASES = JSON.parse(readFileSync(new URL("./fixtures/coverage-cases.json", import.meta.url), "utf8"));
 const ASCII_ONLY = /^[\x09\x0A\x0D\x20-\x7E]*$/;
@@ -217,4 +217,46 @@ test("next options: grouped by each drug's own status (no PA, PA, not covered, c
   assert.match(card, /stepPossibleNote\(c\)/);
   assert.match(card, /nextOptionGroups\(c\)/);
   assert.match(card, /Next options on this plan/);
+});
+
+// ── Avastin-only note + merged-plan label (Mari, Oct 22 2026) ────────────────
+// Fixtures cca-carrier-*: the server's own route output (CCA = 2 plans, rule set 38, both
+// Avastin only, one answer) — "before" = the Oct 21 text Mari flagged.
+test("CCA + Avastin: card shows Retina-Rx's note; copy has the plain carrier and one Note line", () => {
+  const c = CASES["cca-carrier-avastin"];
+  assert.equal(avastinOnlyNoteText(c.cards[0]), "PA required. Avastin only. [Commonwealth Care Alliance].");
+  assert.equal(mergedPlanSub(c.cards[0]), "");
+  const block = blocksOf(copyableNoteText(parseResponse(c.after).note))[0].trim();
+  assert.equal(block, [
+    "=======================================",
+    "COVERAGE REFERENCE - Avastin / Commonwealth Care Alliance",
+    "PA required",
+    "Note: Avastin only. [Commonwealth Care Alliance].",
+    "======================================="].join("\n"));
+  assert.match(block, ASCII_ONLY);
+  // The flagged Oct 21 text: merged label, no Avastin-only line.
+  const old = blocksOf(copyableNoteText(parseResponse(c.before).note))[0];
+  assert.match(old, /Commonwealth Care Alliance \(plan not specified - merged across 2 plans\)\nPA required\n=/);
+});
+
+test("CCA + Eylea: Not covered + the Avastin-only note ({plan} = the carrier)", () => {
+  const c = CASES["cca-carrier-eylea"];
+  assert.equal(coverageTier(c.cards[0]).key, "red");
+  assert.equal(avastinOnlyNoteText(c.cards[0]), "Commonwealth Care Alliance is Avastin-only. Eylea 2mg is not covered under this plan.");
+  const block = blocksOf(copyableNoteText(parseResponse(c.after).note))[0];
+  assert.match(block, /\nCOVERAGE REFERENCE - Eylea 2mg \/ Commonwealth Care Alliance\nNot covered\nNote: Commonwealth Care Alliance is Avastin-only\. Eylea 2mg is not covered under this plan\.\n=/);
+});
+
+test("every other card: no Avastin-only note; merged plans that differ keep the sub-line", () => {
+  for (const [name, c] of Object.entries(CASES)) {
+    if (name.startsWith("cca-")) continue;
+    for (const card of c.cards) assert.equal(avastinOnlyNoteText(card), "", name);
+    assert.doesNotMatch(c.after, /\nNote: /, name);
+  }
+  const merged = { kind: "rule", carrierLevel: true, carrier: "Fallon", planCount: 6 };
+  assert.equal(mergedPlanSub(merged), "Plan not specified — merged across 6 plans");
+  assert.equal(mergedPlanSub({ ...merged, ambiguousAlias: "fallon mc" }), '"fallon mc" matches 6 Fallon plans — merged; specify the plan for exact rules');
+  assert.equal(mergedPlanSub({ ...merged, sameAcrossPlans: true }), "");
+  assert.equal(mergedPlanSub({ kind: "rule", carrierLevel: false, insurance: "Fallon 365 Care" }), "");
+  assert.equal(avastinOnlyNoteText({ kind: "ambiguous", avastinOnlyNote: "x" }), "");
 });

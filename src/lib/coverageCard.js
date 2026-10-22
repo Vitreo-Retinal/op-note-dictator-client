@@ -151,6 +151,27 @@ export function nextOptionGroups(card) {
     .filter((g) => g.drugs.length);
 }
 
+// ── Avastin-only note + merged-plan sub-line (Mari, Oct 22 2026) ─────────────
+// Server routes/notes.js ruleCard: card.avastinOnlyNote = Retina-Rx's notes-box text
+// for an Avastin-only rule (server lib/avastin-only.js), absent for every other rule.
+// card.sameAcrossPlans = merged carrier plans that all give the same answer.
+/** Retina-Rx's note for an Avastin-only rule card, or "". */
+export function avastinOnlyNoteText(card) {
+  const c = card || {};
+  return c.kind === "rule" && typeof c.avastinOnlyNote === "string" ? c.avastinOnlyNote.trim() : "";
+}
+/**
+ * The small line under the plan name for a merged carrier-level card, or "" (a specific plan,
+ * or merged plans that all give the same answer: the plan name is then just the carrier).
+ */
+export function mergedPlanSub(card) {
+  const c = card || {};
+  if (c.kind !== "rule" || !c.carrierLevel || c.sameAcrossPlans) return "";
+  return c.ambiguousAlias
+    ? `"${c.ambiguousAlias}" matches ${c.planCount} ${c.carrier} plans — merged; specify the plan for exact rules`
+    : `Plan not specified — merged across ${c.planCount} plans`;
+}
+
 // ── ASCII fold for the copied coverage block (owner decision B) ─────────────
 // Client twin of server lib/ascii-safe.js — a defensive pass in copyableNoteText,
 // applied to the coverage block(s) only. Keep the two in step.
