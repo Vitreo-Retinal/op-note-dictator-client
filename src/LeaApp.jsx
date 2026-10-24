@@ -15,6 +15,7 @@ import leaSwoosh from "./lea-swoosh.png";
 import { RoleBadge, roleColor } from "./roleIcons.jsx";
 import HomePhone from "./HomePhone.jsx";
 import { LeaSchedulePage, useLeaSchedule } from "./LeaSchedule.jsx";
+import { makeUnlockStore, setHubToken, readHubToken } from "./lib/hubUnlock.js";
 
 // ── LEA Hub (Oct 2026, approved mockup "retina-rx-front-mockup") ─────
 // Lexington Eye's hub: the VRA hub client running in "LEA" mode under
@@ -69,6 +70,11 @@ function resetToken() {
 function clearHubToken() {
   try { sessionStorage.removeItem("vra_token"); } catch { /* storage blocked */ }
 }
+
+// Day-long doctor unlock (Mari, Oct 24 2026; same rule as the VRA hub): the PIN
+// holds until the end of the local day, with the "lea-doctor" token, until Lock.
+const LEA_UNLOCK_KEY = "lea-hub-unlock";
+const leaUnlock = () => { let ls = null; try { ls = typeof localStorage !== "undefined" ? localStorage : null; } catch { ls = null; } return makeUnlockStore(ls, LEA_UNLOCK_KEY); };
 
 const onVraDomain = () => /(^|\.)vra-hub\.com$/i.test(location.hostname);
 
@@ -150,7 +156,7 @@ const TOOLS = [
   { id: "drops", title: "Drop Schedule", icon: DropBottleIcon, description: "Build and print a drop schedule for a patient — post-op or post-injection, in EN / ES / VI / PT.", tags: ["Printable", "EN", "ES", "VI", "PT"] },
 ];
 
-function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onOpenDay, onSelectDoctor, onSwitch, onChangeHub, onScan }) {
+function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onOpenDay, onSelectDoctor, onSwitch, onChangeHub, onScan, onLock }) {
   // Oct 2026 (per Mari): the same front page as the VRA hub — the shared Call
   // Board (day stepper, F/U counter, on call, doctors that day, LEA techs +
   // OCT/FP, events at the bottom), then Your space and Tools for everyone.
@@ -200,16 +206,29 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onOpenDay, 
                 <span style={{ marginLeft: "auto", fontSize: 12, color: T.muted }}>Open</span>
               </button>
             )}
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              {LEA_SURGEONS.filter((d) => !unlockedDoctor || d.id !== unlockedDoctor.id).map((doc) => (
-                <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)} onMouseEnter={hoverOn} onMouseLeave={hoverOff}
-                  style={{ display: "flex", alignItems: "center", gap: 12, background: T.surface, border: `1px solid ${T.line}`, borderRadius: 999, padding: "8px 20px 8px 8px", cursor: "pointer", fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.ink }}>
-                  <span style={avatar(36)}>{doc.name}</span>
-                  Dr. {doc.surname || doc.name}
+            {/* Oct 24 2026 (Mari): unlocked today → only your own space + Lock; other doctors hidden. */}
+            {unlockedDoctor ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", color: T.muted, fontSize: 13, marginTop: 2 }}>
+                Signed in for today — no PIN until midnight.
+                <button type="button" onClick={onLock}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "none", border: 0, padding: "2px 4px", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer" }}>
+                  <LockIcon />Lock
                 </button>
-              ))}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, color: T.muted, fontSize: 12.5, marginTop: 8 }}><LockIcon />PIN required — the same PIN as in the VRA hub</div>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {LEA_SURGEONS.filter((d) => !unlockedDoctor || d.id !== unlockedDoctor.id).map((doc) => (
+                    <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)} onMouseEnter={hoverOn} onMouseLeave={hoverOff}
+                      style={{ display: "flex", alignItems: "center", gap: 12, background: T.surface, border: `1px solid ${T.line}`, borderRadius: 999, padding: "8px 20px 8px 8px", cursor: "pointer", fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.ink }}>
+                      <span style={avatar(36)}>{doc.name}</span>
+                      Dr. {doc.surname || doc.name}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, color: T.muted, fontSize: 12.5, marginTop: 8 }}><LockIcon />PIN required — the same PIN as in the VRA hub</div>
+              </>
+            )}
           </>
         )}
 
@@ -321,14 +340,17 @@ export default function LeaApp() {
   const [role, setRole] = useState(null); // null → "Pick your view"
   const [page, setPage] = useState("home");
   const [activeSurgeon, setActiveSurgeon] = useState(null);
-  const [unlockedId, setUnlockedId] = useState(null);
+  const [unlockedId, setUnlockedId] = useState(() => {
+    const v = rx && readLeaToken() ? leaUnlock().read(LEA_SURGEONS.map((d) => d.id)) : null;
+    return v ? v.id : null;
+  });
   const [onboarding, setOnboarding] = useState(false);
   const [schedDay, setSchedDay] = useState(null); // Schedule page opens on this day (Call Board "Full board ›")
 
   // LEA sign-in gone (401 from the hub API, or it ran out): forget it and
   // show the LEA password screen again.
   const expireLea = (msg) => {
-    storeLeaToken(null); clearHubToken();
+    storeLeaToken(null); clearHubToken(); leaUnlock().clear();
     setLea(null); setRole(null); setPage("home"); setActiveSurgeon(null); setUnlockedId(null); setOnboarding(false);
     setNotice(msg || "");
   };
@@ -390,17 +412,32 @@ export default function LeaApp() {
     const pickRole = (r) => {
       setRole(r);
       setActiveSurgeon(null);
-      if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
+      // A doctor unlock is for the doctor view only: the Tech view ends it.
+      if (r !== "doctor") { setUnlockedId(null); leaUnlock().clear(); resetToken(); }
+      if (r === "doctor" && unlockedDoc) { setOnboarding(false); setPage("home"); }
+      else if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
       else { setOnboarding(false); setPage("home"); }
     };
     return <LeaRolePicker phone={phone} onPick={pickRole} onChangeHub={changeHub} />;
   }
 
+  // Token in use (Oct 24 2026): the unlocked doctor's "lea-doctor" token, put back
+  // after a reload (seedToken left the LEA sign-in token). Idempotent.
+  if (role === "doctor" && unlockedId) {
+    const v = leaUnlock().read([unlockedId]);
+    if (v) setHubToken(v.token);
+  }
+
   const goHome = () => setPage("home");
-  // Picking a name always asks for the PIN (same rule as VRA).
-  const pickDoctor = (doc) => { setActiveSurgeon(leaDoctor(doc)); setPage("pin"); };
-  const lock = () => { setUnlockedId(null); setActiveSurgeon(null); resetToken(); };
-  const leaveDoctor = () => { if (!phone) setUnlockedId(null); setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
+  // Same rule as VRA (Oct 24 2026): the doctor unlocked today opens their space
+  // with no PIN; any other name asks for that doctor's PIN.
+  const pickDoctor = (doc) => {
+    if (unlockedDoc && doc.id === unlockedDoc.id) { setActiveSurgeon(leaDoctor(unlockedDoc)); setPage("doctor"); return; }
+    setActiveSurgeon(leaDoctor(doc)); setPage("pin");
+  };
+  const lock = () => { setUnlockedId(null); leaUnlock().clear(); setActiveSurgeon(null); resetToken(); };
+  // The unlock is kept on every device (it lasts the day; Home has a Lock button).
+  const leaveDoctor = () => { setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
   const switchView = () => { lock(); setRole(null); setOnboarding(false); setPage("home"); };
 
   let content;
@@ -431,11 +468,11 @@ export default function LeaApp() {
   } else if (page === "schedule") {
     content = <LeaSchedulePage key={schedDay || "today"} phone={phone} sched={sched} initialYmd={schedDay} onBack={goHome} />;
   } else if (page === "notes" && phone) {
-    content = <DoctorPicker onSelectDoctor={pickDoctor} />;
+    content = <DoctorPicker onSelectDoctor={pickDoctor} only={role === "doctor" ? unlockedDoc : null} onLock={lock} />;
   } else if (page === "pin" && activeSurgeon) {
     content = (
       <PinGate key={activeSurgeon.id} surgeon={activeSurgeon}
-        onSuccess={() => { setUnlockedId(activeSurgeon.id); setPage(onboarding && phone ? "home" : "doctor"); setOnboarding(false); }}
+        onSuccess={() => { setUnlockedId(activeSurgeon.id); leaUnlock().save(activeSurgeon.id, readHubToken()); setPage(onboarding && phone ? "home" : "doctor"); setOnboarding(false); }}
         onCancel={() => { setActiveSurgeon(phone ? unlockedDoc : null); setPage(phone ? "notes" : "home"); }} />
     );
   } else if (page === "doctor" && activeSurgeon && !phone) {
@@ -454,7 +491,7 @@ export default function LeaApp() {
   } else {
     content = (
       <LeaHomeDesktop role={role} sched={sched} unlockedDoctor={role === "doctor" ? unlockedDoc : null}
-        onSelectTool={(id) => { setSchedDay(null); setPage(id); }} onOpenDay={(ymd) => { setSchedDay(ymd || null); setPage("schedule"); }} onSelectDoctor={pickDoctor} onSwitch={switchView} onChangeHub={changeHub} onScan={openScan} />
+        onSelectTool={(id) => { setSchedDay(null); setPage(id); }} onOpenDay={(ymd) => { setSchedDay(ymd || null); setPage("schedule"); }} onSelectDoctor={pickDoctor} onSwitch={switchView} onChangeHub={changeHub} onScan={openScan} onLock={lock} />
     );
   }
 

@@ -21,6 +21,7 @@ import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, Manag
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
 import { COVERAGE_URL, RX_ORIGIN } from "./lib/retinaRx.js";
+import { makeUnlockStore, setHubToken, readHubToken, readSiteToken, rememberSiteToken } from "./lib/hubUnlock.js";
 
 // "Change hub" (Oct 2026, per Mari): back to the Retina-Rx landing ("Choose a hub").
 export const goChangeHub = () => location.assign(`${RX_ORIGIN}/`);
@@ -59,7 +60,7 @@ function PasswordGate({ onSuccess }) {
       });
       const data = await res.json();
       if (data.success) {
-        if (data.token) sessionStorage.setItem("vra_token", data.token);
+        if (data.token) { sessionStorage.setItem("vra_token", data.token); rememberSiteToken(data.token); }
         onSuccess();
       } else {
         setError("Incorrect password.");
@@ -186,7 +187,8 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
       </span>
     </button>
   );
-  const roleDoc = SURGEONS.find((d) => d.id === roleDoctorId) || null;
+  // Oct 24 2026: the doctor unlocked today is the big button, and the only one.
+  const roleDoc = (role === "doctor" && unlockedDoctor) || SURGEONS.find((d) => d.id === roleDoctorId) || null;
   // Oct 2026 — wide row tiles: Ask (front desk assistant; first for Front desk
   // and Manager) and Phone extensions (last, every role).
   const wideTile = (id, Icon, title, description, right) => (
@@ -289,15 +291,25 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
                     {unlockedDoctor && unlockedDoctor.id === roleDoc.id ? "Open" : <><LockIcon />PIN required</>}
                   </span>
                 </button>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 10, fontSize: 13, color: T.muted }}>
-                  Another doctor:
-                  {SURGEONS.filter((d) => d.id !== roleDoc.id).map((doc) => (
-                    <button key={doc.id} type="button" onClick={() => onSelectDoctor(doc)}
-                      style={{ background: "none", border: 0, padding: "2px 4px", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer" }}>
-                      {doc.surname}
+                {unlockedDoctor && unlockedDoctor.id === roleDoc.id ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 10, fontSize: 13, color: T.muted }}>
+                    Signed in for today — no PIN until midnight.
+                    <button type="button" onClick={onLock}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "none", border: 0, padding: "2px 4px", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer" }}>
+                      <LockIcon />Lock
                     </button>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 10, fontSize: 13, color: T.muted }}>
+                    Another doctor:
+                    {SURGEONS.filter((d) => d.id !== roleDoc.id).map((doc) => (
+                      <button key={doc.id} type="button" onClick={() => onSelectDoctor(doc)}
+                        style={{ background: "none", border: 0, padding: "2px 4px", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer" }}>
+                        {doc.surname}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </>
             ) : (
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -579,13 +591,14 @@ export function doctorPill(id, extra = {}) {
   return { display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 50, height: 28, padding: "0 10px", borderRadius: 999, background: c.soft, color: c.fg, fontSize: 14, fontWeight: 600, fontFamily: T.sans, flexShrink: 0, boxSizing: "border-box", ...extra };
 }
 
-export function DoctorPicker({ onSelectDoctor }) {
+// `only` (Oct 24 2026): the doctor unlocked today → just their name (no PIN) + Lock.
+export function DoctorPicker({ onSelectDoctor, only = null, onLock = null }) {
   return (
     <div style={{ background: T.paper, fontFamily: T.sans, color: T.ink }}>
       <PhoneHeading title="Notes" />
       <div style={{ padding: "0 16px", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted, margin: "4px 0 10px" }}>Choose your space</div>
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-        {SURGEONS.map((doc) => (
+        {(only ? [only] : SURGEONS).map((doc) => (
           <button key={doc.id} className="vra-pill" onClick={() => onSelectDoctor(doc)}
             style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 56, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "8px 14px", cursor: "pointer", fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.ink, textAlign: "left", boxSizing: "border-box" }}>
             <span style={doctorPill(doc.id)}>{doc.name}</span>
@@ -594,9 +607,16 @@ export function DoctorPicker({ onSelectDoctor }) {
           </button>
         ))}
       </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: T.muted, fontSize: 13, padding: "14px 16px 24px" }}>
-        <LockIcon />PIN required
-      </div>
+      {only ? (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: T.muted, fontSize: 13, padding: "14px 16px 24px" }}>
+          Signed in for today
+          {onLock && <button type="button" onClick={onLock} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "none", border: 0, padding: "6px 4px", color: T.accent, fontFamily: T.sans, fontSize: 13, cursor: "pointer" }}><LockIcon />Lock</button>}
+        </div>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: T.muted, fontSize: 13, padding: "14px 16px 24px" }}>
+          <LockIcon />PIN required
+        </div>
+      )}
     </div>
   );
 }
@@ -612,19 +632,23 @@ const PAGES = ["home", "schedule", "inject", "coding", "education", "intakehpi",
 function storeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function storeSet(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* private mode */ } }
 
-// Remembered doctor unlock (phones only, Oct 2026): a PIN entered on a phone
-// holds until the end of that local day, then the PIN is asked again.
-// Stored as { id, day: "YYYY-MM-DD" }. Desktop keeps the old memory-only unlock.
+// Remembered doctor unlock (Oct 2026 phones; Oct 24 2026 every device, per Mari:
+// "Once I log in with my pin as a doctor, I don't want to have to log in again
+// and again if I go back to the hub main screen"). A doctor PIN holds until the
+// end of that local day, across trips back to the hub and reloads, until Lock.
+// Stored with the doctor's server token (lib/hubUnlock.js), which the App puts
+// back into sessionStorage whenever the doctor space / reimbursement needs it.
 const UNLOCK_KEY = "vra-hub-unlock";
 const localYmd = () => { const d = new Date(), p = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+const localStore = () => { try { return typeof localStorage !== "undefined" ? localStorage : null; } catch { return null; } };
+const doctorUnlock = () => makeUnlockStore(localStore(), UNLOCK_KEY);
+// Manager token (kept beside the manager day unlock so a Manager's Hub visit and
+// the doctor space can each get their own token back).
+const MGR_TOKEN_KEY = "vra-hub-mgr-token";
+const managerToken = () => makeUnlockStore(localStore(), MGR_TOKEN_KEY);
 function rememberedUnlock() {
-  if (!isPhoneNow()) return null;
-  try {
-    const v = JSON.parse(storeGet(UNLOCK_KEY) || "null");
-    if (v && v.day === localYmd() && SURGEONS.some((d) => d.id === v.id)) return v.id;
-  } catch { /* bad value */ }
-  storeSet(UNLOCK_KEY, null);
-  return null;
+  const v = doctorUnlock().read(SURGEONS.map((d) => d.id));
+  return v ? v.id : null;
 }
 
 // Role picked on this device (Oct 2026): "doctor" | "tech" | "manager" | "frontdesk" | "research".
@@ -642,13 +666,13 @@ const REMEMBER_ROLE = false;
 function storedRole() { if (!REMEMBER_ROLE) return null; const r = storeGet(ROLE_KEY); return ROLES.includes(r) ? r : null; }
 function rememberedManager() {
   if (!isPhoneNow()) return false;
-  if (storeGet(MGR_UNLOCK_KEY) === localYmd()) return true;
+  if (storeGet(MGR_UNLOCK_KEY) === localYmd() && managerToken().read(["MANAGER"])) return true;
   storeSet(MGR_UNLOCK_KEY, null);
   return false;
 }
 
 function restoredState() {
-  if (!isPhoneNow()) return { page: "home", surgeon: null, unlocked: null };
+  if (!isPhoneNow()) return { page: "home", surgeon: null, unlocked: rememberedUnlock() };
   // A page whose tab this role does not have (e.g. Notes for Tech) falls back to Home.
   const role = storedRole();
   const tabOfStored = TAB_OF[storeGet(PAGE_KEY)];
@@ -677,9 +701,9 @@ export default function App() {
   const [page, setPage] = useState(initial.page);
   // page: home | schedule | inject | coding | education | intakehpi | documents | dictator | notes | doctor | pin
   const [activeSurgeon, setActiveSurgeon] = useState(initial.surgeon);
-  // Surgeon that passed the PIN gate: { id, day }. Desktop: memory only (a
-  // reload goes back through the gate). Phone: also kept in localStorage and
-  // honored until the end of that local day (see rememberedUnlock).
+  // Surgeon that passed the PIN gate: { id, day }. Kept in localStorage (with
+  // the doctor token) and honored until the end of that local day on every
+  // device (see rememberedUnlock); Lock / Change view end it early.
   const [unlocked, setUnlocked] = useState(initial.unlocked ? { id: initial.unlocked, day: localYmd() } : null);
   const [inputNonce, setInputNonce] = useState(0);
   // Role for this device (null → role picker after the password).
@@ -693,7 +717,7 @@ export default function App() {
   const [schedDay, setSchedDay] = useState(null);
   const phone = useIsPhone();
   const managerOpen = mgrDay === localYmd();
-  const unlockedId = unlocked && (!phone || unlocked.day === localYmd()) ? unlocked.id : null;
+  const unlockedId = unlocked && unlocked.day === localYmd() ? unlocked.id : null;
   const unlockedDoc = SURGEONS.find((d) => d.id === unlockedId) || null;
 
   useEffect(() => {
@@ -705,12 +729,27 @@ export default function App() {
     return <PasswordGate onSuccess={() => setAuthed(true)} />;
   }
 
+  // Token in use (Oct 24 2026): the Manager's Hub gets the manager token; every
+  // other page gets the unlocked doctor's token (the site password, a reload or a
+  // Manager's Hub visit would otherwise leave the wrong one in sessionStorage).
+  // Idempotent — set during render so child pages fetch with the right token.
+  {
+    const mgr = page === "manager" && managerOpen ? managerToken().read(["MANAGER"]) : null;
+    const doc = !mgr && role === "doctor" && unlockedId ? doctorUnlock().read([unlockedId]) : null;
+    if (mgr) setHubToken(mgr.token);
+    else if (doc) setHubToken(doc.token);
+  }
+
   // Role picker — once per device; "Switch view" on Home brings it back.
   if (!role) {
     const pickRole = (r) => {
       setRole(r); if (REMEMBER_ROLE) storeSet(ROLE_KEY, r);
       setActiveSurgeon(null);
-      if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
+      // A doctor unlock is for the doctor view only: any other view ends it.
+      if (r !== "doctor") lock();
+      // Doctor still unlocked today → straight to Home, no PIN.
+      if (r === "doctor" && unlockedDoc) { setOnboarding(false); setPage("home"); }
+      else if (r === "doctor") { setOnboarding(phone); setPage(phone ? "notes" : "home"); }
       // Picking Manager always asks for the PIN (same rule as picking a doctor's name).
       else if (r === "manager") { setMgrDay(null); storeSet(MGR_UNLOCK_KEY, null); setOnboarding(true); setPage("managerpin"); }
       // Tech, Front desk, Research (open door, no PIN) → straight to their Home.
@@ -721,25 +760,33 @@ export default function App() {
 
   const goHome = () => setPage("home");
   // Leaving the doctor space: desktop → hub; phone → the doctor picker.
-  // On a phone the unlock is kept (it lasts the day; Home has a Lock button).
-  const leaveDoctor = () => { if (!phone) setUnlocked(null); setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
-  // Picking a name always asks for the PIN (per Mari, Oct 7). The day-long phone
-  // unlock only skips the PIN when the app is reopened or the Notes tab / Dictate
-  // button returns to an already-open space — never on an explicit name pick.
-  const pickDoctor = (doc) => { setActiveSurgeon(doc); setPage("pin"); };
+  // The unlock is kept on every device (it lasts the day; Home has a Lock button).
+  const leaveDoctor = () => { setActiveSurgeon(null); setPage(phone ? "notes" : "home"); };
+  // Oct 24 2026 (Mari): the doctor already unlocked today opens their space with
+  // no PIN. Other doctors' names are hidden while unlocked ("If I put in my pin, I
+  // should not try to then go to using another doctor's interface"); if one is
+  // reached anyway it still asks for that doctor's PIN.
+  const pickDoctor = (doc) => {
+    if (unlockedDoc && doc.id === unlockedDoc.id) { setActiveSurgeon(unlockedDoc); setPage("doctor"); return; }
+    setActiveSurgeon(doc); setPage("pin");
+  };
   const unlock = (id) => {
     const v = { id, day: localYmd() };
     setUnlocked(v);
-    if (phone) storeSet(UNLOCK_KEY, JSON.stringify(v));
+    doctorUnlock().save(id, readHubToken()); // PinGate just stored the doctor token
     if (role === "doctor") { setRoleDoctorId(id); storeSet(ROLE_DOC_KEY, id); }
   };
-  const lock = () => { setUnlocked(null); storeSet(UNLOCK_KEY, null); setActiveSurgeon(null); };
-  const unlockManager = () => { setMgrDay(localYmd()); if (phone) storeSet(MGR_UNLOCK_KEY, localYmd()); };
+  // Lock: forget the doctor unlock and go back to the site sign-in token.
+  function lock() {
+    setUnlocked(null); doctorUnlock().clear(); setActiveSurgeon(null);
+    const site = readSiteToken(); if (site) setHubToken(site);
+  }
+  const unlockManager = () => { setMgrDay(localYmd()); if (phone) storeSet(MGR_UNLOCK_KEY, localYmd()); managerToken().save("MANAGER", readHubToken()); };
   const openManager = () => setPage(managerOpen ? "manager" : "managerpin");
   // "Switch view": forget the role and both unlocks, back to the role picker.
   const switchView = () => {
     lock();
-    setMgrDay(null); storeSet(MGR_UNLOCK_KEY, null);
+    setMgrDay(null); storeSet(MGR_UNLOCK_KEY, null); managerToken().clear();
     setRoleDoctorId(null); storeSet(ROLE_DOC_KEY, null);
     setRole(null); storeSet(ROLE_KEY, null);
     setOnboarding(false);
@@ -811,7 +858,7 @@ export default function App() {
     content = <OpNoteDictator onBack={goHome} />;
   } else if (page === "notes" && phone) {
     // Phone "Notes" tab — the doctor picker.
-    content = <DoctorPicker onSelectDoctor={pickDoctor} />;
+    content = <DoctorPicker onSelectDoctor={pickDoctor} only={role === "doctor" ? unlockedDoc : null} onLock={lock} />;
   } else if (page === "pin" && activeSurgeon) {
     // ── PIN gate (verifies before entering doctor space) ──
     content = (
