@@ -13,6 +13,10 @@ export const NEXTGEN_URL = "https://rdg102818.nextgenmcs.com/RDWeb/Pages/en-US/l
 // Windows 10 link on the left; choose HTML5 if no pop-up appears (gear, top right).
 export const UMASS_EPIC_URL = "https://view.umassmemorial.org/";
 export const UMASS_EPIC_TIP = "Open UMass Epic (FollowMe Desktop) in a new tab. Sign in with your Epic user name, password and RSA code, then click the Windows 10 link on the left. No pop-up? Gear (top right) → HTML5.";
+// LEA Epic (Greg Lyons, LEA IT, Oct 23 2026; Mari Oct 24: beside NextGen and UMass Epic):
+// Lexington Eye's Epic through the Partners Citrix portal. Needs Citrix Workspace installed.
+export const LEA_EPIC_URL = "https://workspace.partners.org";
+export const LEA_EPIC_TIP = "Open LEA Epic (Partners Citrix portal) in a new tab. Needs Citrix Workspace installed on this computer. Sign in with your Partners login, then click the Epic icon.";
 
 export const HUB_DATA = [
   { code: "65260", desc: "Removal of intraocular foreign body, magnetic", type: "procedure", mh: 740.05, medicare: 840.03, units_per_dose: null, payers: { HPHC: { vra: 2295.96, lex: 2633.49 }, MGB: { vra: 1066.67, lex: 2649.18 }, Fallon: { vra: 947.07, lex: 1204.93 } } },

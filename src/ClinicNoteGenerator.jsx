@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { NEXTGEN_URL, UMASS_EPIC_URL, UMASS_EPIC_TIP } from "./hubData.js";
+import { NEXTGEN_URL, UMASS_EPIC_URL, UMASS_EPIC_TIP, LEA_EPIC_URL, LEA_EPIC_TIP } from "./hubData.js";
 import { AICodingAssistant } from "./CptReference.jsx";
 import RateComparison from "./RateComparison.jsx";
 import PatientEducation from "./PatientEducation.jsx";
@@ -1267,6 +1267,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 <a href={UMASS_EPIC_URL} target="_blank" rel="noopener noreferrer" title={UMASS_EPIC_TIP}
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
                   UMass Epic <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                </a>
+                {/* LEA Epic (Mari Oct 24 2026): Partners Citrix portal, beside UMass Epic. Desktop only: three links squeeze the phone's mic row, and Citrix Epic is a computer tool. */}
+                <a href={LEA_EPIC_URL} target="_blank" rel="noopener noreferrer" title={LEA_EPIC_TIP}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                  LEA Epic <span aria-hidden style={{ fontSize: 12 }}>↗</span>
                 </a>
               </div>
             )}

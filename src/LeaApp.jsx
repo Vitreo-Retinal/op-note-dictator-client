@@ -14,7 +14,6 @@ import CallBoard from "./CallBoard.jsx";
 import leaSwoosh from "./lea-swoosh.png";
 import { RoleBadge, roleColor } from "./roleIcons.jsx";
 import HomePhone from "./HomePhone.jsx";
-import EpicRemoteTile from "./EpicRemoteTile.jsx";
 import { LeaSchedulePage, useLeaSchedule } from "./LeaSchedule.jsx";
 
 // ── LEA Hub (Oct 2026, approved mockup "retina-rx-front-mockup") ─────
@@ -211,7 +210,6 @@ function LeaHomeDesktop({ role, sched, unlockedDoctor, onSelectTool, onOpenDay, 
               ))}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, color: T.muted, fontSize: 12.5, marginTop: 8 }}><LockIcon />PIN required — the same PIN as in the VRA hub</div>
-            <EpicRemoteTile style={{ marginTop: 12 }} />
           </>
         )}
 
