@@ -110,3 +110,7 @@ export function DirectoryIcon({ size = 22 }) {
 export function ScanIcon({ size = 22 }) {
   return (<svg {...base(size, 1.75)}><path d="M4 8V5.5A1.5 1.5 0 015.5 4H8M16 4h2.5A1.5 1.5 0 0120 5.5V8M20 16v2.5a1.5 1.5 0 01-1.5 1.5H16M8 20H5.5A1.5 1.5 0 014 18.5V16" /><path d="M8 8.5v7M11 8.5v7M13.5 8.5v7M16 8.5v7" /></svg>);
 }
+// Computer screen — LEA desktop "Epic (remote)" tile (Mari, Oct 23 2026)
+export function MonitorIcon({ size = 22 }) {
+  return (<svg {...base(size, 1.75)}><rect x="3" y="4" width="18" height="12" rx="1.5" /><path d="M8 20h8M12 16v4" /></svg>);
+}

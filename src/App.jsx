@@ -21,6 +21,7 @@ import { InjectIcon, CodingIcon, EducationIcon, IntakeIcon, DocumentsIcon, Manag
 import logo from "./vra-logo.png";
 import { useIsPhone, isPhoneNow, usePhone, PhoneCtx, PhoneShell, PhoneHeading, PHONE_BODY_H, tabsFor } from "./phone.jsx";
 import { COVERAGE_URL, RX_ORIGIN } from "./lib/retinaRx.js";
+import EpicRemoteTile from "./EpicRemoteTile.jsx";
 
 // "Change hub" (Oct 2026, per Mari): back to the Retina-Rx landing ("Choose a hub").
 export const goChangeHub = () => location.assign(`${RX_ORIGIN}/`);
@@ -312,6 +313,7 @@ export function Homepage({ role = "doctor", roleDoctorId, managerOpen, onSelectT
                 ))}
               </div>
             )}
+            <EpicRemoteTile style={{ marginTop: 12 }} />
           </>
         )}
 
