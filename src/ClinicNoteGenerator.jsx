@@ -1268,7 +1268,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
                   UMass Epic <span aria-hidden style={{ fontSize: 12 }}>↗</span>
                 </a>
-                {/* LEA Epic (Mari Oct 24 2026): Partners Citrix portal, beside UMass Epic. Desktop only: three links squeeze the phone's mic row, and Citrix Epic is a computer tool. */}
+                {/* LEA Epic (Mari Oct 24 2026): Partners Citrix portal, beside UMass Epic. On the phone it is "LEA" in the EMR row under the mic. */}
                 <a href={LEA_EPIC_URL} target="_blank" rel="noopener noreferrer" title={LEA_EPIC_TIP}
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 32, padding: "0 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
                   LEA Epic <span aria-hidden style={{ fontSize: 12 }}>↗</span>
@@ -1317,19 +1317,23 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     ? `Recording ${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, "0")} — tap to stop`
                     : isTranscribing ? "Transcribing..." : "Tap to dictate"}
                 </span>
-                {/* NextGen (phone, per Mari Oct 2026): same remote-desktop sign-in link as desktop, beside where the note is typed. */}
-                {!isRecording && (
-                  <div style={{ marginLeft: "auto", display: "flex", gap: 6, flexShrink: 0 }}>
-                    <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in)"
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 34, padding: "0 10px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
-                      NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
-                    </a>
-                    <a href={UMASS_EPIC_URL} target="_blank" rel="noopener noreferrer" title={UMASS_EPIC_TIP}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 34, padding: "0 10px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
-                      UMass <span aria-hidden style={{ fontSize: 12 }}>↗</span>
-                    </a>
-                  </div>
-                )}
+              </div>
+            )}
+            {/* EMR links (phone, Mari Oct 24 2026): NextGen · UMass · LEA on their own row under the mic — three don't fit beside "Tap to dictate". Same links as desktop. */}
+            {phone && (
+              <div style={{ display: "flex", gap: 6, margin: "0 0 8px" }}>
+                <a href={NEXTGEN_URL} target="_blank" rel="noopener noreferrer" title="Open NextGen (remote desktop sign-in)"
+                  style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4, height: 34, padding: "0 10px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                  NextGen <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                </a>
+                <a href={UMASS_EPIC_URL} target="_blank" rel="noopener noreferrer" title={UMASS_EPIC_TIP}
+                  style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4, height: 34, padding: "0 10px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                  UMass <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                </a>
+                <a href={LEA_EPIC_URL} target="_blank" rel="noopener noreferrer" title={LEA_EPIC_TIP}
+                  style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4, height: 34, padding: "0 10px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.surface, color: T.accent, fontFamily: T.sans, fontSize: 13, fontWeight: 500, textDecoration: "none", whiteSpace: "nowrap" }}>
+                  LEA <span aria-hidden style={{ fontSize: 12 }}>↗</span>
+                </a>
               </div>
             )}
 
