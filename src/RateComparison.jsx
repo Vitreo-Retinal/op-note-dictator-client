@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { supabase } from "./supabaseClient.js";
+import { hubRpc } from "./lib/hubRpc.js"; // via the hub server, not the public key (security stage 3, Oct 24 2026)
 import { S, T, card, field, fieldLabel, btnSm, secHead } from "./theme.js";
 import PageBar, { wrap } from "./PageBar.jsx";
 import { AlertIcon } from "./icons.jsx";
@@ -91,15 +91,15 @@ export default function RateComparison({ onBack, embedded = false }) {
   const [drugEcon, setDrugEcon] = useState([]); // hub_drug_economics_v3(): per-dose buy-and-bill margins, current + prior Medicare quarter
 
   useEffect(() => {
-    supabase.rpc("hub_drug_economics_v3").then(({ data }) => setDrugEcon(data || []));
-    supabase.rpc("hub_codes").then(({ data }) => setCodes((data || []).filter((c) => c.has_market)));
-    supabase.rpc("hub_networks").then(({ data }) => {
+    hubRpc("hub_drug_economics_v3").then(({ data }) => setDrugEcon(data || []));
+    hubRpc("hub_codes").then(({ data }) => setCodes((data || []).filter((c) => c.has_market)));
+    hubRpc("hub_networks").then(({ data }) => {
       const list = data || [];
       setNets(list);
       setNet((cur) => cur || list.find((n) => n.kind === "field") || list[0] || null);
     });
     // Insurance aliases (UHC / United Healthcare / Tufts Direct / MassHealth …) from the shared insurance_plans table
-    supabase.rpc("hub_insurance_dict").then(({ data }) => {
+    hubRpc("hub_insurance_dict").then(({ data }) => {
       const m = {};
       (data || []).forEach((r) => { (m[r.hub_payer] = m[r.hub_payer] || []).push(r.match_str); });
       setAliasMap(m);
@@ -109,7 +109,7 @@ export default function RateComparison({ onBack, embedded = false }) {
   useEffect(() => {
     if (!code || !net) return;
     setLoading(true);
-    supabase.rpc("hub_compare", { p_code: code, p_network: net.network, p_lob: net.lob, p_kind: net.kind }).then(({ data, error }) => {
+    hubRpc("hub_compare", { p_code: code, p_network: net.network, p_lob: net.lob, p_kind: net.kind }).then(({ data, error }) => {
       setData(error ? null : data); setLoading(false);
     });
   }, [code, net]);
@@ -117,7 +117,7 @@ export default function RateComparison({ onBack, embedded = false }) {
   // RVU breakdown depends only on the code (Medicare component values are national)
   useEffect(() => {
     if (!code) { setRvu(null); return; }
-    supabase.rpc("hub_rvu", { p_code: code }).then(({ data, error }) => setRvu(error ? null : data));
+    hubRpc("hub_rvu", { p_code: code }).then(({ data, error }) => setRvu(error ? null : data));
   }, [code]);
 
   // when the selected insurance has no peer field (regional/benchmark), drop field-only targets
