@@ -21,6 +21,8 @@ import { S, T, appBar, avatar, btn, btnSm, field, fieldLabel, chip, input, RESPO
 import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.jsx";
 import logo from "./vra-logo.png";
 import { usePhone, TABBAR_H } from "./phone.jsx";
+import { liveDictationAllowed, liveWsUrl, chooseDelivery } from "./lib/liveDictation.js";
+import { startLiveSession, liveDictationSupported, readHubToken } from "./lib/liveDictationSession.js";
 
 // Tabs shown on phones (everything else is desktop-only).
 const PHONE_TABS = ["input", "output", "evidence"]; // Coding lives in the bottom tab bar on phone (same AI assistant, reimbursement shown once PIN-unlocked)
@@ -219,6 +221,15 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const lastCursorRef = useRef(null);        // last cursor position in the note (null = append at end)
   const recordingPurposeRef = useRef("insert"); // "insert" (into note) | "edit" (spoken instruction) | "pbm" (session fields)
   const runRef = useRef(null);               // set below, lets dictation auto-trigger a regenerate
+  // Live dictation (Oct 2026, lib/liveDictation.js): words appear while the doctor
+  // talks — regular Dictate only, allow-listed doctors only (MR). The MediaRecorder
+  // above keeps recording in parallel; any live failure → the batch path as before.
+  const [liveState, setLiveState] = useState(null);   // null | "connecting" | "live" | "failed" | "finishing"
+  const [livePreview, setLivePreview] = useState([]); // [{ text, done }] in turn order
+  const liveRef = useRef(null);                        // the running live session, if any
+  const surgeonIdRef = useRef(surgeon && surgeon.id);  // startRecording is memoized once
+  surgeonIdRef.current = surgeon && surgeon.id;
+  useEffect(() => () => { if (liveRef.current) { liveRef.current.abort(); liveRef.current = null; } }, []);
 
   // ── PBM Session mode state (added July 2026) ──────────────────────
   const [pbmEye, setPbmEye] = useState("");                 // "" | "OD" | "OS" | "OU"
@@ -308,9 +319,27 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         stream.getTracks().forEach(t => t.stop());
         clearInterval(timerRef.current);
         setRecordingTime(0);
-        if (audioChunksRef.current.length === 0) return;
+        const live = liveRef.current;
+        liveRef.current = null;
+        if (audioChunksRef.current.length === 0) {
+          if (live) { live.abort(); setLiveState(null); setLivePreview([]); }
+          return;
+        }
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
         setIsTranscribing(true);
+        if (live) {
+          // Live: wait for the server's final (≤ 8 s). Exactly one source reaches the
+          // note — the live text, or (any failure / empty) the recording below.
+          const out = await live.stop();
+          setLiveState(null);
+          setLivePreview([]);
+          const pick = chooseDelivery(out, audioBlob.size);
+          if (pick.use === "live") {
+            deliverTranscript(pick.text);
+            setIsTranscribing(false);
+            return;
+          }
+        }
         try {
           // ONE round trip (Sep 2026): the server transcribes AND cleans up
           // (?cleanup=1 → { transcript, cleaned }). Pass the recording purpose so
@@ -348,17 +377,28 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         }
         setIsTranscribing(false);
       };
+      liveRef.current = null;
+      if (liveDictationAllowed(surgeonIdRef.current, recordingPurposeRef.current) && liveDictationSupported()) {
+        const token = readHubToken();
+        const wsUrl = liveWsUrl(API_BASE);
+        if (token && wsUrl) {
+          setLivePreview([]);
+          liveRef.current = startLiveSession({ stream, wsUrl, token, onPreview: setLivePreview, onState: setLiveState });
+        }
+      }
       mediaRecorder.start(1000);
       mediaRecorderRef.current = mediaRecorder;
       setIsRecording(true);
       setRecordingTime(0);
       timerRef.current = setInterval(() => setRecordingTime(t => t + 1), 1000);
     } catch (e) {
+      if (liveRef.current) { liveRef.current.abort(); liveRef.current = null; setLiveState(null); setLivePreview([]); }
       setError("Microphone access denied. Please allow mic access and try again.");
     }
   }, []);
 
   const stopRecording = useCallback(() => {
+    if (liveRef.current) liveRef.current.stop(); // live: flush audio + ask for the final (idempotent; onstop awaits it)
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
     }
@@ -954,6 +994,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
 
   // Phone calculator block (one per input group).
   const calcBlock = { display: "flex", flexDirection: "column", gap: 6, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "10px 14px", minWidth: 0 };
+  // "Live" badge while a live dictation session streams (Oct 2026; MR's Dictate only).
+  const liveBadge = (extra = {}) => (liveState === "connecting" || liveState === "live") ? (
+    <span data-testid="live-badge" title={liveState === "live" ? "Live dictation — words appear as you speak" : "Connecting live dictation…"}
+      style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "1px 7px", borderRadius: 999, background: T.greenSoft, color: T.green, fontSize: 11, fontWeight: 700, letterSpacing: 0.3, verticalAlign: "middle", flexShrink: 0, ...extra }}>
+      <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, opacity: liveState === "live" ? 1 : 0.4 }} />
+      Live
+    </span>
+  ) : null;
   const generateBtn = (extra = {}) => (
     <button onClick={handleGenerate} disabled={loading || !note.trim()} style={btn("primary", {
       background: loading || !note.trim() ? T.accentSoft : pendingUnknown ? T.amber : T.accent,
@@ -1313,8 +1361,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 <span style={{ fontSize: 14, color: isRecording ? T.red : T.ink2, fontWeight: isRecording ? 600 : 400, minWidth: 0 }}>
                   {isRecording
                     ? `Recording ${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, "0")} — tap to stop`
-                    : isTranscribing ? "Transcribing..." : "Tap to dictate"}
+                    : isTranscribing ? (liveState === "finishing" ? "Finishing…" : "Transcribing...") : "Tap to dictate"}
                 </span>
+                {isRecording && liveBadge()}
               </div>
             )}
             {/* EMR links (phone, Mari Oct 24 2026): NextGen · UMass · LEA on their own row under the mic — three don't fit beside "Tap to dictate". Same links as desktop. */}
@@ -1370,7 +1419,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   ) : isTranscribing ? (
                     <>
                       <span style={{ fontSize: "0.9rem" }}>⏳</span>
-                      Transcribing...
+                      {liveState === "finishing" ? "Finishing…" : "Transcribing..."}
                     </>
                   ) : (
                     <>
@@ -1398,6 +1447,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 {isRecording && (
                   <span style={{ fontSize: 12, color: T.red, fontWeight: 600, flex: "1 1 180px", minWidth: 0 }}>
                     ● Recording — {recordingPurposeRef.current === "edit" ? "speak the change you want (e.g. “change follow-up to 2 weeks”)" : "speak now"}
+                    {!phone && liveBadge({ marginLeft: 8 })}
                   </span>
                 )}
                 {/* Dictation tip */}
@@ -1418,6 +1468,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 </div>
               </div>
             </div>
+            {liveState && (
+              <div aria-live="polite" data-testid="live-preview"
+                style={{ marginTop: 8, padding: "8px 12px", background: T.paper, border: `1px dashed ${T.line}`, borderRadius: T.r, color: T.muted, fontSize: 13, lineHeight: 1.55, maxHeight: phone ? 96 : 140, overflowY: "auto", wordBreak: "break-word" }}>
+                {liveState === "failed"
+                  ? "Live preview stopped — still recording. Your dictation will be transcribed when you stop."
+                  : livePreview.length
+                    ? livePreview.map((seg, i) => (
+                        <span key={i} style={{ color: seg.done ? T.ink2 : T.muted, fontStyle: seg.done ? "normal" : "italic" }}>{seg.text}{" "}</span>
+                      ))
+                    : liveState === "finishing" ? "Finishing…" : "Listening…"}
+              </div>
+            )}
             {phone && generateBtn({ width: "100%", height: 48, fontSize: 15, marginTop: 10, justifyContent: "center" })}
 
             {error && (
