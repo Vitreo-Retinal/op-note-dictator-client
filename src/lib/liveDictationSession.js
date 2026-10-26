@@ -147,7 +147,7 @@ export function startLiveSession({ stream, wsUrl, token, onPreview = () => {}, o
   } else {
     ws.onopen = () => {
       if (failReason) return;
-      onState("live");
+      if (!stopRequested) onState("live"); // after Stop the UI stays on "Finishing…"
       while (queue.length) ws.send(queue.shift());
       if (stopRequested) ws.send(JSON.stringify({ type: "stop" }));
     };

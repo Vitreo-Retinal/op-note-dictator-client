@@ -139,7 +139,7 @@ test("chooseDelivery: live text, else the recording, never both", () => {
   assert.deepEqual(chooseDelivery(null, 5000), { use: "fallback" });
   assert.deepEqual(chooseDelivery({ ok: false }, 0), { use: "none" });
   assert.deepEqual(chooseDelivery({ ok: true, text: "hi" }, 0), { use: "live", text: "hi" });
-  assert.equal(LIVE_FINAL_TIMEOUT_MS, 8000);
+  assert.equal(LIVE_FINAL_TIMEOUT_MS, 15000);
 });
 
 // ── Session glue with fakes ─────────────────────────────────────────
@@ -259,6 +259,33 @@ test("session: no final within the timeout → not ok; a late final is ignored",
   assert.ok(Date.now() - t0 >= 35);
   ws.msg({ type: "final", transcript: "late", cleaned: "late" });
   assert.deepEqual(await s.stop(), out);
+});
+
+test("session: Stop while still connecting stays \"finishing\" and waits for the final", async () => {
+  const { s, ws, states } = begin();
+  await tick();
+  feed(4800);
+  const p = s.stop();
+  await tick(20);
+  ws.open(); // opens after Stop: queued audio + stop go out, state is not reset to "live"
+  assert.deepEqual(states, ["connecting", "finishing"]);
+  assert.equal(ws.sent.filter((m) => typeof m !== "string").length, 1);
+  assert.equal(JSON.parse(ws.sent.at(-1)).type, "stop");
+  ws.msg({ type: "final", transcript: "ok then", cleaned: "" });
+  assert.deepEqual(await p, { ok: true, text: "ok then", timings: undefined });
+});
+
+test("session: the default wait for the final after Stop is 15 s", async () => {
+  const realSetTimeout = globalThis.setTimeout;
+  const delays = [];
+  globalThis.setTimeout = (fn, ms, ...a) => { delays.push(ms); return realSetTimeout(fn, ms === 15000 ? 1 : ms, ...a); };
+  try {
+    const { s, ws } = begin();
+    ws.open();
+    const out = await s.stop();
+    assert.ok(delays.includes(15000), `timers: ${delays}`);
+    assert.deepEqual(out, { ok: false, reason: "final_timeout" });
+  } finally { globalThis.setTimeout = realSetTimeout; }
 });
 
 test("session: empty final → not ok (the recording is used instead)", async () => {

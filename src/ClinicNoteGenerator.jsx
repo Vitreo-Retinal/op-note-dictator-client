@@ -328,7 +328,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
         setIsTranscribing(true);
         if (live) {
-          // Live: wait for the server's final (≤ 8 s). Exactly one source reaches the
+          // Live: wait for the server's final (≤ 15 s, "Finishing…"). Exactly one source reaches the
           // note — the live text, or (any failure / empty) the recording below.
           const out = await live.stop();
           setLiveState(null);

@@ -11,7 +11,7 @@ export const LIVE_DICTATION_SURGEONS = Object.freeze(["MR"]);
 
 export const LIVE_SAMPLE_RATE = 24000;
 export const LIVE_FRAME_SAMPLES = 2400;      // 100 ms at 24 kHz
-export const LIVE_FINAL_TIMEOUT_MS = 8000;   // after Stop: no final by then → batch fallback
+export const LIVE_FINAL_TIMEOUT_MS = 15000;  // after Stop: no final by then → batch fallback ("Finishing…" meanwhile)
 export const LIVE_SUBPROTOCOL = "vra-hub";
 
 /**
