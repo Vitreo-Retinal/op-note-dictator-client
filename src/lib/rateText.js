@@ -149,11 +149,19 @@ export function periodLabel(from, to) {
  *               / "Worcester · current release (Oct 2026)"
  * Null when the answer carries no period.
  */
-export function medicarePeriod(benchmarks, isDrug) {
+export function medicarePeriod(benchmarks, isDrug, month) {
   const p = benchmarks && benchmarks.med_period;
   if (!p || !p.from) return null;
   if (isDrug) {
     const q = periodLabel(p.from, p.to);
+    // The month asked is before the quarter returned (no older ASP stored): say so.
+    if (month && month < p.from.slice(0, 7)) {
+      return {
+        line: `Medicare ASP · ${q}`,
+        short: `ASP ${q} · none stored for ${monthLabel(month)}`,
+        later: `No Medicare ASP for ${monthLabel(month)} is stored. This is the rate ${q}.`,
+      };
+    }
     return { line: `Medicare ASP · ${q}`, short: `ASP · ${q}` };
   }
   const year = p.from.slice(0, 4);
@@ -255,9 +263,68 @@ export function sourceLine(plan, vra, data) {
   if (!plan) return "";
   const b = data && data.benchmarks;
   if (plan.source === "medicare") {
-    const p = medicarePeriod(b, data && data.type === "drug");
+    const p = medicarePeriod(b, data && data.type === "drug", data && data.month);
     return p ? p.line : plan.label || "";
   }
   if (plan.source === "masshealth") return massHealthPeriod(b) || plan.label || "";
   return fileLine(plan, vra, data && data.month);
+}
+
+// ── Drug margin with the cost in effect for the month (Oct 2026) ─────────────
+// hub_plan_rate_at returns drug_cost (today's cost) and drug_cost_at (the cost in
+// effect on the 15th of the picked month, from pricing.drug_cost_history; null when
+// none is recorded). drug_cost_at is NOT dose-adjusted: for a dose-level code
+// (dose_mult ≠ 1) the server already multiplied the rate to a per-dose figure and
+// gives drug_cost billed_units_per_vial = 1 (dose_adjusted), so the same is done here.
+
+/** "Jul 20 – Sep 30, 2026", "Dec 15, 2026 – Jan 31, 2027", "since Jul 20, 2026". */
+export function costPeriod(from, to) {
+  if (!dayLabel(from)) return null;
+  if (!dayLabel(to)) return `since ${dayLabel(from)}`;
+  return from.slice(0, 4) === to.slice(0, 4) ? `${shortDay(from)} – ${dayLabel(to)}` : `${dayLabel(from)} – ${dayLabel(to)}`;
+}
+
+/**
+ * Margin per dose from VRA's per-unit rate (× units_per_dose, as before).
+ * → { perUnit, perDose, acqPerUnit, upd, acqCost, historic, period, todayAsOf, noCostFor } or null.
+ *   historic   — the cost in effect for the month was used (drug_cost_at)
+ *   period     — "Jul 20 – Sep 30, 2026" for that cost
+ *   noCostFor  — 'YYYY-MM' when the answer says there is no cost for that month and today's cost is used
+ */
+export function drugMargin(data, vraRate) {
+  if (!data || data.type !== "drug" || vraRate == null) return null;
+  const upd = data.units_per_dose ? Number(data.units_per_dose) : 1;
+  const mult = data.dose_mult != null ? Number(data.dose_mult) : 1;
+  const at = data.drug_cost_at;
+  const now = data.drug_cost;
+  let acqPerUnit = null, acqCost = null, historic = false, period = null;
+  if (at && at.acq_cost != null) {
+    const units = mult !== 1 ? 1 : Number(at.billed_units_per_vial);
+    if (units > 0) {
+      acqCost = Number(at.acq_cost);
+      acqPerUnit = acqCost / units;
+      historic = true;
+      period = costPeriod(at.effective_from, at.effective_to);
+    }
+  }
+  if (acqPerUnit == null && now && now.acq_cost != null) {
+    acqCost = Number(now.acq_cost);
+    acqPerUnit = now.cost_basis === "per_billed_unit" ? acqCost
+      : now.billed_units_per_vial ? acqCost / Number(now.billed_units_per_vial) : null;
+  }
+  if (acqPerUnit == null) return null;
+  const todayAsOf = !historic && now ? now.as_of || null : null;
+  // Older answers have no drug_cost_at key: flag only when today's cost is newer than the month.
+  const hasAtKey = Object.prototype.hasOwnProperty.call(data, "drug_cost_at");
+  const noCostFor = historic || !data.month ? null
+    : hasAtKey ? data.month
+    : todayAsOf && String(todayAsOf).slice(0, 7) > data.month ? data.month : null;
+  return { perUnit: vraRate - acqPerUnit, perDose: (vraRate - acqPerUnit) * upd, acqPerUnit, upd, acqCost, historic, period, todayAsOf, noCostFor };
+}
+
+/** "We have no recorded acquisition cost for Jun 2026. Today's price (as of Oct 1, 2026) is shown." */
+export function noCostLine(m) {
+  if (!m || !m.noCostFor) return null;
+  const asOf = dayLabel(m.todayAsOf);
+  return `We have no recorded acquisition cost for ${monthLabel(m.noCostFor)}. Today's price${asOf ? ` (as of ${asOf})` : ""} is shown.`;
 }

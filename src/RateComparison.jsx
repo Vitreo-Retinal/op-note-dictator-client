@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { hubRpc } from "./lib/hubRpc.js"; // via the hub server, not the public key (security stage 3, Oct 24 2026)
 import { searchPlans } from "./lib/planSearch.js";
-import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, monthOptions, monthLabel, dayLabel, ymOf, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
+import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, monthOptions, monthLabel, ymOf, drugMargin, noCostLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
 import { S, T, card, field, fieldLabel, btnSm, secHead } from "./theme.js";
 import PageBar, { wrap } from "./PageBar.jsx";
 import { AlertIcon } from "./icons.jsx";
@@ -198,6 +198,7 @@ function VraCard({ data }) {
     <div style={field({ marginBottom: 12, borderTop: `3px solid ${S.blue}` })}>
       <div style={{ fontSize: 12.5, color: T.muted, marginBottom: 6, fontFamily: T.sans }}>Your rate (VRA)</div>
       {content}
+      {plan.source === "medicare" && (() => { const p = medicarePeriod(data.benchmarks, isDrug, data.month); return p && p.later ? <Note>{p.later}</Note> : null; })()}
       {plan.caveat && <Note>{plan.caveat}</Note>}
       {plan.status === "draft" && <div style={{ fontSize: 11.5, color: T.muted, marginTop: 10 }}>Plan mapping under review.</div>}
     </div>
@@ -287,17 +288,12 @@ export default function RateComparison({ onBack, embedded = false }) {
   const medLocal = b.mworc != null ? b.mworc : b.med_nat;
   const showVsMed = vra != null && medLocal && src !== "medicare";
   const vraPctOfMed = showVsMed ? vra / medLocal : null;
-  const medPer = data ? medicarePeriod(b, isDrug) : null;
+  const medPer = data ? medicarePeriod(b, isDrug, data.month) : null;
   const maxBar = Math.max(vra || 0, targetVal || 0, medLocal || 0);
 
-  // drug margin (VRA rate is per billed unit; × units_per_dose → per dose — same as v1)
-  let margin = null;
-  if (isDrug && data.drug_cost && data.drug_cost.acq_cost != null && vra != null) {
-    const dc = data.drug_cost;
-    const acqPerUnit = dc.cost_basis === "per_billed_unit" ? Number(dc.acq_cost)
-      : dc.billed_units_per_vial ? Number(dc.acq_cost) / Number(dc.billed_units_per_vial) : null;
-    if (acqPerUnit != null) margin = { perUnit: vra - acqPerUnit, acqPerUnit, perDose: (vra - acqPerUnit) * upd };
-  }
+  // drug margin (VRA rate is per billed unit; × units_per_dose → per dose — same as v1),
+  // with the acquisition cost in effect for the month when we have it (lib/rateText.js)
+  const margin = isDrug ? drugMargin(data, vra) : null;
 
   const codeLabel = data ? (data.description ? `${data.code} — ${data.description}` : data.code)
     : ((codeItems.find((c) => c.val === code) || {}).label || code);
@@ -416,11 +412,13 @@ export default function RateComparison({ onBack, embedded = false }) {
                   <div style={{ fontSize: 12.5, color: T.muted, marginTop: 4, fontFamily: T.mono }}>
                     {price(margin.perUnit)}/unit · {upd} units/dose
                   </div>
-                  {/* the margin uses today's vial price; flag it for an earlier service month */}
-                  {data.drug_cost.as_of && data.month && String(data.drug_cost.as_of).slice(0, 7) > data.month && (
-                    <div style={{ fontSize: 12.5, color: T.amber, marginTop: 6, lineHeight: 1.5 }}>
-                      Acquisition cost is today's price, as of {dayLabel(data.drug_cost.as_of)}. A vial used in {monthLabel(data.month)} may have cost more or less.
+                  {margin.historic && (
+                    <div style={{ fontSize: 12.5, color: T.ink2, marginTop: 6, lineHeight: 1.5 }}>
+                      Acquisition {price(margin.acqCost)} per vial{margin.period ? ` (cost ${margin.period})` : ""}.
                     </div>
+                  )}
+                  {noCostLine(margin) && (
+                    <div style={{ fontSize: 12.5, color: T.amber, marginTop: 6, lineHeight: 1.5 }}>{noCostLine(margin)}</div>
                   )}
                 </>
               ) : vra == null ? (

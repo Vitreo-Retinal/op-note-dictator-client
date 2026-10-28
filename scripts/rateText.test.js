@@ -3,7 +3,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { monthLabel, price, uniqPrices, otherPrices, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, SEVERAL_PRICES_LINE,
-  dayLabel, monthOptions, monthRange, periodLabel, medicarePeriod, massHealthPeriod, fileLine, noFileLine, timelineRuns, pctChange } from "../src/lib/rateText.js";
+  dayLabel, monthOptions, monthRange, periodLabel, medicarePeriod, massHealthPeriod, fileLine, noFileLine, timelineRuns, pctChange,
+  costPeriod, drugMargin, noCostLine } from "../src/lib/rateText.js";
 
 test("monthLabel and price", () => {
   assert.equal(monthLabel("2026-10"), "Oct 2026");
@@ -133,4 +134,63 @@ test("rate by file month: equal-rate runs and percent change", () => {
   assert.deepEqual(timelineRuns([{ month: null, rate: 1 }, { month: null, rate: 2 }]), []);
   // several prices in a month
   assert.deepEqual(timelineRuns([{ month: "2026-06", rate: null }, { month: "2026-07", rate: 50 }]).map((r) => r.change), [null, null]);
+});
+
+// Real Medicare J2777 answers (Oct 28 2026): Aug has a history cost, Jun has none.
+const TODAY_J2777 = { code: "J2777", as_of: "2026-10-01", acq_cost: 1811.9, cost_basis: "per_vial", billed_units_per_vial: 60 };
+const J2777 = (month, at) => ({ type: "drug", code: "J2777", units_per_dose: 60, dose_mult: 1, month, drug_cost: TODAY_J2777, drug_cost_at: at });
+
+test("drug margin uses the cost in effect for the month", () => {
+  const at = { acq_cost: 1873.06, billed_units_per_vial: 60, effective_from: "2026-07-20", effective_to: "2026-09-30", source: "MEDICATION COST INJECTABLE.xlsx 7/20/2026" };
+  const m = drugMargin(J2777("2026-08", at), 32.381);
+  assert.equal(m.historic, true);
+  assert.equal(m.acqCost, 1873.06);
+  assert.equal(m.period, "Jul 20 – Sep 30, 2026");
+  assert.equal(Math.round(m.perDose * 100) / 100, 69.8); // (32.381 − 1873.06/60) × 60
+  assert.equal(noCostLine(m), null);
+  assert.equal(costPeriod("2026-12-15", "2027-01-31"), "Dec 15, 2026 – Jan 31, 2027");
+  assert.equal(costPeriod("2026-07-20", null), "since Jul 20, 2026");
+});
+
+test("no cost recorded for the month → today's cost, with the note", () => {
+  const m = drugMargin(J2777("2026-06", null), 31.322);
+  assert.equal(m.historic, false);
+  assert.equal(m.acqCost, 1811.9);
+  assert.equal(Math.round(m.perDose * 100) / 100, Math.round((31.322 - 1811.9 / 60) * 60 * 100) / 100);
+  assert.equal(noCostLine(m), "We have no recorded acquisition cost for Jun 2026. Today's price (as of Oct 1, 2026) is shown.");
+  // an older answer without drug_cost_at: note only when today's cost is newer than the month
+  const old = J2777("2026-10", undefined); delete old.drug_cost_at;
+  assert.equal(drugMargin(old, 31.322).noCostFor, null);
+  const oldAug = J2777("2026-08", undefined); delete oldAug.drug_cost_at;
+  assert.equal(drugMargin(oldAug, 31.322).noCostFor, "2026-08");
+});
+
+test("dose-level code (dose_mult ≠ 1): drug_cost_at counts as 1 billed unit per vial, like the server's dose_adjusted cost", () => {
+  // J0178-2MG: the rate is already per 2 mg dose; units_per_dose = 1
+  const data = { type: "drug", code: "J0178-2MG", units_per_dose: 1, dose_mult: 2, month: "2026-08",
+    drug_cost: { acq_cost: 1380.99, cost_basis: "per_vial", billed_units_per_vial: 1, dose_adjusted: true, as_of: "2026-10-01" },
+    drug_cost_at: { acq_cost: 1422.08, billed_units_per_vial: 2, effective_from: "2026-07-20", effective_to: "2026-09-30" } };
+  const m = drugMargin(data, 1487.22);
+  assert.equal(m.acqPerUnit, 1422.08);
+  assert.equal(Math.round(m.perDose * 100) / 100, 65.14);
+  // and with no history it falls back to today's dose-adjusted cost
+  const m2 = drugMargin({ ...data, drug_cost_at: null }, 1487.22);
+  assert.equal(m2.acqPerUnit, 1380.99);
+});
+
+test("no margin without a VRA rate or a cost; procedures never", () => {
+  assert.equal(drugMargin(J2777("2026-08", null), null), null);
+  assert.equal(drugMargin({ ...J2777("2026-08", null), drug_cost: null }, 31), null);
+  assert.equal(drugMargin({ type: "procedure" }, 100), null);
+});
+
+test("Medicare drug: a month before the stored quarter is said plainly (real Jun 2026 J2777 answer)", () => {
+  const b = { med_period: { from: "2026-10-01", to: null, basis: "2026 MPFS / Oct 2026 ASP" } };
+  const p = medicarePeriod(b, true, "2026-06");
+  assert.equal(p.line, "Medicare ASP · from Oct 1, 2026");
+  assert.equal(p.later, "No Medicare ASP for Jun 2026 is stored. This is the rate from Oct 1, 2026.");
+  assert.equal(p.short, "ASP from Oct 1, 2026 · none stored for Jun 2026");
+  const q3 = { med_period: { from: "2026-07-01", to: "2026-09-30" } };
+  assert.equal(medicarePeriod(q3, true, "2026-08").later, undefined);
+  assert.equal(medicarePeriod(b, false, "2026-06").later, undefined, "procedures keep the current-release wording");
 });
