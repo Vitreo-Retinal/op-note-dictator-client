@@ -13,10 +13,12 @@
 
 const API_BASE = (import.meta.env || {}).VITE_API_BASE || "https://op-note-dictator-server-production.up.railway.app";
 
-// The eight functions the server allows (routes/hub-data.js HUB_FUNCTIONS).
+// The functions the server allows (routes/hub-data.js HUB_FUNCTIONS).
+// Rates v2 (Oct 2026) added hub_rate_plans + hub_plan_rate.
 export const HUB_RPC_FUNCTIONS = Object.freeze([
   "hub_drug_economics_v3", "hub_codes", "hub_networks", "hub_insurance_dict",
   "hub_compare", "hub_rvu", "hub_surgeon_schedule", "hub_call_schedule",
+  "hub_rate_plans", "hub_plan_rate",
 ]);
 
 export async function hubRpc(fn, args = {}, { fetchImpl = (...a) => fetch(...a), base = API_BASE } = {}) {
