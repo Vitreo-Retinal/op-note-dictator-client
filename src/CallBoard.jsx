@@ -345,6 +345,10 @@ export default function CallBoard({ onOpenSchedule, hub = "vra", sched: given, d
                   <span style={{ color: fuReasonColor(fuReason), fontWeight: 600, whiteSpace: "nowrap" }}>⚠ {fuReasonText}</span>
                 )}
                 {fuHalf && <span style={{ color: T.amber, fontSize: 12 }}>{fuHalf}</span>}
+                {/* Half-day clinic: what fills the other half (Mari, Oct 28 2026) */}
+                {fuWin && fuWin.target.clinic && fuWin.target.note && (
+                  <span style={{ color: T.amber, fontSize: 12 }}>{fuWin.target.note}</span>
+                )}
                 {fuCall ? (
                   <span style={{ color: T.muted }}>(on call that week: {fuCall.doctor})</span>
                 ) : (

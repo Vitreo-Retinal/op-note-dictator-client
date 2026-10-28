@@ -116,9 +116,39 @@ function siteText(h) {
   return { site: null, half: null, codes: [], segments: [] };
 }
 
+// ── Half-day note (Mari, Oct 28 2026) ──
+// "It's ok to show LEOM AM, but then there should be a note saying the PM is
+// blocked for accountant meeting." When the doctor works only one half of a
+// clinic day, the shared calendar's TIMED general events in the other half
+// (day.events — title + time only, never descriptions) become one note:
+//   "PM blocked — Tech meeting 12:30, Accountant meeting 2:00"
+// An event whose title says blocked / no clinic / closed is the block itself:
+// it sets "blocked" and is not listed. Other halves' events, all-day events and
+// full-day sessions → no note. Noon splits AM / PM.
+const BLOCK_EVENT_RX = /\bblocked\b|no clinic|\bclosed\b/i;
+const fuClock = (hm) => {
+  const m = /^(\d{1,2}):(\d{2})/.exec(String(hm || ""));
+  if (!m) return "";
+  const h = Number(m[1]) % 12 || 12;
+  return `${h}:${m[2]}`;
+};
+export function fuHalfNote(day, half) {
+  if (half !== "AM" && half !== "PM") return null;
+  const other = half === "AM" ? "PM" : "AM";
+  const evs = (day && Array.isArray(day.events) ? day.events : [])
+    .filter((e) => e && !e.allDay && typeof e.start === "string" && e.title)
+    .filter((e) => (other === "PM" ? e.start >= "12:00" : e.start < "12:00"));
+  if (!evs.length) return null;
+  const blocked = evs.some((e) => BLOCK_EVENT_RX.test(e.title));
+  const items = evs.filter((e) => !BLOCK_EVENT_RX.test(e.title)).map((e) => `${String(e.title).trim()} ${fuClock(e.start)}`.trim());
+  if (!items.length) return `${other} blocked`;
+  return `${other}${blocked ? " blocked —" : ":"} ${items.join(", ")}`;
+}
+
 /**
  * Evaluate one calendar day for the doctor.
- * → { ymd, clinic, site, half, codes, segments, reasons: [{ code, text }] }
+ * → { ymd, clinic, site, half, codes, segments, reasons: [{ code, text }], note }
+ *   note: fuHalfNote — what fills the other half of a half-day clinic, or null.
  * Reason codes: "weekend", "holiday", "blackout", "block" (caller's isBlocked),
  * "closed", "vacation", "noClinic". Calendar reasons come in that order;
  * "noClinic" is only added when neither "closed" nor "vacation" applies.
@@ -141,7 +171,8 @@ export function evalFuDay(day, doctor, fns = {}, hub = "vra") {
   const h = clinicHalves(day, doctor, hub);
   const { site, half, codes, segments } = siteText(h);
   if (!site && !day.closed && !vac) reasons.push({ code: "noClinic", text: "No clinic that day" });
-  return { ymd, clinic: !!site && reasons.length === 0, site, half, codes, segments, reasons };
+  const clinic = !!site && reasons.length === 0;
+  return { ymd, clinic, site, half, codes, segments, reasons, note: clinic ? fuHalfNote(day, half) : null };
 }
 
 /**
@@ -204,7 +235,7 @@ export function computeFuWindow(target, doctor, schedule, fns = {}, hub = "vra",
       const e = evalFuDay(day, doc, fns, hub);
       if (!e.clinic) continue;
       cands.push({
-        ymd: e.ymd, label: fuShortDate(e.ymd), site: e.site, half: e.half, codes: e.codes, segments: e.segments,
+        ymd: e.ymd, label: fuShortDate(e.ymd), site: e.site, half: e.half, codes: e.codes, segments: e.segments, note: e.note,
         delta: off, deltaText: fuDelta(off), preferred: !!pref && e.codes.includes(pref),
       });
     }

@@ -1221,6 +1221,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 )}
               </div>
             )}
+            {/* Half-day clinic: what fills the other half (Mari, Oct 28 2026) */}
+            {injCalc && injCalc.nextDate && fuWin && fuWin.target.clinic && fuWin.target.note && (
+              <div style={{ color: T.amber, fontSize: 12.5 }}>{fuWin.target.note}</div>
+            )}
             {/* Notes about that date — each on its own line */}
             {injCalc && injCalc.nextDate && injCalc.holiday && (
               <div style={{ color: T.amber, fontWeight: 600, fontSize: 12.5 }}>

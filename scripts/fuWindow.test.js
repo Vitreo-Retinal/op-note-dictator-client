@@ -585,3 +585,47 @@ test("fuCalReason: first of closed / vacation / noClinic for a non-clinic target
   assert.equal(sat.target.clinic, false);
   assert.equal(fuCalReason(sat).code, "noClinic");
 });
+
+// ── Half-day note (Mari, Oct 28 2026: Dec 2 = LEOM AM, PM blocked for the accountant meeting) ──
+import { fuHalfNote } from "../src/lib/fuWindow.js";
+
+const DEC2_EVENTS = [
+  { title: "HALF DAY — all doctors and techs (AM clinic only)", start: null, end: null, allDay: true },
+  { title: "PM BLOCKED — no clinic, all sites (WORC, LEOM, LEX)", start: "12:00", end: "17:00", allDay: false },
+  { title: "Tech meeting", start: "12:30", end: "13:30", allDay: false },
+  { title: "Accountant meeting", start: "14:00", end: "15:00", allDay: false },
+];
+
+test("half-day note: Dec 2 → LEOM AM + 'PM blocked — Tech meeting 12:30, Accountant meeting 2:00'", () => {
+  const WED = "2026-12-02";
+  const r = computeFuWindow(WED, "MR", payload(WED, (d) => {
+    if (d.date === WED) {
+      d.sessions = [{ doctor: "MR", site: "LEOM", part: "AM" }, { doctor: "BKH", site: "WORC", part: "AM" }];
+      d.events = DEC2_EVENTS;
+    }
+  }), FNS);
+  assert.equal(r.target.clinic, true);
+  assert.equal(r.target.site, "LEOM");
+  assert.equal(r.target.half, "AM");
+  assert.equal(r.target.note, "PM blocked — Tech meeting 12:30, Accountant meeting 2:00");
+  assert.deepEqual(r.suggestions, []);
+});
+
+test("half-day note: only the block event → 'PM blocked'; plain PM events → 'PM: …'", () => {
+  assert.equal(fuHalfNote({ events: [DEC2_EVENTS[1]] }, "AM"), "PM blocked");
+  assert.equal(fuHalfNote({ events: [DEC2_EVENTS[3]] }, "AM"), "PM: Accountant meeting 2:00");
+});
+
+test("half-day note: PM clinic → morning events; none for full days, all-day or same-half events", () => {
+  assert.equal(fuHalfNote({ events: [{ title: "Board meeting", start: "08:00", end: "11:00" }] }, "PM"), "AM: Board meeting 8:00");
+  assert.equal(fuHalfNote({ events: DEC2_EVENTS }, null), null, "full day → no note");
+  assert.equal(fuHalfNote({ events: [DEC2_EVENTS[0]] }, "AM"), null, "all-day event alone → no note");
+  assert.equal(fuHalfNote({ events: [{ title: "Rep lunch", start: "11:00", end: "11:30" }] }, "AM"), null, "AM event on an AM day → no note");
+  assert.equal(fuHalfNote({}, "AM"), null);
+});
+
+test("half-day note: a usual Wednesday (LEOM AM + Valeda PM, no events) has no note", () => {
+  const WED = "2027-01-27";
+  const r = computeFuWindow(WED, "MR", payload(WED), FNS);
+  assert.equal(r.target.note, null);
+});
