@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { monthLabel, price, uniqPrices, otherPrices, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, SEVERAL_PRICES_LINE,
   dayLabel, monthOptions, monthRange, periodLabel, medicarePeriod, massHealthPeriod, fileLine, noFileLine, timelineRuns, pctChange,
-  costPeriod, drugMargin, noCostLine } from "../src/lib/rateText.js";
+  costPeriod, drugMargin, noCostLine, missingAsp } from "../src/lib/rateText.js";
 
 test("monthLabel and price", () => {
   assert.equal(monthLabel("2026-10"), "Oct 2026");
@@ -193,4 +193,15 @@ test("Medicare drug: a month before the stored quarter is said plainly (real Jun
   const q3 = { med_period: { from: "2026-07-01", to: "2026-09-30" } };
   assert.equal(medicarePeriod(q3, true, "2026-08").later, undefined);
   assert.equal(medicarePeriod(b, false, "2026-06").later, undefined, "procedures keep the current-release wording");
+});
+
+test("Medicare drug month before the first stored ASP quarter: no number, plain sentence (real Jun 2026 J2777)", () => {
+  const b = { med_nat: null, med_period: { missing: true, first_from: "2026-07-01" } };
+  assert.equal(missingAsp(b, "2026-06"), "No Medicare ASP stored for Jun 2026. Our first stored quarter starts Jul 1, 2026.");
+  assert.equal(medicarePeriod(b, true, "2026-06"), null, "no period line without a period");
+  assert.equal(missingAsp({ med_period: { from: "2026-07-01", to: "2026-09-30" } }, "2026-08"), null);
+  assert.equal(missingAsp({}, "2026-08"), null);
+  // Medicare plan: vra.rate is null → no single rate and no margin
+  assert.equal(hasSingleRate({ rate: null, pattern: "fee_schedule" }), false);
+  assert.equal(drugMargin({ type: "drug", units_per_dose: 60, month: "2026-06", drug_cost: { acq_cost: 1811.9, billed_units_per_vial: 60 }, drug_cost_at: null }, null), null);
 });

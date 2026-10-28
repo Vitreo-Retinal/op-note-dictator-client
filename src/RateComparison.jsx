@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { hubRpc } from "./lib/hubRpc.js"; // via the hub server, not the public key (security stage 3, Oct 24 2026)
 import { searchPlans } from "./lib/planSearch.js";
-import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, monthOptions, monthLabel, ymOf, drugMargin, noCostLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
+import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, missingAsp, monthOptions, monthLabel, ymOf, drugMargin, noCostLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
 import { S, T, card, field, fieldLabel, btnSm, secHead } from "./theme.js";
 import PageBar, { wrap } from "./PageBar.jsx";
 import { AlertIcon } from "./icons.jsx";
@@ -146,7 +146,11 @@ function VraCard({ data }) {
   const body = { fontSize: 13.5, color: T.ink2, lineHeight: 1.55, marginTop: 8 };
 
   let content;
-  if (plan.source === "none") {
+  const noAsp = plan.source === "medicare" ? missingAsp(data.benchmarks, data.month) : null;
+  if (noAsp) {
+    // Medicare drug, month before the first stored ASP quarter: no number at all.
+    content = <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>{noAsp}</div>;
+  } else if (plan.source === "none") {
     content = (
       <>
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>No VRA rate on file for {plan.name}.</div>
@@ -327,6 +331,9 @@ export default function RateComparison({ onBack, embedded = false }) {
 
           <VraCard data={data} />
           {data.plan && data.plan.source === "mrf" && <Timeline data={data} />}
+          {src !== "medicare" && missingAsp(b, data.month) && (
+            <div style={{ fontSize: 12.5, color: T.muted, margin: "0 0 12px", lineHeight: 1.5 }}>No Medicare ASP stored for {monthLabel(data.month)}, so there is no Medicare comparison.</div>
+          )}
 
           {vra != null && (targetVal != null || vraPctOfMed != null) && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12, marginBottom: 16 }}>
@@ -422,7 +429,7 @@ export default function RateComparison({ onBack, embedded = false }) {
                   )}
                 </>
               ) : vra == null ? (
-                <div style={{ fontSize: 13, color: T.muted }}>No single VRA rate for this plan, so no margin is shown.</div>
+                <div style={{ fontSize: 13, color: T.muted }}>{src === "medicare" && missingAsp(b, data.month) ? `No Medicare ASP for ${monthLabel(data.month)}, so no margin is shown.` : "No single VRA rate for this plan, so no margin is shown."}</div>
               ) : (
                 <div style={{ fontSize: 13, color: T.muted }}>No acquisition cost entered yet for this drug — add it in <span style={{ fontFamily: S.mono }}>drug_costs</span> to see margin.</div>
               )}

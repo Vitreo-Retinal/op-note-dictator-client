@@ -176,6 +176,18 @@ export function medicarePeriod(benchmarks, isDrug, month) {
   };
 }
 
+/**
+ * Medicare drug month before the first stored ASP quarter: the answer has no
+ * number (vra.rate and med_nat null) and med_period = { missing, first_from }.
+ * → "No Medicare ASP stored for Jun 2026. Our first stored quarter starts Jul 1, 2026." or null.
+ */
+export function missingAsp(benchmarks, month) {
+  const p = benchmarks && benchmarks.med_period;
+  if (!p || !p.missing) return null;
+  const first = dayLabel(p.first_from);
+  return `No Medicare ASP stored for ${monthLabel(month) || "this month"}.${first ? ` Our first stored quarter starts ${first}.` : ""}`;
+}
+
 /** "MassHealth fee schedule · as of May 2026" (from benchmarks.mh_as_of), or null. */
 export function massHealthPeriod(benchmarks) {
   const m = monthLabel(benchmarks && benchmarks.mh_as_of);
