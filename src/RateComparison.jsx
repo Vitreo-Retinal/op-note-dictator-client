@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { hubRpc } from "./lib/hubRpc.js"; // via the hub server, not the public key (security stage 3, Oct 24 2026)
 import { searchPlans } from "./lib/planSearch.js";
-import { price, hasSingleRate, patternLine, priceSets, eobLine, sourceLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
+import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, monthOptions, monthLabel, dayLabel, ymOf, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
 import { S, T, card, field, fieldLabel, btnSm, secHead } from "./theme.js";
 import PageBar, { wrap } from "./PageBar.jsx";
 import { AlertIcon } from "./icons.jsx";
@@ -11,7 +11,10 @@ const softOf = (c) => (c === T.green ? [T.greenSoft, T.green] : c === T.red ? [T
 
 // ── Rates (v2, Oct 2026): VRA's own published rate for one plan + one code ──
 // Data: hub_rate_plans() (every insurance plan, Retina-Rx-style search) and
-// hub_plan_rate(plan_key, code), both through the hub server (lib/hubRpc.js).
+// hub_plan_rate_at(plan_key, code, month), both through the hub server (lib/hubRpc.js).
+// Date of service (Oct 2026): the month picker asks for that month's file, or the
+// nearest earlier one, so a new rate never hides an old one. EOB payments show
+// their service and EOB dates — payments lag the service.
 // Mari's rules: only VRA's actual rates — never an estimate, never "≈ Medicare",
 // never another plan's rate. When the file lists several prices without saying
 // which one applies, there is no main number. Peers come from the same file.
@@ -82,6 +85,44 @@ function Card({ label, value, color, sub }) {
   );
 }
 
+function MonthPick({ value, onPick, options }) {
+  return (
+    <div style={field({ flex: "0 1 170px", minWidth: 0 })}>
+      <label style={fieldLabel()} htmlFor="rates-month">Date of service</label>
+      <select id="rates-month" value={value} onChange={(e) => onPick(e.target.value)} className="vra-input"
+        style={{ width: "100%", height: 32, background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "0 8px", color: T.ink, fontFamily: T.sans, fontSize: 13.5, boxSizing: "border-box", outline: "none" }}>
+        {options.map((o) => <option key={o.val} value={o.val}>{o.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
+// "Rate by file month": equal-rate months compressed; changes in percent.
+function Timeline({ data }) {
+  const runs = timelineRuns(data.timeline);
+  if (!runs.length) return null;
+  const used = data.vra && data.vra.source_month;
+  const isDrug = data.type === "drug";
+  return (
+    <div style={field({ marginBottom: 12, padding: "10px 14px" })}>
+      <div style={{ fontSize: 12.5, color: T.muted, marginBottom: 6 }}>Rate by file month{isDrug ? " (per unit)" : ""}</div>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 8px", fontSize: 13, color: T.ink2, lineHeight: 1.5 }}>
+        {runs.map((r, i) => {
+          const inUse = used && used >= r.from && used <= r.to;
+          const c = r.change == null || r.change === 0 ? T.muted : r.change < 0 ? T.red : T.green;
+          return (
+            <span key={r.from} style={{ whiteSpace: "nowrap" }}>
+              {i > 0 && <span style={{ color: T.muted, marginRight: 8 }}>→</span>}
+              <span style={{ fontWeight: inUse ? 600 : 400, color: inUse ? T.ink : T.ink2 }}>{r.label} {r.rate == null ? "several prices" : <span style={{ fontFamily: T.mono, fontVariantNumeric: "tabular-nums" }}>{price(r.rate)}</span>}</span>
+              {r.change != null && <span style={{ color: c, fontWeight: 600 }}> ({pctChange(r.change)})</span>}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function Note({ tone = "amber", children }) {
   const c = tone === "amber" ? { bg: T.amberSoft, line: T.goldSoft, fg: T.amber } : { bg: T.accentSoft, line: T.accentLine, fg: T.ink2 };
   return (
@@ -111,14 +152,18 @@ function VraCard({ data }) {
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>No VRA rate on file for {plan.name}.</div>
         {plan.none_reason && <div style={body}>{plan.none_reason}</div>}
         {(data.eob || []).map((e, i) => (
-          <div key={i} style={{ ...body, background: T.paper, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "8px 12px" }}>{eobLine(e)}</div>
+          <div key={i} style={{ ...body, background: T.paper, border: `1px solid ${T.line}`, borderRadius: T.r, padding: "8px 12px" }}>
+            <div>{eobLine(e)}</div>
+            <div style={{ fontSize: 12.5, color: T.muted, marginTop: 2 }}>{eobDates(e, data.month)}</div>
+          </div>
         ))}
       </>
     );
   } else if (!vra) {
+    const noFile = noFileLine(data);
     content = (
       <>
-        <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>This file does not list {data.code} for VRA.</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>{noFile || `This file does not list ${data.code} for VRA.`}</div>
         {plan.label && <div style={muted}>{plan.label}</div>}
       </>
     );
@@ -130,7 +175,7 @@ function VraCard({ data }) {
           <span style={{ fontSize: 30, fontWeight: 600, letterSpacing: "-0.01em", color: S.blue, fontVariantNumeric: "tabular-nums" }}>{price(vra.rate)}</span>
           {isDrug && <span style={{ fontSize: 13, color: T.muted }}>per unit{upd > 1 ? ` · ${price(vra.rate * upd)} per dose (${upd} units)` : ""}</span>}
         </div>
-        <div style={muted}>{sourceLine(plan, vra)}</div>
+        <div style={muted}>{sourceLine(plan, vra, data)}</div>
         {line && <div style={body}>{line}</div>}
         {vra.note && <div style={muted}>{vra.note}</div>}
       </>
@@ -139,7 +184,7 @@ function VraCard({ data }) {
     content = (
       <>
         <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>No single VRA rate</div>
-        <div style={muted}>{sourceLine(plan, vra)}</div>
+        <div style={muted}>{sourceLine(plan, vra, data)}</div>
         {priceSets(vra).map((s) => (
           <div key={s.label} style={body}>{s.label}: <PriceList prices={s.prices} />.</div>
         ))}
@@ -164,6 +209,8 @@ export default function RateComparison({ onBack, embedded = false }) {
   const [plans, setPlans] = useState([]);
   const [planKey, setPlanKey] = useState(null); // nothing pre-selected (Mari: "Pick a plan…")
   const [code, setCode] = useState("67028");
+  const [month, setMonth] = useState(() => ymOf()); // date of service, 'YYYY-MM' — this month by default
+  const months = useMemo(() => monthOptions(), []);
   const [data, setData] = useState(null);
   const [failed, setFailed] = useState(false);
   const [rvu, setRvu] = useState(null); // hub_rvu(code): work/PE/MP/total RVUs + 2026 conversion factors
@@ -183,11 +230,11 @@ export default function RateComparison({ onBack, embedded = false }) {
     if (!code || !planKey) { setData(null); return; }
     const id = ++reqId.current;
     setLoading(true); setFailed(false);
-    hubRpc("hub_plan_rate", { p_plan_key: planKey, p_code: code }).then(({ data, error }) => {
+    hubRpc("hub_plan_rate_at", { p_plan_key: planKey, p_code: code, p_month: month }).then(({ data, error }) => {
       if (id !== reqId.current) return; // a newer pick is on its way
       setData(error ? null : data); setFailed(!!error || !data); setLoading(false);
     });
-  }, [code, planKey]);
+  }, [code, planKey, month]);
 
   // RVU breakdown depends only on the code (Medicare component values are national)
   useEffect(() => {
@@ -240,6 +287,7 @@ export default function RateComparison({ onBack, embedded = false }) {
   const medLocal = b.mworc != null ? b.mworc : b.med_nat;
   const showVsMed = vra != null && medLocal && src !== "medicare";
   const vraPctOfMed = showVsMed ? vra / medLocal : null;
+  const medPer = data ? medicarePeriod(b, isDrug) : null;
   const maxBar = Math.max(vra || 0, targetVal || 0, medLocal || 0);
 
   // drug margin (VRA rate is per billed unit; × units_per_dose → per dose — same as v1)
@@ -259,6 +307,7 @@ export default function RateComparison({ onBack, embedded = false }) {
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
         <Combo label="Insurance" value={plan ? plan.name : ""} placeholder="Pick a plan…" items={[]} search={planSearch} onPick={setPlanKey} />
         <Combo label="Procedure or drug" value={codeLabel} placeholder="Search code or name…" items={codeItems} onPick={setCode} />
+        <MonthPick value={month} onPick={setMonth} options={months} />
         {vra != null && targetItems.length > 0 && (
           <Combo label="Compare against" value={(targetItems.find((t) => t.val === target) || {}).label || ""} placeholder="Pick a group…" items={targetItems} onPick={setTarget} />
         )}
@@ -278,14 +327,15 @@ export default function RateComparison({ onBack, embedded = false }) {
       ) : (
         <>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.accent }}><span style={{ fontFamily: T.mono, fontWeight: 500 }}>{data.code}</span>{isDrug ? " · drug" : ""}</div>
-          <div style={{ fontSize: 13, color: T.ink2, marginBottom: 16, marginTop: 2 }}>{data.description} · {(data.plan && data.plan.name) || (plan && plan.name)}</div>
+          <div style={{ fontSize: 13, color: T.ink2, marginBottom: 16, marginTop: 2 }}>{data.description} · {(data.plan && data.plan.name) || (plan && plan.name)} · service in {monthLabel(data.month || month)}</div>
 
           <VraCard data={data} />
+          {data.plan && data.plan.source === "mrf" && <Timeline data={data} />}
 
           {vra != null && (targetVal != null || vraPctOfMed != null) && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12, marginBottom: 16 }}>
               {vra != null && targetVal != null && <Card label={targetLabel} value={price(targetVal)} sub={crossLoc && geoAdj && !isDrug ? "Boston rate, adjusted to Worcester" : null} />}
-              {vraPctOfMed != null && <Card label="vs local Medicare" value={`${vraPctOfMed.toFixed(2)}×`} sub={isDrug ? `Medicare ${price(medLocal)} per unit` : `Worcester · Medicare ${price(medLocal)}`} />}
+              {vraPctOfMed != null && <Card label="vs local Medicare" value={`${vraPctOfMed.toFixed(2)}×`} sub={`Medicare ${price(medLocal)}${isDrug ? " per unit" : ""}${medPer ? ` · ${medPer.short}` : ""}`} />}
             </div>
           )}
 
@@ -309,7 +359,7 @@ export default function RateComparison({ onBack, embedded = false }) {
             <>
               <div className="vra-table" style={card({ marginTop: 16, overflow: "hidden" })}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "8px 14px", background: T.paper, borderBottom: `1px solid ${T.line}`, fontSize: 12.5, color: T.muted, fontWeight: 500 }}>
-                  <span>Other groups in the same file</span><span>Rate</span>
+                  <span>Other groups in the same file{vraObj && monthLabel(vraObj.source_month) ? ` (${monthLabel(vraObj.source_month)})` : ""}</span><span>Rate</span>
                 </div>
                 {peers.map((p, i) => {
                   const r = adj(p.rate, p.locality);
@@ -366,6 +416,12 @@ export default function RateComparison({ onBack, embedded = false }) {
                   <div style={{ fontSize: 12.5, color: T.muted, marginTop: 4, fontFamily: T.mono }}>
                     {price(margin.perUnit)}/unit · {upd} units/dose
                   </div>
+                  {/* the margin uses today's vial price; flag it for an earlier service month */}
+                  {data.drug_cost.as_of && data.month && String(data.drug_cost.as_of).slice(0, 7) > data.month && (
+                    <div style={{ fontSize: 12.5, color: T.amber, marginTop: 6, lineHeight: 1.5 }}>
+                      Acquisition cost is today's price, as of {dayLabel(data.drug_cost.as_of)}. A vial used in {monthLabel(data.month)} may have cost more or less.
+                    </div>
+                  )}
                 </>
               ) : vra == null ? (
                 <div style={{ fontSize: 13, color: T.muted }}>No single VRA rate for this plan, so no margin is shown.</div>

@@ -47,6 +47,6 @@ test("non-JSON error body → HTTP status message", async () => {
 test("the functions match the server allow-list", () => {
   assert.deepEqual([...HUB_RPC_FUNCTIONS].sort(), [
     "hub_call_schedule", "hub_codes", "hub_compare", "hub_drug_economics_v3",
-    "hub_insurance_dict", "hub_networks", "hub_plan_rate", "hub_rate_plans", "hub_rvu", "hub_surgeon_schedule",
+    "hub_insurance_dict", "hub_networks", "hub_plan_rate", "hub_plan_rate_at", "hub_rate_plans", "hub_rvu", "hub_surgeon_schedule",
   ]);
 });

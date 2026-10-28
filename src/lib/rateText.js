@@ -91,17 +91,173 @@ export function priceSets(vra) {
   return sets;
 }
 
-/** "Paid on your EOB (Jun 2026): $123.49 — what was paid, not a published rate." */
-export function eobLine(e) {
-  const m = monthLabel(e && e.source_month);
-  return `Paid on your EOB${m ? ` (${m})` : ""}: ${price(e && e.rate)} — what was paid, not a published rate.`;
+// ── Dates (Oct 2026, Mari: "a new rate doesn't wipe out an old one"; "payments lag,
+// so if we want to look at an EOB, it is helpful to know when the quoted payment is from") ──
+
+/** "2026-06-12" → "Jun 12, 2026" (no time zone shift); anything else → null. */
+export function dayLabel(ymd) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(ymd || ""));
+  if (!m) return null;
+  const i = Number(m[2]) - 1;
+  return i >= 0 && i < 12 ? `${MONTHS[i]} ${Number(m[3])}, ${m[1]}` : null;
 }
 
-/** The muted line under the big number: plan label · month (label only for Medicare / MassHealth). */
-export function sourceLine(plan, vra) {
+/** "YYYY-MM" for a Date (local time). */
+export function ymOf(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** Date-of-service picker: every month from `first` to the current month, newest first. */
+export function monthOptions(now = new Date(), first = "2026-01") {
+  const out = [];
+  let [y, m] = ymOf(now).split("-").map(Number);
+  const [fy, fm] = first.split("-").map(Number);
+  while (y > fy || (y === fy && m >= fm)) {
+    const val = `${y}-${String(m).padStart(2, "0")}`;
+    out.push({ val, label: monthLabel(val) });
+    m -= 1; if (m === 0) { m = 12; y -= 1; }
+  }
+  return out;
+}
+
+/** "Jun–Oct 2026", "Oct 2026", "Dec 2026 – Feb 2027". */
+export function monthRange(from, to) {
+  const f = monthLabel(from), t = monthLabel(to);
+  if (!f || !t) return f || t || "";
+  if (from === to) return t;
+  return from.slice(0, 4) === to.slice(0, 4) ? `${f.slice(0, 3)}–${t}` : `${f} – ${t}`;
+}
+
+const shortDay = (ymd) => { const d = dayLabel(ymd); return d ? d.replace(/, \d{4}$/, "") : null; };
+
+/** "Q3 2026 (Jul 1 – Sep 30)" for a full calendar quarter, else "Jul 1 – Aug 15, 2026". */
+export function periodLabel(from, to) {
+  if (!from) return null;
+  if (!to) return `from ${dayLabel(from)}`;
+  const m = /^(\d{4})-(\d{2})-01$/.exec(from);
+  const qEnd = { "01": "03-31", "04": "06-30", "07": "09-30", "10": "12-31" };
+  if (m && qEnd[m[2]] && to === `${m[1]}-${qEnd[m[2]]}`) {
+    return `Q${(Number(m[2]) + 2) / 3} ${m[1]} (${shortDay(from)} – ${shortDay(to)})`;
+  }
+  return `${shortDay(from)} – ${dayLabel(to)}`;
+}
+
+/**
+ * Medicare period. { line, short }:
+ *   drug      → "Medicare ASP · Q3 2026 (Jul 1 – Sep 30)" / "ASP · Q3 2026 (Jul 1 – Sep 30)"
+ *   procedure → "Medicare 2026 fee schedule (Worcester) · current release (Oct 2026). Earlier 2026 releases are not stored."
+ *               / "Worcester · current release (Oct 2026)"
+ * Null when the answer carries no period.
+ */
+export function medicarePeriod(benchmarks, isDrug) {
+  const p = benchmarks && benchmarks.med_period;
+  if (!p || !p.from) return null;
+  if (isDrug) {
+    const q = periodLabel(p.from, p.to);
+    return { line: `Medicare ASP · ${q}`, short: `ASP · ${q}` };
+  }
+  const year = p.from.slice(0, 4);
+  if (p.to) {
+    const range = periodLabel(p.from, p.to);
+    return { line: `Medicare ${year} fee schedule (Worcester) · ${range}`, short: `Worcester · ${range}` };
+  }
+  const rel = monthLabel(p.from);
+  return {
+    line: `Medicare ${year} fee schedule (Worcester) · current release (${rel}). Earlier ${year} releases are not stored.`,
+    short: `Worcester · current release (${rel})`,
+  };
+}
+
+/** "MassHealth fee schedule · as of May 2026" (from benchmarks.mh_as_of), or null. */
+export function massHealthPeriod(benchmarks) {
+  const m = monthLabel(benchmarks && benchmarks.mh_as_of);
+  return m ? `MassHealth fee schedule · as of ${m}` : null;
+}
+
+/** Commercial file sub-line for the month asked. */
+export function fileLine(plan, vra, month) {
+  const label = (plan && plan.label) || "";
+  const src = vra && vra.source_month;
+  let when = null;
+  if (!src) when = (plan && plan.month_note) || null;            // files with no stated month
+  else if (vra.exact_month === false && month && month !== src) when = `No ${monthLabel(month)} file — using the ${monthLabel(src)} file`;
+  else when = `${monthLabel(src)} file`;
+  return [label, when].filter(Boolean).join(" · ");
+}
+
+/** Timeline entries with a stated month, oldest first. */
+export function datedTimeline(timeline) {
+  return (timeline || []).filter((t) => t && /^\d{4}-\d{2}$/.test(String(t.month || "")))
+    .sort((a, b) => (a.month < b.month ? -1 : a.month > b.month ? 1 : 0));
+}
+
+/** "No file on record for Mar 2026. Our first file for this plan is Jun 2026." or null. */
+export function noFileLine(data) {
+  if (!data || data.vra || !data.plan || data.plan.source !== "mrf") return null;
+  const dated = datedTimeline(data.timeline);
+  if (!dated.length || !data.month || data.month >= dated[0].month) return null;
+  return `No file on record for ${monthLabel(data.month)}. Our first file for this plan is ${monthLabel(dated[0].month)}.`;
+}
+
+/**
+ * "Rate by file month" runs: equal-rate (to the cent) months compressed, oldest
+ * first: [{ from, to, rate, label, change }] — change = % vs the previous run
+ * (null for the first run, or when either rate is missing). [] when the timeline
+ * has fewer than two dated entries.
+ */
+export function timelineRuns(timeline) {
+  const dated = datedTimeline(timeline);
+  if (dated.length < 2) return [];
+  const runs = [];
+  for (const t of dated) {
+    const rate = t.rate == null ? null : Math.round(Number(t.rate) * 100) / 100;
+    const last = runs[runs.length - 1];
+    if (last && last.rate === rate) last.to = t.month;
+    else runs.push({ from: t.month, to: t.month, rate });
+  }
+  return runs.map((r, i) => {
+    const prev = runs[i - 1];
+    const change = prev && prev.rate && r.rate != null ? Math.round((r.rate / prev.rate - 1) * 100) : null;
+    return { ...r, label: monthRange(r.from, r.to), change };
+  });
+}
+
+/** "−10%" / "+4%" / "0%" (true minus sign). */
+export function pctChange(n) {
+  if (n == null) return "";
+  return n > 0 ? `+${n}%` : n < 0 ? `−${Math.abs(n)}%` : "0%";
+}
+
+/** "Paid on your EOB: $123.49 — what was paid, not a published rate." */
+export function eobLine(e) {
+  return `Paid on your EOB: ${price(e && e.rate)} — what was paid, not a published rate.`;
+}
+
+/**
+ * When the EOB payment is from:
+ *   "Service Jun 12, 2026 · EOB Jul 20, 2026"
+ *   "Service date not recorded · entered as Jun 2026"
+ * plus " (different month from the one selected)" when the service month ≠ the picker month.
+ */
+export function eobDates(e, month) {
+  if (!e) return "";
+  const svc = dayLabel(e.service_date), paid = dayLabel(e.eob_date);
+  const parts = [svc ? `Service ${svc}` : "Service date not recorded"];
+  if (paid) parts.push(`EOB ${paid}`);
+  else if (!svc && monthLabel(e.source_month)) parts.push(`entered as ${monthLabel(e.source_month)}`);
+  let out = parts.join(" · ");
+  if (svc && month && String(e.service_date).slice(0, 7) !== month) out += " (different month from the one selected)";
+  return out;
+}
+
+/** The muted line under the big number. Medicare / MassHealth show their period. */
+export function sourceLine(plan, vra, data) {
   if (!plan) return "";
-  const label = plan.label || "";
-  if (plan.source === "medicare" || plan.source === "masshealth") return label;
-  const month = plan.month_note || monthLabel(vra && vra.source_month);
-  return [label, month].filter(Boolean).join(" · ");
+  const b = data && data.benchmarks;
+  if (plan.source === "medicare") {
+    const p = medicarePeriod(b, data && data.type === "drug");
+    return p ? p.line : plan.label || "";
+  }
+  if (plan.source === "masshealth") return massHealthPeriod(b) || plan.label || "";
+  return fileLine(plan, vra, data && data.month);
 }
