@@ -1,5 +1,6 @@
 import { HANDOUTS } from "./PatientEducation.jsx";
 import { VRA_LOGO_DATA_URI } from "./vra-logo-data.js";
+import { IRD_RX } from "./lib/advisor.js";
 
 // ── Language detection from note text ──────────────────────────────
 export function detectLanguage(noteText) {
@@ -115,7 +116,7 @@ export function matchHandouts(noteText, icd10Codes = []) {
   }
 
   // Inherited retinal disease → genetic testing options (FFB / Invitae)
-  if (/retinitis\s*pigmentosa|\brp\b|stargardt|fundus\s*flavimaculatus|\babca4\b|usher|cone.?rod\s*dystroph|rod.?cone\s*dystroph|cone\s*dystroph|choroideremia|achromatopsia|leber\s*congenital|best\s*disease|best\s*vitelliform|x.?linked\s*retinoschisis|juvenile\s*retinoschisis|inherited\s*retinal|hereditary\s*retinal|retinal\s*dystroph|\bh35\.5[0-4]/.test(combined)) {
+  if (IRD_RX.test(combined)) { // shared with the advisor strip (src/lib/advisor.js)
     matched.add("cond-ird-genetic-testing");
   }
 

@@ -8,6 +8,9 @@ import OpNoteDictator from "./OpNoteDictator.jsx";
 import { detectLanguage, matchHandouts, detectDropsFromPlan, generateEducationPrintHTML } from "./NoteEducationMatcher.jsx";
 import PhoneText from "./PhoneText.jsx";
 import { CoverageCards } from "./CoverageCard.jsx";
+import AdvisorStrip from "./AdvisorStrip.jsx"; // clinical advisor strip (Oct 29 2026) — src/lib/advisor.js
+import { advisorCards, insertPlanLine } from "./lib/advisor.js";
+import { HANDOUTS } from "./data/educationContent.js";
 import { COVERAGE_FENCE_RX, reqTagClass } from "./lib/coverageCard.js";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
 import { parseResponse, isEyeCode, getEmLabel, calcGlobalPeriodContext, calcPlaquenilDose, isIcdWarning, copyableIcdText, copyableNoteText, noteDisplayLines, coverageCardNotes } from "./lib/noteHelpers.js";
@@ -167,6 +170,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // CC/HPI back in the same API call as the A/P. Per-visit, like the note itself.
   const [intakeText, setIntakeText] = useState("");
   const [result, setResult] = useState(null);
+  // Advisor strip (Oct 29 2026): ids of lines already added to the Plan for THIS note,
+  // and the line to flash gold for a moment after "+ Add".
+  const [advisorAdded, setAdvisorAdded] = useState(() => new Set());
+  const [flashLine, setFlashLine] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   // Pre-flight unknown-drug warning: holds the offending token while the
@@ -690,7 +697,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     const edit = typeof editInstruction === "string" ? editInstruction.trim() : "";
     if (!note.trim()) return;
     sendPendingFlag(); // typed flag for the note being replaced goes out first (not awaited)
-    setLoading(true); setError(""); setResult(null);
+    setLoading(true); setError(""); setResult(null); setAdvisorAdded(new Set());
     setFlagOpen(false); setFlagReason("");
     try {
       // System prompt now lives server-side (server/prompts/note-generator-prompt.js, July 2026).
@@ -809,7 +816,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   function newNote() {
     sendPendingFlag();
     setFlagOpen(false); setFlagReason("");
-    setTab("input"); setResult(null);
+    setTab("input"); setResult(null); setAdvisorAdded(new Set());
   }
 
   // Leaving the page (Back to hub/doctors, phone tab bar) unmounts this screen:
@@ -870,9 +877,46 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         {i > 0 && "\n"}
         {l.header
           ? <strong style={{ fontWeight: 700, color: T.ink }}>{renderInline(l.text, i)}</strong>
-          : renderInline(l.text, i)}
+          : flashLine && l.text.trim() === flashLine.trim()
+            ? <span style={{ background: T.goldSoft, transition: "background 0.6s" }}>{renderInline(l.text, i)}</span>
+            : renderInline(l.text, i)}
       </span>
     ));
+  }
+
+  // ── Advisor strip actions (Oct 29 2026) ───────────────────────────────
+  // "+ Add" puts the line at the end of the Plan (before the trailing MDM/G2211
+  // sentences, above any coverage block). Nothing is added unless clicked.
+  function addAdvisorLine(line) {
+    if (!result?.note) return;
+    const ins = insertPlanLine(result.note, line.text);
+    if (ins.added) {
+      setResult((r) => (r ? { ...r, note: ins.text } : r));
+      setFlashLine(ins.line);
+      setTimeout(() => setFlashLine(""), 1800);
+    }
+    setAdvisorAdded((prev) => new Set(prev).add(line.id));
+  }
+  async function printIrdPamphlet(lang) {
+    const h = HANDOUTS.find((x) => x.id === "cond-ird-genetic-testing");
+    if (!h) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/education-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handouts: [{ title: h.title[lang] || h.title.en, content: h.content[lang] || h.content.en }], lang }),
+      });
+      if (!res.ok) throw new Error("PDF generation failed");
+      const url = URL.createObjectURL(await res.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Genetic_Testing_IRD.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Pamphlet download error:", e && e.message);
+      throw e; // the strip shows the error next to the button
+    }
   }
 
   // ── [DOCUMENT: …] highlighting for the CC/HPI card (Sep 2026, per Mari) ──
@@ -1899,6 +1943,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   </div>
                 </div>
                 {phone && phoneFooter(newNote, "New note", copyNote, copied)}
+
+                {/* Clinical advisor strip (Oct 29 2026) — under the note, above coverage.
+                    Never copied; "+ Add" puts a line in the Plan. src/AdvisorStrip.jsx */}
+                <AdvisorStrip cards={advisorCards(noteBody, icd10Codes || [])} added={advisorAdded} onAdd={addAdvisorLine} onPrintPamphlet={printIrdPamphlet} />
 
                 {/* Coverage reference(s) — server appends these to the note text */}
                 {Array.isArray(result.coverage) && result.coverage.length > 0

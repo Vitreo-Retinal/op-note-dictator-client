@@ -20,10 +20,11 @@ test("IRD genetic testing handout exists in all four languages", () => {
   }
 });
 
-// The matcher file imports JSX, so test its IRD regex directly from source.
+// The matcher's IRD rule is shared with the advisor strip (Oct 29 2026): src/lib/advisor.js.
+// Check that the matcher still uses it for this handout, then test the regex itself.
+import { IRD_RX } from "../src/lib/advisor.js";
 const src = fs.readFileSync(new URL("../src/NoteEducationMatcher.jsx", import.meta.url), "utf8");
-const m = src.match(/if \((\/retinitis[^\n]*?\/)\.test\(combined\)\) \{\n\s*matched\.add\("cond-ird-genetic-testing"\)/);
-const rx = m && eval(m[1]);
+const rx = /if \(IRD_RX\.test\(combined\)\)[^\n]*\n\s*matched\.add\("cond-ird-genetic-testing"\)/.test(src) ? IRD_RX : null;
 
 test("matcher suggests the IRD handout for inherited retinal diseases", () => {
   assert.ok(rx, "IRD matcher rule not found");
