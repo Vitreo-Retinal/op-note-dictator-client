@@ -143,7 +143,7 @@ export default function PatientEducation({ onBack, embedded = false, backLabel =
                     ))}
                   </div>
                   <pre style={{ whiteSpace: "pre-wrap", fontFamily: T.sans, fontSize: 13.5, color: T.ink, lineHeight: 1.65, margin: 0, maxHeight: 500, overflowY: "auto", padding: "12px 14px", background: T.paper, border: `1px solid ${T.line}`, borderRadius: T.r }}>
-                    {content.replace(/\[PAGE_BREAK\]\n?/g, "").replace(/\[IMAGE[^\]]*\]\n?/g, "")}
+                    {content.replace(/\[PAGE_BREAK\]\n?/g, "").replace(/\[IMAGE[^\]]*\]\n?/g, "").replace(/\[\/?TABLE\]\n?/g, "")}
                   </pre>
                   <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
                     <button

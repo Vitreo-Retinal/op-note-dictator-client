@@ -3872,6 +3872,131 @@ Se Notar Mudança
 • Não espere pela próxima consulta agendada.`
     }
   },
+  {
+    id: "cond-ird-genetic-testing",
+    category: "condition",
+    title: { en: "Genetic Testing for Inherited Retinal Disease", es: "Pruebas Genéticas para Enfermedades Hereditarias de la Retina", vi: "Xét Nghiệm Di Truyền cho Bệnh Võng Mạc Di Truyền", pt: "Teste Genético para Doenças Hereditárias da Retina" },
+    tags: ["genetic testing", "inherited retinal disease", "IRD", "retinitis pigmentosa", "Stargardt", "Usher", "Invitae", "Foundation Fighting Blindness"],
+    content: {
+      en: `GENETIC TESTING FOR INHERITED RETINAL DISEASE
+
+Why Get Tested?
+A genetic test finds the gene that causes your eye condition. It can confirm your diagnosis, show your family's risk, and open the door to new treatments and clinical trials. It needs only a saliva, cheek swab or blood sample.
+
+Your Two Options
+[TABLE]
+|  | Option 1: Foundation Fighting Blindness (lab: PreventionGenetics) | Option 2: Invitae (lab: Invitae, part of Labcorp) |
+| Cost to you | Free. Your insurance is not billed. | Billed to your insurance first. You get a cost estimate before testing. May be free if insurance does not cover it. |
+| Genes checked | 110 genes, the most common causes | 330 genes, including rarer causes |
+| Results | About 3 to 4 weeks | About 2 weeks |
+| Genetic counselor | Free session with InformedDNA if you want one | Invitae genetic counselors are available |
+| Research | You join the My Retina Tracker Registry (required). It helps match patients to clinical trials. | No registry. Information without your name may be shared with researchers and companies. |
+| Family members | If a gene is found, blood relatives can be tested for it for free. | If a gene is found, blood relatives can be tested for it. Cost varies. |
+| Who can use it | Not if you had eye genetic testing before, or a parent, sibling or child was tested in this program. | Anyone with a known or suspected inherited retinal disease. |
+[/TABLE]
+
+What Happens Next
+[TABLE]
+| Option 1: Foundation Fighting Blindness | Option 2: Invitae |
+| 1. We send your name and email to the program. | 1. You sign a consent form. |
+| 2. You sign the forms online in a DocuSign email from the Foundation (dse_NA3@docusign.net). Check your spam folder. | 2. We order the test with your insurance and email. Invitae texts or emails you a cost estimate. |
+| 3. We order the test. You give a sample here, or a kit is mailed to your home. | 3. You give a sample here, or a kit is mailed to your home. |
+| 4. Your doctor reviews the results with you. | 4. Your doctor reviews the results with you. |
+[/TABLE]
+
+Good to Know
+• Both are good options. Choose based on your preference, for example whether you want your insurance involved. Please choose only one.
+• About two out of three people tested find their gene. If no gene is found, testing can be repeated later as science improves.
+• Questions? Our office is happy to help: 508-752-1155.`,
+
+      es: `Por Qué Hacerse la Prueba
+Una prueba genética busca el gen que causa su enfermedad ocular. Puede confirmar su diagnóstico, mostrar el riesgo de su familia y abrir paso a nuevos tratamientos y estudios. Solo requiere saliva, un hisopo de la mejilla o sangre.
+
+Sus Dos Opciones
+[TABLE]
+|  | Opción 1: Foundation Fighting Blindness (laboratorio: PreventionGenetics) | Opción 2: Invitae (laboratorio: Invitae, parte de Labcorp) |
+| Costo para usted | Gratis. No se factura a su seguro. | Se factura primero a su seguro. Recibe un estimado antes de la prueba. Puede ser gratis si el seguro no la cubre. |
+| Genes analizados | 110 genes, las causas más comunes | 330 genes, incluidas causas menos comunes |
+| Resultados | Unas 3 a 4 semanas | Unas 2 semanas |
+| Consejero genético | Sesión gratuita con InformedDNA si la desea | Consejeros genéticos de Invitae disponibles |
+| Investigación | Se une al registro My Retina Tracker (obligatorio), que conecta pacientes con estudios. | Sin registro. Información sin su nombre puede compartirse con investigadores y empresas. |
+| Familiares | Si se encuentra un gen, sus familiares de sangre pueden hacerse la prueba gratis. | Si se encuentra un gen, sus familiares de sangre pueden hacerse la prueba. El costo varía. |
+| Quién puede usarla | No si ya tuvo una prueba genética ocular, o si un padre, hermano o hijo ya la hizo en este programa. | Cualquier persona con una enfermedad hereditaria de la retina conocida o sospechada. |
+[/TABLE]
+
+Próximos Pasos
+[TABLE]
+| Opción 1: Foundation Fighting Blindness | Opción 2: Invitae |
+| 1. Enviamos su nombre y correo electrónico al programa. | 1. Usted firma un formulario de consentimiento. |
+| 2. Firma los formularios en línea en un correo de DocuSign (dse_NA3@docusign.net). Revise el spam. | 2. Ordenamos la prueba con su seguro y correo electrónico. Invitae le envía un estimado del costo por texto o correo. |
+| 3. Ordenamos la prueba. Usted da la muestra aquí, o le enviamos un kit a su casa. | 3. Usted da la muestra aquí, o le enviamos un kit a su casa. |
+| 4. Su médico revisa los resultados con usted. | 4. Su médico revisa los resultados con usted. |
+[/TABLE]
+
+Información Útil
+• Ambas opciones son buenas. Elija según su preferencia, por ejemplo si quiere que su seguro participe o no. Elija solo una.
+• Unas dos de cada tres personas encuentran su gen. Si no, la prueba puede repetirse más adelante.
+• ¿Preguntas? Nuestra oficina con gusto le ayuda: 508-752-1155.`,
+
+      vi: `Tại Sao Nên Xét Nghiệm
+Xét nghiệm di truyền tìm gen gây ra bệnh mắt của bạn. Kết quả có thể xác nhận chẩn đoán, cho biết nguy cơ của gia đình bạn, và mở ra cơ hội tiếp cận các phương pháp điều trị mới và nghiên cứu lâm sàng. Chỉ cần mẫu nước bọt, mẫu tăm bông má hoặc mẫu máu.
+
+Hai Lựa Chọn Của Bạn
+[TABLE]
+|  | Lựa chọn 1: Foundation Fighting Blindness (phòng xét nghiệm: PreventionGenetics) | Lựa chọn 2: Invitae (phòng xét nghiệm: Invitae, thuộc Labcorp) |
+| Chi phí của bạn | Miễn phí. Không tính vào bảo hiểm của bạn. | Bảo hiểm được tính trước. Bạn nhận được ước tính chi phí trước khi xét nghiệm. Có thể miễn phí nếu bảo hiểm không chi trả. |
+| Số gen được kiểm tra | 110 gen, các nguyên nhân phổ biến nhất | 330 gen, bao gồm cả nguyên nhân hiếm gặp |
+| Kết quả | Khoảng 3 đến 4 tuần | Khoảng 2 tuần |
+| Tư vấn di truyền | Một buổi tư vấn miễn phí với InformedDNA nếu bạn muốn | Có chuyên viên tư vấn di truyền của Invitae |
+| Nghiên cứu | Bạn tham gia cơ sở dữ liệu My Retina Tracker (bắt buộc). Giúp kết nối bệnh nhân với nghiên cứu lâm sàng. | Không có cơ sở dữ liệu. Thông tin không có tên bạn có thể được chia sẻ với nhà nghiên cứu và công ty. |
+| Người thân | Nếu tìm thấy gen, người thân cùng huyết thống được xét nghiệm miễn phí. | Nếu tìm thấy gen, người thân cùng huyết thống có thể được xét nghiệm. Chi phí khác nhau. |
+| Ai có thể sử dụng | Không áp dụng nếu bạn đã từng xét nghiệm di truyền về mắt, hoặc cha mẹ, anh chị em hay con đã xét nghiệm qua chương trình này. | Bất kỳ ai có bệnh võng mạc di truyền đã biết hoặc nghi ngờ. |
+[/TABLE]
+
+Các Bước Tiếp Theo
+[TABLE]
+| Lựa chọn 1: Foundation Fighting Blindness | Lựa chọn 2: Invitae |
+| 1. Chúng tôi gửi tên và email của bạn đến chương trình. | 1. Bạn ký mẫu đồng ý. |
+| 2. Bạn ký các mẫu đơn trực tuyến qua email DocuSign từ Quỹ (dse_NA3@docusign.net). Hãy kiểm tra thư mục spam. | 2. Chúng tôi đặt xét nghiệm với thông tin bảo hiểm và email của bạn. Invitae gửi ước tính chi phí qua tin nhắn hoặc email. |
+| 3. Chúng tôi đặt xét nghiệm. Bạn lấy mẫu tại đây, hoặc bộ dụng cụ được gửi đến nhà. | 3. Bạn lấy mẫu tại đây, hoặc bộ dụng cụ được gửi đến nhà. |
+| 4. Bác sĩ xem kết quả cùng bạn. | 4. Bác sĩ xem kết quả cùng bạn. |
+[/TABLE]
+
+Những Điều Nên Biết
+• Cả hai lựa chọn đều tốt. Hãy chọn theo mong muốn của bạn, ví dụ bạn có muốn dùng bảo hiểm hay không. Chỉ chọn một.
+• Khoảng hai trong ba người được xét nghiệm tìm thấy gen của mình. Nếu chưa tìm thấy, có thể xét nghiệm lại sau khi khoa học tiến bộ.
+• Có câu hỏi? Văn phòng chúng tôi luôn sẵn lòng giúp đỡ: 508-752-1155.`,
+
+      pt: `Por Que Fazer o Teste
+Um teste genético procura o gene que causa a sua doença ocular. Ele pode confirmar o diagnóstico, mostrar o risco da família e abrir caminho para novos tratamentos. Basta saliva, cotonete da bochecha ou sangue.
+
+Suas Duas Opções
+[TABLE]
+|  | Opção 1: Foundation Fighting Blindness (laboratório: PreventionGenetics) | Opção 2: Invitae (laboratório: Invitae, parte da Labcorp) |
+| Custo para você | Gratuito. Seu seguro não é cobrado. | Cobrado primeiro do seu seguro, com estimativa de custo antes do teste. Pode ser grátis se o seguro não cobrir. |
+| Genes analisados | 110 genes, as causas mais comuns | 330 genes, incluindo causas mais raras |
+| Resultados | Cerca de 3 a 4 semanas | Cerca de 2 semanas |
+| Aconselhamento | Sessão gratuita com a InformedDNA, se desejar | Conselheiros genéticos da Invitae disponíveis |
+| Pesquisa | Você entra no registro My Retina Tracker (obrigatório), que conecta pacientes a estudos. | Sem registro. Dados sem o seu nome podem ser compartilhados com pesquisadores e empresas. |
+| Familiares | Se um gene for encontrado, seus parentes de sangue podem fazer o teste de graça. | Se um gene for encontrado, seus parentes de sangue podem fazer o teste. O custo varia. |
+| Quem pode usar | Não se você já fez teste genético ocular, ou se pai, mãe, irmão ou filho já fez neste programa. | Qualquer pessoa com doença hereditária da retina conhecida ou suspeita. |
+[/TABLE]
+
+Próximos Passos
+[TABLE]
+| Opção 1: Foundation Fighting Blindness | Opção 2: Invitae |
+| 1. Enviamos seu nome e e-mail ao programa. | 1. Você assina um termo de consentimento. |
+| 2. Você assina os formulários on-line em um e-mail do DocuSign (dse_NA3@docusign.net). Verifique o spam. | 2. Pedimos o teste com seu seguro e e-mail. A Invitae envia uma estimativa de custo por mensagem ou e-mail. |
+| 3. Pedimos o teste. Você dá a amostra aqui, ou um kit é enviado para sua casa. | 3. Você dá a amostra aqui, ou um kit é enviado para sua casa. |
+| 4. Seu médico revisa os resultados com você. | 4. Seu médico revisa os resultados com você. |
+[/TABLE]
+
+Bom Saber
+• As duas opções são boas. Escolha conforme sua preferência, por exemplo, se quer ou não usar o seu seguro. Escolha apenas uma.
+• Cerca de duas em cada três pessoas testadas encontram o seu gene. Se não, o teste pode ser repetido mais tarde.
+• Dúvidas? Nosso consultório terá prazer em ajudar: 508-752-1155.`
+    }
+  },
 ];
 
 export { CATEGORIES, LANGUAGES };

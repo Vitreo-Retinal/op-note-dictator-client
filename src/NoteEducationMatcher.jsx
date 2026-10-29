@@ -114,6 +114,11 @@ export function matchHandouts(noteText, icd10Codes = []) {
     matched.add("cond-rd");
   }
 
+  // Inherited retinal disease → genetic testing options (FFB / Invitae)
+  if (/retinitis\s*pigmentosa|\brp\b|stargardt|fundus\s*flavimaculatus|\babca4\b|usher|cone.?rod\s*dystroph|rod.?cone\s*dystroph|cone\s*dystroph|choroideremia|achromatopsia|leber\s*congenital|best\s*disease|best\s*vitelliform|x.?linked\s*retinoschisis|juvenile\s*retinoschisis|inherited\s*retinal|hereditary\s*retinal|retinal\s*dystroph|\bh35\.5[0-4]/.test(combined)) {
+    matched.add("cond-ird-genetic-testing");
+  }
+
   // Filter to actual HANDOUTS entries
   return HANDOUTS.filter(h => matched.has(h.id));
 }

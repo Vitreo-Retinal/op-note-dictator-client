@@ -1,0 +1,39 @@
+// IRD genetic testing pamphlet (cond-ird-genetic-testing) — Oct 29 2026
+import test from "node:test";
+import assert from "node:assert";
+import fs from "node:fs";
+import { HANDOUTS } from "../src/data/educationContent.js";
+
+const h = HANDOUTS.find((x) => x.id === "cond-ird-genetic-testing");
+
+test("IRD genetic testing handout exists in all four languages", () => {
+  assert.ok(h, "handout missing");
+  assert.strictEqual(h.category, "condition");
+  for (const lang of ["en", "es", "vi", "pt"]) {
+    assert.ok(h.title[lang], `title ${lang}`);
+    const c = h.content[lang];
+    assert.ok(c && c.length > 500, `content ${lang}`);
+    // Two tables, balanced markers
+    assert.strictEqual((c.match(/^\[TABLE\]$/gm) || []).length, 2, `tables ${lang}`);
+    assert.strictEqual((c.match(/^\[\/TABLE\]$/gm) || []).length, 2, `table ends ${lang}`);
+    assert.ok(c.includes("508-752-1155"), `phone ${lang}`);
+  }
+});
+
+// The matcher file imports JSX, so test its IRD regex directly from source.
+const src = fs.readFileSync(new URL("../src/NoteEducationMatcher.jsx", import.meta.url), "utf8");
+const m = src.match(/if \((\/retinitis[^\n]*?\/)\.test\(combined\)\) \{\n\s*matched\.add\("cond-ird-genetic-testing"\)/);
+const rx = m && eval(m[1]);
+
+test("matcher suggests the IRD handout for inherited retinal diseases", () => {
+  assert.ok(rx, "IRD matcher rule not found");
+  for (const s of ["retinitis pigmentosa ou", "rp ou, stable", "stargardt disease", "usher syndrome type 2", "cone-rod dystrophy", "h35.52 hereditary retinal dystrophy", "choroideremia", "x-linked retinoschisis"]) {
+    assert.ok(rx.test(s), s);
+  }
+});
+
+test("matcher does not suggest the IRD handout for unrelated notes", () => {
+  for (const s of ["prp os for pdr", "rpe atrophy, dry amd", "wet amd od, eylea", "retinal detachment repair", "crvo with cme", "best corrected vision 20/40"]) {
+    assert.ok(!rx.test(s), s);
+  }
+});
