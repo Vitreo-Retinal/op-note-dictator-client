@@ -3689,11 +3689,11 @@ El desprendimiento es indoloro. Las señales clave son cambios visuales súbitos
 Examen de fondo con dilatación con lentes especializados. Si la retina no se ve (sangrado en el ojo), se usa ultrasonido. El OCT evalúa si la mácula está adherida.
 
 Tratamiento
-El desprendimiento casi siempre requiere cirugía. El enfoque depende del tipo, severidad, y si la mácula está involucrada. El tiempo es crítico.
+El desprendimiento casi siempre requiere cirugía. El enfoque depende del tipo, severidad, y si la mácula está involucrada.
 • Retinopexia con Láser o Crioterapia — en consultorio, para sellar un desgarro antes del desprendimiento completo.
 • Retinopexia Neumática — burbuja de gas inyectada para presionar el desgarro, sellado con láser.
 • Vitrectomía Pars Plana — la reparación más común. Se remueve el gel vítreo, se aplana la retina y se aplica láser. Burbuja de gas o aceite de silicón mantiene la retina durante la cicatrización. Puede requerir posición boca abajo.
-• Cerclaje Escleral — banda de silicón suturada alrededor del ojo, indentando la pared para contactar la retina desprendida.
+• Cerclaje Escleral — banda de silicón alrededor del ojo que empuja la pared hacia la retina.
 
 Recuperación Visual
 El resultado depende de si la mácula estaba adherida al momento de la cirugía. Detectado temprano (mácula adherida), la mayoría recupera buena visión central. Si la mácula ya estaba desprendida, cierta pérdida visual permanente es común. Con burbuja de gas: no volar ni bucear hasta que se disuelva (2 a 8 semanas). Riesgos: infección, sangrado, re-desprendimiento, glaucoma, catarata.
@@ -3939,32 +3939,32 @@ Información Útil
 • ¿Preguntas? Nuestra oficina con gusto le ayuda: 508-752-1155.`,
 
       vi: `Tại Sao Nên Xét Nghiệm
-Xét nghiệm di truyền tìm gen gây ra bệnh mắt của bạn. Kết quả có thể xác nhận chẩn đoán, cho biết nguy cơ của gia đình bạn, và mở ra cơ hội tiếp cận các phương pháp điều trị mới và nghiên cứu lâm sàng. Chỉ cần mẫu nước bọt, mẫu tăm bông má hoặc mẫu máu.
+Xét nghiệm di truyền tìm gen gây ra bệnh mắt của bạn. Kết quả giúp xác nhận chẩn đoán, biết nguy cơ của gia đình và tiếp cận điều trị mới hoặc nghiên cứu lâm sàng. Chỉ cần mẫu nước bọt, tăm bông má hoặc máu.
 
 Hai Lựa Chọn Của Bạn
 [TABLE]
-|  | Lựa chọn 1: Foundation Fighting Blindness (phòng xét nghiệm: PreventionGenetics) | Lựa chọn 2: Invitae (phòng xét nghiệm: Invitae, thuộc Labcorp) |
-| Chi phí của bạn | Miễn phí. Không tính vào bảo hiểm của bạn. | Bảo hiểm được tính trước. Bạn nhận được ước tính chi phí trước khi xét nghiệm. Có thể miễn phí nếu bảo hiểm không chi trả. |
-| Số gen được kiểm tra | 110 gen, các nguyên nhân phổ biến nhất | 330 gen, bao gồm cả nguyên nhân hiếm gặp |
+|  | Lựa chọn 1: Foundation Fighting Blindness (PreventionGenetics) | Lựa chọn 2: Invitae (thuộc Labcorp) |
+| Chi phí của bạn | Miễn phí. Không tính vào bảo hiểm của bạn. | Tính vào bảo hiểm trước. Có ước tính chi phí trước khi xét nghiệm. Có thể miễn phí nếu bảo hiểm không trả. |
+| Số gen | 110 gen, các nguyên nhân phổ biến nhất | 330 gen, bao gồm cả nguyên nhân hiếm gặp |
 | Kết quả | Khoảng 3 đến 4 tuần | Khoảng 2 tuần |
-| Tư vấn di truyền | Một buổi tư vấn miễn phí với InformedDNA nếu bạn muốn | Có chuyên viên tư vấn di truyền của Invitae |
-| Nghiên cứu | Bạn tham gia cơ sở dữ liệu My Retina Tracker (bắt buộc). Giúp kết nối bệnh nhân với nghiên cứu lâm sàng. | Không có cơ sở dữ liệu. Thông tin không có tên bạn có thể được chia sẻ với nhà nghiên cứu và công ty. |
+| Tư vấn di truyền | Tư vấn miễn phí với InformedDNA nếu muốn | Có chuyên viên tư vấn di truyền của Invitae |
+| Nghiên cứu | Tham gia cơ sở dữ liệu My Retina Tracker (bắt buộc), giúp kết nối với nghiên cứu. | Không có. Thông tin không có tên bạn có thể được chia sẻ với nhà nghiên cứu và công ty. |
 | Người thân | Nếu tìm thấy gen, người thân cùng huyết thống được xét nghiệm miễn phí. | Nếu tìm thấy gen, người thân cùng huyết thống có thể được xét nghiệm. Chi phí khác nhau. |
-| Ai có thể sử dụng | Không áp dụng nếu bạn đã từng xét nghiệm di truyền về mắt, hoặc cha mẹ, anh chị em hay con đã xét nghiệm qua chương trình này. | Bất kỳ ai có bệnh võng mạc di truyền đã biết hoặc nghi ngờ. |
+| Ai có thể dùng | Không áp dụng nếu bạn đã xét nghiệm di truyền về mắt, hoặc cha mẹ, anh chị em, con đã xét nghiệm qua chương trình này. | Bất kỳ ai có bệnh võng mạc di truyền đã biết hoặc nghi ngờ. |
 [/TABLE]
 
 Các Bước Tiếp Theo
 [TABLE]
 | Lựa chọn 1: Foundation Fighting Blindness | Lựa chọn 2: Invitae |
 | 1. Chúng tôi gửi tên và email của bạn đến chương trình. | 1. Bạn ký mẫu đồng ý. |
-| 2. Bạn ký các mẫu đơn trực tuyến qua email DocuSign từ Quỹ (dse_NA3@docusign.net). Hãy kiểm tra thư mục spam. | 2. Chúng tôi đặt xét nghiệm với thông tin bảo hiểm và email của bạn. Invitae gửi ước tính chi phí qua tin nhắn hoặc email. |
-| 3. Chúng tôi đặt xét nghiệm. Bạn lấy mẫu tại đây, hoặc bộ dụng cụ được gửi đến nhà. | 3. Bạn lấy mẫu tại đây, hoặc bộ dụng cụ được gửi đến nhà. |
+| 2. Ký các mẫu đơn trực tuyến qua email DocuSign (dse_NA3@docusign.net). Kiểm tra thư mục spam. | 2. Chúng tôi đặt xét nghiệm với bảo hiểm và email của bạn. Invitae gửi ước tính chi phí qua tin nhắn hoặc email. |
+| 3. Chúng tôi đặt xét nghiệm. Lấy mẫu tại đây, hoặc bộ dụng cụ được gửi đến nhà. | 3. Bạn lấy mẫu tại đây, hoặc bộ dụng cụ được gửi đến nhà. |
 | 4. Bác sĩ xem kết quả cùng bạn. | 4. Bác sĩ xem kết quả cùng bạn. |
 [/TABLE]
 
 Những Điều Nên Biết
-• Cả hai lựa chọn đều tốt. Hãy chọn theo mong muốn của bạn, ví dụ bạn có muốn dùng bảo hiểm hay không. Chỉ chọn một.
-• Khoảng hai trong ba người được xét nghiệm tìm thấy gen của mình. Nếu chưa tìm thấy, có thể xét nghiệm lại sau khi khoa học tiến bộ.
+• Cả hai lựa chọn đều tốt. Chọn theo mong muốn của bạn, ví dụ có muốn dùng bảo hiểm hay không. Chỉ chọn một.
+• Khoảng hai trong ba người được xét nghiệm tìm thấy gen của mình. Nếu chưa tìm thấy, có thể xét nghiệm lại sau.
 • Có câu hỏi? Văn phòng chúng tôi luôn sẵn lòng giúp đỡ: 508-752-1155.`,
 
       pt: `Por Que Fazer o Teste
