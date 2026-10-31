@@ -6,6 +6,8 @@ import { SendIcon, ChevronDownIcon, ChevronRightIcon, SearchIcon } from "./icons
 import { usePhone, PhoneHeading, APPBAR_H, TABBAR_H } from "./phone.jsx";
 import { linkifyPhones } from "./PhoneText.jsx";
 import { findPhones, faxLineFlags } from "./lib/phoneText.js";
+import AskReply from "./AskReply.jsx";
+import { assistantMessage, historyForServer } from "./lib/askReply.js";
 
 // ── Styles (shared palette with the rest of the app) ────────────────
 
@@ -35,9 +37,13 @@ const CODING_PHONE_EXAMPLES = [
   "67041 vs 67042 — when to use each?",
 ];
 
+// Ask Phase B (Oct 31 2026): the default endpoint is POST /api/ask — the one Ask engine
+// (coding, referral directory and coverage / PA cards, classified on the server; the
+// coding answers are the same pipeline as /api/cpt-assist). Every reply may carry
+// coverage cards + a copy block and has a "Flag" control (AskReplyExtras).
 export function AICodingAssistant({
   showReimbursement = false, phoneLayout = false,
-  endpoint = "/api/cpt-assist",
+  endpoint = "/api/ask",
   examples = CODING_PHONE_EXAMPLES,
   suggestions = CODING_SUGGESTIONS,
   emptyText = "Ask any retina coding question",
@@ -92,11 +98,11 @@ export function AICodingAssistant({
       const res = await fetch(`${AI_API_BASE}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sendReimbursementFlag ? { messages: updated, showReimbursement } : { messages: updated }),
+        body: JSON.stringify(sendReimbursementFlag ? { messages: historyForServer(updated), showReimbursement } : { messages: historyForServer(updated) }),
       });
       const data = await res.json();
       if (data.success && data.reply) {
-        setMessages([...updated, { role: "assistant", content: data.reply }]);
+        setMessages([...updated, assistantMessage(data)]);
       } else {
         setMessages([...updated, { role: "assistant", content: "Sorry, something went wrong. Try again." }]);
       }
@@ -241,8 +247,8 @@ export function AICodingAssistant({
               </div>
             ) : (
               <div key={i} ref={i === lastAnswerIdx ? lastAnswerRef : undefined}
-                style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 14, lineHeight: 1.55, color: T.ink, overflowWrap: "anywhere", scrollMarginTop: APPBAR_H + 12 }}>
-                {renderContent(msg.content)}
+                style={{ background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.rLg, padding: "12px 14px", fontSize: 14, lineHeight: 1.55, color: T.ink, overflowWrap: "anywhere", scrollMarginTop: APPBAR_H + 12, minWidth: 0 }}>
+                <AskReply messages={messages} index={i} flagUrl={`${AI_API_BASE}/api/ask-flag`} renderText={renderContent} />
               </div>
             ))}
             {loading && (
@@ -344,8 +350,11 @@ export function AICodingAssistant({
               fontFamily: T.sans,
               border: `1px solid ${msg.role === "user" ? T.accentLine : T.line}`,
               overflowWrap: "anywhere",
+              minWidth: 0,
+              ...(msg.role === "assistant" && Array.isArray(msg.cards) && msg.cards.length ? { width: "85%" } : {}),
             }}>
-              {msg.role === "user" ? renderUser(msg.content) : renderContent(msg.content)}
+              {msg.role === "user" ? renderUser(msg.content)
+                : <AskReply messages={messages} index={i} flagUrl={`${AI_API_BASE}/api/ask-flag`} renderText={renderContent} />}
             </div>
           </div>
         ))}

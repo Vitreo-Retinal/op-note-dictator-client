@@ -202,7 +202,7 @@ function NextOptions({ groups }) {
 }
 
 /** One entry of the server's data.coverage array (routes/notes.js ruleCard / dual cards / ambiguous / biosimilar / invalid / norule). */
-export default function CoverageCard({ card, dualNote }) {
+export default function CoverageCard({ card, dualNote, footText }) {
   const [open, setOpen] = useState(false);
   const c = card || {};
   const tier = coverageTier(c);
@@ -304,19 +304,20 @@ export default function CoverageCard({ card, dualNote }) {
           {dualNote && <div className="cov-dualnote">{dualNote}</div>}
         </div>
       </div>
-      <div className="cov-foot"><b>Coverage check</b><span>Included when you copy the note</span></div>
+      <div className="cov-foot"><b>Coverage check</b><span>{footText || "Included when you copy the note"}</span></div>
     </div>
   );
 }
 
 /** All cards of one note, with the stylesheet once. */
-export function CoverageCards({ cards, notes }) {
+// footText (Ask Phase B, Oct 31 2026): the Ask boxes say where the copy block is.
+export function CoverageCards({ cards, notes, footText }) {
   const list = Array.isArray(cards) ? cards : [];
   if (!list.length) return null;
   return (
     <>
       <style>{COVERAGE_CSS}</style>
-      {list.map((c, i) => <CoverageCard key={i} card={c} dualNote={notes ? notes[i] : null} />)}
+      {list.map((c, i) => <CoverageCard key={i} card={c} dualNote={notes ? notes[i] : null} footText={footText} />)}
     </>
   );
 }
