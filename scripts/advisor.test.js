@@ -84,3 +84,10 @@ test("a line already in the note is not added twice", () => {
   const r = insertPlanLine("Plan\nSmoking avoidance advised.", "Smoking avoidance advised.");
   assert.strictEqual(r.added, false);
 });
+
+test("eligibility row gives no look-back number until FFB confirms (Nov 2 2026)", async () => {
+  const { IRD_COMPARE } = await import("../src/lib/advisor.js");
+  const row = IRD_COMPARE.find((r) => r[0] === "Not eligible");
+  assert.match(row[1], /check with FFB/);
+  assert.doesNotMatch(row[1], /\b\d+\s*years?\b/);
+});

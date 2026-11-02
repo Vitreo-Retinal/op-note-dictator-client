@@ -55,7 +55,9 @@ export const IRD_COMPARE = [
   ["Results", "About 3–4 weeks", "About 2 weeks"],
   ["Counseling", "InformedDNA, free", "Invitae genetic counselors"],
   ["Family", "Relatives tested free if a gene is found", "Available; cost varies"],
-  ["Not eligible", "Prior eye gene panel (32+ genes) in 5 years, exome/genome, or known gene; parent, sibling or child tested in the program", "—"],
+  // Nov 2 2026: FFB documents disagree on the look-back window (requisition 3 y, PG page 5 y,
+  // FFB FAQ 4 y / since 2016) — no number shown until FFB confirms.
+  ["Not eligible", "Known gene, or parent, sibling or child tested in the program. Any prior eye gene panel (32+ genes), exome or genome: check with FFB first (time window unclear)", "—"],
 ];
 
 // buildIrdCard(noteText, icd10Codes) → card object, or null when no IRD in the note.
