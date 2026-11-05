@@ -543,7 +543,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const [injFamily, setInjFamily] = useState("em");
   const [injTapped, setInjTapped] = useState(false);
   const [injSaving, setInjSaving] = useState(""); // "" | "saving" | "saved" | "failed"
-  // injDefault may be "auto" ("Auto — what pays more"): the server resolves E/M or eye per note;
+  // injDefault may be "auto" (label "Auto"; Nov 5 2026): the server resolves E/M or eye per note;
   // an untapped toggle then sends { family: "auto", source: "default" }.
   const [secondDxText, setSecondDxText] = useState(""); // the "add a second diagnosis" box (comp exam, injection days)
   const injRef = useRef({ family: "em", tapped: false });
@@ -1461,7 +1461,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 for traditional Medicare (established patients). Days in a global, -57, Level 5
                 or with another procedure always stay E/M (server). */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
-              <span id="inj-code-label" title={'A typed "eye code" or "99214" in the dictation wins. From Jan 1 2027 the hub pre-selects the eye code for traditional Medicare (established patients); with the Auto default it picks whichever pays more. You can switch.'}
+              <span id="inj-code-label" title={'A typed "eye code" or "99214" in the dictation wins. From Jan 1 2027 the hub pre-selects the eye code for traditional Medicare (established patients); with the Auto default it picks E/M or the eye code by date and insurance. You can switch.'}
                 style={{ fontSize: 12.5, color: T.ink2, fontFamily: T.sans, whiteSpace: "nowrap" }}>
                 {phone ? "Injection day:" : "Visit code on injection days:"}
               </span>
@@ -1476,7 +1476,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   </button>
                 ))}
               </div>
-              {!injTapped && <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{injDefault === "auto" ? (saveMode === "ok" ? "Auto — what pays more (your default)" : "Auto — what pays more") : saveMode === "ok" ? "your default" : "default"}</span>}
+              {!injTapped && <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{injDefault === "auto" ? (saveMode === "ok" ? "Auto (your default)" : "Auto") : saveMode === "ok" ? "your default" : "default"}</span>}
               {injTapped && injFamily !== injDefault && saveMode === "ok" && injSaving !== "saving" && (
                 <button type="button" onClick={() => saveInjDefault(injFamily)} style={{ background: "none", border: "none", padding: 0, color: T.accent, fontSize: 12.5, fontFamily: T.sans, cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>
                   Make this my default
@@ -2336,7 +2336,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             <div style={field({ marginBottom: 16 })}>
               <div style={{ fontSize: 13.5, fontWeight: 600, color: T.ink }}>Injection-day visit code — my default</div>
               <div style={{ fontSize: 12.5, color: T.muted, margin: "2px 0 8px", lineHeight: 1.45 }}>
-                Used on injection days unless you type a code word ("eye code", "99214") or tap the toggle on the note page. E/M = 99214-25; Eye code = 92014-25 (92004-25 new), no MDM sentence. Auto — what pays more: E/M before Jan 1 2027 and for new patients; from Jan 1 2027 the eye code for established patients with traditional Medicare (alone, with a Medigap / Tricare for Life or MassHealth secondary), Harvard Pilgrim commercial or Tufts commercial / Together / One Care; E/M for every other or unclear insurance. Your own setting — partners keep theirs.
+                Used on injection days unless you type a code word ("eye code", "99214") or tap the toggle on the note page. E/M = 99214-25; Eye code = 92014-25 (92004-25 new), no MDM sentence. Auto: E/M before Jan 1 2027 and for new patients; from Jan 1 2027 the eye code for established patients with traditional Medicare (alone, with a Medigap / Tricare for Life or MassHealth secondary), Harvard Pilgrim commercial or Tufts commercial / Together / One Care; E/M for every other or unclear insurance. Your own setting — partners keep theirs.
               </div>
               <div role="group" aria-label="Injection-day visit code default" style={{ display: "inline-flex", flexWrap: "wrap", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 2 }}>
                 {[["em", DEFAULT_LABELS.em], ["eye", DEFAULT_LABELS.eye], ["auto", DEFAULT_LABELS.auto]].map(([f, label]) => (

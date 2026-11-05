@@ -70,7 +70,7 @@ test("never copied: the reminder, the 'No separate problem' flag and the source 
 const ASK = "Comp exam: add a second diagnosis addressed today to support 92014-25.";
 
 test("Auto default: saved default em / eye / auto; an untapped toggle sends it as a default, a tap is never auto", () => {
-  assert.deepEqual(DEFAULT_LABELS, { em: "E/M", eye: "Eye code", auto: "Auto — what pays more" });
+  assert.deepEqual(DEFAULT_LABELS, { em: "E/M", eye: "Eye code", auto: "Auto" });
   for (const v of ["em", "eye", "auto"]) assert.equal(normalizeDefault(v), v);
   for (const v of [undefined, null, "AUTO", "pays-more", 1]) assert.equal(normalizeDefault(v), "em");
   assert.deepEqual(injectionCodeRequest("auto", false), { family: "auto", source: "default" });
@@ -84,8 +84,8 @@ test("Auto default: saved default em / eye / auto; an untapped toggle sends it a
 });
 
 test("Auto strip: the server's Auto label is the 'why' (Medicare 2027 / 2026 / new patient / commercial)", () => {
-  for (const label of ["Auto: Medicare 2027 — eye code pays more", "Auto: 2026 — E/M", "Auto: new patient — E/M", "Auto: commercial — E/M"]) {
-    const family = /eye code pays more/.test(label) ? "eye" : "em";
+  for (const label of ["Auto: Medicare 2027 — eye code", "Auto: 2026 — E/M", "Auto: new patient — E/M", "Auto: commercial — E/M"]) {
+    const family = /eye code$/.test(label) ? "eye" : "em";
     const s = visitFamilySummary({ ...VF, family, source: "auto", code: family === "eye" ? "92014" : "99214", auto: { family, reason: "x", label } });
     assert.equal(s.why, label);
   }
@@ -130,4 +130,13 @@ test("comp-exam reminder: shown once — in the strip on injection days, stand-a
   assert.match(src, /parsed\.compExamReminder = typeof data\.compExamReminder === "string"/);
   assert.match(src, /const rem = compExamReminderFor\(result\);/);
   assert.match(src, /const clean = copyableNoteText\(result\.note\);/);
+});
+
+// Mari, Nov 5 2026 12:10 PM: "don't write explicitly … 'what pays more' … I don't like it" — no payment wording on screen.
+test("no 'pays more' wording anywhere the doctor sees it", () => {
+  const ui = readFileSync(new URL("../src/ClinicNoteGenerator.jsx", import.meta.url), "utf8");
+  for (const v of [...Object.values(DEFAULT_LABELS), ...Object.values(SOURCE_LABELS)]) assert.doesNotMatch(v, /pay/i);
+  // JSX strings and attributes only (comments may explain the history)
+  const visible = ui.split("\n").filter((l) => !/^\s*(\/\/|\*|\{\/\*)/.test(l)).join("\n");
+  assert.doesNotMatch(visible, /pays more|what pays/i);
 });

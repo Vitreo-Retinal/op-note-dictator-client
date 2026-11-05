@@ -3,7 +3,7 @@
 //
 // The doctor picks the visit-code family for injection days: a typed word in the
 // dictation, a tap on the note-page toggle, the Medicare 2027 suggestion (server),
-// her saved default (E/M, Eye code, or "Auto — what pays more", which the server resolves
+// her saved default (E/M, Eye code, or "Auto", which the server resolves
 // per note), or the practice default (E/M). The client only sends the toggle
 // state and whether it was tapped; the server decides and returns data.visitFamily,
 // which this file turns into the hub-only strip under the note. Nothing here is ever
@@ -12,10 +12,10 @@
 // Pure helpers — no React, no fetch — so scripts/visitFamily.test.js can test them.
 
 export const INJECTION_FAMILIES = ["em", "eye"];
-// The doctor's saved default may also be "auto" = "Auto — what pays more" (Nov 5 2026): the
+// The doctor's saved default may also be "auto" = "Auto" (Nov 5 2026; Mari 12:10 PM: no "what pays more" on screen): the
 // server picks E/M or the eye code per note (date, new vs established, primary payer).
 export const DEFAULT_CHOICES = ["em", "eye", "auto"];
-export const DEFAULT_LABELS = { em: "E/M", eye: "Eye code", auto: "Auto — what pays more" };
+export const DEFAULT_LABELS = { em: "E/M", eye: "Eye code", auto: "Auto" };
 
 /** "em" | "eye" from anything (a toggle tap, server field); unknown → "em". */
 export function normalizeFamily(v) {
@@ -35,7 +35,7 @@ export function injectionCodeRequest(family, tapped) {
 export const SOURCE_LABELS = {
   typed: "typed in the dictation",
   toggle: "your tap",
-  auto: "Auto — what pays more",
+  auto: "Auto",
   suggestion: "Medicare 2027 suggestion",
   default: "your default",
   practice: "practice default",
@@ -46,7 +46,7 @@ export const SOURCE_LABELS = {
  * (not an injection day, older server).
  *   { family, code, title, why, reminder, switchTo, forced, secondDx }
  * title: "Eye code 92014-25" / "E/M"; why: "Medicare 2027 suggestion", "Auto: Medicare
- * 2027 — eye code pays more", "stays E/M: inside a VRA global", …; switchTo: the other
+ * 2027 — eye code", "stays E/M: inside a VRA global", …; switchTo: the other
  * family for the one-tap regenerate (null on a day that always stays E/M); secondDx: the
  * server's one-diagnosis ask ("Comp exam: add a second diagnosis …") or null.
  */
