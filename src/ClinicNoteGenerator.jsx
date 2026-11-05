@@ -25,6 +25,7 @@ import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.j
 import logo from "./vra-logo.png";
 import { usePhone, TABBAR_H } from "./phone.jsx";
 import { liveDictationAllowed, liveWsUrl, chooseDelivery } from "./lib/liveDictation.js";
+import { normalizeFamily, injectionCodeRequest, visitFamilySummary, switchLabel } from "./lib/visitFamily.js"; // injection-day visit code (Nov 5 2026)
 import { startLiveSession, liveDictationSupported, readHubToken } from "./lib/liveDictationSession.js";
 
 // Tabs shown on phones (everything else is desktop-only).
@@ -531,6 +532,19 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // Custom instructions (free-form style/formatting rules for Claude)
   const [customInstructions, setCustomInstructions] = useState("");
 
+  // ── Injection-day visit code (Nov 5 2026, owner decisions D13; server OWN-RULE-043) ──
+  // E/M (99214-25) or the eye code (92014-25) on injection days. injDefault = the doctor's
+  // own saved default (surgeon_profiles.billing_preferences via /api/user-data — never
+  // inherited from MR); injFamily = the toggle on the Input tab; injTapped = she tapped it
+  // for THIS note (a tap beats the server's Medicare 2027 suggestion; a typed word in the
+  // dictation beats both). injRef lets a one-tap switch regenerate with the new choice.
+  const [injDefault, setInjDefault] = useState("em");
+  const [injFamily, setInjFamily] = useState("em");
+  const [injTapped, setInjTapped] = useState(false);
+  const [injSaving, setInjSaving] = useState(""); // "" | "saving" | "saved" | "failed"
+  const injRef = useRef({ family: "em", tapped: false });
+  injRef.current = { family: injFamily, tapped: injTapped };
+
   // Expansion rules state
   const [inlineRules, setInlineRules] = useState(DEFAULT_INLINE_RULES);
   const [planRules, setPlanRules] = useState(DEFAULT_PLAN_RULES);
@@ -555,6 +569,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           if (json.data.inlineRules?.length > 0) setInlineRules(json.data.inlineRules);
           if (json.data.planRules?.length > 0) setPlanRules(json.data.planRules);
           if (json.data.customInstructions) setCustomInstructions(json.data.customInstructions);
+          // Injection-day visit code default (Nov 5 2026) — the doctor's own; "em" when absent.
+          const injPref = normalizeFamily(json.billingPreferences && json.billingPreferences.injectionVisitCode);
+          setInjDefault(injPref);
+          if (!injRef.current.tapped) setInjFamily(injPref);
           next = json.readOnly ? "signin" : "ok";
         }
       } catch (e) {
@@ -588,6 +606,41 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     }, 500);
     return () => clearTimeout(timer);
   }, [examples, inlineRules, planRules, customInstructions, dataLoaded, saveMode]);
+
+  // Save the injection-day visit code as this doctor's default (her own row only; the
+  // note settings above are not touched — server routes/coverage.js billingPreferences).
+  async function saveInjDefault(f) {
+    const fam = normalizeFamily(f);
+    setInjSaving("saving");
+    try {
+      const res = await fetch(`${API_BASE}/api/user-data`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ billingPreferences: { injectionVisitCode: fam } }),
+      });
+      if (res.status === 403) { setInjSaving("failed"); return; }
+      const json = await res.json().catch(() => null);
+      if (json && json.success) {
+        setInjDefault(fam);
+        if (!injRef.current.tapped) setInjFamily(fam);
+        setInjSaving("saved");
+      } else setInjSaving("failed");
+    } catch { setInjSaving("failed"); }
+  }
+  // A tap on the toggle = an explicit choice for this note (source "toggle").
+  function pickInjFamily(f) {
+    const fam = normalizeFamily(f);
+    injRef.current = { family: fam, tapped: true };
+    setInjFamily(fam);
+    setInjTapped(true);
+    setInjSaving("");
+  }
+  // Output strip "Switch to …": tap + regenerate the same note with the other family.
+  function switchInjFamilyAndRegenerate(f) {
+    if (loading) return;
+    pickInjFamily(f);
+    run();
+  }
 
   const saveNote = saveMode === "signin"
     ? "Sign in with your PIN to save your settings."
@@ -734,6 +787,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           thinking: "between_tools",
           // Shadow coder v1: surgeon initials for the PHI-free note ledger.
           surgeon: surgeon?.id || "",
+          // Injection-day visit code (Nov 5 2026): the toggle + whether it was tapped for
+          // this note. The server applies it only on an injection day (67028 billed).
+          injectionCode: injectionCodeRequest(injRef.current.family, injRef.current.tapped),
         }),
       });
       const data = await res.json();
@@ -746,6 +802,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       parsed.coverage = Array.isArray(data.coverage) ? data.coverage : null; // Oct 2026 — structured coverage (older servers omit it)
       parsed.noteId = typeof data.noteId === "string" ? data.noteId : null; // Oct 2026 — shadow coder ledger id (older servers omit it)
       parsed.flagged = !!data.flagged; // true when the dictation carried a "flag: …" line
+      // Nov 5 2026 — injection days only: which visit-code family was used and why, the hub-only
+      // reminder (never copied: copyNote copies result.note only). Older servers omit it.
+      parsed.visitFamily = data.visitFamily && typeof data.visitFamily === "object" ? data.visitFamily : null;
       setResult(parsed);
       setTab("output");
       if (edit) setPendingEdit(""); // spoken edit applied — clear the banner
@@ -816,6 +875,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   function newNote() {
     sendPendingFlag();
     setFlagOpen(false); setFlagReason("");
+    // A toggle tap is for one note: the next patient starts from the doctor's default.
+    injRef.current = { family: injDefault, tapped: false };
+    setInjTapped(false); setInjFamily(injDefault); setInjSaving("");
     setTab("input"); setResult(null); setAdvisorAdded(new Set());
   }
 
@@ -1372,6 +1434,35 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             </div>
 
             {mode !== "pbm" && (<>
+            {/* Injection-day visit code (Nov 5 2026): E/M | Eye code. A typed "eye code" / "99214"
+                in the dictation wins; from Jan 1 2027 the server may pre-select the eye code
+                for traditional Medicare (established patients). Days in a global, -57, Level 5
+                or with another procedure always stay E/M (server). */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
+              <span id="inj-code-label" title={'A typed "eye code" or "99214" in the dictation wins. From Jan 1 2027 the hub pre-selects the eye code for traditional Medicare (established patients); you can switch.'}
+                style={{ fontSize: 12.5, color: T.ink2, fontFamily: T.sans, whiteSpace: "nowrap" }}>
+                {phone ? "Injection day:" : "Visit code on injection days:"}
+              </span>
+              <div role="group" aria-labelledby="inj-code-label" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 2, boxSizing: "border-box" }}>
+                {[["em", "E/M"], ["eye", "Eye code"]].map(([f, label]) => (
+                  <button key={f} type="button" onClick={() => pickInjFamily(f)} aria-pressed={injFamily === f} style={{
+                    height: phone ? 34 : 28, padding: "0 12px", borderRadius: 4, border: "none", whiteSpace: "nowrap",
+                    background: injFamily === f ? T.accent : "transparent", color: injFamily === f ? T.onAccent : T.ink2,
+                    fontFamily: T.sans, fontSize: 13, fontWeight: injFamily === f ? 500 : 400, cursor: "pointer",
+                  }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {!injTapped && <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{saveMode === "ok" ? "your default" : "default"}</span>}
+              {injTapped && injFamily !== injDefault && saveMode === "ok" && injSaving !== "saving" && (
+                <button type="button" onClick={() => saveInjDefault(injFamily)} style={{ background: "none", border: "none", padding: 0, color: T.accent, fontSize: 12.5, fontFamily: T.sans, cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>
+                  Make this my default
+                </button>
+              )}
+              {injSaving === "saved" && <span style={{ fontSize: 12, color: T.green, whiteSpace: "nowrap" }}>Saved as your default</span>}
+              {injSaving === "failed" && <span style={{ fontSize: 12, color: T.red, whiteSpace: "nowrap" }}>Default not saved</span>}
+            </div>
             {/* Hint (desktop only — phones show the "No PHI" badge instead) */}
             {!phone && <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5, margin: "14px 0 12px", fontFamily: T.sans }}>
               <b style={{ color: T.amber, fontWeight: 600 }}>No PHI.</b>{" "}
@@ -1913,8 +2004,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                         </span>
                       </div>
                     )}
-                    {/* v2 Oct 8 2026: an Eye visit code with -25 on an injection day DOES need the MDM sentence. */}
-                    {isEyeCode(result.code) && !/-25\b/.test(result.code || "") && (
+                    {/* v2 Oct 8 2026: an Eye visit code with -25 on an injection day under the E/M rules DOES
+                        need the MDM sentence. Nov 5 2026: the eye code chosen for an injection day
+                        (visitFamily eye) never has one — its support is the comprehensive-exam line. */}
+                    {isEyeCode(result.code) && (!/-25\b/.test(result.code || "") || (result.visitFamily && result.visitFamily.family === "eye")) && (
                       <span style={{ fontSize: 12.5, color: T.accent, fontStyle: "italic" }}>— no MDM documentation needed</span>
                     )}
                     {/* ICD-10 Codes */}
@@ -1942,6 +2035,34 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                     )}
                   </div>
                 </div>
+                {/* Injection-day visit code (Nov 5 2026) — HUB ONLY, never in the copied note:
+                    which family was used and why, the 92014 exam reminder, one-tap switch. */}
+                {(() => {
+                  const fs = visitFamilySummary(result.visitFamily);
+                  if (!fs) return null;
+                  return (
+                    <div data-testid="visit-family" style={{ marginTop: 10, padding: "9px 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.paper, fontFamily: T.sans, fontSize: 13, color: T.ink2, display: "flex", flexDirection: "column", gap: 7 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ color: T.muted }}>Injection-day visit code</span>
+                        <b style={{ color: T.ink, fontWeight: 600 }}>{fs.title}</b>
+                        <span style={{ color: T.muted }}>{phone ? `(${fs.why})` : `· ${fs.why}`}</span>
+                        {fs.switchTo && (
+                          <button type="button" onClick={() => switchInjFamilyAndRegenerate(fs.switchTo)} disabled={loading}
+                            style={btnSm("secondary", { marginLeft: "auto", ...(phone ? { height: 40, padding: "0 12px", fontSize: 13.5 } : {}) })}>
+                            {switchLabel(fs.switchTo)}
+                          </button>
+                        )}
+                      </div>
+                      {fs.reminder && (
+                        <div style={{ fontSize: 12.5, lineHeight: 1.45, color: T.amber, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: 4, padding: "6px 9px" }}>
+                          {fs.reminder}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
+                    </div>
+                  );
+                })()}
+
                 {phone && phoneFooter(newNote, "New note", copyNote, copied)}
 
                 {/* Clinical advisor strip (Oct 29 2026) — under the note, above coverage.
@@ -2159,6 +2280,26 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         {tab === "rules" && (
           <div>
             {saveNoteEl}
+            {/* Injection-day visit code default (Nov 5 2026) — this doctor's own; never shared with partners. */}
+            <div style={field({ marginBottom: 16 })}>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: T.ink }}>Injection-day visit code — my default</div>
+              <div style={{ fontSize: 12.5, color: T.muted, margin: "2px 0 8px", lineHeight: 1.45 }}>
+                Used on injection days unless you type a code word ("eye code", "99214") or tap the toggle on the note page. Eye code = 92014-25 (92004-25 new), no MDM sentence. Your own setting — partners keep theirs.
+              </div>
+              <div role="group" aria-label="Injection-day visit code default" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 2 }}>
+                {[["em", "E/M (99214-25)"], ["eye", "Eye code (92014-25)"]].map(([f, label]) => (
+                  <button key={f} type="button" disabled={saveMode !== "ok" || injSaving === "saving"} onClick={() => saveInjDefault(f)} aria-pressed={injDefault === f} style={{
+                    height: 30, padding: "0 12px", borderRadius: 4, border: "none", whiteSpace: "nowrap",
+                    background: injDefault === f ? T.accent : "transparent", color: injDefault === f ? T.onAccent : T.ink2,
+                    fontFamily: T.sans, fontSize: 13, fontWeight: injDefault === f ? 500 : 400, cursor: saveMode === "ok" ? "pointer" : "default",
+                  }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {injSaving === "saved" && <span style={{ marginLeft: 10, fontSize: 12, color: T.green }}>Saved</span>}
+              {injSaving === "failed" && <span style={{ marginLeft: 10, fontSize: 12, color: T.red }}>Not saved — try again</span>}
+            </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: "0.9rem", fontWeight: 700, color: S.bright }}>Expansion Rules</div>
