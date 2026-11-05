@@ -1,5 +1,7 @@
 import { asciiFold, COVERAGE_FENCE_RX } from "./coverageCard.js";
 // ── Response parser ─────────────────────────────────────────────────
+// "-B1" as a modifier on the visit code (CMS CY2027: G2211 → modifier B1).
+const B1_MOD_RX = /^\s*(?:99\d{3}|920(?:0[24]|1[24]))(?:-[A-Z0-9]{2})*?-B1(?![A-Z0-9])/i;
 function parseResponse(text) {
   const sec = (a, b) => {
     const s = text.indexOf("---" + a + "---");
@@ -28,12 +30,19 @@ function parseResponse(text) {
   const procedure = hasProcedure ? sec("PROCEDURE", hasTests ? "TESTS" : "G2211") : "";
   const tests = hasTests ? secAuto("TESTS") : "";
   let g2211 = secAuto("G2211") === "YES";
+  // Nov 5 2026 (CMS CY2027, owner decision D14): from Jan 1 2027 the server bills G2211 as
+  // modifier B1 on the E/M ("99214-B1") and writes ---G2211--- "B1" — an older client reads
+  // that as G2211 NO, so it never shows "+ G2211" next to "-B1". b1 = the add-on is on the code.
+  let b1 = secAuto("G2211") === "B1" || B1_MOD_RX.test(code);
   let note = sec("NOTE", "END");
   // Guards for same-day procedure days (the E/M carries -25).
   const procedureToday = !!procedure && procedure.trim() !== "" && !/^none\b/i.test(procedure.trim());
   if (procedureToday) {
     // (1) G2211 is never payable alongside -25 — force NO and strip any longitudinal/complexity add-on sentence.
+    //     Same for its 2027 form, modifier B1: "-B1" is dropped from the visit code (server billed-text 1c).
     g2211 = false;
+    b1 = false;
+    code = code.replace(/^(\s*(?:99\d{3}|920(?:0[24]|1[24]))(?:-[A-Z0-9]{2})*?)-B1(?![A-Z0-9])/i, "$1");
     note = note
       .split("\n")
       .filter((l) => !/longitudinal managing physician|ongoing complexity given|visit[- ]complexity add|\bG2211\b/i.test(l))
@@ -47,7 +56,8 @@ function parseResponse(text) {
     //     code with -25; there is no injection-only code line any more.)
     const minorProc = /\b(67028|67105|67145|67141|67101|67228|67227|65800|67221|67516)\b/.test(procedure);
     if (minorProc && /^\s*(?:99\d{3}|920(?:0[24]|1[24]))\b/.test(code) && !/-25\b/.test(code) && !/-57\b/.test(code)) {
-      code = code.replace(/^(\s*(?:99\d{3}|920(?:0[24]|1[24]))(?:-\d{2})*)/, "$1-25");
+      // Nov 5 2026: modifiers matched as 2 letters/digits, so -25 goes after them all.
+      code = code.replace(/^(\s*(?:99\d{3}|920(?:0[24]|1[24]))(?:-[A-Z0-9]{2})*)/i, "$1-25");
     }
   }
   return {
@@ -55,6 +65,7 @@ function parseResponse(text) {
     procedure,
     tests,
     g2211,
+    b1,
     // Billing-additions list is derived deterministically from the [+] markers
     // in the note body (July 2026 — Sonnet no longer writes a CHANGES section;
     // this also works on older outputs, which carry the same [+] markers).

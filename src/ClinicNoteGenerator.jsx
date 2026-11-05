@@ -26,6 +26,7 @@ import logo from "./vra-logo.png";
 import { usePhone, TABBAR_H } from "./phone.jsx";
 import { liveDictationAllowed, liveWsUrl, chooseDelivery } from "./lib/liveDictation.js";
 import { normalizeFamily, normalizeDefault, DEFAULT_LABELS, injectionCodeRequest, visitFamilySummary, switchLabel, safetyFlagsForList, secondDxRegenerate, compExamReminderFor } from "./lib/visitFamily.js"; // injection-day visit code (Nov 5 2026)
+import { LONG_DEFAULTS, LONG_DEFAULT_LABELS, normalizeLongDefault, longitudinalRequest, longitudinalHint, defaultForTap, longitudinalSummary, applyLongitudinalEdit } from "./lib/longitudinal.js"; // G2211 / B1 switch (Nov 5 2026)
 import { startLiveSession, liveDictationSupported, readHubToken } from "./lib/liveDictationSession.js";
 
 // Tabs shown on phones (everything else is desktop-only).
@@ -548,6 +549,16 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const [secondDxText, setSecondDxText] = useState(""); // the "add a second diagnosis" box (comp exam, injection days)
   const injRef = useRef({ family: "em", tapped: false });
   injRef.current = { family: injFamily, tapped: injTapped };
+  // ── G2211 / B1 switch (Nov 5 2026, owner; server lib/g2211-choice.js) ──
+  // lgDefault = the doctor's saved default (by_plan | always | never; billing_preferences
+  // longitudinal_code); lgChoice / lgTapped = the Input-tab toggle for THIS note (neither
+  // button lit until tapped). A typed "no G2211" / "add B1" in the dictation beats both.
+  const [lgDefault, setLgDefault] = useState("by_plan");
+  const [lgChoice, setLgChoice] = useState(null);
+  const [lgTapped, setLgTapped] = useState(false);
+  const [lgSaving, setLgSaving] = useState(""); // "" | "saving" | "saved" | "failed"
+  const lgRef = useRef({ choice: null, tapped: false, def: "by_plan" });
+  lgRef.current = { choice: lgChoice, tapped: lgTapped, def: lgDefault };
 
   // Expansion rules state
   const [inlineRules, setInlineRules] = useState(DEFAULT_INLINE_RULES);
@@ -577,6 +588,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           const injPref = normalizeDefault(json.billingPreferences && json.billingPreferences.injectionVisitCode);
           setInjDefault(injPref);
           if (!injRef.current.tapped) setInjFamily(injPref);
+          // G2211 / B1 default (Nov 5 2026) — the doctor's own; "by_plan" when absent.
+          setLgDefault(normalizeLongDefault(json.billingPreferences && json.billingPreferences.longitudinalCode));
           next = json.readOnly ? "signin" : "ok";
         }
       } catch (e) {
@@ -630,6 +643,33 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
         setInjSaving("saved");
       } else setInjSaving("failed");
     } catch { setInjSaving("failed"); }
+  }
+  // G2211 / B1 default (by plan | always | never) — her own row, billing_preferences only.
+  async function saveLgDefault(v) {
+    const def = normalizeLongDefault(v);
+    setLgSaving("saving");
+    try {
+      const res = await fetch(`${API_BASE}/api/user-data`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ billingPreferences: { longitudinalCode: def } }),
+      });
+      if (res.status === 403) { setLgSaving("failed"); return; }
+      const json = await res.json().catch(() => null);
+      if (json && json.success) { setLgDefault(def); setLgSaving("saved"); } else setLgSaving("failed");
+    } catch { setLgSaving("failed"); }
+  }
+  // A tap on the G2211 / B1 toggle = this note only (source "toggle").
+  function pickLg(choice) {
+    const c = choice === "on" ? "on" : "off";
+    lgRef.current = { ...lgRef.current, choice: c, tapped: true };
+    setLgChoice(c);
+    setLgTapped(true);
+    setLgSaving("");
+  }
+  // Output line "Add / Remove G2211 (B1)": edits the note on screen, no regenerate.
+  function toggleLongitudinalOnNote() {
+    setResult((r) => (r && r.longitudinal ? applyLongitudinalEdit(r, !r.longitudinal.on) : r));
   }
   // A tap on the toggle = an explicit choice for this note (source "toggle").
   function pickInjFamily(f) {
@@ -809,6 +849,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           // Injection-day visit code (Nov 5 2026): the toggle + whether it was tapped for
           // this note. The server applies it only on an injection day (67028 billed).
           injectionCode: injectionCodeRequest(injRef.current.family, injRef.current.tapped),
+          // G2211 / B1 (Nov 5 2026): the toggle if tapped for this note, else the doctor's default.
+          longitudinal: longitudinalRequest(lgRef.current.choice, lgRef.current.tapped, lgRef.current.def),
         }),
       });
       const data = await res.json();
@@ -826,6 +868,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       parsed.visitFamily = data.visitFamily && typeof data.visitFamily === "object" ? data.visitFamily : null;
       // Nov 5 2026 — every final 92014 / 92004 note: the hub-only comp-exam reminder (never copied).
       parsed.compExamReminder = typeof data.compExamReminder === "string" && data.compExamReminder ? data.compExamReminder : null;
+      // Nov 5 2026 — G2211 / B1: on or off and why, the sentence for the one-tap Add (hub only). Older servers omit it.
+      parsed.longitudinal = data.longitudinal && typeof data.longitudinal === "object" ? data.longitudinal : null;
       setSecondDxText("");
       setResult(parsed);
       setTab("output");
@@ -900,6 +944,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     // A toggle tap is for one note: the next patient starts from the doctor's default.
     injRef.current = { family: injDefault, tapped: false };
     setInjTapped(false); setInjFamily(injDefault); setInjSaving("");
+    lgRef.current = { choice: null, tapped: false, def: lgDefault };
+    setLgTapped(false); setLgChoice(null); setLgSaving("");
     setTab("input"); setResult(null); setAdvisorAdded(new Set());
   }
 
@@ -1485,6 +1531,37 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
               {injSaving === "saved" && <span style={{ fontSize: 12, color: T.green, whiteSpace: "nowrap" }}>Saved as your default</span>}
               {injSaving === "failed" && <span style={{ fontSize: 12, color: T.red, whiteSpace: "nowrap" }}>Default not saved</span>}
             </div>
+            {/* G2211 / B1 (Nov 5 2026): On | Off for THIS note; neither lit = the doctor's default
+                (by plan / always / never). Typed "no G2211" / "add B1" in the dictation wins.
+                Never on an injection or procedure day, with -25 or with an eye code (server). */}
+            <div data-testid="longitudinal-toggle" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+              <span id="lg-code-label" title={'Typed "no G2211" or "add B1" in the dictation wins. By plan: on for traditional Medicare or when no insurance is written; off for other plans. Never on an injection or procedure day.'}
+                style={{ fontSize: 12.5, color: T.ink2, fontFamily: T.sans, whiteSpace: "nowrap" }}>
+                G2211 / B1:
+              </span>
+              <div role="group" aria-labelledby="lg-code-label" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 2, boxSizing: "border-box" }}>
+                {[["on", "On"], ["off", "Off"]].map(([c, label]) => {
+                  const lit = lgTapped && lgChoice === c;
+                  return (
+                    <button key={c} type="button" onClick={() => pickLg(c)} aria-pressed={lit} style={{
+                      height: phone ? 34 : 28, padding: "0 12px", borderRadius: 4, border: "none", whiteSpace: "nowrap",
+                      background: lit ? T.accent : "transparent", color: lit ? T.onAccent : T.ink2,
+                      fontFamily: T.sans, fontSize: 13, fontWeight: lit ? 500 : 400, cursor: "pointer",
+                    }}>
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              {!lgTapped && <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{longitudinalHint(lgDefault, saveMode === "ok")}</span>}
+              {lgTapped && defaultForTap(lgChoice, lgDefault) && saveMode === "ok" && lgSaving !== "saving" && (
+                <button type="button" onClick={() => saveLgDefault(defaultForTap(lgChoice, lgDefault))} style={{ background: "none", border: "none", padding: 0, color: T.accent, fontSize: 12.5, fontFamily: T.sans, cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>
+                  Make this my default
+                </button>
+              )}
+              {lgSaving === "saved" && <span style={{ fontSize: 12, color: T.green, whiteSpace: "nowrap" }}>Saved as your default</span>}
+              {lgSaving === "failed" && <span style={{ fontSize: 12, color: T.red, whiteSpace: "nowrap" }}>Default not saved</span>}
+            </div>
             {/* Hint (desktop only — phones show the "No PHI" badge instead) */}
             {!phone && <p style={{ fontSize: 13, color: T.ink2, lineHeight: 1.5, margin: "14px 0 12px", fontFamily: T.sans }}>
               <b style={{ color: T.amber, fontWeight: 600 }}>No PHI.</b>{" "}
@@ -2018,6 +2095,12 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                         <b style={{ fontFamily: T.mono, fontWeight: 500, color: T.ink }}>+ G2211</b>
                       </span>
                     )}
+                    {/* Nov 5 2026 (CMS CY2027): from Jan 1 2027 G2211 is modifier B1 on the E/M ("99214-B1"). */}
+                    {result.b1 && !result.g2211 && (
+                      <span style={codeChip({ background: T.goldSoft, borderColor: T.gold })} title="From Jan 1 2027 G2211 is billed as modifier B1 on the E/M code">
+                        <b style={{ fontFamily: T.mono, fontWeight: 500, color: T.ink }}>+ B1</b>
+                      </span>
+                    )}
                     {/* TESTS (Oct 12 2026): diagnostic tests performed today — its own line in the
                         coding block. HUB ONLY: never part of Copy note or Copy codes. */}
                     {result.tests && !/^none\b/i.test(result.tests.trim()) && (
@@ -2097,6 +2180,27 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                           {fs.reminder}
                         </div>
                       )}
+                      <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
+                    </div>
+                  );
+                })()}
+
+                {/* G2211 / B1 (Nov 5 2026) — HUB ONLY, never in the copied note: on or off and why,
+                    and a one-tap Add / Remove that edits the note on screen (no regenerate).
+                    Hidden on injection / procedure days, -25 and eye-code notes (server allowed:false). */}
+                {(() => {
+                  const ls = longitudinalSummary(result.longitudinal);
+                  if (!ls) return null;
+                  return (
+                    <div data-testid="longitudinal" style={{ marginTop: 10, padding: "9px 12px", borderRadius: T.r, border: `1px solid ${T.line}`, background: T.paper, fontFamily: T.sans, fontSize: 13, color: T.ink2, display: "flex", flexDirection: "column", gap: 7 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <b style={{ color: T.ink, fontWeight: 600 }}>{ls.title}</b>
+                        {ls.why && <span style={{ color: T.muted }}>{phone ? `(${ls.why})` : `· ${ls.why}`}</span>}
+                        <button type="button" onClick={toggleLongitudinalOnNote} disabled={loading}
+                          style={btnSm("secondary", { marginLeft: "auto", ...(phone ? { height: 40, padding: "0 12px", fontSize: 13.5 } : {}) })}>
+                          {ls.button}
+                        </button>
+                      </div>
                       <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
                     </div>
                   );
@@ -2351,6 +2455,26 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
               </div>
               {injSaving === "saved" && <span style={{ marginLeft: 10, fontSize: 12, color: T.green }}>Saved</span>}
               {injSaving === "failed" && <span style={{ marginLeft: 10, fontSize: 12, color: T.red }}>Not saved — try again</span>}
+            </div>
+            {/* G2211 / B1 default (Nov 5 2026) — this doctor's own; never shared with partners. */}
+            <div data-testid="longitudinal-default" style={field({ marginBottom: 16 })}>
+              <div style={{ fontSize: 13.5, fontWeight: 600, color: T.ink }}>G2211 / B1 — my default</div>
+              <div style={{ fontSize: 12.5, color: T.muted, margin: "2px 0 8px", lineHeight: 1.45 }}>
+                Used on office E/M visits that qualify, unless you type "no G2211" / "add G2211" (or B1) or tap the toggle on the note page. From Jan 1 2027 G2211 is billed as modifier B1 on the E/M (99214-B1). Never on an injection or procedure day, with -25 or with an eye code. Your own setting — partners keep theirs.
+              </div>
+              <div role="group" aria-label="G2211 / B1 default" style={{ display: "inline-flex", flexWrap: "wrap", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 2 }}>
+                {LONG_DEFAULTS.map((d) => (
+                  <button key={d} type="button" disabled={saveMode !== "ok" || lgSaving === "saving"} onClick={() => saveLgDefault(d)} aria-pressed={lgDefault === d} style={{
+                    minHeight: 30, padding: "4px 12px", borderRadius: 4, border: "none", textAlign: "left",
+                    background: lgDefault === d ? T.accent : "transparent", color: lgDefault === d ? T.onAccent : T.ink2,
+                    fontFamily: T.sans, fontSize: 13, fontWeight: lgDefault === d ? 500 : 400, cursor: saveMode === "ok" ? "pointer" : "default",
+                  }}>
+                    {LONG_DEFAULT_LABELS[d]}
+                  </button>
+                ))}
+              </div>
+              {lgSaving === "saved" && <span style={{ marginLeft: 10, fontSize: 12, color: T.green }}>Saved</span>}
+              {lgSaving === "failed" && <span style={{ marginLeft: 10, fontSize: 12, color: T.red }}>Not saved — try again</span>}
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
