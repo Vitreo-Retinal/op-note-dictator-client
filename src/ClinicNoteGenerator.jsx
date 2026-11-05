@@ -25,7 +25,7 @@ import { BackIcon, MicIcon, EditLinesIcon, CopyIcon, AlertIcon } from "./icons.j
 import logo from "./vra-logo.png";
 import { usePhone, TABBAR_H } from "./phone.jsx";
 import { liveDictationAllowed, liveWsUrl, chooseDelivery } from "./lib/liveDictation.js";
-import { normalizeFamily, injectionCodeRequest, visitFamilySummary, switchLabel } from "./lib/visitFamily.js"; // injection-day visit code (Nov 5 2026)
+import { normalizeFamily, normalizeDefault, DEFAULT_LABELS, injectionCodeRequest, visitFamilySummary, switchLabel, safetyFlagsForList, secondDxRegenerate, compExamReminderFor } from "./lib/visitFamily.js"; // injection-day visit code (Nov 5 2026)
 import { startLiveSession, liveDictationSupported, readHubToken } from "./lib/liveDictationSession.js";
 
 // Tabs shown on phones (everything else is desktop-only).
@@ -162,6 +162,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const { phone } = usePhone(); // phone shell: in-page heading instead of the app bar
   const [mode, setMode] = useState("generate"); // generate | optimize
   const [note, setNote] = useState("");
+  const noteState = note; // run() reads the dictation through this (it may override it)
   const [timeSpent, setTimeSpent] = useState(""); // optional — minutes spent with patient
   // ── Modifier-25 audit-proofing (Sep 2026, per Mari) ───────────────
   // WHY: the OCB $3.9M FCA settlement (DOJ, Jul 31 2026) put injection-day -25
@@ -542,6 +543,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   const [injFamily, setInjFamily] = useState("em");
   const [injTapped, setInjTapped] = useState(false);
   const [injSaving, setInjSaving] = useState(""); // "" | "saving" | "saved" | "failed"
+  // injDefault may be "auto" ("Auto — what pays more"): the server resolves E/M or eye per note;
+  // an untapped toggle then sends { family: "auto", source: "default" }.
+  const [secondDxText, setSecondDxText] = useState(""); // the "add a second diagnosis" box (comp exam, injection days)
   const injRef = useRef({ family: "em", tapped: false });
   injRef.current = { family: injFamily, tapped: injTapped };
 
@@ -570,7 +574,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           if (json.data.planRules?.length > 0) setPlanRules(json.data.planRules);
           if (json.data.customInstructions) setCustomInstructions(json.data.customInstructions);
           // Injection-day visit code default (Nov 5 2026) — the doctor's own; "em" when absent.
-          const injPref = normalizeFamily(json.billingPreferences && json.billingPreferences.injectionVisitCode);
+          const injPref = normalizeDefault(json.billingPreferences && json.billingPreferences.injectionVisitCode);
           setInjDefault(injPref);
           if (!injRef.current.tapped) setInjFamily(injPref);
           next = json.readOnly ? "signin" : "ok";
@@ -610,7 +614,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // Save the injection-day visit code as this doctor's default (her own row only; the
   // note settings above are not touched — server routes/coverage.js billingPreferences).
   async function saveInjDefault(f) {
-    const fam = normalizeFamily(f);
+    const fam = normalizeDefault(f);
     setInjSaving("saving");
     try {
       const res = await fetch(`${API_BASE}/api/user-data`, {
@@ -640,6 +644,18 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     if (loading) return;
     pickInjFamily(f);
     run();
+  }
+  // Output strip "Add & regenerate" (comp exam with one diagnosis, Nov 5 2026): the typed diagnosis
+  // becomes a new dictation line ("Also: …") and the note is regenerated with the SAME family —
+  // sent as a tap, so the eye code stays whatever chose it (default, Auto, suggestion).
+  function addSecondDxAndRegenerate() {
+    if (loading || !result) return;
+    const next = secondDxRegenerate(note, secondDxText, result.visitFamily);
+    if (!next) return;
+    setNote(next.note);
+    setSecondDxText("");
+    pickInjFamily(next.family);
+    run(undefined, next.note);
   }
 
   const saveNote = saveMode === "signin"
@@ -746,8 +762,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // ── Run ───────────────────────────────────────────────────────────
   // Optional editInstruction: a dictated spoken edit to apply during regeneration
   // (guard against React passing the click event when used as onClick={run}).
-  async function run(editInstruction) {
+  // Optional dictationOverride: the dictation to send instead of the textarea state (the
+  // "Add & regenerate" path has just appended a line that state has not caught up with).
+  async function run(editInstruction, dictationOverride) {
     const edit = typeof editInstruction === "string" ? editInstruction.trim() : "";
+    const note = typeof dictationOverride === "string" ? dictationOverride : noteState;
     if (!note.trim()) return;
     sendPendingFlag(); // typed flag for the note being replaced goes out first (not awaited)
     setLoading(true); setError(""); setResult(null); setAdvisorAdded(new Set());
@@ -805,6 +824,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       // Nov 5 2026 — injection days only: which visit-code family was used and why, the hub-only
       // reminder (never copied: copyNote copies result.note only). Older servers omit it.
       parsed.visitFamily = data.visitFamily && typeof data.visitFamily === "object" ? data.visitFamily : null;
+      // Nov 5 2026 — every final 92014 / 92004 note: the hub-only comp-exam reminder (never copied).
+      parsed.compExamReminder = typeof data.compExamReminder === "string" && data.compExamReminder ? data.compExamReminder : null;
+      setSecondDxText("");
       setResult(parsed);
       setTab("output");
       if (edit) setPendingEdit(""); // spoken edit applied — clear the banner
@@ -1439,7 +1461,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 for traditional Medicare (established patients). Days in a global, -57, Level 5
                 or with another procedure always stay E/M (server). */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
-              <span id="inj-code-label" title={'A typed "eye code" or "99214" in the dictation wins. From Jan 1 2027 the hub pre-selects the eye code for traditional Medicare (established patients); you can switch.'}
+              <span id="inj-code-label" title={'A typed "eye code" or "99214" in the dictation wins. From Jan 1 2027 the hub pre-selects the eye code for traditional Medicare (established patients); with the Auto default it picks whichever pays more. You can switch.'}
                 style={{ fontSize: 12.5, color: T.ink2, fontFamily: T.sans, whiteSpace: "nowrap" }}>
                 {phone ? "Injection day:" : "Visit code on injection days:"}
               </span>
@@ -1454,7 +1476,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   </button>
                 ))}
               </div>
-              {!injTapped && <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{saveMode === "ok" ? "your default" : "default"}</span>}
+              {!injTapped && <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>{injDefault === "auto" ? (saveMode === "ok" ? "Auto — what pays more (your default)" : "Auto — what pays more") : saveMode === "ok" ? "your default" : "default"}</span>}
               {injTapped && injFamily !== injDefault && saveMode === "ok" && injSaving !== "saving" && (
                 <button type="button" onClick={() => saveInjDefault(injFamily)} style={{ background: "none", border: "none", padding: 0, color: T.accent, fontSize: 12.5, fontFamily: T.sans, cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>
                   Make this my default
@@ -1897,14 +1919,16 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
               <div style={{ display: "flex", flexDirection: "column" }}>
 
                 {/* Safety flags — deterministic warnings from the server; never part of the copied note */}
-                {result.safetyFlags?.length > 0 && (
+                {/* Nov 5 2026: the comp-exam "add a second diagnosis" ask shows in the visit-code strip
+                    (with its box), so the list skips it when the strip is there. */}
+                {safetyFlagsForList(result).length > 0 && (
                   <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "10px 14px", borderRadius: T.r, fontSize: 13, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, color: T.amber, marginBottom: 14 }}>
                     <span style={{ marginTop: 1 }}><AlertIcon /></span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <b style={{ fontWeight: 600, display: "block", marginBottom: 4 }}>
                         Safety flags — review before signing (not included in the copied note)
                       </b>
-                      {result.safetyFlags.map((f, i) => {
+                      {safetyFlagsForList(result).map((f, i) => {
                         // Sep 2026, per Mari — modifier-25 audit flags (CC/HPI lint,
                         // header lint, truth check, -25 defensibility) arrive prefixed
                         // "AUDIT: ". They get their own badge so they read as an
@@ -2053,12 +2077,40 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                           </button>
                         )}
                       </div>
+                      {fs.secondDx && (
+                        <div data-testid="second-dx" style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 12.5, lineHeight: 1.45, color: T.amber, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: 4, padding: "6px 9px" }}>
+                          <span>{fs.secondDx}</span>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+                            <input type="text" value={secondDxText} onChange={(e) => setSecondDxText(e.target.value)} disabled={loading}
+                              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSecondDxAndRegenerate(); } }}
+                              placeholder="e.g. ERM OD, stable — observe" aria-label="Second diagnosis addressed today"
+                              style={{ flex: "1 1 220px", minWidth: 0, height: phone ? 40 : 30, padding: "0 9px", border: `1px solid ${T.line}`, borderRadius: 4, fontFamily: T.sans, fontSize: phone ? 15 : 13, color: T.ink, background: T.surface, boxSizing: "border-box" }} />
+                            <button type="button" onClick={addSecondDxAndRegenerate} disabled={loading || !secondDxText.trim()}
+                              style={btnSm("secondary", { ...(phone ? { height: 40, padding: "0 12px", fontSize: 13.5 } : {}) })}>
+                              Add &amp; regenerate
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       {fs.reminder && (
                         <div style={{ fontSize: 12.5, lineHeight: 1.45, color: T.amber, background: T.amberSoft, border: `1px solid ${T.goldSoft}`, borderRadius: 4, padding: "6px 9px" }}>
                           {fs.reminder}
                         </div>
                       )}
                       <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
+                    </div>
+                  );
+                })()}
+
+                {/* Comp exam reminder (Nov 5 2026, server OWN-RULE-044) — every final 92014 / 92004 note
+                    without the injection-day strip (the strip shows the same text). HUB ONLY, never copied. */}
+                {(() => {
+                  const rem = compExamReminderFor(result);
+                  if (!rem) return null;
+                  return (
+                    <div data-testid="comp-exam-reminder" style={{ marginTop: 10, padding: "8px 12px", borderRadius: T.r, border: `1px solid ${T.goldSoft}`, background: T.amberSoft, fontFamily: T.sans, fontSize: 12.5, lineHeight: 1.45, color: T.amber }}>
+                      {rem}
+                      <div style={{ fontSize: 11.5, color: T.muted, marginTop: 3 }}>Hub only — not copied into the note.</div>
                     </div>
                   );
                 })()}
@@ -2284,10 +2336,10 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
             <div style={field({ marginBottom: 16 })}>
               <div style={{ fontSize: 13.5, fontWeight: 600, color: T.ink }}>Injection-day visit code — my default</div>
               <div style={{ fontSize: 12.5, color: T.muted, margin: "2px 0 8px", lineHeight: 1.45 }}>
-                Used on injection days unless you type a code word ("eye code", "99214") or tap the toggle on the note page. Eye code = 92014-25 (92004-25 new), no MDM sentence. Your own setting — partners keep theirs.
+                Used on injection days unless you type a code word ("eye code", "99214") or tap the toggle on the note page. E/M = 99214-25; Eye code = 92014-25 (92004-25 new), no MDM sentence. Auto — what pays more: E/M before Jan 1 2027 and for new patients; from Jan 1 2027 the eye code for established patients with traditional Medicare (alone, with a Medigap / Tricare for Life or MassHealth secondary), Harvard Pilgrim commercial or Tufts commercial / Together / One Care; E/M for every other or unclear insurance. Your own setting — partners keep theirs.
               </div>
-              <div role="group" aria-label="Injection-day visit code default" style={{ display: "inline-flex", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 2 }}>
-                {[["em", "E/M (99214-25)"], ["eye", "Eye code (92014-25)"]].map(([f, label]) => (
+              <div role="group" aria-label="Injection-day visit code default" style={{ display: "inline-flex", flexWrap: "wrap", background: T.surface, border: `1px solid ${T.line}`, borderRadius: T.r, padding: 2 }}>
+                {[["em", DEFAULT_LABELS.em], ["eye", DEFAULT_LABELS.eye], ["auto", DEFAULT_LABELS.auto]].map(([f, label]) => (
                   <button key={f} type="button" disabled={saveMode !== "ok" || injSaving === "saving"} onClick={() => saveInjDefault(f)} aria-pressed={injDefault === f} style={{
                     height: 30, padding: "0 12px", borderRadius: 4, border: "none", whiteSpace: "nowrap",
                     background: injDefault === f ? T.accent : "transparent", color: injDefault === f ? T.onAccent : T.ink2,
