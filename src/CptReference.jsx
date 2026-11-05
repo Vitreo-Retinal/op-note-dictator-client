@@ -493,14 +493,14 @@ function SurgicalCodeMap({ onPick }) {
 
 // ── Modifier decision map (-25 vs -57) ──────────────────────────────
 const MINOR_LEAVES = [
-  { code: "67028", label: "Intravitreal injection" },
+  { code: "67028", label: "Injection / tap & inject" },
   { code: "67145", label: "Laser retinopexy (tear)" },
   { code: "67228", label: "PRP" },
   { code: "65800", label: "AC tap / paracentesis" },
   { code: "67141", label: "Cryotherapy (tear)" },
 ];
+// Nov 5 2026 (OWN-RULE-016/019): VRA never bills 67015 — tap-and-inject is 67028 (-25 side).
 const MAJOR_LEAVES = [
-  { code: "67015", label: "Vitreous tap (tap & inject)" },
   { code: "67108", label: "RD repair — decision today" },
   { code: "66821", label: "YAG capsulotomy — 90-day laser!" },
 ];
@@ -551,8 +551,8 @@ function ModifierMap({ onPick }) {
       </div>
       <div style={{ marginTop: 10, fontSize: 13, color: T.ink2, lineHeight: 1.6, fontFamily: T.sans }}>
         <span style={{ color: T.amber, fontWeight: 600 }}>Key rules: </span>
-        An emergency Level-5 visit does NOT change the modifier {"—"} endophthalmitis with only an AC tap (0-day) is still 99215-25.
-        A dry vitreous tap is not billable {"—"} the modifier follows the code you actually bill.
+        An emergency Level-5 visit does NOT change the modifier {"—"} endophthalmitis tap-and-inject (vitreous, AC, both or dry tap) is 67028 + 99215-25.
+        VRA never bills 67015, so no 90-day global opens and the follow-up visits bill normally.
         66821 YAG is the exception laser: 90-day {"→"} -57.
         Unrelated E/M during another surgery's global {"→"} -24 instead.
       </div>
@@ -602,7 +602,7 @@ function ImagingMap({ onPick }) {
         <rect x="40" y="270" width="690" height="200" rx="10" fill={T.amberSoft} stroke={T.amber} />
         <text x="56" y="294" fill={T.amber} fontSize="12.5" fontWeight="700">SAME-DAY WATCH-OUTS</text>
         <text x="70" y="322" fill={T.red} fontSize="14" fontWeight="800">✗</text>
-        <text x="90" y="322" fill={T.ink} fontSize="11.5">92250 fundus photos + OCT (92133/92134) same eye — generally mutually exclusive (-59 on 92250 only if truly separate &amp; necessary)</text>
+        <text x="90" y="322" fill={T.ink} fontSize="11.5">92250 fundus photos + any OCT (92133/92134/92137) same day — VRA bills ONE (keeps the OCT); never both, no -59/XU</text>
         <text x="70" y="352" fill={T.red} fontSize="14" fontWeight="800">✗</text>
         <text x="90" y="352" fill={T.ink} fontSize="11.5">92083 visual field + 92133 RNFL OCT same day — LCDs call this not medically necessary. Alternate the visits.</text>
         <text x="70" y="382" fill={T.red} fontSize="14" fontWeight="800">✗</text>
