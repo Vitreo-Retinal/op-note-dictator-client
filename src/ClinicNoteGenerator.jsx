@@ -27,6 +27,7 @@ import { usePhone, TABBAR_H } from "./phone.jsx";
 import { liveDictationAllowed, liveWsUrl, chooseDelivery } from "./lib/liveDictation.js";
 import { normalizeFamily, normalizeDefault, DEFAULT_LABELS, injectionCodeRequest, visitFamilySummary, switchLabel, safetyFlagsForList, secondDxRegenerate, compExamReminderFor } from "./lib/visitFamily.js"; // injection-day visit code (Nov 5 2026)
 import { LONG_DEFAULTS, LONG_DEFAULT_LABELS, normalizeLongDefault, longitudinalRequest, longitudinalHint, defaultForTap, longitudinalSummary, applyLongitudinalEdit } from "./lib/longitudinal.js"; // G2211 / B1 switch (Nov 5 2026)
+import { normalizeObservationSwitch, observationSwitchSummary, toggleObservationSwitch } from "./lib/observationSwitch.js"; // new patient, observation only → 92004 (Nov 5 2026)
 import { startLiveSession, liveDictationSupported, readHubToken } from "./lib/liveDictationSession.js";
 
 // Tabs shown on phones (everything else is desktop-only).
@@ -671,6 +672,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   function toggleLongitudinalOnNote() {
     setResult((r) => (r && r.longitudinal ? applyLongitudinalEdit(r, !r.longitudinal.on) : r));
   }
+  // Output strip "Switch to 92004" / "Back to 99204" (new patient, observation only): edits the
+  // note on screen, no regenerate — CODE, G2211 and the two E/M-only [+] lines (lib/observationSwitch.js).
+  function toggleObservationOnNote() {
+    setResult((r) => toggleObservationSwitch(r));
+  }
   // A tap on the toggle = an explicit choice for this note (source "toggle").
   function pickInjFamily(f) {
     const fam = normalizeFamily(f);
@@ -870,6 +876,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       parsed.compExamReminder = typeof data.compExamReminder === "string" && data.compExamReminder ? data.compExamReminder : null;
       // Nov 5 2026 — G2211 / B1: on or off and why, the sentence for the one-tap Add (hub only). Older servers omit it.
       parsed.longitudinal = data.longitudinal && typeof data.longitudinal === "object" ? data.longitudinal : null;
+      // Nov 5 2026 — new patient, observation only, billed 99204: the server keeps 99204 and offers
+      // 92004 (hub only; the switch is an instant edit below). Older servers omit it.
+      parsed.observationSwitch = normalizeObservationSwitch(data.observationSwitch);
       setSecondDxText("");
       setResult(parsed);
       setTab("output");
@@ -2180,6 +2189,27 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                           {fs.reminder}
                         </div>
                       )}
+                      <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
+                    </div>
+                  );
+                })()}
+
+                {/* New patient, observation only, billed 99204 (Nov 5 2026, owner 2:35 PM; server
+                    OWN-RULE-011) — HUB ONLY, never in the copied note: the flag and a one-tap switch
+                    to 92004 that edits the note on screen (no regenerate), and back. */}
+                {(() => {
+                  const ob = observationSwitchSummary(result);
+                  if (!ob) return null;
+                  return (
+                    <div data-testid="observation-switch" style={{ marginTop: 10, padding: "9px 12px", borderRadius: T.r, border: `1px solid ${ob.switched ? T.line : T.goldSoft}`, background: ob.switched ? T.paper : T.amberSoft, fontFamily: T.sans, fontSize: 13, color: T.ink2, display: "flex", flexDirection: "column", gap: 7 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <b style={{ color: ob.switched ? T.ink : T.amber, fontWeight: 600 }}>{ob.title}</b>
+                        <button type="button" onClick={toggleObservationOnNote} disabled={loading}
+                          style={btnSm("secondary", { marginLeft: "auto", ...(phone ? { height: 40, padding: "0 12px", fontSize: 13.5 } : {}) })}>
+                          {ob.button}
+                        </button>
+                      </div>
+                      <div style={{ fontSize: 12.5, lineHeight: 1.45, color: ob.switched ? T.ink2 : T.amber }}>{ob.text}</div>
                       <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
                     </div>
                   );
