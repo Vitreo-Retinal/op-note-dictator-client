@@ -65,6 +65,8 @@ const KNOWN_DRUG_TOKENS = [
   // "a"/"i"/"s" in prose is a word, not a drug); multi-char shorthand is
   // matched case-insensitively.
   "A", "E", "E2", "E8", "EHD", "V", "L", "L3", "L5", "I", "Iz", "S",
+  // Nov 5 2026 (owner): intravitreal Avastin / Eylea / Vabysmo / Cimerli and Cimerli 0.3 / 0.5 mg.
+  "IVA", "IVE", "IVV", "IVC", "C3", "C5",
   // Literal HCPCS codes, in case the physician dictates the code itself
   "J0178", "J0177", "J9035", "J2777", "J2778", "J0179", "J2782", "J2781",
   "Q5124", "Q5128", "J1094", "J3301", "J3299", "J2997",

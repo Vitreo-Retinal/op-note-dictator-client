@@ -6,7 +6,7 @@
 // Same fixtures as the server's tests/billed-text.test.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseResponse, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines, coverageCardNotes } from "../src/lib/noteHelpers.js";
+import { parseResponse, isIcdWarning, copyableIcdText, copyableNoteText, isDiagnosisHeaderLine, noteDisplayLines, coverageCardNotes, calcGlobalPeriodContext } from "../src/lib/noteHelpers.js";
 import { readFileSync } from "node:fs";
 
 const note = (code, proc, g2211, body) =>
@@ -259,4 +259,30 @@ test("dualNote is rendered only inside the coverage card (src/CoverageCard.jsx) 
     const body = src.slice(a, src.indexOf("}, [", a));
     assert.ok(a > 0 && !/coverage|dualNote/i.test(body), `${fn} must not read coverage`);
   }
+});
+
+// ── Owner shorthand (Nov 5 2026): IVA / IVE / IVV / IVC, C3 / C5 (Cimerli) ──────────────
+// Pre-flight unknown-drug check: the block between the START / END markers, evaluated as-is.
+const preflight = () => {
+  const src = readFileSync(new URL("../src/ClinicNoteGenerator.jsx", import.meta.url), "utf8");
+  const a = src.indexOf("PRE-FLIGHT UNKNOWN-DRUG CHECK (July 2026) ── START");
+  const b = src.indexOf("PRE-FLIGHT UNKNOWN-DRUG CHECK ── END");
+  const block = src.slice(src.indexOf("\n", a) + 1, src.lastIndexOf("\n", b));
+  return new Function(`${block}\nreturn findUnknownDrugTokens;`)();
+};
+test("pre-flight drug check: the owner's shorthand is a known drug; an unknown token still asks", () => {
+  const find = preflight();
+  for (const s of ["inject IVV OS", "inject IVE OD", "inject IVA OS", "inject IVC OD", "inject C5 OD", "switch to C3", "inject L5 OD", "inject EHD OS", "inject V OD"]) {
+    assert.deepEqual(find(s), [], s);
+  }
+  assert.deepEqual(find("inject Zorbix OD"), ["Zorbix"]);
+});
+
+test("global period: an injection shorthand line with a surgeon/date is not a 90-day surgery", () => {
+  const d = new Date(Date.now() - 30 * 86400000);
+  const ds = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  for (const tok of ["IVE", "IVV", "IVA", "IVC", "C5", "C3", "L5", "L3", "E2", "E8", "EHD", "Eylea"]) {
+    assert.equal(calcGlobalPeriodContext(`s/p ${tok} OS (MR, ${ds})`), "", tok);
+  }
+  assert.match(calcGlobalPeriodContext(`s/p PPV/EL/C3F8 OS (MR, ${ds})`), /WITHIN 90-day global/);
 });
