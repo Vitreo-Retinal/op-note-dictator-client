@@ -286,3 +286,29 @@ test("global period: an injection shorthand line with a surgeon/date is not a 90
   }
   assert.match(calcGlobalPeriodContext(`s/p PPV/EL/C3F8 OS (MR, ${ds})`), /WITHIN 90-day global/);
 });
+
+// ── Uppercase-only shorthand (owner, Nov 6 2026 — the server counts shorthand only in UPPERCASE) ──
+test("pre-flight drug check: shorthand is known only as written (uppercase); lowercase shorthand asks; names any case", () => {
+  const find = preflight();
+  for (const tok of ["ehd", "Ehd", "l3", "l5", "e2", "e8", "ivv", "Ivv", "ive", "iva", "ivc", "c3", "c5", "iz"]) {
+    assert.deepEqual(find(`inject ${tok} OD`), [tok], tok);
+  }
+  for (const tok of ["EHD", "L3", "L5", "E2", "E8", "IVV", "IVE", "IVA", "IVC", "C3", "C5", "Iz", "A", "E", "V", "L", "I", "S"]) {
+    assert.deepEqual(find(`inject ${tok} OD`), [], tok);
+  }
+  for (const name of ["eylea", "EYLEA", "Vabysmo", "lucentis", "Cimerli", "ivi", "IVI", "j2777", "pavblu"]) {
+    assert.deepEqual(find(`inject ${name} OD`), [], name);
+  }
+});
+
+test("global period: an injection shorthand counts only in uppercase; injection names / inj / IVI any case", () => {
+  const d = new Date(Date.now() - 30 * 86400000);
+  const ds = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  for (const tok of ["IVV", "EHD", "E8", "L3", "C5", "eylea", "EYLEA", "lucentis", "inj", "ivi", "IVT", "ivt"]) {
+    assert.equal(calcGlobalPeriodContext(`s/p ${tok} OS (MR, ${ds})`), "", tok);
+  }
+  // lowercase shorthand is not an injection any more → read like any other dated procedure
+  for (const tok of ["ivv", "ehd", "e8", "l3", "c5"]) {
+    assert.match(calcGlobalPeriodContext(`s/p ${tok} OS (MR, ${ds})`), /WITHIN 90-day global/, tok);
+  }
+});

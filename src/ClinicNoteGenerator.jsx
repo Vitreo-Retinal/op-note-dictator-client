@@ -28,6 +28,7 @@ import { liveDictationAllowed, liveWsUrl, chooseDelivery } from "./lib/liveDicta
 import { normalizeFamily, normalizeDefault, DEFAULT_LABELS, injectionCodeRequest, visitFamilySummary, switchLabel, safetyFlagsForList, secondDxRegenerate, compExamReminderFor } from "./lib/visitFamily.js"; // injection-day visit code (Nov 5 2026)
 import { LONG_DEFAULTS, LONG_DEFAULT_LABELS, normalizeLongDefault, longitudinalRequest, longitudinalHint, defaultForTap, longitudinalSummary, applyLongitudinalEdit } from "./lib/longitudinal.js"; // G2211 / B1 switch (Nov 5 2026)
 import { normalizeObservationSwitch, observationSwitchSummary, toggleObservationSwitch } from "./lib/observationSwitch.js"; // new patient, observation only → 92004 (Nov 5 2026)
+import { parseWellpointReminder, wellpointReminderFor } from "./lib/wellpointReminder.js"; // Vabysmo + traditional Medicare: Wellpoint reminder (Nov 6 2026)
 import { startLiveSession, liveDictationSupported, readHubToken } from "./lib/liveDictationSession.js";
 
 // Tabs shown on phones (everything else is desktop-only).
@@ -61,9 +62,10 @@ const KNOWN_DRUG_TOKENS = [
   "vancomycin", "vanc", "ceftazidime", "ceftaz", "amikacin", "voriconazole",
   "vori", "amphotericin", "ampho", "foscarnet", "ganciclovir", "clindamycin",
   "air", "gas", "SF6", "C3F8", "saline", "steroid", "silicone",
-  // Mari's shorthand. Single letters are matched UPPERCASE-ONLY (a lowercase
-  // "a"/"i"/"s" in prose is a word, not a drug); multi-char shorthand is
-  // matched case-insensitively.
+  // Mari's shorthand — matched CASE-SENSITIVELY, exactly as written here (owner, Nov 6 2026:
+  // the server counts shorthand only in UPPERCASE, so "ehd" / "l3" / "ivv" are not drugs and the
+  // pre-flight check asks about them). A lowercase "a"/"i"/"s" in prose is a word, not a drug.
+  // Brand names, generics, IVI and the HCPCS codes stay case-insensitive.
   "A", "E", "E2", "E8", "EHD", "V", "L", "L3", "L5", "I", "Iz", "S",
   // Nov 5 2026 (owner): intravitreal Avastin / Eylea / Vabysmo / Cimerli and Cimerli 0.3 / 0.5 mg.
   "IVA", "IVE", "IVV", "IVC", "C3", "C5",
@@ -76,9 +78,10 @@ const KNOWN_DRUG_TOKENS = [
   "J7312", "J3300", "J7313", "J7314", "J2779", "J3396", "J7999",
   "Q5147", "Q5153", "Q5155", "Q5170", "Q5149", "Q5150", "Q5107", "Q5118",
 ];
-const KNOWN_SINGLE_LETTER_DRUGS = new Set(["A", "E", "V", "L", "I", "S"]); // case-sensitive
+// Case-sensitive shorthand (Nov 6 2026: multi-character shorthand joins the single letters).
+const KNOWN_SHORTHAND_DRUGS = new Set(["A", "E", "V", "L", "I", "S", "E2", "E8", "EHD", "L3", "L5", "Iz", "IVA", "IVE", "IVV", "IVC", "C3", "C5"]);
 const KNOWN_DRUG_LOWER = new Set(
-  KNOWN_DRUG_TOKENS.filter(t => !KNOWN_SINGLE_LETTER_DRUGS.has(t)).map(t => t.toLowerCase())
+  KNOWN_DRUG_TOKENS.filter(t => !KNOWN_SHORTHAND_DRUGS.has(t)).map(t => t.toLowerCase())
 );
 // Words that routinely follow "inject"/"switch to" and are obviously not drugs.
 const DRUG_SLOT_STOPWORDS = new Set([
@@ -110,7 +113,7 @@ function findUnknownDrugTokens(input) {
     if (/^\d/.test(tok)) return;                       // 4 (units), 2026 …
     if (/^(?:q|x)\d+$/i.test(tok)) return;             // q8, x2 — intervals, not drugs
     if (tok.length === 1 && tok !== tok.toUpperCase()) return; // lone lowercase letter ("s/p" → "p")
-    if (KNOWN_SINGLE_LETTER_DRUGS.has(tok)) return;    // uppercase A/E/V/L/I/S
+    if (KNOWN_SHORTHAND_DRUGS.has(tok)) return;        // shorthand exactly as written (A/E/V…, EHD, L3, IVV, C5…)
     if (KNOWN_DRUG_LOWER.has(tok.toLowerCase())) return;
     out.push(tok);
   };
@@ -876,6 +879,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       parsed.visitFamily = data.visitFamily && typeof data.visitFamily === "object" ? data.visitFamily : null;
       // Nov 5 2026 — every final 92014 / 92004 note: the hub-only comp-exam reminder (never copied).
       parsed.compExamReminder = typeof data.compExamReminder === "string" && data.compExamReminder ? data.compExamReminder : null;
+      // Nov 6 2026 — Vabysmo on traditional Medicare / no insurance (server OWN-RULE-050): the hub-only
+      // Wellpoint audit reminder (never copied: it is not part of result.note). Older servers omit it.
+      parsed.wellpointReminder = parseWellpointReminder(data);
       // Nov 5 2026 — G2211 / B1: on or off and why, the sentence for the one-tap Add (hub only). Older servers omit it.
       parsed.longitudinal = data.longitudinal && typeof data.longitudinal === "object" ? data.longitudinal : null;
       // Nov 5 2026 — new patient, observation only, billed 99204: the server keeps 99204 and offers
@@ -2246,6 +2252,19 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                   return (
                     <div data-testid="comp-exam-reminder" style={{ marginTop: 10, padding: "8px 12px", borderRadius: T.r, border: `1px solid ${T.goldSoft}`, background: T.amberSoft, fontFamily: T.sans, fontSize: 12.5, lineHeight: 1.45, color: T.amber }}>
                       {rem}
+                      <div style={{ fontSize: 11.5, color: T.muted, marginTop: 3 }}>Hub only — not copied into the note.</div>
+                    </div>
+                  );
+                })()}
+
+                {/* Wellpoint audit reminder (Nov 6 2026, server OWN-RULE-050) — Vabysmo billed today on
+                    traditional Medicare or with no insurance written. HUB ONLY, never copied. */}
+                {(() => {
+                  const wp = wellpointReminderFor(result);
+                  if (!wp) return null;
+                  return (
+                    <div data-testid="wellpoint-reminder" style={{ marginTop: 10, padding: "8px 12px", borderRadius: T.r, border: `1px solid ${T.goldSoft}`, background: T.amberSoft, fontFamily: T.sans, fontSize: 12.5, lineHeight: 1.45, color: T.amber }}>
+                      {wp}
                       <div style={{ fontSize: 11.5, color: T.muted, marginTop: 3 }}>Hub only — not copied into the note.</div>
                     </div>
                   );

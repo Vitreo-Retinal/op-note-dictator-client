@@ -124,7 +124,9 @@ function getEmLabel(codeStr) {
         if (/\b(?:PPV|vitrectom\w*|SB|buckle|pneumatic|PnR|MP|membrane|IOL\w*|phaco\w*|CE|cataract|trab\w*|tube|YAG|focal|grid|67210|SO|ROSO|repair)\b/i.test(ctx)) window = 90;
         else if (/\b(?:LRP|laser\s+retinopexy|PRP|cryo\w*|laser\s+demarcation|barricade|demarcat\w*|67145|67228|67105|67141|67101)\b/i.test(ctx)) window = 10;
         // Nov 5 2026 (owner shorthand): IVA / IVE / IVV / IVC, E2 / E8, L3 / L5, C3 / C5 are injections too.
-        else if (/\b(?:inj\w*|IVI|IVT|IV[AEVC]|avastin|eylea|EHD|E[28]|vabysmo|lucentis|L[35]|C[35]|beovu|izervay|syfovre|pavblu|byooviz|cimerli|ozurdex|67028)\b/i.test(ctx)) continue;
+        // Nov 6 2026 (owner): the shorthand counts only in UPPERCASE (same as the server); names, inj, IVI / IVT any case.
+        else if (/\b(?:inj\w*|IVI|IVT|avastin|eylea|vabysmo|lucentis|beovu|izervay|syfovre|pavblu|byooviz|cimerli|ozurdex|67028)\b/i.test(ctx)
+          || /\b(?:IV[AEVC]|EHD|E[28]|L[35]|C[35])\b/.test(ctx)) continue;
         const dateStr = m[2];
         const parts = dateStr.split("/");
         if (parts.length === 3) {
