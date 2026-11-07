@@ -36,7 +36,11 @@ const STATUS = {
   follow_up_only: { label: "Follow-up only", pill: chip("accent") },
   closed_to_enrollment: { label: "Closed to enrollment", pill: chip("muted", { color: T.amber }) },
   completed: { label: "Completed", pill: chip("muted") },
+  terminated: { label: "Terminated", pill: chip("muted", { color: T.red }) }, // Nov 6 2026 (LUCIA)
 };
+// "Flag candidates to" only while a trial takes new patients; otherwise the same
+// people are just the contact (Nov 6 2026, Mari: Diana Báez or Amy Paul).
+const RECRUITING = new Set(["enrolling", "screening_paused"]);
 const STATUS_ORDER = Object.keys(STATUS);
 const statusRank = (s) => { const i = STATUS_ORDER.indexOf(s); return i === -1 ? STATUS_ORDER.length : i; };
 // Unknown status → "some_new_value" → "Some new value".
@@ -106,7 +110,7 @@ function TrialCard({ trial: t }) {
         )}
         {has(t.flag_to) && (
           <div style={{ marginTop: 10, padding: "7px 12px", background: T.amberSoft, borderLeft: `3px solid ${T.gold}`, borderRadius: T.r, fontSize: 13.5, color: T.goldInk }}>
-            Flag candidates to: <b style={{ fontWeight: 600, color: T.ink }}>{t.flag_to}</b>
+            {RECRUITING.has(t.status) ? "Flag candidates to" : "Contact"}: <b style={{ fontWeight: 600, color: T.ink }}>{t.flag_to}</b>
           </div>
         )}
       </div>

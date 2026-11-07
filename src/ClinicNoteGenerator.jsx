@@ -10,6 +10,8 @@ import PhoneText from "./PhoneText.jsx";
 import { CoverageCards } from "./CoverageCard.jsx";
 import AdvisorStrip from "./AdvisorStrip.jsx"; // clinical advisor strip (Oct 29 2026) — src/lib/advisor.js
 import { advisorCards, insertPlanLine } from "./lib/advisor.js";
+import { buildTrialCards } from "./lib/trialCard.js"; // VRA trial cards in the advisor strip (Nov 6 2026, D15)
+import { fetchTrials } from "./TrialsPage.jsx";
 import { HANDOUTS } from "./data/educationContent.js";
 import { COVERAGE_FENCE_RX, reqTagClass } from "./lib/coverageCard.js";
 import { DEFAULT_EXAMPLES, DEFAULT_INLINE_RULES, DEFAULT_PLAN_RULES } from "./data/noteExamples.js";
@@ -183,6 +185,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // and the line to flash gold for a moment after "+ Add".
   const [advisorAdded, setAdvisorAdded] = useState(() => new Set());
   const [flashLine, setFlashLine] = useState("");
+  // VRA trials (Nov 6 2026, D15): trial rows (status + card rules) from GET /api/trials,
+  // loaded once. Trial-level data only; the note itself is never sent.
+  const [trialRows, setTrialRows] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    fetchTrials().then((d) => { if (alive && d && !d.error && Array.isArray(d.trials)) setTrialRows(d.trials); });
+    return () => { alive = false; };
+  }, []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   // Pre-flight unknown-drug warning: holds the offending token while the
@@ -2273,8 +2283,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                 {phone && phoneFooter(newNote, "New note", copyNote, copied)}
 
                 {/* Clinical advisor strip (Oct 29 2026) — under the note, above coverage.
-                    Never copied; "+ Add" puts a line in the Plan. src/AdvisorStrip.jsx */}
-                <AdvisorStrip cards={advisorCards(noteBody, icd10Codes || [])} added={advisorAdded} onAdd={addAdvisorLine} onPrintPamphlet={printIrdPamphlet} />
+                    Never copied; "+ Add" puts a line in the Plan. src/AdvisorStrip.jsx.
+                    Nov 6 2026: + VRA trial cards and the study-patient reminder (src/lib/trialCard.js). */}
+                <AdvisorStrip cards={[...advisorCards(noteBody, icd10Codes || []), ...buildTrialCards(noteBody, icd10Codes || [], trialRows)]} added={advisorAdded} onAdd={addAdvisorLine} onPrintPamphlet={printIrdPamphlet} />
 
                 {/* Coverage reference(s) — server appends these to the note text */}
                 {Array.isArray(result.coverage) && result.coverage.length > 0

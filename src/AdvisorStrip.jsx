@@ -2,7 +2,7 @@
 // Collapsible strip under the note, above the coverage card. Closed by default:
 // one line. Open: the card(s) below it. Nothing here is copied with the note; only
 // a line the doctor clicks "+ Add" on goes into the Plan (parent's onAdd).
-// Content and rules: src/lib/advisor.js.
+// Content and rules: src/lib/advisor.js (IRD) and src/lib/trialCard.js (VRA trials, Nov 6 2026).
 import { useState } from "react";
 import { T, btnSm, chip } from "./theme.js";
 import { IRD_PROGRAMS, IRD_COMPARE, IRD_LINKS } from "./lib/advisor.js";
@@ -106,6 +106,82 @@ function Section({ sec, added, onAdd, onPrint }) {
   );
 }
 
+// ── VRA trial cards (Nov 6 2026, D15 — src/lib/trialCard.js) ─────────────────
+// Quick check = what the note already says. Never "eligible": the coordinator decides.
+const MARK = {
+  met: { sym: "✓", color: T.green, title: "Met (from the note)" },
+  not_met: { sym: "✗", color: T.red, title: "Not met (from the note)" },
+  check: { sym: "?", color: T.amber, title: "Check — the note is unclear" },
+  none: { sym: "—", color: T.muted, title: "Not in the note" },
+};
+function Mark({ c }) {
+  const m = MARK[c.state] || MARK.none;
+  return (
+    <div style={{ display: "flex", gap: 6, alignItems: "baseline", minWidth: 0 }} title={m.title}>
+      <span aria-label={m.title} style={{ color: m.color, fontWeight: 700, fontSize: 13, width: 12, flexShrink: 0, textAlign: "center" }}>{m.sym}</span>
+      {c.detail && <span style={{ fontSize: 11.5, color: T.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{c.detail}</span>}
+    </div>
+  );
+}
+
+function TrialChecks({ card: c }) {
+  const eyes = c.eyes;
+  const cols = `minmax(150px, 1.3fr) ${eyes.map(() => "minmax(110px, 1fr)").join(" ")}`;
+  return (
+    <div style={{ borderTop: `1px solid ${T.line}`, padding: "10px 14px" }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>Quick check from this note</div>
+      <div style={{ fontSize: 11.5, color: T.muted, margin: "2px 0 8px" }}>Approximate — vision is Snellen, not ETDRS. The coordinator decides.</div>
+      <div style={{ overflowX: "auto" }}>
+        <div role="table" style={{ display: "grid", gridTemplateColumns: cols, minWidth: 150 + 110 * eyes.length, fontSize: 12.5 }}>
+          <div role="row" style={{ display: "contents" }}>
+            <div style={{ padding: "4px 6px", color: T.muted, fontSize: 11.5 }} />
+            {eyes.map((e) => <div key={e} style={{ padding: "4px 6px", color: T.muted, fontSize: 11.5, fontWeight: 600 }}>{e === "?" ? "Eye not stated" : e}</div>)}
+          </div>
+          {c.checks.map((k, i) => (
+            <div role="row" key={k.id} style={{ display: "contents" }}>
+              <div style={{ padding: "5px 6px", color: T.ink2, lineHeight: 1.4, borderTop: `1px dashed ${T.line}`, background: i % 2 ? T.paper : "transparent" }}>{k.label}</div>
+              {k.cells.all
+                ? <div style={{ gridColumn: `span ${eyes.length}`, padding: "5px 6px", borderTop: `1px dashed ${T.line}`, background: i % 2 ? T.paper : "transparent", minWidth: 0 }}><Mark c={k.cells.all} /></div>
+                : eyes.map((e) => <div key={e} style={{ padding: "5px 6px", borderTop: `1px dashed ${T.line}`, background: i % 2 ? T.paper : "transparent", minWidth: 0 }}><Mark c={k.cells[e] || { state: "none" }} /></div>)}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ fontSize: 11.5, color: T.muted, marginTop: 6 }}>✓ met · ✗ not met · ? check · — not in the note</div>
+      {c.coordinator.length > 0 && (
+        <div style={{ marginTop: 10 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 600, color: T.ink }}>The coordinator checks</div>
+          <ul style={{ margin: "4px 0 0", paddingLeft: 18, fontSize: 12.5, color: T.ink2, lineHeight: 1.5 }}>
+            {c.coordinator.map((x, i) => <li key={i}>{x}</li>)}
+          </ul>
+        </div>
+      )}
+      <div style={{ marginTop: 10, padding: "6px 10px", background: T.amberSoft, borderLeft: `3px solid ${T.gold}`, borderRadius: T.r, fontSize: 12.5, color: T.goldInk }}>
+        Flag to: <b style={{ fontWeight: 600, color: T.ink }}>{c.flagTo}</b>
+        <span style={{ color: T.muted }}> · Full criteria on the Clinical Trials page{c.nct ? ` · ${c.nct}` : ""}</span>
+      </div>
+    </div>
+  );
+}
+
+function StudyReminder({ card: c }) {
+  return (
+    <div style={{ borderTop: `1px solid ${T.line}`, padding: "10px 14px" }}>
+      {c.items.map((it) => (
+        <div key={it.slug} style={{ padding: "8px 12px", marginBottom: 6, background: T.amberSoft, border: `1px solid ${T.amberLine}`, borderRadius: T.r, fontSize: 13, lineHeight: 1.45, color: T.ink }}>
+          {it.text}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function badgeFor(c) {
+  if (c.kind === "trial") return <span style={chip("green", { fontSize: 10.5 })}>Enrolling · from Diana's checklist</span>;
+  if (c.kind === "trial-reminder") return <span style={chip("amber", { fontSize: 10.5 })}>VRA study patient</span>;
+  return <span style={chip("green", { fontSize: 10.5 })}>Reviewed by MR</span>;
+}
+
 export default function AdvisorStrip({ cards, added, onAdd, onPrintPamphlet }) {
   const [open, setOpen] = useState(false);
   if (!cards || !cards.length) return null;
@@ -124,10 +200,12 @@ export default function AdvisorStrip({ cards, added, onAdd, onPrintPamphlet }) {
           <div style={{ padding: "10px 14px", borderTop: `1px solid ${T.line}` }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: T.ink }}>{c.title}</span>
-              <span style={chip("green", { fontSize: 10.5 })}>Reviewed by MR</span>
+              {badgeFor(c)}
             </div>
             <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{c.why}</div>
           </div>
+          {c.kind === "trial" && <TrialChecks card={c} />}
+          {c.kind === "trial-reminder" && <StudyReminder card={c} />}
           {c.sections.map((s) => <Section key={s.id} sec={s} added={added} onAdd={onAdd} onPrint={s.programs ? onPrintPamphlet : null} />)}
         </div>
       ))}

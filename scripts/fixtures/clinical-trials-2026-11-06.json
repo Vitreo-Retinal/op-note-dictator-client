@@ -1,0 +1,275 @@
+{
+ "_note": "Snapshot of Retina-Rx public.clinical_trials card fields, Nov 6 2026 (D15). Re-snapshot when the rules change.",
+ "trials": [
+  {
+   "slug": "sienna",
+   "acronym": "SIENNA",
+   "status": "enrolling",
+   "scope": "internal",
+   "active": true,
+   "flag_to": "Diana Báez or Amy Paul",
+   "nct_id": "NCT06541704",
+   "card_triggers": {
+    "concepts": [
+     "ga"
+    ],
+    "condition": "geographic atrophy",
+    "short_name": "SIENNA",
+    "study_names": [
+     "SIENNA"
+    ]
+   },
+   "quick_checks": {
+    "checks": [
+     {
+      "id": "age",
+      "type": "age",
+      "min": 50,
+      "max": 85,
+      "label": "Age 50–85"
+     },
+     {
+      "id": "va",
+      "type": "va",
+      "scope": "eye",
+      "min_letters": 55,
+      "label": "Vision 20/80 or better in the GA eye"
+     },
+     {
+      "id": "no-mnv",
+      "type": "absent",
+      "scope": "either",
+      "concept": "mnv",
+      "label": "No wet AMD, CNV or PCV in either eye"
+     },
+     {
+      "id": "no-ivt",
+      "type": "recent_drug",
+      "scope": "either",
+      "drugs": [
+       "anti_vegf",
+       "complement"
+      ],
+      "months": 6,
+      "label": "No anti-VEGF or complement injection in either eye in 6 months"
+     },
+     {
+      "id": "no-steroid",
+      "type": "absent",
+      "scope": "either",
+      "concept": "ivt_steroid",
+      "label": "No intraocular steroid in either eye"
+     },
+     {
+      "id": "no-comorbid",
+      "type": "absent",
+      "scope": "eye",
+      "concepts": [
+       "dr_any",
+       "macular_edema",
+       "macular_hole"
+      ],
+      "label": "No DR, macular edema or macular hole in the GA eye"
+     },
+     {
+      "id": "amd-cause",
+      "type": "absent",
+      "scope": "either",
+      "concept": "non_amd_atrophy",
+      "label": "Atrophy is from AMD (no Stargardt, dystrophy or toxic maculopathy)"
+     },
+     {
+      "id": "no-laser",
+      "type": "absent",
+      "scope": "either",
+      "concept": "macular_laser",
+      "label": "No prior thermal macular laser in either eye"
+     },
+     {
+      "id": "no-pbm",
+      "type": "absent",
+      "scope": "patient",
+      "concept": "pbm",
+      "label": "No Valeda (PBM), now or planned"
+     }
+    ],
+    "coordinator": [
+     "GA area 2.5–17.5 mm² and within 1500 µm of the fovea on FAF (reading center)",
+     "ETDRS vision ≥55 letters at screening",
+     "Meningococcal and pneumococcal vaccines; labs (HbA1c <8%, eGFR ≥30, liver tests)",
+     "No complement deficiency, transplant, immunosuppressants, serious infection in 3 years, or cancer in 3 years"
+    ]
+   }
+  },
+  {
+   "slug": "helios-3",
+   "acronym": "HELIOS-3",
+   "status": "enrolling",
+   "scope": "internal",
+   "active": true,
+   "flag_to": "Diana Báez or Amy Paul",
+   "nct_id": "NCT07235085",
+   "card_triggers": {
+    "concepts": [
+     "npdr_mod_sev"
+    ],
+    "condition": "nonproliferative diabetic retinopathy",
+    "short_name": "HELIOS-3",
+    "study_names": [
+     "HELIOS-3",
+     "HELIOS"
+    ]
+   },
+   "quick_checks": {
+    "checks": [
+     {
+      "id": "age",
+      "type": "age",
+      "min": 18,
+      "label": "Age 18 or older"
+     },
+     {
+      "id": "va",
+      "type": "va",
+      "scope": "eye",
+      "min_letters": 69,
+      "label": "Vision 20/40 or better in the NPDR eye"
+     },
+     {
+      "id": "no-dme",
+      "type": "absent",
+      "scope": "eye",
+      "concept": "macular_edema",
+      "label": "No DME in that eye"
+     },
+     {
+      "id": "no-pdr",
+      "type": "absent",
+      "scope": "eye",
+      "concept": "pdr_nv_vh",
+      "label": "No PDR, NV or vitreous hemorrhage in that eye"
+     },
+     {
+      "id": "no-prp",
+      "type": "absent",
+      "scope": "eye",
+      "concept": "prp",
+      "label": "No PRP ever in that eye"
+     },
+     {
+      "id": "no-vegf",
+      "type": "recent_drug",
+      "scope": "eye",
+      "drugs": [
+       "anti_vegf"
+      ],
+      "months": 6,
+      "label": "No anti-VEGF in that eye in 6 months"
+     },
+     {
+      "id": "no-steroid",
+      "type": "absent",
+      "scope": "eye",
+      "concept": "ivt_steroid",
+      "soft": true,
+      "label": "No intraocular steroid in that eye (Iluvien/Yutiq ever; others within 6 months)"
+     },
+     {
+      "id": "no-surgery",
+      "type": "absent",
+      "scope": "eye",
+      "concept": "eye_surgery_helios",
+      "label": "No vitrectomy, buckle or glaucoma surgery in that eye"
+     },
+     {
+      "id": "no-macular",
+      "type": "absent",
+      "scope": "eye",
+      "concept": "macular_pathology",
+      "label": "No RD, significant ERM/VMT or macular hole in that eye"
+     },
+     {
+      "id": "no-tki",
+      "type": "absent",
+      "scope": "patient",
+      "concept": "tki",
+      "label": "No prior TKI"
+     }
+    ],
+    "coordinator": [
+     "DRSS 47 or 53 at the reading center (moderate NPDR can be DRSS 43, which does not qualify)",
+     "OCT CSFT under 325 µm (reading center); ETDRS vision ≥69 letters",
+     "HbA1c ≤12%; diabetes meds stable 3 months; no GLP-1 or insulin started in 3 months",
+     "BP ≤170/100; no stroke or MI in 6 months; not on dialysis; IOP under 25"
+    ]
+   }
+  },
+  {
+   "slug": "ascent",
+   "acronym": "ASCENT (RGX-314-3101)",
+   "status": "closed_to_enrollment",
+   "scope": "internal",
+   "active": true,
+   "flag_to": "Diana Báez or Amy Paul",
+   "nct_id": "NCT05407636",
+   "card_triggers": {
+    "short_name": "ASCENT",
+    "study_names": [
+     "ASCENT",
+     "RGX-314-3101"
+    ]
+   },
+   "quick_checks": null
+  },
+  {
+   "slug": "rgx-314-5101",
+   "acronym": "RGX-314 LTFU (5101)",
+   "status": "follow_up_only",
+   "scope": "internal",
+   "active": true,
+   "flag_to": "Diana Báez or Amy Paul",
+   "nct_id": "NCT03999801",
+   "card_triggers": {
+    "short_name": "RGX-314 long-term follow-up",
+    "study_names": [
+     "RGX-314"
+    ]
+   },
+   "quick_checks": null
+  },
+  {
+   "slug": "capri",
+   "acronym": "CAPRI (EYP-1901-304)",
+   "status": "closed_to_enrollment",
+   "scope": "internal",
+   "active": true,
+   "flag_to": "Diana Báez or Amy Paul",
+   "nct_id": "NCT07449923",
+   "card_triggers": {
+    "short_name": "CAPRI",
+    "study_names": [
+     "CAPRI",
+     "EYP-1901-304"
+    ]
+   },
+   "quick_checks": null
+  },
+  {
+   "slug": "lucia",
+   "acronym": "LUCIA (EYP-1901-302)",
+   "status": "terminated",
+   "scope": "internal",
+   "active": true,
+   "flag_to": null,
+   "nct_id": "NCT06683742",
+   "card_triggers": {
+    "short_name": "LUCIA",
+    "study_names": [
+     "LUCIA",
+     "EYP-1901-302"
+    ]
+   },
+   "quick_checks": null
+  }
+ ]
+}
