@@ -1,5 +1,5 @@
 {
- "_source": "READS of the live Supabase functions on 2026-11-08 (project mrfohzuaptrvpctlfsqv; read-only SELECTs). hub_plan_rate_at('plan:307' = Medicare, code, month): benchmarks without mh/mh_as_of/mbos, plan trimmed to the keys the helpers read. No PHI.",
+ "_source": "READS of the live Supabase functions on 2026-11-08 (project mrfohzuaptrvpctlfsqv; read-only SELECTs). hub_plan_rate_at('plan:307' = Medicare, code, month): benchmarks without mh/mh_as_of/mbos, plan trimmed to the keys the helpers read. No PHI. Re-read after the Nov 8 2026 2:05 PM DB change (date-of-service lookups say 'not stored' past the last stored release): Dec 2025 now carries after_stored:false; Jan 2027 is missing with after_stored:true; hub_rvu_at('67028','2027-01') returns no row. Every 2026 answer unchanged.",
  "hub_plan_rate_at_67028": {
   "2025-12": {
    "month": "2025-12",
@@ -20,7 +20,8 @@
     "med_period": {
      "kind": "mpfs",
      "missing": true,
-     "first_from": "2026-01-01"
+     "first_from": "2026-01-01",
+     "after_stored": false
     },
     "mpfs_basis": null,
     "mpfs_release": null
@@ -92,22 +93,20 @@
     "source": "medicare"
    },
    "vra": {
-    "rate": 117.61,
+    "rate": null,
     "pattern": "fee_schedule"
    },
    "benchmarks": {
-    "mworc": 117.61,
-    "med_nat": 114.23,
+    "mworc": null,
+    "med_nat": null,
     "med_period": {
-     "to": null,
-     "from": "2026-10-01",
      "kind": "mpfs",
-     "basis": "2026 MPFS / Oct 2026 RVU26D",
-     "release": "RVU26D",
-     "is_future": false
+     "missing": true,
+     "first_from": "2026-01-01",
+     "after_stored": true
     },
-    "mpfs_basis": "2026 MPFS / Oct 2026 RVU26D",
-    "mpfs_release": "RVU26D"
+    "mpfs_basis": null,
+    "mpfs_release": null
    }
   }
  },
@@ -130,7 +129,8 @@
     "med_nat": null,
     "med_period": {
      "missing": true,
-     "first_from": "2026-01-01"
+     "first_from": "2026-01-01",
+     "after_stored": false
     },
     "mpfs_basis": "2026 MPFS / Oct 2026 ASP",
     "mpfs_release": null
@@ -185,6 +185,31 @@
     "mpfs_basis": "2026 MPFS / Oct 2026 ASP",
     "mpfs_release": null
    }
+  },
+  "2027-01": {
+   "month": "2027-01",
+   "code": "J0178",
+   "type": "drug",
+   "plan": {
+    "plan_key": "plan:307",
+    "name": "Medicare",
+    "source": "medicare"
+   },
+   "vra": {
+    "rate": null,
+    "pattern": "fee_schedule"
+   },
+   "benchmarks": {
+    "mworc": null,
+    "med_nat": null,
+    "med_period": {
+     "missing": true,
+     "first_from": "2026-01-01",
+     "after_stored": true
+    },
+    "mpfs_basis": "2026 MPFS / Oct 2026 ASP",
+    "mpfs_release": null
+   }
   }
  },
  "hub_rvu_at_67028": {
@@ -231,27 +256,7 @@
    "medicare_natl_office": 114.23,
    "medicare_natl_facility": 75.49
   },
-  "2027-01": {
-   "code": "67028",
-   "date": "2027-01-15",
-   "as_of": "2026-10-01",
-   "basis": "2026 MPFS / Oct 2026 RVU26D",
-   "cf_qp": 33.5675,
-   "mp_rvu": 0.11,
-   "release": "RVU26D",
-   "cf_nonqp": 33.4009,
-   "valid_to": null,
-   "work_rvu": 1.4,
-   "is_future": false,
-   "pe_fac_rvu": 0.75,
-   "valid_from": "2026-10-01",
-   "global_days": "000",
-   "pe_nonfac_rvu": 1.91,
-   "total_fac_rvu": 2.26,
-   "total_nonfac_rvu": 3.42,
-   "medicare_natl_office": 114.23,
-   "medicare_natl_facility": 75.49
-  }
+  "2027-01": null
  },
  "hub_rvu_67028": {
   "code": "67028",

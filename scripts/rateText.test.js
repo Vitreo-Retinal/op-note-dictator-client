@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { monthLabel, price, uniqPrices, otherPrices, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, SEVERAL_PRICES_LINE,
   dayLabel, monthOptions, monthRange, periodLabel, medicarePeriod, massHealthPeriod, fileLine, noFileLine, timelineRuns, pctChange,
-  costPeriod, drugMargin, noCostLine, missingAsp, missingMedicare, noMedicareComparison, noMedicareMargin, rvuRelease, latestReleaseMonth } from "../src/lib/rateText.js";
+  costPeriod, drugMargin, noCostLine, missingAsp, missingMedicare, noMedicareComparison, noMedicareMargin, noRvuLine, rvuRelease, latestReleaseMonth } from "../src/lib/rateText.js";
 import { readFileSync } from "node:fs";
 
 // Nov 2026: live reads (Medicare plan, 67028 and J0178 by month; hub_rvu_at; hub_medicare_releases).
@@ -238,8 +238,10 @@ test("procedures: a published future release says 'starts Jan 1, 2027'; a later 
     line: "Medicare 2027 fee schedule (Worcester) · RVU27A · published by CMS, starts Jan 1, 2027",
     short: "Worcester · RVU27A · published by CMS, starts Jan 1, 2027",
   });
-  // Live: with no 2027 release stored, the DB answers January 2027 from the open RVU26D.
-  const jan = medicarePeriod(P["2027-01"].benchmarks, false, "2027-01");
+  // Live since the Nov 8 2026 DB change: January 2027 is missing (after_stored), so no period line.
+  assert.equal(medicarePeriod(P["2027-01"].benchmarks, false, "2027-01"), null);
+  // Defense: an older-shape answer that carried the open RVU26D into 2027 still gets the note.
+  const jan = medicarePeriod(P["2026-12"].benchmarks, false, "2027-01");
   assert.equal(jan.later, "No 2027 Medicare fee schedule is stored yet. This is the RVU26D rate from Oct 1, 2026.");
   assert.equal(medicarePeriod(P["2026-12"].benchmarks, false, "2026-12").later, undefined);
 });
@@ -263,7 +265,8 @@ test("missing Medicare: procedure wording for procedures, ASP wording for drugs 
 test("drugs: quarter by date of service; a month after an open quarter is flagged (live J0178 answers)", () => {
   assert.deepEqual(medicarePeriod(D["2026-03"].benchmarks, true, "2026-03"), { line: "Medicare ASP · Q1 2026 (Jan 1 – Mar 31)", short: "ASP · Q1 2026 (Jan 1 – Mar 31)" });
   assert.deepEqual(medicarePeriod(D["2026-12"].benchmarks, true, "2026-12"), { line: "Medicare ASP · from Oct 1, 2026", short: "ASP · from Oct 1, 2026" });
-  const jan = medicarePeriod(D["2026-12"].benchmarks, true, "2027-01"); // the DB carries the open Oct quarter forward
+  assert.equal(medicarePeriod(D["2027-01"].benchmarks, true, "2027-01"), null, "live: January 2027 is missing (after_stored)");
+  const jan = medicarePeriod(D["2026-12"].benchmarks, true, "2027-01"); // defense: an older-shape answer that carried the open Oct quarter forward
   assert.equal(jan.later, "No Medicare ASP for Jan 2027 is stored yet. This is the rate from Oct 1, 2026.");
   assert.equal(jan.short, "ASP from Oct 1, 2026 · none stored yet for Jan 2027");
 });
@@ -271,7 +274,10 @@ test("drugs: quarter by date of service; a month after an open quarter is flagge
 test("RVU breakdown heading: the release in effect for the month (live hub_rvu_at)", () => {
   assert.deepEqual(rvuRelease(R["2026-12"], "2026-12"), { label: "RVU26D · from Oct 1, 2026", note: null });
   assert.deepEqual(rvuRelease(R["2026-03"], "2026-03"), { label: "RVU26A · Q1 2026 (Jan 1 – Mar 31)", note: null });
-  assert.deepEqual(rvuRelease(R["2027-01"], "2027-01"), { label: "RVU26D · from Oct 1, 2026", note: "No 2027 Medicare fee schedule is stored yet." });
+  assert.equal(R["2027-01"], null, "live since the Nov 8 2026 DB change: no row for a month after the last stored release");
+  assert.deepEqual(rvuRelease(R["2027-01"], "2027-01"), { label: "", note: null }, "no row → no breakdown, no crash");
+  // Defense: an older-shape answer that carried the open RVU26D into 2027 still gets the note.
+  assert.deepEqual(rvuRelease(R["2026-12"], "2027-01"), { label: "RVU26D · from Oct 1, 2026", note: "No 2027 Medicare fee schedule is stored yet." });
   assert.equal(R["2025-12"], null, "before the first release the DB returns null → no RVU box");
   assert.deepEqual(rvuRelease(null, "2025-12"), { label: "", note: null });
   assert.deepEqual(rvuRelease({ ...R["2026-03"], release: "RVU27A", valid_from: "2027-01-01", valid_to: null, is_future: true }, "2027-01"),
@@ -299,4 +305,29 @@ test("month picker reaches the latest stored release's start month (January 2027
 test("no payment-comparison wording added to the Rates helpers", () => {
   const src = readFileSync(new URL("../src/lib/rateText.js", import.meta.url), "utf8");
   assert.ok(!/pays more/i.test(src));
+});
+
+test("after the last stored release (Nov 8 2026 DB change): 'is stored yet', never 'Stored releases start' (live Jan 2027 answers)", () => {
+  const pb = P["2027-01"].benchmarks, db = D["2027-01"].benchmarks;
+  assert.deepEqual(pb.med_period, { kind: "mpfs", missing: true, first_from: "2026-01-01", after_stored: true });
+  assert.equal(P["2027-01"].vra.rate, null); assert.equal(pb.med_nat, null); assert.equal(pb.mworc, null);
+  assert.equal(missingMedicare(pb, "2027-01"), "No Medicare fee schedule is stored yet for Jan 2027.");
+  assert.equal(missingMedicare(db, "2027-01"), "No Medicare ASP is stored yet for Jan 2027.");
+  assert.equal(missingAsp(db, "2027-01"), "No Medicare ASP is stored yet for Jan 2027.");
+  assert.equal(noMedicareComparison(pb, "2027-01"), "No Medicare fee schedule is stored yet for Jan 2027, so there is no Medicare comparison.");
+  assert.equal(noMedicareComparison(db, "2027-01"), "No Medicare ASP is stored yet for Jan 2027, so there is no Medicare comparison.");
+  assert.equal(noMedicareMargin(db, "2027-01"), "No Medicare ASP is stored yet for Jan 2027, so no margin is shown.");
+  for (const t of [missingMedicare(pb, "2027-01"), missingMedicare(db, "2027-01")]) assert.ok(!/Stored releases start|first stored quarter/.test(t), t);
+  // Before the first stored release (after_stored: false) keeps the "start" wording.
+  assert.equal(missingMedicare(P["2025-12"].benchmarks, "2025-12"), "No Medicare fee schedule stored for Dec 2025. Stored releases start Jan 1, 2026.");
+  assert.equal(missingMedicare(D["2025-12"].benchmarks, "2025-12"), "No Medicare ASP stored for Dec 2025. Our first stored quarter starts Jan 1, 2026.");
+});
+
+test("RVU box when hub_rvu_at has no row: a clean 'not stored' line for procedures, nothing for drugs or covered months", () => {
+  assert.equal(noRvuLine(P["2027-01"].benchmarks, "2027-01"), "No Medicare fee schedule is stored yet for Jan 2027, so there is no RVU breakdown.");
+  assert.equal(noRvuLine(P["2025-12"].benchmarks, "2025-12"), "No Medicare fee schedule stored for Dec 2025, so there is no RVU breakdown.");
+  assert.equal(noRvuLine(D["2027-01"].benchmarks, "2027-01"), null, "drugs have no RVU box");
+  assert.equal(noRvuLine(P["2026-12"].benchmarks, "2026-12"), null, "a covered month shows the breakdown instead");
+  assert.equal(noRvuLine({}, "2027-01"), null);
+  assert.equal(noRvuLine(null, "2027-01"), null);
 });

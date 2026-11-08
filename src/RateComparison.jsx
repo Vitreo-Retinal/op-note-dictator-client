@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { hubRpc } from "./lib/hubRpc.js"; // via the hub server, not the public key (security stage 3, Oct 24 2026)
 import { searchPlans } from "./lib/planSearch.js";
-import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, missingMedicare, noMedicareComparison, noMedicareMargin, rvuRelease, monthOptions, latestReleaseMonth, monthLabel, ymOf, drugMargin, noCostLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
+import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, missingMedicare, noMedicareComparison, noMedicareMargin, noRvuLine, rvuRelease, monthOptions, latestReleaseMonth, monthLabel, ymOf, drugMargin, noCostLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
 import { S, T, card, field, fieldLabel, btnSm, secHead } from "./theme.js";
 import PageBar, { wrap } from "./PageBar.jsx";
 import { AlertIcon } from "./icons.jsx";
@@ -221,7 +221,10 @@ export default function RateComparison({ onBack, embedded = false }) {
   const months = useMemo(() => monthOptions(new Date(), "2026-01", latestReleaseMonth(releases)), [releases]);
   const [data, setData] = useState(null);
   const [failed, setFailed] = useState(false);
-  const [rvu, setRvu] = useState(null); // hub_rvu_at(code, month): work/PE/MP/total RVUs + conversion factors of the release in effect that month (null before the first stored release)
+  // hub_rvu_at(code, month): work/PE/MP/total RVUs + conversion factors of the release in effect that
+  // month — no row when no stored release covers it (before Jan 1 2026, or after the last stored
+  // release). Kept with its code + month so an earlier pick's breakdown is never shown for a new one.
+  const [rvuAns, setRvuAns] = useState(null); // { code, month, data }
   const rvuReq = useRef(0);
   const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState("");
@@ -249,12 +252,15 @@ export default function RateComparison({ onBack, embedded = false }) {
   // RVU breakdown for the date of service (Nov 2026): the release in effect that month
   // (Medicare component values are national). Null for a month before the first stored release.
   useEffect(() => {
-    if (!code) { setRvu(null); return; }
     const id = ++rvuReq.current;
+    setRvuAns(null); // clear at once: never show the previous month's breakdown while loading
+    if (!code) return;
     hubRpc("hub_rvu_at", { p_code: code, p_month: month }).then(({ data, error }) => {
-      if (id === rvuReq.current) setRvu(error ? null : data); // a newer pick is on its way
+      if (id === rvuReq.current) setRvuAns({ code, month, data: error ? null : data, error: !!error }); // a newer pick is on its way
     });
   }, [code, month]);
+  const rvuHere = rvuAns && rvuAns.code === code && rvuAns.month === month ? rvuAns : null;
+  const rvu = rvuHere && rvuHere.data && typeof rvuHere.data === "object" ? rvuHere.data : null;
 
   const peers = (data && data.peers) || [];
   const ratedPeers = peers.filter((p) => p.rate != null);
@@ -303,6 +309,8 @@ export default function RateComparison({ onBack, embedded = false }) {
   const vraPctOfMed = showVsMed ? vra / medLocal : null;
   const medPer = data ? medicarePeriod(b, isDrug, data.month) : null;
   const rvuRel = rvuRelease(rvu, month); // RVU heading: the real release and its dates (Nov 2026)
+  // No row for this month (and no error): say why, from the plan answer, instead of a blank or stale box.
+  const noRvu = !isDrug && rvuHere && !rvuHere.error && !rvu && data && data.month === month ? noRvuLine(b, month) : null;
   const maxBar = Math.max(vra || 0, targetVal || 0, medLocal || 0);
 
   // drug margin (VRA rate is per billed unit; × units_per_dose → per dose — same as v1),
@@ -414,6 +422,12 @@ export default function RateComparison({ onBack, embedded = false }) {
                   At your rate of <b style={{ color: S.blue }}>{price(vra)}</b>: <b style={{ color: S.text }}>${(vra / rvu.total_nonfac_rvu).toFixed(2)}/RVU</b> · <b style={{ color: S.text }}>{(vra / rvu.medicare_natl_office).toFixed(2)}×</b> national Medicare
                 </div>
               )}
+            </div>
+          )}
+          {noRvu && (
+            <div style={field({ marginTop: 16 })}>
+              <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, fontFamily: T.sans, marginBottom: 4 }}>Medicare RVU breakdown</div>
+              <div style={{ fontSize: 13, color: T.muted, lineHeight: 1.5 }}>{noRvu}</div>
             </div>
           )}
 

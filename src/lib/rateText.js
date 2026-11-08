@@ -173,7 +173,9 @@ const quarterEndMonth = (ymd) => {
  *               "· RVU27A · published by CMS, starts Jan 1, 2027")
  * `later` (shown as a note) when the month asked is outside the period returned: before it,
  * after an open ASP quarter's calendar quarter, or in a later year than an open fee schedule
- * release (a CMS release never runs past its year). Null when the answer carries no period.
+ * release (a CMS release never runs past its year). Since the Nov 8 2026 DB change a month after
+ * the last stored release comes back missing (after_stored — see missingMedicare), so the last
+ * two only guard an older answer shape. Null when the answer carries no period.
  */
 export function medicarePeriod(benchmarks, isDrug, month) {
   const p = benchmarks && benchmarks.med_period;
@@ -214,9 +216,11 @@ export function medicarePeriod(benchmarks, isDrug, month) {
 
 /**
  * A month with no stored Medicare price: the answer has no number (vra.rate and med_nat null)
- * and med_period = { missing, first_from[, kind: 'mpfs'][, release] }. Or null.
+ * and med_period = { missing, first_from[, kind: 'mpfs'][, release][, after_stored] }. Or null.
  *   drug      → "No Medicare ASP stored for Jun 2026. Our first stored quarter starts Jul 1, 2026."
  *   procedure → "No Medicare fee schedule stored for Dec 2025. Stored releases start Jan 1, 2026."
+ *   after the last stored release / quarter (after_stored) →
+ *               "No Medicare fee schedule is stored yet for Jan 2027." / "No Medicare ASP is stored yet for Jan 2027."
  *               (the release has no row for the code → "No Medicare fee schedule rate stored for this code in RVU26D.")
  */
 function missingParts(benchmarks, month) {
@@ -224,6 +228,11 @@ function missingParts(benchmarks, month) {
   if (!p || !p.missing) return null;
   const first = dayLabel(p.first_from);
   const m = monthLabel(month) || "this month";
+  // Nov 8 2026 DB change: a month after the last stored release / ASP quarter comes back
+  // { missing, after_stored: true } — "not stored yet", never "Stored releases start …".
+  if (p.after_stored) {
+    return { head: p.kind === "mpfs" ? `No Medicare fee schedule is stored yet for ${m}` : `No Medicare ASP is stored yet for ${m}`, tail: "" };
+  }
   if (p.kind === "mpfs") {
     if (p.release && !first) return { head: `No Medicare fee schedule rate stored for this code in ${p.release}`, tail: "" };
     return { head: `No Medicare fee schedule stored for ${m}`, tail: first ? ` Stored releases start ${first}.` : "" };
@@ -247,7 +256,19 @@ export function noMedicareComparison(benchmarks, month) {
 export function noMedicareMargin(benchmarks, month) {
   const p = benchmarks && benchmarks.med_period;
   if (!p || !p.missing) return null;
+  if (p.after_stored) return `${missingParts(benchmarks, month).head}, so no margin is shown.`;
   return `No Medicare ${p.kind === "mpfs" ? "fee schedule" : "ASP"} for ${monthLabel(month) || "this month"}, so no margin is shown.`;
+}
+
+/**
+ * RVU box when hub_rvu_at returns no row because no stored release covers the month (procedures;
+ * the plan answer's med_period says why): "No Medicare fee schedule is stored yet for Jan 2027,
+ * so there is no RVU breakdown." Null otherwise (then the box is simply not shown, as before).
+ */
+export function noRvuLine(benchmarks, month) {
+  const p = benchmarks && benchmarks.med_period;
+  if (!p || !p.missing || p.kind !== "mpfs") return null;
+  return `${missingParts(benchmarks, month).head}, so there is no RVU breakdown.`;
 }
 
 /**
