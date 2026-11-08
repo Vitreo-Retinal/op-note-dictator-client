@@ -107,10 +107,16 @@ export function ymOf(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
-/** Date-of-service picker: every month from `first` to the current month, newest first. */
-export function monthOptions(now = new Date(), first = "2026-01") {
+/**
+ * Date-of-service picker: every month from `first` to the current month, newest first.
+ * `last` ('YYYY-MM', Nov 2026) extends the list past this month — the start month of the latest
+ * stored release (latestReleaseMonth), so a January 2027 visit can be priced in December once
+ * CMS has published RVU27A. Never shorter than this month.
+ */
+export function monthOptions(now = new Date(), first = "2026-01", last = null) {
   const out = [];
-  let [y, m] = ymOf(now).split("-").map(Number);
+  const top = /^\d{4}-\d{2}$/.test(String(last || "")) && last > ymOf(now) ? last : ymOf(now);
+  let [y, m] = top.split("-").map(Number);
   const [fy, fm] = first.split("-").map(Number);
   while (y > fy || (y === fy && m >= fm)) {
     const val = `${y}-${String(m).padStart(2, "0")}`;
@@ -118,6 +124,16 @@ export function monthOptions(now = new Date(), first = "2026-01") {
     m -= 1; if (m === 0) { m = 12; y -= 1; }
   }
   return out;
+}
+
+/** hub_medicare_releases() rows → 'YYYY-MM' of the latest valid_from (any kind or status), or null. */
+export function latestReleaseMonth(releases) {
+  let best = null;
+  for (const r of Array.isArray(releases) ? releases : []) {
+    const ym = /^(\d{4}-\d{2})-\d{2}/.exec(String((r && r.valid_from) || ""));
+    if (ym && (!best || ym[1] > best)) best = ym[1];
+  }
+  return best;
 }
 
 /** "Jun–Oct 2026", "Oct 2026", "Dec 2026 – Feb 2027". */
@@ -142,12 +158,22 @@ export function periodLabel(from, to) {
   return `${shortDay(from)} – ${dayLabel(to)}`;
 }
 
+// Last 'YYYY-MM' of the calendar quarter holding a 'YYYY-MM-DD'.
+const quarterEndMonth = (ymd) => {
+  const y = ymd.slice(0, 4), m = Number(ymd.slice(5, 7));
+  return `${y}-${String(Math.floor((m - 1) / 3) * 3 + 3).padStart(2, "0")}`;
+};
+
 /**
- * Medicare period. { line, short }:
+ * Medicare period. { line, short, later? }:
  *   drug      → "Medicare ASP · Q3 2026 (Jul 1 – Sep 30)" / "ASP · Q3 2026 (Jul 1 – Sep 30)"
- *   procedure → "Medicare 2026 fee schedule (Worcester) · current release (Oct 2026). Earlier 2026 releases are not stored."
- *               / "Worcester · current release (Oct 2026)"
- * Null when the answer carries no period.
+ *   procedure → "Medicare 2026 fee schedule (Worcester) · RVU26A · Q1 2026 (Jan 1 – Mar 31)"
+ *               / "Worcester · RVU26A · Q1 2026 (Jan 1 – Mar 31)"
+ *               (open release: "· RVU26D · from Oct 1, 2026"; published future release:
+ *               "· RVU27A · published by CMS, starts Jan 1, 2027")
+ * `later` (shown as a note) when the month asked is outside the period returned: before it,
+ * after an open ASP quarter's calendar quarter, or in a later year than an open fee schedule
+ * release (a CMS release never runs past its year). Null when the answer carries no period.
  */
 export function medicarePeriod(benchmarks, isDrug, month) {
   const p = benchmarks && benchmarks.med_period;
@@ -162,30 +188,83 @@ export function medicarePeriod(benchmarks, isDrug, month) {
         later: `No Medicare ASP for ${monthLabel(month)} is stored. This is the rate ${q}.`,
       };
     }
+    // After an open quarter (no newer ASP file stored yet): say so.
+    if (month && !p.to && month > quarterEndMonth(p.from)) {
+      return {
+        line: `Medicare ASP · ${q}`,
+        short: `ASP ${q} · none stored yet for ${monthLabel(month)}`,
+        later: `No Medicare ASP for ${monthLabel(month)} is stored yet. This is the rate ${q}.`,
+      };
+    }
     return { line: `Medicare ASP · ${q}`, short: `ASP · ${q}` };
   }
   const year = p.from.slice(0, 4);
-  if (p.to) {
-    const range = periodLabel(p.from, p.to);
-    return { line: `Medicare ${year} fee schedule (Worcester) · ${range}`, short: `Worcester · ${range}` };
+  const rel = p.release ? `${p.release} · ` : "";
+  if (p.is_future) {
+    const starts = `published by CMS, starts ${dayLabel(p.from)}`;
+    return { line: `Medicare ${year} fee schedule (Worcester) · ${rel}${starts}`, short: `Worcester · ${rel}${starts}` };
   }
-  const rel = monthLabel(p.from);
-  return {
-    line: `Medicare ${year} fee schedule (Worcester) · current release (${rel}). Earlier ${year} releases are not stored.`,
-    short: `Worcester · current release (${rel})`,
-  };
+  const range = p.to ? periodLabel(p.from, p.to) : p.release ? `from ${dayLabel(p.from)}` : `current release (${monthLabel(p.from)})`;
+  const out = { line: `Medicare ${year} fee schedule (Worcester) · ${rel}${range}`, short: `Worcester · ${rel}${range}` };
+  if (month && !p.to && month.slice(0, 4) > year) {
+    out.later = `No ${month.slice(0, 4)} Medicare fee schedule is stored yet. This is the ${p.release || year} rate ${range}.`;
+  }
+  return out;
 }
 
 /**
- * Medicare drug month before the first stored ASP quarter: the answer has no
- * number (vra.rate and med_nat null) and med_period = { missing, first_from }.
- * → "No Medicare ASP stored for Jun 2026. Our first stored quarter starts Jul 1, 2026." or null.
+ * A month with no stored Medicare price: the answer has no number (vra.rate and med_nat null)
+ * and med_period = { missing, first_from[, kind: 'mpfs'][, release] }. Or null.
+ *   drug      → "No Medicare ASP stored for Jun 2026. Our first stored quarter starts Jul 1, 2026."
+ *   procedure → "No Medicare fee schedule stored for Dec 2025. Stored releases start Jan 1, 2026."
+ *               (the release has no row for the code → "No Medicare fee schedule rate stored for this code in RVU26D.")
  */
-export function missingAsp(benchmarks, month) {
+function missingParts(benchmarks, month) {
   const p = benchmarks && benchmarks.med_period;
   if (!p || !p.missing) return null;
   const first = dayLabel(p.first_from);
-  return `No Medicare ASP stored for ${monthLabel(month) || "this month"}.${first ? ` Our first stored quarter starts ${first}.` : ""}`;
+  const m = monthLabel(month) || "this month";
+  if (p.kind === "mpfs") {
+    if (p.release && !first) return { head: `No Medicare fee schedule rate stored for this code in ${p.release}`, tail: "" };
+    return { head: `No Medicare fee schedule stored for ${m}`, tail: first ? ` Stored releases start ${first}.` : "" };
+  }
+  return { head: `No Medicare ASP stored for ${m}`, tail: first ? ` Our first stored quarter starts ${first}.` : "" };
+}
+export function missingMedicare(benchmarks, month) {
+  const x = missingParts(benchmarks, month);
+  return x ? `${x.head}.${x.tail}` : null;
+}
+/** Older name (drug-only wording until Nov 2026); same function. */
+export const missingAsp = missingMedicare;
+
+/** "No Medicare fee schedule stored for Dec 2025, so there is no Medicare comparison." (ASP wording for drugs), or null. */
+export function noMedicareComparison(benchmarks, month) {
+  const x = missingParts(benchmarks, month);
+  return x ? `${x.head}, so there is no Medicare comparison.` : null;
+}
+
+/** "No Medicare ASP for Jun 2026, so no margin is shown." (fee schedule wording for procedures), or null. */
+export function noMedicareMargin(benchmarks, month) {
+  const p = benchmarks && benchmarks.med_period;
+  if (!p || !p.missing) return null;
+  return `No Medicare ${p.kind === "mpfs" ? "fee schedule" : "ASP"} for ${monthLabel(month) || "this month"}, so no margin is shown.`;
+}
+
+/**
+ * RVU breakdown heading for hub_rvu_at(code, month) → { label, note }:
+ *   "RVU26D · from Oct 1, 2026" · "RVU26A · Q1 2026 (Jan 1 – Mar 31)" ·
+ *   "RVU27A · published by CMS, starts Jan 1, 2027". Older answers without a release → "2026 MPFS".
+ *   note: "No 2027 Medicare fee schedule is stored yet." when the month is in a later year than an open release.
+ */
+export function rvuRelease(rvu, month) {
+  if (!rvu) return { label: "", note: null };
+  const from = rvu.valid_from || rvu.as_of || null;
+  if (!rvu.release) return { label: `${from ? String(from).slice(0, 4) + " " : ""}MPFS`, note: null };
+  if (rvu.is_future) return { label: `${rvu.release} · published by CMS, starts ${dayLabel(from)}`, note: null };
+  const range = rvu.valid_to ? periodLabel(from, rvu.valid_to) : `from ${dayLabel(from)}`;
+  const note = month && !rvu.valid_to && from && month.slice(0, 4) > String(from).slice(0, 4)
+    ? `No ${month.slice(0, 4)} Medicare fee schedule is stored yet.` : null;
+  return { label: `${rvu.release} · ${range}`, note };
 }
 
 /** "MassHealth fee schedule · as of May 2026" (from benchmarks.mh_as_of), or null. */

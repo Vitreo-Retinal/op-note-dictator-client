@@ -15,10 +15,13 @@ const API_BASE = (import.meta.env || {}).VITE_API_BASE || "https://op-note-dicta
 
 // The functions the server allows (routes/hub-data.js HUB_FUNCTIONS).
 // Rates v2 (Oct 2026) added hub_rate_plans + hub_plan_rate, then hub_plan_rate_at (by month).
+// Medicare price history (Nov 2026): hub_rvu_at (RVU breakdown for the date-of-service month)
+// and hub_medicare_releases (stored releases, for the month picker).
 export const HUB_RPC_FUNCTIONS = Object.freeze([
   "hub_drug_economics_v3", "hub_codes", "hub_networks", "hub_insurance_dict",
   "hub_compare", "hub_rvu", "hub_surgeon_schedule", "hub_call_schedule",
   "hub_rate_plans", "hub_plan_rate", "hub_plan_rate_at",
+  "hub_rvu_at", "hub_medicare_releases",
 ]);
 
 export async function hubRpc(fn, args = {}, { fetchImpl = (...a) => fetch(...a), base = API_BASE } = {}) {

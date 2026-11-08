@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { hubRpc } from "./lib/hubRpc.js"; // via the hub server, not the public key (security stage 3, Oct 24 2026)
 import { searchPlans } from "./lib/planSearch.js";
-import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, missingAsp, monthOptions, monthLabel, ymOf, drugMargin, noCostLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
+import { price, hasSingleRate, patternLine, priceSets, eobLine, eobDates, sourceLine, noFileLine, timelineRuns, pctChange, medicarePeriod, missingMedicare, noMedicareComparison, noMedicareMargin, rvuRelease, monthOptions, latestReleaseMonth, monthLabel, ymOf, drugMargin, noCostLine, SEVERAL_PRICES_LINE } from "./lib/rateText.js";
 import { S, T, card, field, fieldLabel, btnSm, secHead } from "./theme.js";
 import PageBar, { wrap } from "./PageBar.jsx";
 import { AlertIcon } from "./icons.jsx";
@@ -146,10 +146,10 @@ function VraCard({ data }) {
   const body = { fontSize: 13.5, color: T.ink2, lineHeight: 1.55, marginTop: 8 };
 
   let content;
-  const noAsp = plan.source === "medicare" ? missingAsp(data.benchmarks, data.month) : null;
-  if (noAsp) {
-    // Medicare drug, month before the first stored ASP quarter: no number at all.
-    content = <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>{noAsp}</div>;
+  const noMedicare = plan.source === "medicare" ? missingMedicare(data.benchmarks, data.month) : null;
+  if (noMedicare) {
+    // Medicare drug or procedure, month with no stored ASP quarter / fee schedule release: no number at all.
+    content = <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, lineHeight: 1.4 }}>{noMedicare}</div>;
   } else if (plan.source === "none") {
     content = (
       <>
@@ -215,10 +215,14 @@ export default function RateComparison({ onBack, embedded = false }) {
   const [planKey, setPlanKey] = useState(null); // nothing pre-selected (Mari: "Pick a plan…")
   const [code, setCode] = useState("67028");
   const [month, setMonth] = useState(() => ymOf()); // date of service, 'YYYY-MM' — this month by default
-  const months = useMemo(() => monthOptions(), []);
+  // Nov 2026: the picker reaches the start month of the latest stored release (hub_medicare_releases),
+  // so a January 2027 visit can be priced in December once CMS has published the 2027 release.
+  const [releases, setReleases] = useState([]);
+  const months = useMemo(() => monthOptions(new Date(), "2026-01", latestReleaseMonth(releases)), [releases]);
   const [data, setData] = useState(null);
   const [failed, setFailed] = useState(false);
-  const [rvu, setRvu] = useState(null); // hub_rvu(code): work/PE/MP/total RVUs + 2026 conversion factors
+  const [rvu, setRvu] = useState(null); // hub_rvu_at(code, month): work/PE/MP/total RVUs + conversion factors of the release in effect that month (null before the first stored release)
+  const rvuReq = useRef(0);
   const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState("");
   const [geoAdj, setGeoAdj] = useState(true);
@@ -229,6 +233,7 @@ export default function RateComparison({ onBack, embedded = false }) {
     hubRpc("hub_drug_economics_v3").then(({ data }) => setDrugEcon(data || []));
     hubRpc("hub_codes").then(({ data }) => setCodes((data || []).filter((c) => c.has_market)));
     hubRpc("hub_rate_plans").then(({ data }) => setPlans(data || []));
+    hubRpc("hub_medicare_releases").then(({ data }) => setReleases(Array.isArray(data) ? data : []));
   }, []);
 
   useEffect(() => {
@@ -241,11 +246,15 @@ export default function RateComparison({ onBack, embedded = false }) {
     });
   }, [code, planKey, month]);
 
-  // RVU breakdown depends only on the code (Medicare component values are national)
+  // RVU breakdown for the date of service (Nov 2026): the release in effect that month
+  // (Medicare component values are national). Null for a month before the first stored release.
   useEffect(() => {
     if (!code) { setRvu(null); return; }
-    hubRpc("hub_rvu", { p_code: code }).then(({ data, error }) => setRvu(error ? null : data));
-  }, [code]);
+    const id = ++rvuReq.current;
+    hubRpc("hub_rvu_at", { p_code: code, p_month: month }).then(({ data, error }) => {
+      if (id === rvuReq.current) setRvu(error ? null : data); // a newer pick is on its way
+    });
+  }, [code, month]);
 
   const peers = (data && data.peers) || [];
   const ratedPeers = peers.filter((p) => p.rate != null);
@@ -293,6 +302,7 @@ export default function RateComparison({ onBack, embedded = false }) {
   const showVsMed = vra != null && medLocal && src !== "medicare";
   const vraPctOfMed = showVsMed ? vra / medLocal : null;
   const medPer = data ? medicarePeriod(b, isDrug, data.month) : null;
+  const rvuRel = rvuRelease(rvu, month); // RVU heading: the real release and its dates (Nov 2026)
   const maxBar = Math.max(vra || 0, targetVal || 0, medLocal || 0);
 
   // drug margin (VRA rate is per billed unit; × units_per_dose → per dose — same as v1),
@@ -331,8 +341,8 @@ export default function RateComparison({ onBack, embedded = false }) {
 
           <VraCard data={data} />
           {data.plan && data.plan.source === "mrf" && <Timeline data={data} />}
-          {src !== "medicare" && missingAsp(b, data.month) && (
-            <div style={{ fontSize: 12.5, color: T.muted, margin: "0 0 12px", lineHeight: 1.5 }}>No Medicare ASP stored for {monthLabel(data.month)}, so there is no Medicare comparison.</div>
+          {src !== "medicare" && noMedicareComparison(b, data.month) && (
+            <div style={{ fontSize: 12.5, color: T.muted, margin: "0 0 12px", lineHeight: 1.5 }}>{noMedicareComparison(b, data.month)}</div>
           )}
 
           {vra != null && (targetVal != null || vraPctOfMed != null) && (
@@ -387,7 +397,8 @@ export default function RateComparison({ onBack, embedded = false }) {
           {/* RVU breakdown — how the Medicare rate is built (procedures only; drugs are ASP-based) */}
           {!isDrug && rvu && rvu.total_nonfac_rvu > 0 && (
             <div style={field({ marginTop: 16 })}>
-              <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, fontFamily: T.sans, marginBottom: 8 }}>Medicare RVU breakdown · 2026 MPFS (office / non-facility)</div>
+              <div style={{ fontSize: 13.5, color: T.ink, fontWeight: 600, fontFamily: T.sans, marginBottom: rvuRel.note ? 2 : 8 }}>Medicare RVU breakdown · {rvuRel.label} (office / non-facility)</div>
+              {rvuRel.note && <div style={{ fontSize: 12.5, color: T.amber, marginBottom: 8, lineHeight: 1.5 }}>{rvuRel.note}</div>}
               <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "4px 12px", fontSize: 13, color: T.ink2, marginBottom: 6 }}>
                 <span>Work <b style={{ color: S.text }}>{rvu.work_rvu}</b></span>
                 <span>+ Practice exp. <b style={{ color: S.text }}>{rvu.pe_nonfac_rvu}</b></span>
@@ -429,7 +440,7 @@ export default function RateComparison({ onBack, embedded = false }) {
                   )}
                 </>
               ) : vra == null ? (
-                <div style={{ fontSize: 13, color: T.muted }}>{src === "medicare" && missingAsp(b, data.month) ? `No Medicare ASP for ${monthLabel(data.month)}, so no margin is shown.` : "No single VRA rate for this plan, so no margin is shown."}</div>
+                <div style={{ fontSize: 13, color: T.muted }}>{(src === "medicare" && noMedicareMargin(b, data.month)) || "No single VRA rate for this plan, so no margin is shown."}</div>
               ) : (
                 <div style={{ fontSize: 13, color: T.muted }}>No acquisition cost entered yet for this drug — add it in <span style={{ fontFamily: S.mono }}>drug_costs</span> to see margin.</div>
               )}
