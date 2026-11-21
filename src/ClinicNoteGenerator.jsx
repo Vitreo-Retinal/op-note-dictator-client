@@ -31,6 +31,7 @@ import { normalizeFamily, normalizeDefault, DEFAULT_LABELS, injectionCodeRequest
 import { LONG_DEFAULTS, LONG_DEFAULT_LABELS, normalizeLongDefault, longitudinalRequest, longitudinalHint, defaultForTap, longitudinalSummary, applyLongitudinalEdit } from "./lib/longitudinal.js"; // G2211 / B1 switch (Nov 5 2026)
 import { normalizeObservationSwitch, observationSwitchSummary, toggleObservationSwitch } from "./lib/observationSwitch.js"; // new patient, observation only → 92004 (Nov 5 2026)
 import { parseWellpointReminder, wellpointReminderFor } from "./lib/wellpointReminder.js"; // Vabysmo + traditional Medicare: Wellpoint reminder (Nov 6 2026)
+import { parseDecemberVisit, parseDecemberSwitch, decemberRequest, decemberFlagAfter, decemberStripFor } from "./lib/decemberVisit.js"; // "December visit?" switch, Jan 1-15 2027 (Nov 21 2026)
 import { startLiveSession, liveDictationSupported, readHubToken } from "./lib/liveDictationSession.js";
 
 // Tabs shown on phones (everything else is desktop-only).
@@ -564,6 +565,9 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   // an untapped toggle then sends { family: "auto", source: "default" }.
   const [secondDxText, setSecondDxText] = useState(""); // the "add a second diagnosis" box (comp exam, injection days)
   const injRef = useRef({ family: "em", tapped: false });
+  // "December visit?" (Nov 21 2026, OWN-RULE-054): true after the doctor taps "Switch to 2026 codes"
+  // on this note — every regenerate of the same note sends december_visit: true. New note clears it.
+  const decRef = useRef(false);
   injRef.current = { family: injFamily, tapped: injTapped };
   // ── G2211 / B1 switch (Nov 5 2026, owner; server lib/g2211-choice.js) ──
   // lgDefault = the doctor's saved default (by_plan | always | never; billing_preferences
@@ -704,6 +708,14 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
   function switchInjFamilyAndRegenerate(f) {
     if (loading) return;
     pickInjFamily(f);
+    run();
+  }
+  // Output strip "Switch to 2026 codes" (Nov 21 2026, OWN-RULE-054): this visit was in December 2026 —
+  // regenerate the same note with december_visit: true. The injection-day choice is NOT touched
+  // (an Auto default must stay Auto, or the toggle would override the switch).
+  function switchToDecemberAndRegenerate() {
+    if (loading) return;
+    decRef.current = true;
     run();
   }
   // Output strip "Add & regenerate" (comp exam with one diagnosis, Nov 5 2026): the typed diagnosis
@@ -872,6 +884,8 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
           injectionCode: injectionCodeRequest(injRef.current.family, injRef.current.tapped),
           // G2211 / B1 (Nov 5 2026): the toggle if tapped for this note, else the doctor's default.
           longitudinal: longitudinalRequest(lgRef.current.choice, lgRef.current.tapped, lgRef.current.def),
+          // "December visit?" (Nov 21 2026): only after the tap, for this note (server honors it Jan 1-15 2027).
+          ...decemberRequest(decRef.current),
         }),
       });
       const data = await res.json();
@@ -897,6 +911,11 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
       // Nov 5 2026 — new patient, observation only, billed 99204: the server keeps 99204 and offers
       // 92004 (hub only; the switch is an instant edit below). Older servers omit it.
       parsed.observationSwitch = normalizeObservationSwitch(data.observationSwitch);
+      // Nov 21 2026 — Jan 1-15 2027: the "December visit?" reminder and the answer to a tap (hub only,
+      // never copied). A refused tap (outside the window) stops sending the flag. Older servers omit both.
+      parsed.decemberVisit = parseDecemberVisit(data);
+      parsed.decemberSwitch = parseDecemberSwitch(data);
+      decRef.current = decemberFlagAfter(decRef.current, parsed.decemberSwitch);
       setSecondDxText("");
       setResult(parsed);
       setTab("output");
@@ -973,6 +992,7 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
     setInjTapped(false); setInjFamily(injDefault); setInjSaving("");
     lgRef.current = { choice: null, tapped: false, def: lgDefault };
     setLgTapped(false); setLgChoice(null); setLgSaving("");
+    decRef.current = false; // the December switch is for one note
     setTab("input"); setResult(null); setAdvisorAdded(new Set());
   }
 
@@ -2207,6 +2227,29 @@ export default function ClinicNoteGenerator({ onBack, surgeon, inputNonce }) {
                           {fs.reminder}
                         </div>
                       )}
+                      <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
+                    </div>
+                  );
+                })()}
+
+                {/* "December visit?" (Nov 21 2026, owner D16; server OWN-RULE-054) — Jan 1-15 2027 only, when a
+                    2027 switch (B1, Auto / Medicare eye code) changed this note. HUB ONLY, never copied.
+                    The button regenerates the same note with the 2026 codes. */}
+                {(() => {
+                  const dv = decemberStripFor(result);
+                  if (!dv) return null;
+                  const offer = dv.kind === "offer";
+                  return (
+                    <div data-testid="december-visit" style={{ marginTop: 10, padding: "9px 12px", borderRadius: T.r, border: `1px solid ${offer ? T.goldSoft : T.line}`, background: offer ? T.amberSoft : T.paper, fontFamily: T.sans, fontSize: 13, color: T.ink2, display: "flex", flexDirection: "column", gap: 7 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 12.5, lineHeight: 1.45, color: offer ? T.amber : T.ink2, flex: "1 1 240px" }}>{dv.text}</span>
+                        {offer && (
+                          <button type="button" onClick={switchToDecemberAndRegenerate} disabled={loading}
+                            style={btnSm("secondary", { marginLeft: "auto", ...(phone ? { height: 40, padding: "0 12px", fontSize: 13.5 } : {}) })}>
+                            {dv.button}
+                          </button>
+                        )}
+                      </div>
                       <div style={{ fontSize: 11.5, color: T.muted }}>Hub only — not copied into the note.</div>
                     </div>
                   );
